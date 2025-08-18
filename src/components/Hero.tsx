@@ -14,7 +14,7 @@ const Hero = () => {
   ];
 
   return (
-    <section className="pt-24 pb-16 bg-background">
+    <section className="pt-32 pb-16 bg-background">
       <div className="container mx-auto px-4">
         {/* Header */}
         <div className="text-center mb-16 max-w-4xl mx-auto">
