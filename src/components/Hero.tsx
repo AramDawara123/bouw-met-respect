@@ -1,59 +1,50 @@
 
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Users, Shield, Heart } from "lucide-react";
+import { Card } from "@/components/ui/card";
+import { ArrowRight, Users, Shield, Heart, Hammer, HardHat, Building } from "lucide-react";
 
 const Hero = () => {
+  const concepts = [
+    { icon: Shield, title: "Veiligheid", description: "Een veilige werkplek voor iedereen" },
+    { icon: Users, title: "Respect", description: "Respectvolle omgang op de bouwplaats" },
+    { icon: Heart, title: "Inclusie", description: "Ruimte voor jong talent" },
+    { icon: Hammer, title: "Kwaliteit", description: "Professionele werkstandaarden" },
+    { icon: HardHat, title: "Veilig werken", description: "Bescherming en bewustwording" },
+    { icon: Building, title: "Toekomst", description: "Duurzame sector ontwikkeling" }
+  ];
+
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-      {/* Background gradient */}
-      <div className="absolute inset-0 hero-gradient opacity-90" />
-      
-      {/* Floating elements for visual interest */}
-      <div className="absolute top-20 left-10 animate-float">
-        <Shield className="w-12 h-12 text-white/20" />
-      </div>
-      <div className="absolute bottom-32 right-16 animate-float" style={{animationDelay: '1s'}}>
-        <Users className="w-16 h-16 text-white/20" />
-      </div>
-      <div className="absolute top-40 right-20 animate-float" style={{animationDelay: '2s'}}>
-        <Heart className="w-10 h-10 text-white/20" />
-      </div>
-
-      {/* Content */}
-      <div className="relative z-10 container mx-auto px-6 text-center text-white">
-        <div className="animate-fade-in">
-          <h1 className="mb-6 max-w-4xl mx-auto leading-tight">
-            Bouw met <span className="bg-white/20 px-3 py-1 rounded-lg">Respect</span>
+    <section className="py-16 bg-background">
+      <div className="container mx-auto px-6">
+        {/* Header */}
+        <div className="text-center mb-16">
+          <h1 className="mb-6 text-foreground">
+            Bouw met respect:
+            <br />
+            Samen voor een betere toekomst
           </h1>
-          <p className="text-xl md:text-2xl mb-8 max-w-3xl mx-auto leading-relaxed font-light">
-            Samen doorbreken we de cirkel van grensoverschrijdend gedrag op bouwplaatsen. 
-            Voor een veilige, respectvolle sector die jong talent verwelkomt.
+          <p className="text-lg text-muted-foreground max-w-3xl mx-auto mb-8">
+            Ontdek hoe we samen de bouwsector kunnen transformeren door respect, 
+            veiligheid en inclusie centraal te stellen. Een betere werkplek begint bij bewustwording.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <Button 
-              size="lg" 
-              variant="secondary"
-              className="bg-white text-primary hover:bg-white/90 font-semibold px-8 py-3 h-auto"
-            >
-              Word lid van de community
-              <ArrowRight className="ml-2 w-5 h-5" />
-            </Button>
-            <Button 
-              size="lg" 
-              variant="outline"
-              className="border-white/30 text-white hover:bg-white/10 font-semibold px-8 py-3 h-auto"
-            >
-              Lees ons verhaal
-            </Button>
-          </div>
+          <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90">
+            Start nu
+            <ArrowRight className="ml-2 w-4 h-4" />
+          </Button>
         </div>
-      </div>
 
-      {/* Bottom wave */}
-      <div className="absolute bottom-0 w-full">
-        <svg viewBox="0 0 1200 120" preserveAspectRatio="none" className="w-full h-16 fill-background">
-          <path d="M0,60 C150,120 350,0 600,60 C850,120 1050,0 1200,60 L1200,120 L0,120 Z" />
-        </svg>
+        {/* Concepts Grid */}
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
+          {concepts.map((concept, index) => (
+            <Card key={index} className="p-8 text-center hover:shadow-md transition-shadow bg-muted/30">
+              <div className="w-16 h-16 mx-auto mb-4 bg-primary/10 rounded-full flex items-center justify-center">
+                <concept.icon className="w-8 h-8 text-primary" />
+              </div>
+              <h3 className="text-xl font-semibold mb-3 text-foreground">{concept.title}</h3>
+              <p className="text-muted-foreground">{concept.description}</p>
+            </Card>
+          ))}
+        </div>
       </div>
     </section>
   );

@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Mail, Phone, MessageSquare, Send } from "lucide-react";
+import { Mail, Phone, MapPin } from "lucide-react";
 import { useState } from "react";
 
 const Contact = () => {
@@ -17,7 +17,6 @@ const Contact = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     console.log('Form submitted:', formData);
-    // Here you would typically send the data to your backend
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -30,94 +29,44 @@ const Contact = () => {
   return (
     <section className="py-20 bg-background">
       <div className="container mx-auto px-6">
+        {/* Contact Form Section */}
         <div className="text-center mb-16">
-          <h2 className="mb-6 text-foreground">Laten we contact maken</h2>
+          <h2 className="mb-6 text-foreground">Neem contact op</h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Wil je meer weten over onze community? Heb je ideeën of wil je bijdragen? 
-            We horen graag van je!
+            Wil je meer weten over onze community of heb je vragen? 
+            Neem gerust contact met ons op.
           </p>
         </div>
 
-        <div className="grid lg:grid-cols-2 gap-12 max-w-6xl mx-auto">
-          {/* Contact Info */}
-          <div className="space-y-8">
-            <Card className="p-6 hover:shadow-md transition-shadow">
-              <div className="flex items-start space-x-4">
-                <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">
-                  <Mail className="w-6 h-6 text-primary" />
-                </div>
-                <div>
-                  <h3 className="font-semibold mb-2">Email ons</h3>
-                  <p className="text-muted-foreground mb-2">
-                    Voor vragen, suggesties of samenwerkingen
-                  </p>
-                  <a href="mailto:info@bouwmetrespect.nl" className="text-primary hover:underline">
-                    info@bouwmetrespect.nl
-                  </a>
-                </div>
-              </div>
-            </Card>
-
-            <Card className="p-6 hover:shadow-md transition-shadow">
-              <div className="flex items-start space-x-4">
-                <div className="w-12 h-12 bg-secondary/10 rounded-lg flex items-center justify-center flex-shrink-0">
-                  <MessageSquare className="w-6 h-6 text-secondary" />
-                </div>
-                <div>
-                  <h3 className="font-semibold mb-2">Join de discussie</h3>
-                  <p className="text-muted-foreground mb-2">
-                    Deel je ervaring en leer van anderen
-                  </p>
-                  <span className="text-secondary">Community platform komt binnenkort</span>
-                </div>
-              </div>
-            </Card>
-
-            <Card className="p-6 hover:shadow-md transition-shadow">
-              <div className="flex items-start space-x-4">
-                <div className="w-12 h-12 bg-accent/30 rounded-lg flex items-center justify-center flex-shrink-0">
-                  <Phone className="w-6 h-6 text-accent-foreground" />
-                </div>
-                <div>
-                  <h3 className="font-semibold mb-2">Persoonlijk gesprek</h3>
-                  <p className="text-muted-foreground">
-                    Voor diepere gesprekken over samenwerking en impact
-                  </p>
-                </div>
-              </div>
-            </Card>
-          </div>
-
-          {/* Contact Form */}
+        <div className="max-w-2xl mx-auto mb-20">
           <Card className="p-8">
             <form onSubmit={handleSubmit} className="space-y-6">
-              <div>
-                <label htmlFor="name" className="block text-sm font-medium mb-2">
-                  Naam *
-                </label>
-                <Input
-                  id="name"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleChange}
-                  required
-                  className="w-full"
-                />
-              </div>
-
-              <div>
-                <label htmlFor="email" className="block text-sm font-medium mb-2">
-                  Email *
-                </label>
-                <Input
-                  id="email"
-                  name="email"
-                  type="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  required
-                  className="w-full"
-                />
+              <div className="grid md:grid-cols-2 gap-6">
+                <div>
+                  <label htmlFor="name" className="block text-sm font-medium mb-2">
+                    Naam *
+                  </label>
+                  <Input
+                    id="name"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
+                <div>
+                  <label htmlFor="email" className="block text-sm font-medium mb-2">
+                    Email *
+                  </label>
+                  <Input
+                    id="email"
+                    name="email"
+                    type="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
               </div>
 
               <div>
@@ -129,7 +78,6 @@ const Contact = () => {
                   name="company"
                   value={formData.company}
                   onChange={handleChange}
-                  className="w-full"
                 />
               </div>
 
@@ -140,20 +88,56 @@ const Contact = () => {
                 <Textarea
                   id="message"
                   name="message"
-                  rows={4}
+                  rows={6}
                   value={formData.message}
                   onChange={handleChange}
                   required
-                  className="w-full"
-                  placeholder="Vertel ons over je ideeën, vragen of hoe je wilt bijdragen..."
+                  placeholder="Vertel ons over je vragen of hoe je wilt bijdragen..."
                 />
               </div>
 
               <Button type="submit" className="w-full" size="lg">
-                <Send className="w-4 h-4 mr-2" />
                 Verstuur bericht
               </Button>
             </form>
+          </Card>
+        </div>
+
+        {/* Contact Info Section */}
+        <div className="text-center mb-12">
+          <h3 className="text-2xl font-semibold mb-8 text-foreground">Neem contact op</h3>
+        </div>
+        
+        <div className="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto">
+          <Card className="p-6 text-center">
+            <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mx-auto mb-4">
+              <Mail className="w-6 h-6 text-primary" />
+            </div>
+            <h4 className="font-semibold mb-2">Email</h4>
+            <p className="text-muted-foreground mb-2">Stuur ons een bericht</p>
+            <a href="mailto:info@bouwmetrespect.nl" className="text-primary hover:underline">
+              info@bouwmetrespect.nl
+            </a>
+          </Card>
+
+          <Card className="p-6 text-center">
+            <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mx-auto mb-4">
+              <Phone className="w-6 h-6 text-primary" />
+            </div>
+            <h4 className="font-semibold mb-2">Telefoon</h4>
+            <p className="text-muted-foreground mb-2">Bel ons voor directe vragen</p>
+            <a href="tel:+31612345678" className="text-primary hover:underline">
+              +31 6 1234 5678
+            </a>
+          </Card>
+
+          <Card className="p-6 text-center">
+            <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mx-auto mb-4">
+              <MapPin className="w-6 h-6 text-primary" />
+            </div>
+            <h4 className="font-semibold mb-2">Locatie</h4>
+            <p className="text-muted-foreground mb-2">Bezoek ons kantoor</p>
+            <p className="text-primary">Amsterdam, Nederland</p>
           </Card>
         </div>
       </div>
