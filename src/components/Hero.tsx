@@ -1,3 +1,4 @@
+
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { ArrowRight, Users, Shield, Heart, Target, Building, Zap } from "lucide-react";
@@ -51,34 +52,17 @@ const Hero = () => {
             </div>
           </div>
 
-          {/* Hero Image Grid */}
-          <div className={`grid grid-cols-2 gap-4 transition-all duration-1000 delay-400 ${
+          {/* Hero Image - Single Clean Layout */}
+          <div className={`transition-all duration-1000 delay-400 ${
             heroVisible 
               ? 'opacity-100 transform translate-x-0' 
               : 'opacity-0 transform translate-x-8'
           }`}>
-            <div className="space-y-4">
+            <div className="relative">
               <img
                 src="/lovable-uploads/b490bd1a-4422-4f83-8394-d7a2f6d940b9.png"
                 alt="Vrouwelijke bouwvakker draagt houten planken"
-                className="w-full h-48 object-cover rounded-2xl"
-              />
-              <img
-                src="https://images.unsplash.com/photo-1504307651254-35680f356dfd?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
-                alt="Bouwvakkers in veiligheidskleding"
-                className="w-full h-32 object-cover rounded-2xl"
-              />
-            </div>
-            <div className="space-y-4 pt-8">
-              <img
-                src="https://images.unsplash.com/photo-1581094794329-c8112a89af12?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
-                alt="Diverse bouwvakkers werken samen"
-                className="w-full h-32 object-cover rounded-2xl"
-              />
-              <img
-                src="https://images.unsplash.com/photo-1590736969955-71cc94901144?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
-                alt="Vrouwelijke bouwvakker op bouwplaats"
-                className="w-full h-48 object-cover rounded-2xl"
+                className="w-full h-96 object-cover rounded-2xl shadow-lg"
               />
             </div>
           </div>
