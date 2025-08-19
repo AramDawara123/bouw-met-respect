@@ -18,18 +18,21 @@ const Testimonial = () => {
             </p>
           </div>
 
-          {/* Video Section with Background */}
+          {/* Video Section with Real Video */}
           <div className="mb-16">
-            <div className="relative rounded-3xl aspect-video flex items-center justify-center mb-8 overflow-hidden">
-              <img
-                src="https://images.unsplash.com/photo-1504307651254-35680f356dfd?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"
-                alt="Bouwvakkers in teamverband"
-                className="absolute inset-0 w-full h-full object-cover"
-              />
-              <div className="absolute inset-0 bg-black/40"></div>
-              <Button size="lg" className="relative z-10 w-20 h-20 rounded-full p-0">
-                <Play className="w-8 h-8 ml-1" />
-              </Button>
+            <div className="relative rounded-3xl aspect-video overflow-hidden">
+              <video
+                className="w-full h-full object-cover"
+                autoPlay
+                muted
+                loop
+                playsInline
+              >
+                <source src="https://videos.pexels.com/video-files/3205549/3205549-uhd_2560_1440_25fps.mp4" type="video/mp4" />
+                <source src="https://videos.pexels.com/video-files/3205549/3205549-hd_1920_1080_25fps.mp4" type="video/mp4" />
+                Your browser does not support the video tag.
+              </video>
+              <div className="absolute inset-0 bg-black/20 hover:bg-black/10 transition-all duration-300"></div>
             </div>
           </div>
 
