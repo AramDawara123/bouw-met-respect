@@ -17,21 +17,17 @@ const Testimonial = () => {
             </p>
           </div>
 
-          {/* Video Section with Real Video */}
+          {/* YouTube Video Section */}
           <div className="mb-16">
             <div className="relative rounded-3xl aspect-video overflow-hidden">
-              <video
-                className="w-full h-full object-cover"
-                autoPlay
-                muted
-                loop
-                playsInline
-              >
-                <source src="https://videos.pexels.com/video-files/3205549/3205549-uhd_2560_1440_25fps.mp4" type="video/mp4" />
-                <source src="https://videos.pexels.com/video-files/3205549/3205549-hd_1920_1080_25fps.mp4" type="video/mp4" />
-                Your browser does not support the video tag.
-              </video>
-              <div className="absolute inset-0 bg-black/20 hover:bg-black/10 transition-all duration-300"></div>
+              <iframe
+                className="w-full h-full"
+                src="https://www.youtube.com/embed/TxRJdl2vfZU?autoplay=1&mute=1&loop=1&playlist=TxRJdl2vfZU"
+                title="Bouw met Respect Video"
+                frameBorder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowFullScreen
+              />
             </div>
           </div>
 
