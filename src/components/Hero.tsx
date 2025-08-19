@@ -41,8 +41,8 @@ const Hero = () => {
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-4">
               <img
-                src="https://images.unsplash.com/photo-1541888946425-d81bb19240f5?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
-                alt="Moderne bouwplaats met hijskranen"
+                src="/lovable-uploads/370194bf-f017-421b-ab19-49ae1435a82e.png"
+                alt="Vrouwelijke bouwvakker met hout"
                 className="w-full h-48 object-cover rounded-2xl"
               />
               <img
