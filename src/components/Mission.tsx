@@ -1,8 +1,12 @@
 
 import { Card } from "@/components/ui/card";
 import { Target, Users, Lightbulb, Shield, Heart, Zap } from "lucide-react";
+import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 
 const Mission = () => {
+  const { ref: headerRef, isVisible: headerVisible } = useScrollAnimation(0.2);
+  const { ref: cardsRef, isVisible: cardsVisible } = useScrollAnimation(0.1);
+
   const values = [
     {
       icon: Shield,
@@ -45,7 +49,14 @@ const Mission = () => {
   return (
     <section className="py-20 bg-muted/20">
       <div className="container mx-auto px-4">
-        <div className="text-center mb-16">
+        <div 
+          ref={headerRef}
+          className={`text-center mb-16 transition-all duration-1000 ${
+            headerVisible 
+              ? 'opacity-100 transform translate-y-0' 
+              : 'opacity-0 transform translate-y-8'
+          }`}
+        >
           <h2 className="text-4xl md:text-5xl font-bold mb-6 text-foreground">
             Onze kernwaarden
           </h2>
@@ -55,21 +66,31 @@ const Mission = () => {
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div 
+          ref={cardsRef}
+          className="grid md:grid-cols-2 lg:grid-cols-3 gap-8"
+        >
           {values.map((value, index) => (
             <Card 
               key={index} 
-              className="overflow-hidden hover:shadow-xl transition-all duration-300 border-0 bg-card group"
+              className={`overflow-hidden hover:shadow-xl transition-all duration-500 border-0 bg-card group hover:scale-105 ${
+                cardsVisible 
+                  ? 'opacity-100 transform translate-y-0' 
+                  : 'opacity-0 transform translate-y-12'
+              }`}
+              style={{ 
+                transitionDelay: cardsVisible ? `${index * 150}ms` : '0ms'
+              }}
             >
               <div className="aspect-video overflow-hidden">
                 <img 
                   src={value.image} 
                   alt={value.title}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                 />
               </div>
               <div className="p-8 text-center">
-                <div className="w-16 h-16 mx-auto mb-6 bg-primary/10 rounded-2xl flex items-center justify-center group-hover:bg-primary/20 transition-colors">
+                <div className="w-16 h-16 mx-auto mb-6 bg-primary/10 rounded-2xl flex items-center justify-center group-hover:bg-primary/20 transition-all duration-300 group-hover:scale-110">
                   <value.icon className="w-8 h-8 text-primary" />
                 </div>
                 <h3 className="text-xl font-semibold mb-4 text-foreground">{value.title}</h3>

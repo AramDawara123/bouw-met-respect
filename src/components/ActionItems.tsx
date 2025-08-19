@@ -1,8 +1,13 @@
+
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Target, Users, MessageSquare, Shield, ArrowRight, CheckCircle } from "lucide-react";
+import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 
 const ActionItems = () => {
+  const { ref: headerRef, isVisible: headerVisible } = useScrollAnimation(0.2);
+  const { ref: cardsRef, isVisible: cardsVisible } = useScrollAnimation(0.1);
+
   const actions = [
     {
       icon: Target,
@@ -33,7 +38,14 @@ const ActionItems = () => {
   return (
     <section id="actie" className="py-20 bg-background">
       <div className="container mx-auto px-4">
-        <div className="text-center mb-16">
+        <div 
+          ref={headerRef}
+          className={`text-center mb-16 transition-all duration-1000 ${
+            headerVisible 
+              ? 'opacity-100 transform translate-y-0' 
+              : 'opacity-0 transform translate-y-8'
+          }`}
+        >
           <h2 className="text-4xl md:text-5xl font-bold mb-6 text-foreground">
             Hoe kunnen we helpen?
           </h2>
@@ -43,11 +55,24 @@ const ActionItems = () => {
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-8 mb-12">
+        <div 
+          ref={cardsRef}
+          className="grid md:grid-cols-2 gap-8 mb-12"
+        >
           {actions.map((action, index) => (
-            <Card key={index} className="p-8 hover:shadow-xl transition-all duration-300 border-0 bg-card">
+            <Card 
+              key={index} 
+              className={`p-8 hover:shadow-xl transition-all duration-700 border-0 bg-card hover:scale-105 ${
+                cardsVisible 
+                  ? 'opacity-100 transform translate-x-0' 
+                  : 'opacity-0 transform ' + (index % 2 === 0 ? '-translate-x-12' : 'translate-x-12')
+              }`}
+              style={{ 
+                transitionDelay: cardsVisible ? `${index * 200}ms` : '0ms'
+              }}
+            >
               <div className="flex items-start space-x-6">
-                <div className="w-14 h-14 bg-primary/10 rounded-2xl flex items-center justify-center flex-shrink-0">
+                <div className="w-14 h-14 bg-primary/10 rounded-2xl flex items-center justify-center flex-shrink-0 hover:bg-primary/20 hover:scale-110 transition-all duration-300">
                   <action.icon className="w-7 h-7 text-primary" />
                 </div>
                 <div className="flex-1">
@@ -61,7 +86,7 @@ const ActionItems = () => {
                       </li>
                     ))}
                   </ul>
-                  <Button variant="outline" className="w-full">
+                  <Button variant="outline" className="w-full hover:scale-105 transition-transform">
                     Meer informatie
                     <ArrowRight className="w-4 h-4 ml-2" />
                   </Button>
