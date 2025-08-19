@@ -60,26 +60,26 @@ const Hero = () => {
           }`}>
             <div className="space-y-4">
               <img
-                src="/lovable-uploads/370194bf-f017-421b-ab19-49ae1435a82e.png"
-                alt="Vrouwelijke bouwvakker met hout"
-                className="w-full h-48 object-cover rounded-2xl hover:scale-105 transition-transform duration-300"
+                src="/lovable-uploads/b490bd1a-4422-4f83-8394-d7a2f6d940b9.png"
+                alt="Vrouwelijke bouwvakker draagt houten planken"
+                className="w-full h-48 object-cover rounded-2xl"
               />
               <img
                 src="https://images.unsplash.com/photo-1504307651254-35680f356dfd?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
                 alt="Bouwvakkers in veiligheidskleding"
-                className="w-full h-32 object-cover rounded-2xl hover:scale-105 transition-transform duration-300"
+                className="w-full h-32 object-cover rounded-2xl"
               />
             </div>
             <div className="space-y-4 pt-8">
               <img
                 src="https://images.unsplash.com/photo-1581094794329-c8112a89af12?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
                 alt="Diverse bouwvakkers werken samen"
-                className="w-full h-32 object-cover rounded-2xl hover:scale-105 transition-transform duration-300"
+                className="w-full h-32 object-cover rounded-2xl"
               />
               <img
                 src="https://images.unsplash.com/photo-1590736969955-71cc94901144?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
                 alt="Vrouwelijke bouwvakker op bouwplaats"
-                className="w-full h-48 object-cover rounded-2xl hover:scale-105 transition-transform duration-300"
+                className="w-full h-48 object-cover rounded-2xl"
               />
             </div>
           </div>
