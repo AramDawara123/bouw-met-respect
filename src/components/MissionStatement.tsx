@@ -1,8 +1,18 @@
-
 import { Card } from "@/components/ui/card";
-import { AlertTriangle, TrendingUp, Users, Building } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { AlertTriangle, TrendingUp, Users, Building, Plus } from "lucide-react";
+import { useState } from "react";
+import ImageGenerator from "./ImageGenerator";
 
 const MissionStatement = () => {
+  const [showImageGenerator, setShowImageGenerator] = useState(false);
+  const [missionImage, setMissionImage] = useState<string | null>(null);
+
+  const handleImageGenerated = (imageUrl: string) => {
+    setMissionImage(imageUrl);
+    setShowImageGenerator(false);
+  };
+
   return (
     <section className="py-20 bg-muted/20">
       <div className="container mx-auto px-4">
@@ -22,11 +32,41 @@ const MissionStatement = () => {
               <span className="font-semibold">Urgente actie vereist</span>
             </div>
           </div>
-          <div className="bg-muted rounded-3xl aspect-[4/3] flex items-center justify-center">
-            <div className="text-center p-8">
-              <Building className="w-20 h-20 text-muted-foreground mx-auto mb-4" />
-              <p className="text-muted-foreground text-lg">Afbeelding: Positieve werksfeer</p>
-            </div>
+          
+          {/* Mission Image */}
+          <div className="relative">
+            {missionImage ? (
+              <div className="relative rounded-3xl overflow-hidden">
+                <img
+                  src={missionImage}
+                  alt="Probleem op bouwplaats"
+                  className="w-full aspect-[4/3] object-cover"
+                />
+                <Button
+                  onClick={() => setShowImageGenerator(true)}
+                  variant="outline"
+                  size="sm"
+                  className="absolute top-4 right-4 bg-background/80 backdrop-blur-sm"
+                >
+                  <Plus className="w-4 h-4 mr-2" />
+                  Nieuwe afbeelding
+                </Button>
+              </div>
+            ) : (
+              <div className="bg-muted rounded-3xl aspect-[4/3] flex items-center justify-center">
+                <div className="text-center p-8">
+                  <Building className="w-20 h-20 text-muted-foreground mx-auto mb-4" />
+                  <p className="text-muted-foreground text-lg mb-4">Voeg een afbeelding toe</p>
+                  <Button
+                    onClick={() => setShowImageGenerator(true)}
+                    variant="outline"
+                  >
+                    <Plus className="w-4 h-4 mr-2" />
+                    Genereer afbeelding
+                  </Button>
+                </div>
+              </div>
+            )}
           </div>
         </div>
 
@@ -61,6 +101,31 @@ const MissionStatement = () => {
             </div>
           </div>
         </Card>
+
+        {/* Image Generator Modal */}
+        {showImageGenerator && (
+          <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+            <div className="bg-background rounded-lg max-w-md w-full">
+              <div className="p-4 border-b">
+                <h3 className="text-lg font-semibold">Genereer Missie Afbeelding</h3>
+              </div>
+              <div className="p-4">
+                <ImageGenerator
+                  onImageGenerated={handleImageGenerated}
+                  defaultPrompt="Construction site with workplace harassment or bullying situation, showing the problem in construction industry, realistic, documentary style"
+                />
+              </div>
+              <div className="p-4 border-t flex justify-end">
+                <Button
+                  onClick={() => setShowImageGenerator(false)}
+                  variant="outline"
+                >
+                  Sluiten
+                </Button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </section>
   );
