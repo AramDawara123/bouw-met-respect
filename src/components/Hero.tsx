@@ -62,7 +62,7 @@ const Hero = () => {
               <img
                 src="/lovable-uploads/b490bd1a-4422-4f83-8394-d7a2f6d940b9.png"
                 alt="Vrouwelijke bouwvakker draagt houten planken"
-                className="w-full h-96 object-cover rounded-2xl shadow-lg"
+                className="w-full h-[500px] object-cover rounded-2xl shadow-lg"
               />
             </div>
           </div>
