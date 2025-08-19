@@ -88,6 +88,10 @@
   .animate-slide-up {
     animation: slideUp 0.8s ease-out;
   }
+
+  .animate-slide-down {
+    animation: slideDown 0.3s ease-out;
+  }
 }
 
 @keyframes float {
@@ -108,5 +112,18 @@
   to { 
     opacity: 1;
     transform: translateY(0); 
+  }
+}
+
+@keyframes slideDown {
+  from { 
+    opacity: 0;
+    transform: translateY(-10px); 
+    max-height: 0;
+  }
+  to { 
+    opacity: 1;
+    transform: translateY(0);
+    max-height: 200px;
   }
 }
