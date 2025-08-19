@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { ArrowRight, Users, Shield, Heart, Target, Building, Zap } from "lucide-react";
@@ -42,11 +41,11 @@ const Hero = () => {
               Een werkplek waar respect, veiligheid en inclusie centraal staan.
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
-              <Button size="lg" className="text-lg px-8 py-3 hover:scale-105 transition-transform">
+              <Button size="lg" className="text-lg px-8 py-3">
                 Word lid van onze community
                 <ArrowRight className="ml-2 w-5 h-5" />
               </Button>
-              <Button variant="outline" size="lg" className="text-lg px-8 py-3 hover:scale-105 transition-transform">
+              <Button variant="outline" size="lg" className="text-lg px-8 py-3">
                 Meer informatie
               </Button>
             </div>
@@ -93,7 +92,7 @@ const Hero = () => {
           {features.map((feature, index) => (
             <Card 
               key={index} 
-              className={`p-8 text-center hover:shadow-lg transition-all duration-500 border-0 bg-muted/30 hover:scale-105 ${
+              className={`p-8 text-center transition-all duration-500 border-0 bg-muted/30 ${
                 featuresVisible 
                   ? 'opacity-100 transform translate-y-0' 
                   : 'opacity-0 transform translate-y-8'
@@ -102,7 +101,7 @@ const Hero = () => {
                 transitionDelay: featuresVisible ? `${index * 100}ms` : '0ms'
               }}
             >
-              <div className="w-16 h-16 mx-auto mb-6 bg-primary/10 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+              <div className="w-16 h-16 mx-auto mb-6 bg-primary/10 rounded-2xl flex items-center justify-center transition-transform duration-300">
                 <feature.icon className="w-8 h-8 text-primary" />
               </div>
               <h3 className="text-xl font-semibold mb-3 text-foreground">{feature.title}</h3>

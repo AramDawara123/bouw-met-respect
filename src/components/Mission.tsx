@@ -73,7 +73,7 @@ const Mission = () => {
           {values.map((value, index) => (
             <Card 
               key={index} 
-              className={`overflow-hidden hover:shadow-xl transition-all duration-500 border-0 bg-card group hover:scale-105 ${
+              className={`overflow-hidden transition-all duration-500 border-0 bg-card ${
                 cardsVisible 
                   ? 'opacity-100 transform translate-y-0' 
                   : 'opacity-0 transform translate-y-12'
@@ -86,11 +86,11 @@ const Mission = () => {
                 <img 
                   src={value.image} 
                   alt={value.title}
-                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                  className="w-full h-full object-cover transition-transform duration-500"
                 />
               </div>
               <div className="p-8 text-center">
-                <div className="w-16 h-16 mx-auto mb-6 bg-primary/10 rounded-2xl flex items-center justify-center group-hover:bg-primary/20 transition-all duration-300 group-hover:scale-110">
+                <div className="w-16 h-16 mx-auto mb-6 bg-primary/10 rounded-2xl flex items-center justify-center transition-all duration-300">
                   <value.icon className="w-8 h-8 text-primary" />
                 </div>
                 <h3 className="text-xl font-semibold mb-4 text-foreground">{value.title}</h3>
@@ -105,3 +105,4 @@ const Mission = () => {
 };
 
 export default Mission;
+

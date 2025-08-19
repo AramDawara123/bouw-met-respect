@@ -62,7 +62,7 @@ const ActionItems = () => {
           {actions.map((action, index) => (
             <Card 
               key={index} 
-              className={`p-8 hover:shadow-xl transition-all duration-700 border-0 bg-card hover:scale-105 ${
+              className={`p-8 transition-all duration-700 border-0 bg-card ${
                 cardsVisible 
                   ? 'opacity-100 transform translate-x-0' 
                   : 'opacity-0 transform ' + (index % 2 === 0 ? '-translate-x-12' : 'translate-x-12')
@@ -72,7 +72,7 @@ const ActionItems = () => {
               }}
             >
               <div className="flex items-start space-x-6">
-                <div className="w-14 h-14 bg-primary/10 rounded-2xl flex items-center justify-center flex-shrink-0 hover:bg-primary/20 hover:scale-110 transition-all duration-300">
+                <div className="w-14 h-14 bg-primary/10 rounded-2xl flex items-center justify-center flex-shrink-0 transition-all duration-300">
                   <action.icon className="w-7 h-7 text-primary" />
                 </div>
                 <div className="flex-1">
@@ -86,7 +86,7 @@ const ActionItems = () => {
                       </li>
                     ))}
                   </ul>
-                  <Button variant="outline" className="w-full hover:scale-105 transition-transform">
+                  <Button variant="outline" className="w-full">
                     Meer informatie
                     <ArrowRight className="w-4 h-4 ml-2" />
                   </Button>
@@ -101,3 +101,4 @@ const ActionItems = () => {
 };
 
 export default ActionItems;
+

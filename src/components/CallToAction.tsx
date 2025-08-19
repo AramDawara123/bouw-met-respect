@@ -42,7 +42,7 @@ const CallToAction = () => {
               <Button 
                 size="lg" 
                 variant="secondary"
-                className="text-lg px-8 py-4 bg-white text-primary hover:bg-white/90"
+                className="text-lg px-8 py-4 bg-white text-primary"
               >
                 Sluit je nu aan
                 <ArrowRight className="ml-2 w-5 h-5" />
@@ -79,3 +79,4 @@ const CallToAction = () => {
 };
 
 export default CallToAction;
+
