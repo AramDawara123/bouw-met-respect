@@ -1,9 +1,6 @@
-
 import { Heart, Linkedin, Mail, Building } from "lucide-react";
-
 const Footer = () => {
-  return (
-    <footer className="bg-foreground text-background py-16">
+  return <footer className="bg-foreground text-background py-16">
       <div className="container mx-auto px-4">
         <div className="flex flex-col items-center space-y-12 mb-12">
           <div className="text-center">
@@ -32,17 +29,11 @@ const Footer = () => {
           <div className="text-center">
             <h4 className="font-semibold mb-4">Contact</h4>
             <div className="space-y-3">
-              <a 
-                href="mailto:info@bouwmetrespect.nl" 
-                className="flex items-center justify-center space-x-2 text-background/80 hover:text-background transition-colors"
-              >
+              <a href="mailto:info@bouwmetrespect.nl" className="flex items-center justify-center space-x-2 text-background/80 hover:text-background transition-colors">
                 <Mail className="w-4 h-4" />
                 <span>info@bouwmetrespect.nl</span>
               </a>
-              <a 
-                href="#" 
-                className="flex items-center justify-center space-x-2 text-background/80 hover:text-background transition-colors"
-              >
+              <a href="#" className="flex items-center justify-center space-x-2 text-background/80 hover:text-background transition-colors">
                 <Linkedin className="w-4 h-4" />
                 <span>LinkedIn</span>
               </a>
@@ -52,17 +43,13 @@ const Footer = () => {
         
         <div className="pt-8 border-t border-background/20">
           <div className="flex flex-col items-center space-y-4 text-center">
-            <p className="text-background/60 text-sm">
-              © 2024 Bouw met Respect. Alle rechten voorbehouden.
-            </p>
+            <p className="text-background/60 text-sm">© 2025 Bouw met Respect. Alle rechten voorbehouden.</p>
             <p className="text-background/60 text-sm flex items-center">
               Gemaakt met <Heart className="w-4 h-4 mx-1 text-primary" /> voor een respectvolle bouwsector
             </p>
           </div>
         </div>
       </div>
-    </footer>
-  );
+    </footer>;
 };
-
 export default Footer;
