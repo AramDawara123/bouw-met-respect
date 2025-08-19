@@ -1,10 +1,7 @@
-
 import { Card } from "@/components/ui/card";
 import { AlertTriangle, TrendingUp } from "lucide-react";
-
 const MissionStatement = () => {
-  return (
-    <section id="missie" className="py-20 bg-muted/20">
+  return <section id="missie" className="py-20 bg-muted/20">
       <div className="container mx-auto px-4">
         {/* Main Mission Statement */}
         <div className="grid lg:grid-cols-2 gap-16 items-center mb-20">
@@ -25,22 +22,14 @@ const MissionStatement = () => {
           
           {/* Clean Single Image Layout */}
           <div className="flex justify-center">
-            <img
-              src="/lovable-uploads/6a653db4-1d30-46c2-83c1-760e5459fb7d.png"
-              alt="Bouwwerkplek met werknemers"
-              className="w-full max-w-md aspect-square object-cover rounded-2xl shadow-lg"
-            />
+            <img src="https://images.unsplash.com/photo-1581094794329-c8112a89af12?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Bouwwerkplek met werknemers" className="w-full max-w-md aspect-square object-cover rounded-2xl shadow-lg" />
           </div>
         </div>
 
         {/* Statistics Section */}
         <Card className="p-12 bg-accent/30 border-0 relative overflow-hidden">
           <div className="absolute inset-0 opacity-5">
-            <img
-              src="https://images.unsplash.com/photo-1583487640850-4e4071c04429?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80"
-              alt="Bouwplaats achtergrond"
-              className="w-full h-full object-cover"
-            />
+            
           </div>
           <div className="relative z-10 grid lg:grid-cols-2 gap-12 items-center">
             <div>
@@ -64,17 +53,11 @@ const MissionStatement = () => {
               </div>
             </div>
             <div className="flex justify-center">
-              <img
-                src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80"
-                alt="Jonge bouwvakkers aan het werk"
-                className="w-full max-w-md aspect-square object-cover rounded-2xl shadow-lg"
-              />
+              <img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Jonge bouwvakkers aan het werk" className="w-full max-w-md aspect-square object-cover rounded-2xl shadow-lg" />
             </div>
           </div>
         </Card>
       </div>
-    </section>
-  );
+    </section>;
 };
-
 export default MissionStatement;
