@@ -1,11 +1,8 @@
-
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { ArrowRight, Users, Heart } from "lucide-react";
-
 const CallToAction = () => {
-  return (
-    <section className="py-20 bg-gradient-to-r from-primary/10 via-secondary/10 to-primary/10">
+  return <section className="py-20 bg-gradient-to-r from-primary/10 via-secondary/10 to-primary/10">
       <div className="container mx-auto px-4">
         <Card className="relative overflow-hidden border-0 bg-gradient-to-br from-primary to-secondary text-primary-foreground">
           {/* Background Pattern */}
@@ -39,22 +36,12 @@ const CallToAction = () => {
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-              <Button 
-                size="lg" 
-                variant="secondary"
-                className="text-lg px-8 py-4 bg-white text-primary"
-              >
+              <Button size="lg" variant="secondary" className="text-lg px-8 py-4 bg-white text-primary">
                 Sluit je nu aan
                 <ArrowRight className="ml-2 w-5 h-5" />
               </Button>
               
-              <Button 
-                size="lg" 
-                variant="outline"
-                className="text-lg px-8 py-4 border-white/30 text-white bg-transparent hover:bg-transparent hover:text-white hover:border-white/30"
-              >
-                Plan een gesprek
-              </Button>
+              
             </div>
 
             <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-8 max-w-2xl mx-auto">
@@ -74,8 +61,6 @@ const CallToAction = () => {
           </div>
         </Card>
       </div>
-    </section>
-  );
+    </section>;
 };
-
 export default CallToAction;
