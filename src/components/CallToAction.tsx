@@ -51,7 +51,7 @@ const CallToAction = () => {
               <Button 
                 size="lg" 
                 variant="outline"
-                className="text-lg px-8 py-4 border-white/30 text-white hover:bg-white/10"
+                className="text-lg px-8 py-4 border-white/30 text-white"
               >
                 Plan een gesprek
               </Button>
