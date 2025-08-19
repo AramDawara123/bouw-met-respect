@@ -1,11 +1,10 @@
-
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Play, Star, Quote } from "lucide-react";
 
 const Testimonial = () => {
   return (
-    <section className="py-20 bg-muted/20">
+    <section id="verhalen" className="py-20 bg-muted/20">
       <div className="container mx-auto px-4">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">

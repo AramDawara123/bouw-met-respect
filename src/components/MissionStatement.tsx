@@ -1,10 +1,9 @@
-
 import { Card } from "@/components/ui/card";
 import { AlertTriangle, TrendingUp } from "lucide-react";
 
 const MissionStatement = () => {
   return (
-    <section className="py-20 bg-muted/20">
+    <section id="missie" className="py-20 bg-muted/20">
       <div className="container mx-auto px-4">
         {/* Main Mission Statement */}
         <div className="grid lg:grid-cols-2 gap-16 items-center mb-20">

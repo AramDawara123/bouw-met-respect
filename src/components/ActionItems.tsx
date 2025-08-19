@@ -1,4 +1,3 @@
-
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Target, Users, MessageSquare, Shield, ArrowRight, CheckCircle } from "lucide-react";
@@ -32,7 +31,7 @@ const ActionItems = () => {
   ];
 
   return (
-    <section className="py-20 bg-background">
+    <section id="actie" className="py-20 bg-background">
       <div className="container mx-auto px-4">
         <div className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-bold mb-6 text-foreground">
