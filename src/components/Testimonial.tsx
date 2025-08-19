@@ -18,10 +18,15 @@ const Testimonial = () => {
             </p>
           </div>
 
-          {/* Video Section */}
+          {/* Video Section with Background */}
           <div className="mb-16">
-            <div className="relative bg-muted rounded-3xl aspect-video flex items-center justify-center mb-8 overflow-hidden">
-              <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-secondary/20"></div>
+            <div className="relative rounded-3xl aspect-video flex items-center justify-center mb-8 overflow-hidden">
+              <img
+                src="https://images.unsplash.com/photo-1504307651254-35680f356dfd?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"
+                alt="Bouwvakkers in teamverband"
+                className="absolute inset-0 w-full h-full object-cover"
+              />
+              <div className="absolute inset-0 bg-black/40"></div>
               <Button size="lg" className="relative z-10 w-20 h-20 rounded-full p-0">
                 <Play className="w-8 h-8 ml-1" />
               </Button>
@@ -45,9 +50,11 @@ const Testimonial = () => {
                 veiligheid is merkbaar toegenomen."
               </blockquote>
               <div className="flex items-center space-x-4">
-                <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
-                  <span className="text-primary font-semibold">JB</span>
-                </div>
+                <img
+                  src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80"
+                  alt="Jan Bakker"
+                  className="w-12 h-12 rounded-full object-cover"
+                />
                 <div>
                   <p className="font-semibold text-foreground">Jan Bakker</p>
                   <p className="text-muted-foreground">Projectleider, Bouwbedrijf Amsterdam</p>
@@ -69,9 +76,11 @@ const Testimonial = () => {
                 De community heeft me de tools gegeven om zelf verandering teweeg te brengen."
               </blockquote>
               <div className="flex items-center space-x-4">
-                <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
-                  <span className="text-primary font-semibold">MS</span>
-                </div>
+                <img
+                  src="https://images.unsplash.com/photo-1494790108755-2616b612b047?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80"
+                  alt="Maria Silva"
+                  className="w-12 h-12 rounded-full object-cover"
+                />
                 <div>
                   <p className="font-semibold text-foreground">Maria Silva</p>
                   <p className="text-muted-foreground">Bouwkundig ingenieur</p>

@@ -37,13 +37,32 @@ const Hero = () => {
             </div>
           </div>
 
-          {/* Hero Image */}
-          <div className="relative">
-            <img
-              src="https://images.unsplash.com/photo-1581094794329-c8112a89af12?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80"
-              alt="Diverse bouwvakkers werken samen op een bouwplaats"
-              className="w-full h-[400px] object-cover rounded-3xl"
-            />
+          {/* Hero Image Grid */}
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-4">
+              <img
+                src="https://images.unsplash.com/photo-1541888946425-d81bb19240f5?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+                alt="Moderne bouwplaats met hijskranen"
+                className="w-full h-48 object-cover rounded-2xl"
+              />
+              <img
+                src="https://images.unsplash.com/photo-1504307651254-35680f356dfd?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+                alt="Bouwvakkers in veiligheidskleding"
+                className="w-full h-32 object-cover rounded-2xl"
+              />
+            </div>
+            <div className="space-y-4 pt-8">
+              <img
+                src="https://images.unsplash.com/photo-1581094794329-c8112a89af12?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+                alt="Diverse bouwvakkers werken samen"
+                className="w-full h-32 object-cover rounded-2xl"
+              />
+              <img
+                src="https://images.unsplash.com/photo-1590736969955-71cc94901144?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+                alt="Vrouwelijke bouwvakker op bouwplaats"
+                className="w-full h-48 object-cover rounded-2xl"
+              />
+            </div>
           </div>
         </div>
 
