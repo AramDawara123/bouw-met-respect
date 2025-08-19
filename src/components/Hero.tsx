@@ -1,14 +1,9 @@
 
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { ArrowRight, Users, Shield, Heart, Target, Building, Zap, Plus } from "lucide-react";
-import { useState } from "react";
-import ImageGenerator from "./ImageGenerator";
+import { ArrowRight, Users, Shield, Heart, Target, Building, Zap } from "lucide-react";
 
 const Hero = () => {
-  const [showImageGenerator, setShowImageGenerator] = useState(false);
-  const [heroImage, setHeroImage] = useState<string | null>(null);
-
   const features = [
     { icon: Shield, title: "Veiligheid", description: "Een veilige werkplek voor iedereen" },
     { icon: Users, title: "Respect", description: "Respectvolle omgang op de bouwplaats" },
@@ -17,11 +12,6 @@ const Hero = () => {
     { icon: Building, title: "Toekomst", description: "Duurzame sector ontwikkeling" },
     { icon: Zap, title: "Verandering", description: "Concrete actie voor verbetering" }
   ];
-
-  const handleImageGenerated = (imageUrl: string) => {
-    setHeroImage(imageUrl);
-    setShowImageGenerator(false);
-  };
 
   return (
     <section className="pt-32 pb-16 bg-background">
@@ -49,63 +39,11 @@ const Hero = () => {
 
           {/* Hero Image */}
           <div className="relative">
-            {heroImage ? (
-              <div className="relative rounded-3xl overflow-hidden">
-                <img
-                  src={heroImage}
-                  alt="Positieve bouwplaats sfeer"
-                  className="w-full h-[400px] object-cover"
-                />
-                <Button
-                  onClick={() => setShowImageGenerator(true)}
-                  variant="outline"
-                  size="sm"
-                  className="absolute top-4 right-4 bg-background/80 backdrop-blur-sm"
-                >
-                  <Plus className="w-4 h-4 mr-2" />
-                  Nieuwe afbeelding
-                </Button>
-              </div>
-            ) : (
-              <div className="bg-muted rounded-3xl h-[400px] flex items-center justify-center">
-                <div className="text-center p-8">
-                  <Building className="w-20 h-20 text-muted-foreground mx-auto mb-4" />
-                  <p className="text-muted-foreground text-lg mb-4">Voeg een afbeelding toe</p>
-                  <Button
-                    onClick={() => setShowImageGenerator(true)}
-                    variant="outline"
-                  >
-                    <Plus className="w-4 h-4 mr-2" />
-                    Genereer afbeelding
-                  </Button>
-                </div>
-              </div>
-            )}
-
-            {/* Image Generator Modal */}
-            {showImageGenerator && (
-              <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-                <div className="bg-background rounded-lg max-w-md w-full">
-                  <div className="p-4 border-b">
-                    <h3 className="text-lg font-semibold">Genereer Hero Afbeelding</h3>
-                  </div>
-                  <div className="p-4">
-                    <ImageGenerator
-                      onImageGenerated={handleImageGenerated}
-                      defaultPrompt="Professional diverse construction workers collaborating on a modern building site, positive atmosphere, natural lighting, high quality, realistic"
-                    />
-                  </div>
-                  <div className="p-4 border-t flex justify-end">
-                    <Button
-                      onClick={() => setShowImageGenerator(false)}
-                      variant="outline"
-                    >
-                      Sluiten
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            )}
+            <img
+              src="https://images.unsplash.com/photo-1581094794329-c8112a89af12?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80"
+              alt="Diverse bouwvakkers werken samen op een bouwplaats"
+              className="w-full h-[400px] object-cover rounded-3xl"
+            />
           </div>
         </div>
 
