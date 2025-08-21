@@ -1,8 +1,11 @@
+
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Play, Star, Quote } from "lucide-react";
+
 const Testimonial = () => {
-  return <section id="verhalen" className="py-20 bg-muted/20">
+  return (
+    <section id="verhalen" className="py-20 bg-muted/20">
       <div className="container mx-auto px-4">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
@@ -18,7 +21,14 @@ const Testimonial = () => {
           {/* YouTube Video Section */}
           <div className="mb-16">
             <div className="relative rounded-3xl aspect-video overflow-hidden">
-              <iframe className="w-full h-full" src="https://www.youtube.com/embed/TxRJdl2vfZU?autoplay=1&mute=1&loop=1&playlist=TxRJdl2vfZU" title="Bouw met Respect Video" frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowFullScreen />
+              <iframe 
+                className="w-full h-full" 
+                src="https://www.youtube.com/embed/TxRJdl2vfZU" 
+                title="Bouw met Respect Video" 
+                frameBorder="0" 
+                allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                allowFullScreen 
+              />
             </div>
           </div>
 
@@ -26,6 +36,8 @@ const Testimonial = () => {
           
         </div>
       </div>
-    </section>;
+    </section>
+  );
 };
+
 export default Testimonial;
