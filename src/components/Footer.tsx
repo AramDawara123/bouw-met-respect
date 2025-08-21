@@ -1,55 +1,135 @@
 
-import { Heart, Linkedin, Mail, Building } from "lucide-react";
+import { Heart, Linkedin, Mail, Building, ArrowRight, Users } from "lucide-react";
 
 const Footer = () => {
   return (
-    <footer className="bg-foreground text-background py-16">
+    <footer className="bg-foreground text-background py-20">
       <div className="container mx-auto px-4">
-        <div className="flex flex-col lg:flex-row lg:justify-between lg:items-start items-center space-y-12 lg:space-y-0 lg:space-x-8 mb-12">
-          <div className="text-center lg:text-left lg:flex-1">
-            <div className="flex items-center justify-center lg:justify-start space-x-3 mb-4">
-              <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center">
-                <Building className="w-6 h-6 text-primary-foreground" />
+        {/* Main Content */}
+        <div className="grid lg:grid-cols-4 gap-12 mb-16">
+          {/* Brand Section - Takes 2 columns on large screens */}
+          <div className="lg:col-span-2 text-center lg:text-left">
+            <div className="flex items-center justify-center lg:justify-start space-x-3 mb-6">
+              <div className="w-12 h-12 bg-primary rounded-2xl flex items-center justify-center shadow-lg">
+                <Building className="w-7 h-7 text-primary-foreground" />
               </div>
-              <h3 className="text-2xl font-bold">Bouw met Respect</h3>
+              <h3 className="text-3xl font-bold">Bouw met Respect</h3>
             </div>
-            <p className="text-background/80 leading-relaxed max-w-md lg:max-w-none">
+            <p className="text-background/80 leading-relaxed text-lg mb-8 max-w-lg lg:max-w-none">
               Samen bouwen we aan een betere toekomst voor de bouwsector. 
               Een werkplek waar respect, veiligheid en inclusie centraal staan.
             </p>
+            
+            {/* Call to Action */}
+            <div className="flex flex-col sm:flex-row gap-4 items-center lg:items-start">
+              <div className="flex items-center space-x-2 text-background/90 bg-background/10 px-4 py-2 rounded-lg backdrop-blur-sm">
+                <Users className="w-5 h-5" />
+                <span className="font-medium">1250+ professionals aangesloten</span>
+              </div>
+            </div>
           </div>
           
+          {/* Community Section */}
           <div className="text-center lg:text-left">
-            <h4 className="font-semibold mb-4">Community</h4>
-            <ul className="space-y-2 text-background/80">
-              <li><a href="#" className="hover:text-background transition-colors">Word lid</a></li>
-              <li><a href="#" className="hover:text-background transition-colors">Events</a></li>
-              <li><a href="#" className="hover:text-background transition-colors">Verhalen</a></li>
-              <li><a href="#" className="hover:text-background transition-colors">Resources</a></li>
+            <h4 className="font-bold text-xl mb-6 flex items-center justify-center lg:justify-start">
+              <div className="w-2 h-2 bg-primary rounded-full mr-3"></div>
+              Community
+            </h4>
+            <ul className="space-y-4 text-background/80">
+              <li>
+                <a href="#" className="hover:text-background transition-colors flex items-center justify-center lg:justify-start group">
+                  <ArrowRight className="w-4 h-4 mr-2 opacity-0 group-hover:opacity-100 transition-opacity" />
+                  Word lid
+                </a>
+              </li>
+              <li>
+                <a href="#" className="hover:text-background transition-colors flex items-center justify-center lg:justify-start group">
+                  <ArrowRight className="w-4 h-4 mr-2 opacity-0 group-hover:opacity-100 transition-opacity" />
+                  Events
+                </a>
+              </li>
+              <li>
+                <a href="#" className="hover:text-background transition-colors flex items-center justify-center lg:justify-start group">
+                  <ArrowRight className="w-4 h-4 mr-2 opacity-0 group-hover:opacity-100 transition-opacity" />
+                  Verhalen
+                </a>
+              </li>
+              <li>
+                <a href="#" className="hover:text-background transition-colors flex items-center justify-center lg:justify-start group">
+                  <ArrowRight className="w-4 h-4 mr-2 opacity-0 group-hover:opacity-100 transition-opacity" />
+                  Resources
+                </a>
+              </li>
             </ul>
           </div>
           
+          {/* Contact Section */}
           <div className="text-center lg:text-left">
-            <h4 className="font-semibold mb-4">Contact</h4>
-            <div className="space-y-3">
-              <a href="mailto:info@bouwmetrespect.nl" className="flex items-center justify-center lg:justify-start space-x-2 text-background/80 hover:text-background transition-colors">
-                <Mail className="w-4 h-4" />
-                <span>info@bouwmetrespect.nl</span>
+            <h4 className="font-bold text-xl mb-6 flex items-center justify-center lg:justify-start">
+              <div className="w-2 h-2 bg-primary rounded-full mr-3"></div>
+              Contact
+            </h4>
+            <div className="space-y-4">
+              <a 
+                href="mailto:info@bouwmetrespect.nl" 
+                className="flex items-center justify-center lg:justify-start space-x-3 text-background/80 hover:text-background transition-all duration-300 p-3 rounded-lg hover:bg-background/5"
+              >
+                <div className="w-10 h-10 bg-background/10 rounded-lg flex items-center justify-center">
+                  <Mail className="w-5 h-5" />
+                </div>
+                <div className="text-left">
+                  <div className="font-medium">Email ons</div>
+                  <div className="text-sm opacity-80">info@bouwmetrespect.nl</div>
+                </div>
               </a>
-              <a href="#" className="flex items-center justify-center lg:justify-start space-x-2 text-background/80 hover:text-background transition-colors">
-                <Linkedin className="w-4 h-4" />
-                <span>LinkedIn</span>
+              
+              <a 
+                href="#" 
+                className="flex items-center justify-center lg:justify-start space-x-3 text-background/80 hover:text-background transition-all duration-300 p-3 rounded-lg hover:bg-background/5"
+              >
+                <div className="w-10 h-10 bg-background/10 rounded-lg flex items-center justify-center">
+                  <Linkedin className="w-5 h-5" />
+                </div>
+                <div className="text-left">
+                  <div className="font-medium">Volg ons</div>
+                  <div className="text-sm opacity-80">LinkedIn</div>
+                </div>
               </a>
             </div>
           </div>
         </div>
         
-        <div className="pt-8 border-t border-background/20">
-          <div className="flex flex-col items-center space-y-4 text-center">
-            <p className="text-background/60 text-sm">© 2025 Bouw met Respect. Alle rechten voorbehouden.</p>
-            <p className="text-background/60 text-sm flex items-center">
-              Gemaakt met <Heart className="w-4 h-4 mx-1 text-primary" /> voor een respectvolle bouwsector
+        {/* Decorative Separator */}
+        <div className="relative mb-12">
+          <div className="absolute inset-0 flex items-center">
+            <div className="w-full border-t border-background/20"></div>
+          </div>
+          <div className="relative flex justify-center">
+            <div className="bg-foreground px-6 py-2">
+              <div className="flex items-center space-x-2">
+                <div className="w-2 h-2 bg-primary rounded-full"></div>
+                <div className="w-2 h-2 bg-primary/60 rounded-full"></div>
+                <div className="w-2 h-2 bg-primary/30 rounded-full"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        {/* Bottom Section */}
+        <div className="flex flex-col md:flex-row md:justify-between md:items-center space-y-4 md:space-y-0 text-center md:text-left">
+          <div>
+            <p className="text-background/60 text-sm mb-2">
+              © 2025 Bouw met Respect. Alle rechten voorbehouden.
             </p>
+            <p className="text-background/60 text-sm flex items-center justify-center md:justify-start">
+              Gemaakt met <Heart className="w-4 h-4 mx-1 text-primary animate-pulse" /> voor een respectvolle bouwsector
+            </p>
+          </div>
+          
+          <div className="flex items-center justify-center md:justify-end space-x-6 text-background/60 text-sm">
+            <a href="#" className="hover:text-background transition-colors">Privacy</a>
+            <a href="#" className="hover:text-background transition-colors">Voorwaarden</a>
+            <a href="#" className="hover:text-background transition-colors">Cookies</a>
           </div>
         </div>
       </div>
