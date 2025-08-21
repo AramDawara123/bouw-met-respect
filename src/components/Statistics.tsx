@@ -9,31 +9,31 @@ const Statistics = () => {
   const stats = [
     { 
       icon: Users, 
-      title: "Community leden", 
+      title: "Gesprekken gevoerd", 
       value: 1250, 
       suffix: "+",
-      description: "Actieve professionals"
-    },
-    { 
-      icon: Target, 
-      title: "Projecten", 
-      value: 89, 
-      suffix: "",
-      description: "Succesvolle initiatieven"
+      description: "Met vakmensen en jongeren in de bouw"
     },
     { 
       icon: Award, 
-      title: "Bedrijven", 
+      title: "Bedrijven aangesloten", 
+      value: 89, 
+      suffix: "",
+      description: "Die actief werken aan sociale veiligheid"
+    },
+    { 
+      icon: Target, 
+      title: "Succesvolle projecten", 
       value: 45, 
       suffix: "+",
-      description: "Aangesloten organisaties"
+      description: "Gericht op respect op de werkvloer"
     },
     { 
       icon: TrendingUp, 
-      title: "Verbetering", 
+      title: "Voelt zich gesteund", 
       value: 73, 
       suffix: "%",
-      description: "Rapporteert positieve verandering"
+      description: "Van deelnemers sinds aansluiting bij community"
     }
   ];
 
@@ -77,8 +77,8 @@ const Statistics = () => {
             Onze impact in cijfers
           </h2>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            Samen maken we echt verschil in de bouwsector. Bekijk de groei 
-            van onze community en de positieve veranderingen die we bewerkstelligen.
+            Samen maken we echt verschil. Bekijk hoe wij de bouwsector aantrekkelijker maken 
+            en grensoverschrijdend gedrag aanpakken door cultuurverandering op de bouwplaats.
           </p>
         </div>
 

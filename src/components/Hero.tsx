@@ -1,3 +1,4 @@
+
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { ArrowRight, Users, Shield, Heart, Target, Building, Zap } from "lucide-react";
@@ -19,28 +20,28 @@ const Hero = () => {
 
   const features = [{
     icon: Shield,
-    title: "Veiligheid",
-    description: "Een veilige werkplek voor iedereen"
+    title: "Respect & gelijkwaardigheid",
+    description: "Iedereen verdient een respectvolle werkplek"
   }, {
     icon: Users,
-    title: "Respect",
-    description: "Respectvolle omgang op de bouwplaats"
+    title: "Kracht van samenwerking",
+    description: "Samen bouwen we aan cultuurverandering"
   }, {
     icon: Heart,
-    title: "Inclusie",
-    description: "Ruimte voor jong talent"
+    title: "Ruimte voor jong talent",
+    description: "De bouw aantrekkelijk maken voor nieuwe generaties"
   }, {
     icon: Target,
-    title: "Kwaliteit",
-    description: "Professionele werkstandaarden"
+    title: "Sociale veiligheid",
+    description: "Veilige werkplekken voor iedereen"
   }, {
     icon: Building,
-    title: "Toekomst",
-    description: "Duurzame sector ontwikkeling"
+    title: "Toekomstbestendige sector",
+    description: "Een bouwsector die klaar is voor morgen"
   }, {
     icon: Zap,
-    title: "Verandering",
-    description: "Concrete actie voor verbetering"
+    title: "Cultuurverandering bouwplaats",
+    description: "Van harde cultuur naar respectvolle omgang"
   }];
 
   return (
@@ -51,18 +52,18 @@ const Hero = () => {
           <div ref={heroRef} className={`grid lg:grid-cols-2 gap-12 items-center mb-16 transition-all duration-1000 ${heroVisible ? 'opacity-100 transform translate-y-0' : 'opacity-0 transform translate-y-8'}`}>
             <div className={`transition-all duration-1000 delay-200 ${heroVisible ? 'opacity-100 transform translate-x-0' : 'opacity-0 transform -translate-x-8'}`}>
               <h1 className="text-5xl md:text-6xl font-bold mb-6 text-foreground leading-tight">
-                Bouw met respect
+                Bouw met Respect – Samen maken we de bouw veiliger en menselijker
               </h1>
               <p className="text-xl text-muted-foreground mb-8 leading-relaxed">
-                Samen bouwen we aan een betere toekomst voor de bouwsector. 
-                Een werkplek waar respect, veiligheid en inclusie centraal staan.
+                Grensoverschrijdend gedrag en een harde cultuur houden jong talent weg uit de bouw. 
+                Wij geloven dat verandering begint met respect. Sluit je aan en help mee de sector 
+                aantrekkelijker te maken voor iedereen.
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
                 <Button size="lg" className="text-lg px-8 py-3" onClick={() => setIsMembershipFormOpen(true)}>
-                  Word lid van onze community
+                  Sluit je aan bij de community
                   <ArrowRight className="ml-2 w-5 h-5" />
                 </Button>
-                
               </div>
             </div>
 
@@ -74,7 +75,7 @@ const Hero = () => {
             </div>
           </div>
 
-          {/* Features Grid */}
+          {/* Features Grid - Onze kernwaarden */}
           <div ref={featuresRef} className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {features.map((feature, index) => <Card key={index} className={`p-8 text-center transition-all duration-500 border-0 bg-muted/30 ${featuresVisible ? 'opacity-100 transform translate-y-0' : 'opacity-0 transform translate-y-8'}`} style={{
             transitionDelay: featuresVisible ? `${index * 100}ms` : '0ms'

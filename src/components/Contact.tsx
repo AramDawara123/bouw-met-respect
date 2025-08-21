@@ -1,3 +1,4 @@
+
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -34,8 +35,9 @@ const Contact = () => {
             Neem contact op
           </h2>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            Wil je meer weten over onze community of heb je vragen? 
-            We horen graag van je.
+            Heb je vragen over sociale veiligheid in de bouw of wil je direct aansluiten 
+            bij onze community? We horen graag van je. Samen maken we de bouwsector 
+            aantrekkelijker en veiliger voor iedereen.
           </p>
         </div>
 
@@ -98,7 +100,7 @@ const Contact = () => {
                   value={formData.message}
                   onChange={handleChange}
                   required
-                  placeholder="Vertel ons over je vragen of hoe je wilt bijdragen..."
+                  placeholder="Vertel ons over je vragen over grensoverschrijdend gedrag, sociale veiligheid, of hoe je wilt bijdragen aan cultuurverandering in de bouw..."
                   className="resize-none"
                 />
               </div>
@@ -115,8 +117,9 @@ const Contact = () => {
             <div>
               <h3 className="text-2xl font-semibold mb-6 text-foreground">Kom in contact</h3>
               <p className="text-lg text-muted-foreground mb-8">
-                We zijn er om je te helpen. Neem gerust contact met ons op via een van 
-                onderstaande kanalen.
+                Wil je direct starten met het aanpakken van grensoverschrijdend gedrag op jouw 
+                bouwplaats? Of heb je vragen over hoe we de bouwsector aantrekkelijker kunnen 
+                maken voor jong talent? Neem gerust contact op.
               </p>
             </div>
 

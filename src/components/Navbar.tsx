@@ -1,3 +1,4 @@
+
 import { Button } from "@/components/ui/button";
 import { Building, Menu, X } from "lucide-react";
 import { useState } from "react";
@@ -9,7 +10,7 @@ const Navbar = () => {
 
   const handleMembershipClick = () => {
     setIsMembershipFormOpen(true);
-    setIsMenuOpen(false); // Sluit mobile menu als het open is
+    setIsMenuOpen(false);
   };
 
   return (
@@ -27,11 +28,11 @@ const Navbar = () => {
 
             {/* Desktop Navigation */}
             <div className="hidden md:flex items-center space-x-8">
-              <a href="#missie" className="text-muted-foreground hover:text-foreground transition-colors">
-                Missie
+              <a href="#probleem" className="text-muted-foreground hover:text-foreground transition-colors">
+                Het probleem
               </a>
-              <a href="#actie" className="text-muted-foreground hover:text-foreground transition-colors">
-                Actie
+              <a href="#hoe-wij-helpen" className="text-muted-foreground hover:text-foreground transition-colors">
+                Hoe wij helpen
               </a>
               <a href="#verhalen" className="text-muted-foreground hover:text-foreground transition-colors">
                 Verhalen
@@ -40,7 +41,7 @@ const Navbar = () => {
                 Contact
               </a>
               <Button className="ml-4" onClick={handleMembershipClick}>
-                Lid worden
+                Sluit je aan
               </Button>
             </div>
 
@@ -58,18 +59,18 @@ const Navbar = () => {
             <div className="md:hidden py-4 border-t border-border">
               <div className="flex flex-col space-y-4">
                 <a 
-                  href="#missie" 
+                  href="#probleem" 
                   className="text-muted-foreground hover:text-foreground transition-colors py-2"
                   onClick={() => setIsMenuOpen(false)}
                 >
-                  Missie
+                  Het probleem
                 </a>
                 <a 
-                  href="#actie" 
+                  href="#hoe-wij-helpen" 
                   className="text-muted-foreground hover:text-foreground transition-colors py-2"
                   onClick={() => setIsMenuOpen(false)}
                 >
-                  Actie
+                  Hoe wij helpen
                 </a>
                 <a 
                   href="#verhalen" 
@@ -86,7 +87,7 @@ const Navbar = () => {
                   Contact
                 </a>
                 <Button className="w-full mt-4" onClick={handleMembershipClick}>
-                  Lid worden
+                  Sluit je aan
                 </Button>
               </div>
             </div>

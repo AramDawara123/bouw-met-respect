@@ -13,8 +13,9 @@ const Testimonial = () => {
               Verhalen van verandering
             </h2>
             <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-              Ontdek hoe bedrijven en professionals samen werken aan een 
-              respectvolle bouwsector.
+              Mensen uit de bouw delen hun verhaal. Zo maken we grensoverschrijdend gedrag 
+              zichtbaar en tonen we dat cultuurverandering op de bouwplaats mogelijk is. 
+              Ontdek hoe respect op de werkvloer echt verschil maakt.
             </p>
           </div>
 
@@ -24,16 +25,13 @@ const Testimonial = () => {
               <iframe 
                 className="w-full h-full" 
                 src="https://www.youtube.com/embed/TxRJdl2vfZU" 
-                title="Bouw met Respect Video" 
+                title="Bouw met Respect - Verhalen van verandering uit de bouwsector" 
                 frameBorder="0" 
                 allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
                 allowFullScreen 
               />
             </div>
           </div>
-
-          {/* Testimonial Cards */}
-          
         </div>
       </div>
     </section>

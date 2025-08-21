@@ -1,3 +1,4 @@
+
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { ArrowRight, Users, Heart } from "lucide-react";
@@ -34,12 +35,13 @@ const CallToAction = () => {
               </div>
 
               <h2 className="text-4xl md:text-6xl font-bold mb-6">
-                Klaar voor verandering?
+                Klaar om mee te bouwen aan respect?
               </h2>
               
               <p className="text-xl md:text-2xl mb-8 opacity-90 max-w-3xl mx-auto leading-relaxed">
-                Word onderdeel van de beweging die de bouwsector transformeert. 
-                Samen bouwen we aan een toekomst waar respect en veiligheid centraal staan.
+                Word onderdeel van de beweging die grensoverschrijdend gedrag aanpakt. 
+                Samen zorgen we voor een veilige, aantrekkelijke en toekomstbestendige 
+                bouwsector waar jong talent wil blijven.
               </p>
 
               <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
@@ -49,7 +51,7 @@ const CallToAction = () => {
                   className="text-lg px-8 py-4 bg-white text-primary"
                   onClick={() => setIsMembershipFormOpen(true)}
                 >
-                  Sluit je nu aan
+                  Doe mee en sluit je aan
                   <ArrowRight className="ml-2 w-5 h-5" />
                 </Button>
               </div>
@@ -57,15 +59,15 @@ const CallToAction = () => {
               <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-8 max-w-2xl mx-auto">
                 <div className="text-center">
                   <div className="text-3xl font-bold mb-2">100%</div>
-                  <p className="text-sm opacity-80">Gratis lidmaatschap</p>
+                  <p className="text-sm opacity-80">Gratis community lidmaatschap</p>
                 </div>
                 <div className="text-center">
                   <div className="text-3xl font-bold mb-2">24/7</div>
-                  <p className="text-sm opacity-80">Community ondersteuning</p>
+                  <p className="text-sm opacity-80">Ondersteuning van vakgenoten</p>
                 </div>
                 <div className="text-center">
-                  <div className="text-3xl font-bold mb-2">1000+</div>
-                  <p className="text-sm opacity-80">Tevreden leden</p>
+                  <div className="text-3xl font-bold mb-2">1250+</div>
+                  <p className="text-sm opacity-80">Professionals aangesloten</p>
                 </div>
               </div>
             </div>
