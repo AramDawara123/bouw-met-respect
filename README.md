@@ -1,58 +1,53 @@
-# Welcome to your Lovable project
+
+# Bouw met Respect
 
 ## Project info
 
-**URL**: https://lovable.dev/projects/ca63ba2d-75b2-41d2-8112-bddb35c48fec
+Een community platform voor een veilige bouwsector.
 
-## How can I edit this code?
+## Hoe kan ik deze code bewerken?
 
-There are several ways of editing your application.
+Er zijn verschillende manieren om deze applicatie te bewerken.
 
-**Use Lovable**
+**Gebruik je favoriete IDE**
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/ca63ba2d-75b2-41d2-8112-bddb35c48fec) and start prompting.
+Als je lokaal wilt werken met je eigen IDE, kun je deze repo klonen en wijzigingen pushen.
 
-Changes made via Lovable will be committed automatically to this repo.
+De enige vereiste is dat je Node.js & npm hebt geïnstalleerd - [installeer met nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
 
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
+Volg deze stappen:
 
 ```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+# Stap 1: Kloon de repository
+git clone <JOUW_GIT_URL>
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+# Stap 2: Navigeer naar de projectdirectory
+cd <JOUW_PROJECT_NAAM>
 
-# Step 3: Install the necessary dependencies.
+# Stap 3: Installeer de benodigde dependencies
 npm i
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
+# Stap 4: Start de development server
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+**Bewerk een bestand direct in GitHub**
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+- Navigeer naar het gewenste bestand.
+- Klik op de "Edit" knop (potlood icoon) rechtsboven in de bestandsweergave.
+- Maak je wijzigingen en commit de wijzigingen.
 
-**Use GitHub Codespaces**
+**Gebruik GitHub Codespaces**
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+- Navigeer naar de hoofdpagina van je repository.
+- Klik op de "Code" knop (groene knop) rechtsboven.
+- Selecteer de "Codespaces" tab.
+- Klik op "New codespace" om een nieuwe Codespace omgeving te starten.
+- Bewerk bestanden direct binnen de Codespace en commit en push je wijzigingen wanneer je klaar bent.
 
-## What technologies are used for this project?
+## Welke technologieën worden gebruikt voor dit project?
 
-This project is built with:
+Dit project is gebouwd met:
 
 - Vite
 - TypeScript
@@ -60,14 +55,11 @@ This project is built with:
 - shadcn-ui
 - Tailwind CSS
 
-## How can I deploy this project?
+## Hoe kan ik dit project deployen?
 
-Simply open [Lovable](https://lovable.dev/projects/ca63ba2d-75b2-41d2-8112-bddb35c48fec) and click on Share -> Publish.
+Je kunt dit project deployen naar verschillende platforms zoals Netlify, Vercel, of andere hosting providers.
 
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+Voor Netlify:
+1. Connect je GitHub repository
+2. Gebruik build command: `npm run build`
+3. Publish directory: `dist`
