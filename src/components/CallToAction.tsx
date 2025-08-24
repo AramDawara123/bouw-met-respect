@@ -1,7 +1,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { ArrowRight, Users, Heart } from "lucide-react";
+import { ArrowRight, Users, Heart, Building2 } from "lucide-react";
 import { useState } from "react";
 import MembershipForm from "./MembershipForm";
 
@@ -25,7 +25,7 @@ const CallToAction = () => {
               <div className="flex justify-center mb-8">
                 <div className="flex items-center space-x-4">
                   <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
-                    <Users className="w-6 h-6" />
+                    <Building2 className="w-6 h-6" />
                   </div>
                   <Heart className="w-8 h-8 text-white/80" />
                   <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
@@ -35,7 +35,7 @@ const CallToAction = () => {
               </div>
 
               <h2 className="text-4xl md:text-6xl font-bold mb-6">
-                Klaar om mee te bouwen aan respect?
+                Klaar om je aan te sluiten bij de beweging?
               </h2>
               
               <p className="text-xl md:text-2xl mb-8 opacity-90 max-w-3xl mx-auto leading-relaxed">
@@ -51,23 +51,23 @@ const CallToAction = () => {
                   className="text-lg px-8 py-4 bg-white text-primary"
                   onClick={() => setIsMembershipFormOpen(true)}
                 >
-                  Doe mee en sluit je aan
+                  Sluit je bedrijf aan
                   <ArrowRight className="ml-2 w-5 h-5" />
                 </Button>
               </div>
 
               <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-8 max-w-2xl mx-auto">
                 <div className="text-center">
-                  <div className="text-3xl font-bold mb-2">100%</div>
-                  <p className="text-sm opacity-80">Gratis community lidmaatschap</p>
+                  <div className="text-3xl font-bold mb-2">Keurmerk</div>
+                  <p className="text-sm opacity-80">Zichtbaar op gevel en website</p>
                 </div>
                 <div className="text-center">
-                  <div className="text-3xl font-bold mb-2">24/7</div>
-                  <p className="text-sm opacity-80">Ondersteuning van vakgenoten</p>
+                  <div className="text-3xl font-bold mb-2">Coaching</div>
+                  <p className="text-sm opacity-80">Professionele begeleiding</p>
                 </div>
                 <div className="text-center">
-                  <div className="text-3xl font-bold mb-2">1250+</div>
-                  <p className="text-sm opacity-80">Professionals aangesloten</p>
+                  <div className="text-3xl font-bold mb-2">Netwerk</div>
+                  <p className="text-sm opacity-80">Bijeenkomsten en kennisdeling</p>
                 </div>
               </div>
             </div>

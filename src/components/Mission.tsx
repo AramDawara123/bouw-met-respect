@@ -1,6 +1,6 @@
 
 import { Card } from "@/components/ui/card";
-import { Target, Users, Lightbulb, Shield, Heart, Zap } from "lucide-react";
+import { MessageSquareWarning, Users, Lightbulb, Shield, Award, Calendar } from "lucide-react";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 
 const Mission = () => {
@@ -9,24 +9,34 @@ const Mission = () => {
 
   const helpMethods = [
     {
-      icon: Shield,
-      title: "Workshops & trainingen voor bedrijven",
-      description: "Praktische trainingen over sociale veiligheid in de bouw en het aanpakken van grensoverschrijdend gedrag."
+      icon: MessageSquareWarning,
+      title: "Anoniem meldpunt",
+      description: "Een veilige plek waar je anoniem je verhaal kunt delen. Bij ernstige of herhaalde meldingen nemen wij contact op met het betreffende bedrijf."
     },
     {
       icon: Users,
-      title: "Community & steun voor jongeren", 
-      description: "Een veilige plek waar jongeren in de bouw hun ervaringen delen en elkaar ondersteunen."
-    },
-    {
-      icon: Target,
-      title: "Verhalen & ervaringen delen",
-      description: "Echte verhalen uit de sector die het probleem zichtbaar maken en oplossingen inspireren."
+      title: "Coaching via 3e partijen", 
+      description: "Professionele coaching voor slachtoffers, daders en bedrijven. Van individuele trajecten tot groepstrainingen over sociale veiligheid."
     },
     {
       icon: Lightbulb,
-      title: "Tools & handvatten voor leidinggevenden",
-      description: "Praktische hulpmiddelen voor HR en leidinggevenden om respect op de werkvloer te bevorderen."
+      title: "Op maat gemaakte toolbox",
+      description: "We ondersteunen werkgevers bij het maken van een bedrijfsspecifieke toolbox of bieden een algemene toolbox met gedragsregels voor de bouw."
+    },
+    {
+      icon: Award,
+      title: "Keurmerk Bouw met Respect",
+      description: "Bedrijven die zich aansluiten tonen aan dat ze niet alleen slachtoffers beschermen, maar ook daders begeleiden - zonder direct ontslag."
+    },
+    {
+      icon: Shield,
+      title: "Stappenplan HR-traject",
+      description: "Gestructureerde aanpak: melding → gesprek → coaching → evaluatie. Met jaarlijkse audit van trainingen en afgeronde trajecten."
+    },
+    {
+      icon: Calendar,
+      title: "Netwerkbijeenkomsten",
+      description: "2-3 keer per jaar organiseren we bijeenkomsten waar leden elkaar kunnen ontmoeten en inspirerende sprekers aan het woord komen."
     }
   ];
 
@@ -42,11 +52,11 @@ const Mission = () => {
           }`}
         >
           <h2 className="text-4xl md:text-5xl font-bold mb-6 text-foreground">
-            Hoe wij helpen
+            Hoe onze beweging helpt
           </h2>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto mb-8">
-            Van praktische trainingen tot een ondersteunende community. Wij bieden concrete hulp 
-            om grensoverschrijdend gedrag aan te pakken en de bouwsector aantrekkelijker te maken.
+            Van anonieme melding tot keurmerk. Wij bieden concrete hulp 
+            om grensoverschrijdend gedrag aan te pakken en de bouwsector veiliger te maken.
           </p>
           <p className="text-lg font-semibold text-primary">
             Samen zorgen we voor cultuurverandering op de bouwplaats.
@@ -55,7 +65,7 @@ const Mission = () => {
 
         <div 
           ref={cardsRef}
-          className="grid md:grid-cols-2 gap-8"
+          className="grid md:grid-cols-2 lg:grid-cols-3 gap-8"
         >
           {helpMethods.map((method, index) => (
             <Card 

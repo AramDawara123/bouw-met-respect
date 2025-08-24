@@ -41,7 +41,7 @@ const Navbar = () => {
                 Contact
               </a>
               <Button className="ml-4" onClick={handleMembershipClick}>
-                Sluit je aan
+                Sluit je aan bij de beweging
               </Button>
             </div>
 
@@ -87,7 +87,7 @@ const Navbar = () => {
                   Contact
                 </a>
                 <Button className="w-full mt-4" onClick={handleMembershipClick}>
-                  Sluit je aan
+                  Sluit je aan bij de beweging
                 </Button>
               </div>
             </div>

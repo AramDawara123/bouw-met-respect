@@ -10,7 +10,7 @@ const MissionStatement = () => {
         <div className="grid lg:grid-cols-2 gap-16 items-center mb-20">
           <div>
             <h2 className="text-4xl md:text-5xl font-bold mb-6 text-foreground leading-tight">
-              Het probleem dat we samen oplossen
+              Het probleem dat we als beweging oplossen
             </h2>
             <p className="text-lg text-muted-foreground leading-relaxed mb-6">
               Grensoverschrijdend gedrag en een harde cultuur maken de bouwsector onveilig. 
