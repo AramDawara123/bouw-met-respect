@@ -78,13 +78,14 @@ const Contact = () => {
 
               <div>
                 <label htmlFor="company" className="block text-sm font-medium mb-2 text-foreground">
-                  Bedrijf/Organisatie
+                  Bedrijf/Organisatie <span className="text-destructive">*</span>
                 </label>
                 <Input
                   id="company"
                   name="company"
                   value={formData.company}
                   onChange={handleChange}
+                  required
                   className="h-12"
                 />
               </div>
