@@ -28,7 +28,7 @@ const MissionStatement = () => {
           
           {/* Clean Single Image Layout */}
           <div className="flex justify-center">
-            <img src="https://images.unsplash.com/photo-1504307651254-35680f356dfd?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Bouwprofessionals in overleg op de bouwplaats" className="w-full max-w-md aspect-square object-cover rounded-2xl shadow-lg" />
+            <img src="/lovable-uploads/132795ea-2daa-4305-a106-02650a9bf06c.png" alt="Bouwprofessionals in overleg op de bouwplaats" className="w-full max-w-md aspect-square object-cover rounded-2xl shadow-lg" />
           </div>
         </div>
 
@@ -56,7 +56,7 @@ const MissionStatement = () => {
               </div>
             </div>
             <div className="flex justify-center">
-              <img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Bouwvakkers werken samen op de bouwplaats" className="w-full max-w-md aspect-square object-cover rounded-2xl shadow-lg" />
+              <img src="/lovable-uploads/c1a704b2-e7df-4ac3-8a4c-6dba63413a43.png" alt="Bouwvakkers werken samen op de bouwplaats" className="w-full max-w-md aspect-square object-cover rounded-2xl shadow-lg" />
             </div>
           </div>
         </Card>
