@@ -49,7 +49,7 @@ const Contact = () => {
               <div className="grid md:grid-cols-2 gap-6">
                 <div>
                   <label htmlFor="name" className="block text-sm font-medium mb-2 text-foreground">
-                    Naam *
+                    Naam <span className="text-destructive">*</span>
                   </label>
                   <Input
                     id="name"
@@ -62,7 +62,7 @@ const Contact = () => {
                 </div>
                 <div>
                   <label htmlFor="email" className="block text-sm font-medium mb-2 text-foreground">
-                    Email *
+                    Email <span className="text-destructive">*</span>
                   </label>
                   <Input
                     id="email"
@@ -91,7 +91,7 @@ const Contact = () => {
 
               <div>
                 <label htmlFor="message" className="block text-sm font-medium mb-2 text-foreground">
-                  Bericht *
+                  Bericht <span className="text-destructive">*</span>
                 </label>
                 <Textarea
                   id="message"
