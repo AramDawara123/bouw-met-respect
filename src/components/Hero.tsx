@@ -70,7 +70,7 @@ const Hero = () => {
             {/* Hero Image - Single Clean Layout */}
             <div className={`transition-all duration-1000 delay-400 ${heroVisible ? 'opacity-100 transform translate-x-0' : 'opacity-0 transform translate-x-8'}`}>
               <div className="relative">
-                <img src="/lovable-uploads/b490bd1a-4422-4f83-8394-d7a2f6d940b9.png" alt="Vrouwelijke bouwvakker draagt houten planken" className="w-full h-[500px] object-cover rounded-2xl shadow-lg" />
+                <img src="https://images.unsplash.com/photo-1581094794329-c8112a89af12?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Vrouwelijke bouwvakker draagt houten planken" className="w-full h-[500px] object-cover rounded-2xl shadow-lg" />
               </div>
             </div>
           </div>
