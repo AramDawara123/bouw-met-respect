@@ -28,7 +28,7 @@ const MissionStatement = () => {
           
           {/* Clean Single Image Layout */}
           <div className="flex justify-center">
-            <img src="/lovable-uploads/6a653db4-1d30-46c2-83c1-760e5459fb7d.png" alt="Werkplek planning met twee personen" className="w-full max-w-md aspect-square object-cover rounded-2xl shadow-lg" />
+            <img src="/lovable-uploads/132795ea-2daa-4305-a106-02650a9bf06c.png" alt="Bouwprofessionals in overleg op de bouwplaats" className="w-full max-w-md aspect-square object-cover rounded-2xl shadow-lg" />
           </div>
         </div>
 
