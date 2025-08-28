@@ -121,8 +121,11 @@ const Footer = () => {
             <p className="text-background/60 text-sm mb-2">
               © 2025 Bouw met Respect. Alle rechten voorbehouden.
             </p>
-            <p className="text-background/60 text-sm flex items-center justify-center md:justify-start">
+            <p className="text-background/60 text-sm flex items-center justify-center md:justify-start mb-2">
               Gemaakt met <Heart className="w-4 h-4 mx-1 text-primary animate-pulse" /> voor een respectvolle bouwsector
+            </p>
+            <p className="text-background/60 text-sm text-center md:text-left">
+              Gemaakt door <a href="https://dawaraconsulting.com" target="_blank" rel="noopener noreferrer" className="text-primary hover:text-primary/80 transition-colors font-medium">Dawara Consulting</a>
             </p>
           </div>
           
