@@ -1,9 +1,6 @@
-
 import { Heart, Linkedin, Mail, Building, ArrowRight, Users } from "lucide-react";
-
 const Footer = () => {
-  return (
-    <footer className="bg-foreground text-background py-20">
+  return <footer className="bg-foreground text-background py-20">
       <div className="container mx-auto px-4">
         {/* Main Content */}
         <div className="grid lg:grid-cols-4 gap-12 mb-16">
@@ -70,10 +67,7 @@ const Footer = () => {
               Contact
             </h4>
             <div className="space-y-4">
-              <a 
-                href="mailto:info@bouwmetrespect.nl" 
-                className="flex items-center justify-center lg:justify-start space-x-3 text-background/80 hover:text-background transition-all duration-300 p-3 rounded-lg hover:bg-background/5"
-              >
+              <a href="mailto:info@bouwmetrespect.nl" className="flex items-center justify-center lg:justify-start space-x-3 text-background/80 hover:text-background transition-all duration-300 p-3 rounded-lg hover:bg-background/5">
                 <div className="w-10 h-10 bg-background/10 rounded-lg flex items-center justify-center">
                   <Mail className="w-5 h-5" />
                 </div>
@@ -83,10 +77,7 @@ const Footer = () => {
                 </div>
               </a>
               
-              <a 
-                href="#" 
-                className="flex items-center justify-center lg:justify-start space-x-3 text-background/80 hover:text-background transition-all duration-300 p-3 rounded-lg hover:bg-background/5"
-              >
+              <a href="#" className="flex items-center justify-center lg:justify-start space-x-3 text-background/80 hover:text-background transition-all duration-300 p-3 rounded-lg hover:bg-background/5">
                 <div className="w-10 h-10 bg-background/10 rounded-lg flex items-center justify-center">
                   <Linkedin className="w-5 h-5" />
                 </div>
@@ -121,9 +112,7 @@ const Footer = () => {
             <p className="text-background/60 text-sm mb-2">
               © 2025 Bouw met Respect. Alle rechten voorbehouden.
             </p>
-            <p className="text-background/60 text-sm flex items-center justify-center md:justify-start mb-2">
-              Gemaakt met <Heart className="w-4 h-4 mx-1 text-primary animate-pulse" /> voor een respectvolle bouwsector
-            </p>
+            
             <p className="text-background/60 text-sm text-center md:text-left">
               Gemaakt door <a href="https://dawaraconsulting.com" target="_blank" rel="noopener noreferrer" className="text-primary hover:text-primary/80 transition-colors font-medium">Dawara Consulting</a>
             </p>
@@ -136,8 +125,6 @@ const Footer = () => {
           </div>
         </div>
       </div>
-    </footer>
-  );
+    </footer>;
 };
-
 export default Footer;
