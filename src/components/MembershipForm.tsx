@@ -26,6 +26,9 @@ const formSchema = z.object({
   specializations: z.array(z.string()).min(1, "Selecteer minimaal één specialisatie"),
   motivation: z.string().min(50, "Motivatie moet minimaal 50 karakters bevatten"),
   respectfulPractices: z.string().min(30, "Beschrijf hoe je respectvolle bouwpraktijken toepast"),
+  respectfulWorkplace: z.string().min(30, "Beschrijf wat een respectvolle bouwplaats voor jou betekent"),
+  boundaryBehavior: z.string().min(30, "Beschrijf hoe je reageert op grensoverschrijdend gedrag"),
+  merchandiseMotivation: z.string().min(30, "Vertel waarom je bouw met respect merchandise koopt"),
   newsletter: z.boolean().default(true),
   terms: z.boolean().refine(val => val === true, {
     message: "Je moet akkoord gaan met de voorwaarden"
@@ -57,6 +60,9 @@ const MembershipForm = ({
       specializations: [],
       motivation: "",
       respectfulPractices: "",
+      respectfulWorkplace: "",
+      boundaryBehavior: "",
+      merchandiseMotivation: "",
       newsletter: true,
       terms: false
     }
@@ -262,6 +268,36 @@ const MembershipForm = ({
                     <FormLabel>Hoe pas je respectvolle bouwpraktijken toe in je werk?</FormLabel>
                     <FormControl>
                       <Textarea placeholder="Beschrijf hoe je respect voor mensen, omgeving en gemeenschap integreert in je projecten..." className="min-h-[100px]" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>} />
+              
+              <FormField control={form.control} name="respectfulWorkplace" render={({
+              field
+            }) => <FormItem>
+                    <FormLabel>Wat betekent een respectvolle bouwplaats voor jou?</FormLabel>
+                    <FormControl>
+                      <Textarea placeholder="Beschrijf wat voor jou een respectvolle bouwplaats inhoudt..." className="min-h-[100px]" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>} />
+              
+              <FormField control={form.control} name="boundaryBehavior" render={({
+              field
+            }) => <FormItem>
+                    <FormLabel>Wat doe jij als je grensoverschrijdend gedrag opmerkt?</FormLabel>
+                    <FormControl>
+                      <Textarea placeholder="Beschrijf hoe je zou reageren bij grensoverschrijdend gedrag..." className="min-h-[100px]" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>} />
+              
+              <FormField control={form.control} name="merchandiseMotivation" render={({
+              field
+            }) => <FormItem>
+                    <FormLabel>Waarom koop jij bouw met respect merchandise?</FormLabel>
+                    <FormControl>
+                      <Textarea placeholder="Vertel waarom je geinteresseerd bent in onze merchandise..." className="min-h-[100px]" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>} />
