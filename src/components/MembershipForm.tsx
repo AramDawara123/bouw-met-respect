@@ -29,6 +29,8 @@ const formSchema = z.object({
   respectfulWorkplace: z.string().min(30, "Beschrijf wat een respectvolle bouwplaats voor jou betekent"),
   boundaryBehavior: z.string().min(30, "Beschrijf hoe je reageert op grensoverschrijdend gedrag"),
   merchandiseMotivation: z.string().min(30, "Vertel waarom je bouw met respect merchandise koopt"),
+  allowStorySharing: z.boolean().default(false),
+  anonymousSharing: z.boolean().default(false),
   newsletter: z.boolean().default(true),
   terms: z.boolean().refine(val => val === true, {
     message: "Je moet akkoord gaan met de voorwaarden"
@@ -63,6 +65,8 @@ const MembershipForm = ({
       respectfulWorkplace: "",
       boundaryBehavior: "",
       merchandiseMotivation: "",
+      allowStorySharing: false,
+      anonymousSharing: false,
       newsletter: true,
       terms: false
     }
@@ -304,7 +308,78 @@ const MembershipForm = ({
             </div>
 
             {/* Voorkeuren en akkoord */}
-            
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold">Voorkeuren en toestemmingen</h3>
+              
+              <FormField control={form.control} name="allowStorySharing" render={({ field }) => (
+                <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
+                  <FormControl>
+                    <Checkbox 
+                      checked={field.value} 
+                      onCheckedChange={field.onChange}
+                    />
+                  </FormControl>
+                  <div className="space-y-1 leading-none">
+                    <FormLabel>
+                      Ik geef toestemming om mijn verhaal te delen voor bewustwording
+                    </FormLabel>
+                    <p className="text-sm text-muted-foreground">
+                      Je verhaal kan gebruikt worden op sociale media en andere platforms om andere mensen te helpen en bewustzijn te creëren over respectvolle bouwpraktijken
+                    </p>
+                  </div>
+                </FormItem>
+              )} />
+
+              {form.watch("allowStorySharing") && (
+                <FormField control={form.control} name="anonymousSharing" render={({ field }) => (
+                  <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4 ml-6">
+                    <FormControl>
+                      <Checkbox 
+                        checked={field.value} 
+                        onCheckedChange={field.onChange}
+                      />
+                    </FormControl>
+                    <div className="space-y-1 leading-none">
+                      <FormLabel>
+                        Deel mijn verhaal anoniem
+                      </FormLabel>
+                      <p className="text-sm text-muted-foreground">
+                        Je verhaal wordt gedeeld zonder je naam, bedrijfsnaam of andere identificeerbare informatie
+                      </p>
+                    </div>
+                  </FormItem>
+                )} />
+              )}
+
+              <FormField control={form.control} name="newsletter" render={({ field }) => (
+                <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                  <FormControl>
+                    <Checkbox 
+                      checked={field.value} 
+                      onCheckedChange={field.onChange}
+                    />
+                  </FormControl>
+                  <FormLabel className="text-sm font-normal">
+                    Ik wil updates ontvangen over Bouw met Respect activiteiten
+                  </FormLabel>
+                </FormItem>
+              )} />
+
+              <FormField control={form.control} name="terms" render={({ field }) => (
+                <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                  <FormControl>
+                    <Checkbox 
+                      checked={field.value} 
+                      onCheckedChange={field.onChange}
+                    />
+                  </FormControl>
+                  <FormLabel className="text-sm font-normal">
+                    Ik ga akkoord met de voorwaarden en privacybeleid <span className="text-destructive">*</span>
+                  </FormLabel>
+                  <FormMessage />
+                </FormItem>
+              )} />
+            </div>
 
             <div className="flex gap-3 pt-4">
               <Button type="button" variant="outline" onClick={() => onOpenChange(false)} className="flex-1">
