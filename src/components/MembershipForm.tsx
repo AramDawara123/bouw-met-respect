@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -29,8 +30,9 @@ const formSchema = z.object({
   respectfulWorkplace: z.string().min(30, "Beschrijf wat een respectvolle bouwplaats voor jou betekent"),
   boundaryBehavior: z.string().min(30, "Beschrijf hoe je reageert op grensoverschrijdend gedrag"),
   merchandiseMotivation: z.string().min(30, "Vertel waarom je bouw met respect merchandise koopt"),
-  allowStorySharing: z.boolean().default(false),
-  anonymousSharing: z.boolean().default(false),
+  storySharing: z.enum(["no-sharing", "share-with-name", "share-anonymous"], {
+    required_error: "Selecteer een optie voor het delen van je verhaal"
+  }),
   newsletter: z.boolean().default(true),
   terms: z.boolean().refine(val => val === true, {
     message: "Je moet akkoord gaan met de voorwaarden"
@@ -65,8 +67,7 @@ const MembershipForm = ({
       respectfulWorkplace: "",
       boundaryBehavior: "",
       merchandiseMotivation: "",
-      allowStorySharing: false,
-      anonymousSharing: false,
+      storySharing: "no-sharing",
       newsletter: true,
       terms: false
     }
@@ -311,37 +312,57 @@ const MembershipForm = ({
             <div className="space-y-4">
               <h3 className="text-lg font-semibold">Voorkeuren en toestemmingen</h3>
               
-              <FormField control={form.control} name="allowStorySharing" render={({
+              <FormField control={form.control} name="storySharing" render={({
               field
-            }) => <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
+            }) => (
+                <FormItem className="rounded-md border p-4">
+                  <FormLabel className="text-base font-medium">
+                    Hoe wil je dat we omgaan met je verhaal?
+                  </FormLabel>
                   <FormControl>
-                    <Checkbox checked={field.value} onCheckedChange={field.onChange} />
+                    <RadioGroup
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                      className="flex flex-col space-y-3 pt-2"
+                    >
+                      <div className="flex items-start space-x-3">
+                        <RadioGroupItem value="no-sharing" id="no-sharing" />
+                        <div className="space-y-1 leading-none">
+                          <label htmlFor="no-sharing" className="text-sm font-normal cursor-pointer">
+                            Ik wil mijn verhaal niet delen
+                          </label>
+                          <p className="text-xs text-muted-foreground">
+                            Je verhaal blijft privé en wordt niet gebruikt voor bewustwording
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex items-start space-x-3">
+                        <RadioGroupItem value="share-with-name" id="share-with-name" />
+                        <div className="space-y-1 leading-none">
+                          <label htmlFor="share-with-name" className="text-sm font-normal cursor-pointer">
+                            Ik geef toestemming om mijn verhaal te delen met mijn naam
+                          </label>
+                          <p className="text-xs text-muted-foreground">
+                            Je verhaal kan gebruikt worden met je naam en bedrijf voor bewustwording
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex items-start space-x-3">
+                        <RadioGroupItem value="share-anonymous" id="share-anonymous" />
+                        <div className="space-y-1 leading-none">
+                          <label htmlFor="share-anonymous" className="text-sm font-normal cursor-pointer">
+                            Ik geef toestemming om mijn verhaal anoniem te delen
+                          </label>
+                          <p className="text-xs text-muted-foreground">
+                            Je verhaal wordt gedeeld zonder naam, bedrijf of identificeerbare informatie
+                          </p>
+                        </div>
+                      </div>
+                    </RadioGroup>
                   </FormControl>
-                  <div className="space-y-1 leading-none">
-                    <FormLabel>
-                      Ik geef toestemming om mijn verhaal te delen voor bewustwording
-                    </FormLabel>
-                    <p className="text-sm text-muted-foreground">
-                      Je verhaal kan gebruikt worden op sociale media en andere platforms om andere mensen te helpen en bewustzijn te creëren over respectvolle bouwpraktijken
-                    </p>
-                  </div>
-                </FormItem>} />
-
-              {form.watch("allowStorySharing") && <FormField control={form.control} name="anonymousSharing" render={({
-              field
-            }) => <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4 ml-6">
-                    <FormControl>
-                      <Checkbox checked={field.value} onCheckedChange={field.onChange} />
-                    </FormControl>
-                    <div className="space-y-1 leading-none">
-                      <FormLabel>
-                        Deel mijn verhaal anoniem
-                      </FormLabel>
-                      <p className="text-sm text-muted-foreground">
-                        Je verhaal wordt gedeeld zonder je naam, bedrijfsnaam of andere identificeerbare informatie
-                      </p>
-                    </div>
-                  </FormItem>} />}
+                  <FormMessage />
+                </FormItem>
+              )} />
 
               <FormField control={form.control} name="newsletter" render={({
               field
@@ -356,7 +377,17 @@ const MembershipForm = ({
 
               <FormField control={form.control} name="terms" render={({
               field
-            }) => {}} />
+            }) => (
+                <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                  <FormControl>
+                    <Checkbox checked={field.value} onCheckedChange={field.onChange} />
+                  </FormControl>
+                  <FormLabel className="text-sm font-normal">
+                    Ik ga akkoord met de algemene voorwaarden en het privacybeleid
+                  </FormLabel>
+                  <FormMessage />
+                </FormItem>
+              )} />
             </div>
 
             <div className="flex gap-3 pt-4">
