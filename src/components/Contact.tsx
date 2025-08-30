@@ -3,8 +3,9 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Mail, Phone, MapPin, Send } from "lucide-react";
+import { Mail, Phone, MapPin, Send, AlertTriangle } from "lucide-react";
 import { useState } from "react";
+import ReportForm from "./ReportForm";
 
 const Contact = () => {
   const [formData, setFormData] = useState({
@@ -13,6 +14,7 @@ const Contact = () => {
     company: '',
     message: ''
   });
+  const [reportFormOpen, setReportFormOpen] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -34,11 +36,24 @@ const Contact = () => {
           <h2 className="text-4xl md:text-5xl font-bold mb-6 text-foreground">
             Neem contact op
           </h2>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+          <p className="text-xl text-muted-foreground max-w-3xl mx-auto mb-8">
             Heb je vragen over sociale veiligheid in de bouw of wil je direct aansluiten 
             bij onze community? We horen graag van je. Samen maken we de bouwsector 
             aantrekkelijker en veiliger voor iedereen.
           </p>
+          
+          {/* Meldpunt Button */}
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+            <Button 
+              size="lg" 
+              variant="outline"
+              onClick={() => setReportFormOpen(true)}
+              className="border-destructive/30 text-destructive hover:bg-destructive/10"
+            >
+              <AlertTriangle className="w-5 h-5 mr-2" />
+              Meld grensoverschrijdend gedrag
+            </Button>
+          </div>
         </div>
 
         <div className="grid lg:grid-cols-2 gap-16 max-w-6xl mx-auto">
@@ -168,6 +183,8 @@ const Contact = () => {
           </div>
         </div>
       </div>
+      
+      <ReportForm open={reportFormOpen} onOpenChange={setReportFormOpen} />
     </section>
   );
 };
