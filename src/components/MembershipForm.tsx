@@ -311,13 +311,11 @@ const MembershipForm = ({
             <div className="space-y-4">
               <h3 className="text-lg font-semibold">Voorkeuren en toestemmingen</h3>
               
-              <FormField control={form.control} name="allowStorySharing" render={({ field }) => (
-                <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
+              <FormField control={form.control} name="allowStorySharing" render={({
+              field
+            }) => <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
                   <FormControl>
-                    <Checkbox 
-                      checked={field.value} 
-                      onCheckedChange={field.onChange}
-                    />
+                    <Checkbox checked={field.value} onCheckedChange={field.onChange} />
                   </FormControl>
                   <div className="space-y-1 leading-none">
                     <FormLabel>
@@ -327,17 +325,13 @@ const MembershipForm = ({
                       Je verhaal kan gebruikt worden op sociale media en andere platforms om andere mensen te helpen en bewustzijn te creëren over respectvolle bouwpraktijken
                     </p>
                   </div>
-                </FormItem>
-              )} />
+                </FormItem>} />
 
-              {form.watch("allowStorySharing") && (
-                <FormField control={form.control} name="anonymousSharing" render={({ field }) => (
-                  <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4 ml-6">
+              {form.watch("allowStorySharing") && <FormField control={form.control} name="anonymousSharing" render={({
+              field
+            }) => <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4 ml-6">
                     <FormControl>
-                      <Checkbox 
-                        checked={field.value} 
-                        onCheckedChange={field.onChange}
-                      />
+                      <Checkbox checked={field.value} onCheckedChange={field.onChange} />
                     </FormControl>
                     <div className="space-y-1 leading-none">
                       <FormLabel>
@@ -347,38 +341,22 @@ const MembershipForm = ({
                         Je verhaal wordt gedeeld zonder je naam, bedrijfsnaam of andere identificeerbare informatie
                       </p>
                     </div>
-                  </FormItem>
-                )} />
-              )}
+                  </FormItem>} />}
 
-              <FormField control={form.control} name="newsletter" render={({ field }) => (
-                <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+              <FormField control={form.control} name="newsletter" render={({
+              field
+            }) => <FormItem className="flex flex-row items-start space-x-3 space-y-0">
                   <FormControl>
-                    <Checkbox 
-                      checked={field.value} 
-                      onCheckedChange={field.onChange}
-                    />
+                    <Checkbox checked={field.value} onCheckedChange={field.onChange} />
                   </FormControl>
                   <FormLabel className="text-sm font-normal">
                     Ik wil updates ontvangen over Bouw met Respect activiteiten
                   </FormLabel>
-                </FormItem>
-              )} />
+                </FormItem>} />
 
-              <FormField control={form.control} name="terms" render={({ field }) => (
-                <FormItem className="flex flex-row items-start space-x-3 space-y-0">
-                  <FormControl>
-                    <Checkbox 
-                      checked={field.value} 
-                      onCheckedChange={field.onChange}
-                    />
-                  </FormControl>
-                  <FormLabel className="text-sm font-normal">
-                    Ik ga akkoord met de voorwaarden en privacybeleid <span className="text-destructive">*</span>
-                  </FormLabel>
-                  <FormMessage />
-                </FormItem>
-              )} />
+              <FormField control={form.control} name="terms" render={({
+              field
+            }) => {}} />
             </div>
 
             <div className="flex gap-3 pt-4">
