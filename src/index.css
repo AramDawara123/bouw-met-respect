@@ -7,41 +7,52 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222 15% 15%;
+    /* Kalk Wit background */
+    --background: 0 0% 96%;
+    --foreground: 194 46% 15%;
 
     --card: 0 0% 100%;
-    --card-foreground: 222 15% 15%;
+    --card-foreground: 194 46% 15%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 222 15% 15%;
+    --popover-foreground: 194 46% 15%;
 
-    /* Primary: Professional construction orange */
-    --primary: 16 100% 60%;
-    --primary-foreground: 0 0% 98%;
+    /* Primary: Bouw Geel (Construction Yellow) */
+    --primary: 50 98% 50%;
+    --primary-foreground: 194 46% 15%;
 
-    /* Secondary: Trust blue */
-    --secondary: 217 91% 60%;
+    /* Secondary: Lei Grijs (Slate Grey) */
+    --secondary: 194 13% 37%;
     --secondary-foreground: 0 0% 98%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --muted: 182 16% 90%;
+    --muted-foreground: 194 13% 37%;
 
-    --accent: 16 100% 95%;
-    --accent-foreground: 16 100% 25%;
+    /* Accent: Zand Geel (Sand Yellow) */
+    --accent: 50 85% 76%;
+    --accent-foreground: 194 46% 15%;
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 16 100% 60%;
+    /* Blauw Staal borders */
+    --border: 182 16% 66%;
+    --input: 182 16% 66%;
+    --ring: 50 98% 50%;
 
     --radius: 0.75rem;
 
-    /* Custom gradient variables */
-    --hero-gradient: linear-gradient(135deg, hsl(16 100% 60%) 0%, hsl(217 91% 60%) 100%);
-    --card-gradient: linear-gradient(145deg, hsl(0 0% 100%) 0%, hsl(210 40% 98%) 100%);
+    /* Custom gradient variables using new palette */
+    --hero-gradient: linear-gradient(135deg, hsl(50 98% 50%) 0%, hsl(194 46% 15%) 100%);
+    --card-gradient: linear-gradient(145deg, hsl(0 0% 100%) 0%, hsl(182 16% 90%) 100%);
+    
+    /* Dark theme variants */
+    --nacht-blauw: 194 46% 15%;
+    --bouw-geel: 50 98% 50%;
+    --lei-grijs: 194 13% 37%;
+    --zand-geel: 50 85% 76%;
+    --blauw-staal: 182 16% 66%;
+    --kalk-wit: 0 0% 96%;
   }
 }
 
@@ -58,7 +69,7 @@
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-sigmund;
     font-feature-settings: "rlig" 1, "calt" 1;
   }
 
