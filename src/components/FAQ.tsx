@@ -32,40 +32,40 @@ const FAQ = () => {
 
   return (
     <section className="py-20 bg-background">
-      <div className="container mx-auto px-4">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold mb-6 text-foreground">
+          <div className="text-center mb-8 sm:mb-12 lg:mb-16">
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-4 sm:mb-6 text-foreground">
               Veelgestelde vragen
             </h2>
-            <p className="text-xl text-muted-foreground">
+            <p className="text-lg sm:text-xl text-muted-foreground px-4 sm:px-0">
               Alles wat je wilt weten over sociale veiligheid in de bouw, 
               grensoverschrijdend gedrag aanpakken en hoe wij de sector 
               aantrekkelijker maken voor jong talent.
             </p>
           </div>
 
-          <div className="space-y-4">
+          <div className="space-y-3 sm:space-y-4">
             {faqs.map((faq, index) => (
               <Card key={index} className="border-0 bg-card overflow-hidden">
                 <Button
                   variant="ghost"
-                  className="w-full p-6 h-auto justify-between text-left hover:bg-muted/50"
+                  className="w-full p-4 sm:p-6 h-auto justify-between text-left hover:bg-muted/50"
                   onClick={() => setOpenIndex(openIndex === index ? null : index)}
                 >
-                  <span className="text-lg font-semibold text-foreground pr-4">
+                  <span className="text-base sm:text-lg font-semibold text-foreground pr-3 sm:pr-4 leading-tight">
                     {faq.question}
                   </span>
                   {openIndex === index ? (
-                    <Minus className="w-5 h-5 text-primary flex-shrink-0" />
+                    <Minus className="w-4 h-4 sm:w-5 sm:h-5 text-primary flex-shrink-0 mt-0.5" />
                   ) : (
-                    <Plus className="w-5 h-5 text-primary flex-shrink-0" />
+                    <Plus className="w-4 h-4 sm:w-5 sm:h-5 text-primary flex-shrink-0 mt-0.5" />
                   )}
                 </Button>
                 
                 {openIndex === index && (
-                  <div className="px-6 pb-6 animate-slide-down">
-                    <p className="text-muted-foreground leading-relaxed">
+                  <div className="px-4 sm:px-6 pb-4 sm:pb-6 animate-slide-down">
+                    <p className="text-sm sm:text-base text-muted-foreground leading-relaxed">
                       {faq.answer}
                     </p>
                   </div>
