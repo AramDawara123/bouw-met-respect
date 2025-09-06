@@ -1,14 +1,11 @@
-
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { ArrowRight, Users, Shield, Heart, Target, Building, Zap } from "lucide-react";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 import { useState } from "react";
 import MembershipForm from "./MembershipForm";
-
 const Hero = () => {
   const [isMembershipFormOpen, setIsMembershipFormOpen] = useState(false);
-  
   const {
     ref: heroRef,
     isVisible: heroVisible
@@ -17,7 +14,6 @@ const Hero = () => {
     ref: featuresRef,
     isVisible: featuresVisible
   } = useScrollAnimation(0.1);
-
   const features = [{
     icon: Shield,
     title: "Respect & gelijkwaardigheid",
@@ -43,17 +39,14 @@ const Hero = () => {
     title: "Cultuurverandering bouwplaats",
     description: "Van harde cultuur naar respectvolle omgang"
   }];
-
-  return (
-    <>
+  return <>
       <section className="pt-32 pb-16 bg-background">
         <div className="container mx-auto px-4">
           {/* Header */}
           <div ref={heroRef} className={`grid lg:grid-cols-2 gap-12 items-center mb-16 transition-all duration-1000 ${heroVisible ? 'opacity-100 transform translate-y-0' : 'opacity-0 transform translate-y-8'}`}>
             <div className={`transition-all duration-1000 delay-200 ${heroVisible ? 'opacity-100 transform translate-x-0' : 'opacity-0 transform -translate-x-8'}`}>
-              <h1 className="text-5xl md:text-6xl font-bold mb-6 text-foreground leading-tight">
-                Bouw met Respect – De beweging voor een veiligere en menselijkere bouwsector
-              </h1>
+              <h1 className="text-5xl md:text-6xl font-bold mb-6 text-foreground leading-tight">Bouw met Respect 
+– De beweging voor een veiligere en menselijkere bouwsector</h1>
               <p className="text-xl text-muted-foreground mb-8 leading-relaxed">
                 Grensoverschrijdend gedrag en een harde cultuur houden jong talent weg uit de bouw. 
                 Onze beweging gelooft dat verandering begint met respect. Sluit je aan en help mee de sector 
@@ -77,27 +70,20 @@ const Hero = () => {
 
           {/* Features Grid - Onze kernwaarden */}
           <div ref={featuresRef} className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {features.map((feature, index) => (
-              <Card key={index} className={`p-8 text-center transition-all duration-500 border-0 bg-muted/30 ${featuresVisible ? 'opacity-100 transform translate-y-0' : 'opacity-0 transform translate-y-8'}`} style={{
-                transitionDelay: featuresVisible ? `${index * 100}ms` : '0ms'
-              }}>
+            {features.map((feature, index) => <Card key={index} className={`p-8 text-center transition-all duration-500 border-0 bg-muted/30 ${featuresVisible ? 'opacity-100 transform translate-y-0' : 'opacity-0 transform translate-y-8'}`} style={{
+            transitionDelay: featuresVisible ? `${index * 100}ms` : '0ms'
+          }}>
                 <div className="w-16 h-16 mx-auto mb-6 bg-primary/10 rounded-2xl flex items-center justify-center transition-transform duration-300">
                   <feature.icon className="w-8 h-8 text-primary" />
                 </div>
                 <h3 className="text-xl font-semibold mb-3 text-foreground">{feature.title}</h3>
                 <p className="text-muted-foreground leading-relaxed">{feature.description}</p>
-              </Card>
-            ))}
+              </Card>)}
           </div>
         </div>
       </section>
 
-      <MembershipForm 
-        open={isMembershipFormOpen} 
-        onOpenChange={setIsMembershipFormOpen} 
-      />
-    </>
-  );
+      <MembershipForm open={isMembershipFormOpen} onOpenChange={setIsMembershipFormOpen} />
+    </>;
 };
-
 export default Hero;
