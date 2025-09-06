@@ -20,9 +20,11 @@ const Navbar = () => {
           <div className="flex items-center justify-between h-16">
             {/* Logo */}
             <div className="flex items-center space-x-3">
-              <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-                <Building className="w-5 h-5 text-primary-foreground" />
-              </div>
+              <img 
+                src="/lovable-uploads/7b41cfaf-011f-4a79-aaa7-a4a6deb29c1c.png" 
+                alt="Bouw met Respect logo" 
+                className="h-8 w-auto"
+              />
               <span className="text-xl font-bold text-foreground">Bouw met Respect</span>
             </div>
 
