@@ -120,9 +120,9 @@ const Footer = () => {
           </div>
           
           <div className="flex items-center justify-center md:justify-end space-x-6 text-background/60 text-sm">
-            <a href="#" className="hover:text-background transition-colors">Privacy</a>
-            <Link to="/algemene-voorwaarden" className="hover:text-background transition-colors">Voorwaarden</Link>
-            <a href="#" className="hover:text-background transition-colors">Cookies</a>
+            
+            <Link to="/algemene-voorwaarden" className="hover:text-background transition-colors">Algemeene Voorwaarden</Link>
+            
           </div>
         </div>
       </div>
