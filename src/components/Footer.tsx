@@ -1,4 +1,5 @@
 import { Heart, Linkedin, Mail, Building, ArrowRight, Users } from "lucide-react";
+import { Link } from "react-router-dom";
 const Footer = () => {
   return <footer className="bg-foreground text-background py-20">
       <div className="container mx-auto px-4">
@@ -120,7 +121,7 @@ const Footer = () => {
           
           <div className="flex items-center justify-center md:justify-end space-x-6 text-background/60 text-sm">
             <a href="#" className="hover:text-background transition-colors">Privacy</a>
-            <a href="#" className="hover:text-background transition-colors">Voorwaarden</a>
+            <Link to="/algemene-voorwaarden" className="hover:text-background transition-colors">Voorwaarden</Link>
             <a href="#" className="hover:text-background transition-colors">Cookies</a>
           </div>
         </div>
