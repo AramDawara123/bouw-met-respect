@@ -33,7 +33,7 @@ const formSchema = z.object({
   respectfulWorkplace: z.string().min(30, "Beschrijf wat een respectvolle bouwplaats voor jou betekent"),
   boundaryBehavior: z.string().min(30, "Beschrijf hoe je reageert op grensoverschrijdend gedrag"),
   
-  membershipType: z.enum(["klein","middelgroot","groot"], { required_error: "Kies je lidmaatschap" }),
+  membershipType: z.enum(["klein","middelgroot","groot","offerte"], { required_error: "Kies je lidmaatschap" }),
   newsletter: z.boolean().default(true),
   terms: z.boolean().refine(val => val === true, {
     message: "Je moet akkoord gaan met de voorwaarden"
@@ -82,14 +82,49 @@ const MembershipForm = ({
   });
 
   const selectedType = form.watch('membershipType');
-  const getAmountFromType = (t: string) => t === 'middelgroot' ? 75000 : t === 'groot' ? 125000 : 25000;
-  const displayPrice = (selectedType === 'middelgroot' ? '€750' : selectedType === 'groot' ? '€1250' : '€250');
+  const getAmountFromType = (t: string) => t === 'middelgroot' ? 75000 : t === 'groot' ? 125000 : t === 'offerte' ? 0 : 25000;
+  const displayPrice = (selectedType === 'middelgroot' ? '€750' : selectedType === 'groot' ? '€1250' : selectedType === 'offerte' ? 'Offerte op maat' : '€250');
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     setIsSubmitting(true);
 
     try {
-      // Call Mollie payment function
+      // Handle offerte requests differently
+      if (values.membershipType === 'offerte') {
+        // Store offerte request directly in memberships table
+        const { error } = await supabase
+          .from('memberships')
+          .insert({
+            first_name: values.firstName,
+            last_name: values.lastName,
+            email: values.email,
+            phone: values.phone,
+            company: values.company,
+            job_title: values.jobTitle,
+            industry_role: values.industryRole,
+            experience_years: values.experienceYears,
+            specializations: values.specializations,
+            membership_type: 'offerte',
+            payment_status: 'quote_requested',
+            amount: 0,
+            currency: 'EUR'
+          });
+
+        if (error) {
+          throw error;
+        }
+
+        toast({
+          title: "Offerte aanvraag verzonden!",
+          description: "We nemen binnen 2 werkdagen contact met je op voor een persoonlijke offerte.",
+        });
+        
+        onOpenChange(false);
+        form.reset();
+        return;
+      }
+
+      // Regular payment flow for other membership types
       const { data, error } = await supabase.functions.invoke('create-mollie-payment', {
         body: { 
           membershipData: values,
@@ -155,7 +190,7 @@ const MembershipForm = ({
                   name="membershipType"
                   render={({ field }) => (
                     <FormItem>
-                      <RadioGroup onValueChange={field.onChange} value={field.value} className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                      <RadioGroup onValueChange={field.onChange} value={field.value} className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div className={`border rounded-lg p-4 ${form.watch('membershipType')==='klein' ? 'border-primary' : 'border-border'}`}>
                           <div className="flex items-center space-x-3">
                             <RadioGroupItem value="klein" id="klein" />
@@ -172,6 +207,17 @@ const MembershipForm = ({
                           <div className="flex items-center space-x-3">
                             <RadioGroupItem value="groot" id="groot" />
                             <Label htmlFor="groot">Groot — €1250/jaar</Label>
+                          </div>
+                        </div>
+                        <div className={`border rounded-lg p-4 ${form.watch('membershipType')==='offerte' ? 'border-primary' : 'border-border'}`}>
+                          <div className="flex items-center space-x-3">
+                            <RadioGroupItem value="offerte" id="offerte" />
+                            <Label htmlFor="offerte">
+                              <div>
+                                <div className="font-medium">Offerte op maat</div>
+                                <div className="text-sm text-muted-foreground">Voor grote organisaties</div>
+                              </div>
+                            </Label>
                           </div>
                         </div>
                       </RadioGroup>
@@ -427,7 +473,10 @@ const MembershipForm = ({
                 Annuleren
               </Button>
               <Button type="submit" disabled={isSubmitting} className="flex-1">
-                {isSubmitting ? "Doorsturen naar betaling..." : `Betaal ${displayPrice} per jaar`}
+                {isSubmitting ? 
+                  (selectedType === 'offerte' ? "Offerte aanvraag verzenden..." : "Doorsturen naar betaling...") : 
+                  (selectedType === 'offerte' ? "Offerte aanvragen" : `Betaal ${displayPrice} per jaar`)
+                }
               </Button>
             </div>
           </form>
