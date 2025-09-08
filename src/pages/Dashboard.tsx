@@ -248,10 +248,19 @@ const Dashboard = () => {
             <h1 className="text-4xl font-bold text-foreground">Admin Dashboard</h1>
             <p className="text-muted-foreground mt-2">Beheer lidmaatschappen en bestellingen</p>
           </div>
-          <Button onClick={exportToCsv} className="flex items-center gap-2">
-            <Download className="w-4 h-4" />
-            Export CSV
-          </Button>
+          <div className="flex gap-3">
+            <Button onClick={exportToCsv} className="flex items-center gap-2">
+              <Download className="w-4 h-4" />
+              Export CSV
+            </Button>
+            <Button 
+              onClick={() => window.open('/website-editor', '_blank')}
+              className="flex items-center gap-2 bg-purple-600 hover:bg-purple-700"
+            >
+              <Edit className="w-4 h-4" />
+              Edit Website
+            </Button>
+          </div>
         </div>
 
         {/* Stats Cards */}

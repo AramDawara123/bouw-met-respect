@@ -11,6 +11,7 @@ import AlgemeneVoorwaarden from "./pages/AlgemeneVoorwaarden";
 import Webshop from "./pages/Webshop";
 import MembershipSuccess from "./pages/MembershipSuccess";
 import Dashboard from "./pages/Dashboard";
+import WebsiteEditor from "./pages/WebsiteEditor";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -30,6 +31,7 @@ const App = () => (
               <Route path="/webshop" element={<Webshop />} />
               <Route path="/membership-success" element={<MembershipSuccess />} />
               <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/website-editor" element={<WebsiteEditor />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>
