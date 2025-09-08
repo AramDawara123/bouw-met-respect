@@ -186,7 +186,10 @@ const Webshop = () => {
               </p>
             </div>
 
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 max-w-6xl mx-auto">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 lg:gap-10 xl:gap-8 max-w-7xl mx-auto px-4 relative">
+              {/* Background decoration for the grid */}
+              <div className="absolute inset-0 bg-gradient-to-br from-primary/2 to-secondary/2 rounded-3xl opacity-50 -z-10"></div>
+              <div className="absolute inset-0 bg-grid-white/[0.01] bg-[size:40px_40px] rounded-3xl -z-10"></div>
               {products.map((product, index) => (
                 <Card 
                   key={product.id}
