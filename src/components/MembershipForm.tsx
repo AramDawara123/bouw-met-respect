@@ -13,6 +13,7 @@ import * as z from "zod";
 import { useToast } from "@/hooks/use-toast";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { Label } from "@/components/ui/label";
 const formSchema = z.object({
   firstName: z.string().min(2, "Voornaam moet minimaal 2 karakters bevatten"),
   lastName: z.string().min(2, "Achternaam moet minimaal 2 karakters bevatten"),
@@ -32,6 +33,7 @@ const formSchema = z.object({
   respectfulWorkplace: z.string().min(30, "Beschrijf wat een respectvolle bouwplaats voor jou betekent"),
   boundaryBehavior: z.string().min(30, "Beschrijf hoe je reageert op grensoverschrijdend gedrag"),
   
+  membershipType: z.enum(["klein","middelgroot","groot"], { required_error: "Kies je lidmaatschap" }),
   newsletter: z.boolean().default(true),
   terms: z.boolean().refine(val => val === true, {
     message: "Je moet akkoord gaan met de voorwaarden"
@@ -73,10 +75,16 @@ const MembershipForm = ({
       respectfulWorkplace: "",
       boundaryBehavior: "",
       
+      membershipType: (membershipPlan?.id as any) || "klein",
       newsletter: true,
       terms: false
     }
   });
+
+  const selectedType = form.watch('membershipType');
+  const getAmountFromType = (t: string) => t === 'middelgroot' ? 75000 : t === 'groot' ? 125000 : 25000;
+  const displayPrice = membershipPlan?.yearlyPrice ?? (selectedType === 'middelgroot' ? '€750' : selectedType === 'groot' ? '€1250' : '€250');
+
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     setIsSubmitting(true);
 
@@ -85,8 +93,8 @@ const MembershipForm = ({
       const { data, error } = await supabase.functions.invoke('create-mollie-payment', {
         body: { 
           membershipData: values,
-          membershipType: membershipPlan?.id || 'klein',
-          amount: membershipPlan?.price || 25000
+          membershipType: membershipPlan?.id || (values as any).membershipType,
+          amount: membershipPlan?.price ?? getAmountFromType((values as any).membershipType)
         }
       });
 
@@ -138,8 +146,42 @@ const MembershipForm = ({
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            {/* Persoonlijke gegevens */}
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+              {/* Lidmaatschap kiezen */}
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold">Kies je lidmaatschap</h3>
+                <FormField
+                  control={form.control}
+                  name="membershipType"
+                  render={({ field }) => (
+                    <FormItem>
+                      <RadioGroup onValueChange={field.onChange} defaultValue={field.value} className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        <div className={`border rounded-lg p-4 ${form.watch('membershipType')==='klein' ? 'border-primary' : 'border-border'}`}>
+                          <div className="flex items-center space-x-3">
+                            <RadioGroupItem value="klein" id="klein" />
+                            <Label htmlFor="klein">Klein — €250/jaar</Label>
+                          </div>
+                        </div>
+                        <div className={`border rounded-lg p-4 ${form.watch('membershipType')==='middelgroot' ? 'border-primary' : 'border-border'}`}>
+                          <div className="flex items-center space-x-3">
+                            <RadioGroupItem value="middelgroot" id="middelgroot" />
+                            <Label htmlFor="middelgroot">Middelgroot — €750/jaar</Label>
+                          </div>
+                        </div>
+                        <div className={`border rounded-lg p-4 ${form.watch('membershipType')==='groot' ? 'border-primary' : 'border-border'}`}>
+                          <div className="flex items-center space-x-3">
+                            <RadioGroupItem value="groot" id="groot" />
+                            <Label htmlFor="groot">Groot — €1250/jaar</Label>
+                          </div>
+                        </div>
+                      </RadioGroup>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              {/* Persoonlijke gegevens */}
             <div className="space-y-4">
               <h3 className="text-lg font-semibold">Persoonlijke gegevens</h3>
               <div className="grid grid-cols-2 gap-4">
@@ -385,7 +427,7 @@ const MembershipForm = ({
                 Annuleren
               </Button>
               <Button type="submit" disabled={isSubmitting} className="flex-1">
-                {isSubmitting ? "Doorsturen naar betaling..." : `Betaal ${membershipPlan?.yearlyPrice || '€250'} per jaar`}
+                {isSubmitting ? "Doorsturen naar betaling..." : `Betaal ${displayPrice} per jaar`}
               </Button>
             </div>
           </form>
