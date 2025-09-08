@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ShoppingCart, Coffee, Edit3, ArrowLeft } from "lucide-react";
+import { ShoppingCart, Coffee, Edit3, ArrowLeft, Plus, Minus, X } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 import { useToast } from "@/hooks/use-toast";
@@ -66,6 +66,39 @@ const Webshop = () => {
     toast({
       title: "Toegevoegd aan winkelwagen",
       description: `${product?.name} is toegevoegd aan je winkelwagen.`
+    });
+  };
+
+  const increaseQuantity = (productId: string) => {
+    setCart(prev => ({
+      ...prev,
+      [productId]: (prev[productId] || 0) + 1
+    }));
+  };
+
+  const decreaseQuantity = (productId: string) => {
+    setCart(prev => {
+      const newCart = { ...prev };
+      if (newCart[productId] > 1) {
+        newCart[productId] = newCart[productId] - 1;
+      } else {
+        delete newCart[productId];
+      }
+      return newCart;
+    });
+  };
+
+  const removeFromCart = (productId: string) => {
+    setCart(prev => {
+      const newCart = { ...prev };
+      delete newCart[productId];
+      return newCart;
+    });
+    
+    const product = products.find(p => p.id === productId);
+    toast({
+      title: "Verwijderd uit winkelwagen",
+      description: `${product?.name} is verwijderd uit je winkelwagen.`
     });
   };
 
@@ -296,23 +329,57 @@ const Webshop = () => {
                       if (!product || quantity === 0) return null;
                       
                       return (
-                        <div key={productId} className="flex items-center justify-between py-3 px-4 bg-background/50 rounded-lg border border-border">
-                          <div className="flex items-center space-x-3">
-                            <div className="w-12 h-12 bg-muted rounded-lg overflow-hidden">
+                        <div key={productId} className="flex items-center justify-between py-4 px-4 bg-background/50 rounded-lg border border-border group hover:shadow-md transition-all duration-300">
+                          <div className="flex items-center space-x-4">
+                            <div className="w-16 h-16 bg-muted rounded-lg overflow-hidden shadow-sm">
                               <img src={product.image} alt={product.name} className="w-full h-full object-cover" />
                             </div>
-                            <div>
-                              <p className="font-medium text-foreground">{product.name}</p>
-                              <p className="text-sm text-muted-foreground">Aantal: {quantity}</p>
+                            <div className="flex-1">
+                              <p className="font-semibold text-foreground text-lg">{product.name}</p>
+                              <p className="text-sm text-muted-foreground">€{product.price.toFixed(2)} per stuk</p>
                             </div>
                           </div>
-                          <div className="text-right">
-                            <p className="font-bold text-lg text-primary">
-                              €{(product.price * quantity).toFixed(2)}
-                            </p>
-                            <p className="text-xs text-muted-foreground">
-                              €{product.price.toFixed(2)} per stuk
-                            </p>
+                          
+                          <div className="flex items-center space-x-4">
+                            {/* Quantity Controls */}
+                            <div className="flex items-center space-x-2 bg-muted/50 rounded-lg p-1">
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => decreaseQuantity(productId)}
+                                className="w-8 h-8 p-0 hover:bg-primary/10"
+                              >
+                                <Minus className="w-4 h-4" />
+                              </Button>
+                              <span className="w-8 text-center font-semibold text-foreground">
+                                {quantity}
+                              </span>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => increaseQuantity(productId)}
+                                className="w-8 h-8 p-0 hover:bg-primary/10"
+                              >
+                                <Plus className="w-4 h-4" />
+                              </Button>
+                            </div>
+                            
+                            {/* Price */}
+                            <div className="text-right min-w-[80px]">
+                              <p className="font-bold text-lg text-primary">
+                                €{(product.price * quantity).toFixed(2)}
+                              </p>
+                            </div>
+                            
+                            {/* Remove Button */}
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => removeFromCart(productId)}
+                              className="w-8 h-8 p-0 text-muted-foreground hover:text-destructive hover:bg-destructive/10 opacity-0 group-hover:opacity-100 transition-all duration-300"
+                            >
+                              <X className="w-4 h-4" />
+                            </Button>
                           </div>
                         </div>
                       );
