@@ -7,6 +7,7 @@ import { Link } from "react-router-dom";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 import { useToast } from "@/hooks/use-toast";
 import { MarqueeAnimation } from "@/components/ui/marquee-effect";
+import Footer from "@/components/Footer";
 
 const Webshop = () => {
   const { ref: headerRef, isVisible: headerVisible } = useScrollAnimation(0.2);
@@ -520,6 +521,8 @@ const Webshop = () => {
           </div>
         </div>
       </section>
+      
+      <Footer />
     </div>
   );
 };
