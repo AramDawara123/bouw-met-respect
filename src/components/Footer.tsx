@@ -5,8 +5,8 @@ const Footer = () => {
       <div className="container mx-auto px-4">
         {/* Main Content */}
         <div className="grid lg:grid-cols-4 gap-12 mb-16">
-          {/* Brand Section - Takes 2 columns on large screens */}
-          <div className="lg:col-span-2 text-center lg:text-left">
+          {/* Brand Section */}
+          <div className="lg:col-span-1 text-center lg:text-left">
             <div className="flex items-center justify-center lg:justify-start space-x-3 mb-6">
               <div className="w-12 h-12 bg-primary rounded-2xl flex items-center justify-center shadow-lg">
                 <Building className="w-7 h-7 text-primary-foreground" />
@@ -17,28 +17,6 @@ const Footer = () => {
               Samen bouwen we aan een betere toekomst voor de bouwsector. 
               Een werkplek waar respect, veiligheid en inclusie centraal staan.
             </p>
-            
-            {/* Newsletter Signup */}
-            <div className="bg-background/5 rounded-lg p-6 mb-8">
-              <h4 className="font-bold text-xl mb-3 flex items-center justify-center lg:justify-start">
-                <div className="w-2 h-2 bg-primary rounded-full mr-3"></div>
-                Nieuwsbrief
-              </h4>
-              <p className="text-background/80 mb-4 text-sm">
-                Blijf op de hoogte van onze laatste nieuws en ontwikkelingen.
-              </p>
-              <div className="flex flex-col sm:flex-row gap-3">
-                <input
-                  type="email"
-                  placeholder="Je e-mailadres"
-                  className="flex-1 px-4 py-2 rounded-md bg-background text-foreground border border-background/20 focus:outline-none focus:ring-2 focus:ring-primary/50"
-                />
-                <button className="px-6 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors font-medium whitespace-nowrap">
-                  Aanmelden
-                </button>
-              </div>
-            </div>
-            
           </div>
           
           {/* Community Section */}
@@ -102,6 +80,30 @@ const Footer = () => {
                 </div>
               </a>
             </div>
+          </div>
+          
+          {/* Newsletter Section */}
+          <div className="text-center lg:text-left">
+            <h4 className="font-bold text-xl mb-6 flex items-center justify-center lg:justify-start">
+              <div className="w-2 h-2 bg-primary rounded-full mr-3"></div>
+              Nieuwsbrief
+            </h4>
+            <p className="text-background/70 mb-6 text-sm leading-relaxed">
+              Ontvang maandelijks updates over onze initiatieven, events en inspirerende verhalen uit de bouwsector.
+            </p>
+            <div className="space-y-3">
+              <input
+                type="email"
+                placeholder="Je e-mailadres"
+                className="w-full px-4 py-3 rounded-lg bg-background/10 text-background border border-background/20 placeholder:text-background/50 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50 transition-all"
+              />
+              <button className="w-full px-6 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-all duration-300 font-medium shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
+                Aanmelden
+              </button>
+            </div>
+            <p className="text-background/50 text-xs mt-3">
+              Je kunt je op elk moment uitschrijven. We respecteren je privacy.
+            </p>
           </div>
         </div>
         
