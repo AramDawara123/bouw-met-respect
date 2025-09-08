@@ -33,7 +33,23 @@ serve(async (req) => {
       throw new Error('Membership data and type are required');
     }
 
-    const membershipAmount = amount || 25000; // Default to €250 if not provided
+    // Default prices based on membership type
+    let defaultAmount;
+    switch(membershipType) {
+      case 'klein':
+        defaultAmount = 25000; // €250.00
+        break;
+      case 'middelgroot':
+        defaultAmount = 75000; // €750.00
+        break;
+      case 'groot':
+        defaultAmount = 125000; // €1250.00
+        break;
+      default:
+        defaultAmount = 25000; // €250.00
+    }
+
+    const membershipAmount = amount || defaultAmount;
     const amountInEuros = (membershipAmount / 100).toFixed(2);
 
     console.log('Creating Mollie payment for membership:', { membershipData, membershipType, amount: membershipAmount });
