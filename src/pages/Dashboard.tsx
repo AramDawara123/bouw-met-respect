@@ -7,7 +7,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Search, Users, CreditCard, Edit, Trash2, Download, Filter, Eye } from "lucide-react";
+import { Textarea } from "@/components/ui/textarea";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Search, Users, CreditCard, Edit, Trash2, Download, Filter, Eye, Save } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
@@ -38,6 +40,8 @@ const Dashboard = () => {
   const [statusFilter, setStatusFilter] = useState("all");
   const [typeFilter, setTypeFilter] = useState("all");
   const [selectedMembership, setSelectedMembership] = useState<Membership | null>(null);
+  const [editingMembership, setEditingMembership] = useState<Membership | null>(null);
+  const [isEditing, setIsEditing] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -84,6 +88,45 @@ const Dashboard = () => {
       toast({
         title: "Fout",
         description: "Kon status niet bijwerken",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const updateMembership = async (updatedMembership: Membership) => {
+    try {
+      const { error } = await supabase
+        .from('memberships')
+        .update({
+          first_name: updatedMembership.first_name,
+          last_name: updatedMembership.last_name,
+          email: updatedMembership.email,
+          phone: updatedMembership.phone,
+          company: updatedMembership.company,
+          job_title: updatedMembership.job_title,
+          industry_role: updatedMembership.industry_role,
+          experience_years: updatedMembership.experience_years,
+          specializations: updatedMembership.specializations,
+          membership_type: updatedMembership.membership_type,
+          payment_status: updatedMembership.payment_status,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', updatedMembership.id);
+
+      if (error) throw error;
+      
+      await fetchMemberships();
+      setIsEditing(false);
+      setEditingMembership(null);
+      toast({
+        title: "Bijgewerkt",
+        description: "Lidmaatschap is succesvol bijgewerkt"
+      });
+    } catch (error) {
+      console.error('Error updating membership:', error);
+      toast({
+        title: "Fout",
+        description: "Kon lidmaatschap niet bijwerken",
         variant: "destructive"
       });
     }
@@ -339,119 +382,298 @@ const Dashboard = () => {
                             <Button 
                               variant="ghost" 
                               size="sm"
-                              onClick={() => setSelectedMembership(membership)}
+                              onClick={() => {
+                                setSelectedMembership(membership);
+                                setEditingMembership(membership);
+                                setIsEditing(false);
+                              }}
                             >
                               <Eye className="w-4 h-4" />
                             </Button>
                           </DialogTrigger>
-                          <DialogContent className="max-w-2xl">
+                          <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
                             <DialogHeader>
-                              <DialogTitle>Lidmaatschap Details</DialogTitle>
+                              <div className="flex items-center justify-between">
+                                <DialogTitle>Lidmaatschap Details</DialogTitle>
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => setIsEditing(!isEditing)}
+                                  className="flex items-center gap-2"
+                                >
+                                  <Edit className="w-4 h-4" />
+                                  {isEditing ? 'Annuleren' : 'Bewerken'}
+                                </Button>
+                              </div>
                             </DialogHeader>
-                            {selectedMembership && (
+                            {selectedMembership && editingMembership && (
                               <div className="space-y-6">
-                                {/* Personal Information */}
-                                <div>
-                                  <h3 className="text-lg font-semibold mb-3 text-primary">Persoonlijke Gegevens</h3>
-                                  <div className="grid grid-cols-2 gap-4">
+                                {!isEditing ? (
+                                  <>
+                                    {/* View Mode */}
+                                    {/* Personal Information */}
                                     <div>
-                                      <label className="text-sm font-medium text-muted-foreground">Voor- en achternaam</label>
-                                      <p className="mt-1">{selectedMembership.first_name} {selectedMembership.last_name}</p>
+                                      <h3 className="text-lg font-semibold mb-3 text-primary">Persoonlijke Gegevens</h3>
+                                      <div className="grid grid-cols-2 gap-4">
+                                        <div>
+                                          <label className="text-sm font-medium text-muted-foreground">Voor- en achternaam</label>
+                                          <p className="mt-1">{selectedMembership.first_name} {selectedMembership.last_name}</p>
+                                        </div>
+                                        <div>
+                                          <label className="text-sm font-medium text-muted-foreground">Email</label>
+                                          <p className="mt-1">{selectedMembership.email}</p>
+                                        </div>
+                                        <div>
+                                          <label className="text-sm font-medium text-muted-foreground">Telefoon</label>
+                                          <p className="mt-1">{selectedMembership.phone}</p>
+                                        </div>
+                                        <div>
+                                          <label className="text-sm font-medium text-muted-foreground">Bedrijf</label>
+                                          <p className="mt-1">{selectedMembership.company || 'Niet opgegeven'}</p>
+                                        </div>
+                                      </div>
                                     </div>
-                                    <div>
-                                      <label className="text-sm font-medium text-muted-foreground">Email</label>
-                                      <p className="mt-1">{selectedMembership.email}</p>
-                                    </div>
-                                    <div>
-                                      <label className="text-sm font-medium text-muted-foreground">Telefoon</label>
-                                      <p className="mt-1">{selectedMembership.phone}</p>
-                                    </div>
-                                    <div>
-                                      <label className="text-sm font-medium text-muted-foreground">Bedrijf</label>
-                                      <p className="mt-1">{selectedMembership.company || 'Niet opgegeven'}</p>
-                                    </div>
-                                  </div>
-                                </div>
 
-                                {/* Professional Information */}
-                                <div>
-                                  <h3 className="text-lg font-semibold mb-3 text-primary">Professionele Gegevens</h3>
-                                  <div className="grid grid-cols-2 gap-4">
+                                    {/* Professional Information */}
                                     <div>
-                                      <label className="text-sm font-medium text-muted-foreground">Huidige functie</label>
-                                      <p className="mt-1 capitalize">{selectedMembership.job_title}</p>
+                                      <h3 className="text-lg font-semibold mb-3 text-primary">Professionele Gegevens</h3>
+                                      <div className="grid grid-cols-2 gap-4">
+                                        <div>
+                                          <label className="text-sm font-medium text-muted-foreground">Huidige functie</label>
+                                          <p className="mt-1 capitalize">{selectedMembership.job_title}</p>
+                                        </div>
+                                        <div>
+                                          <label className="text-sm font-medium text-muted-foreground">Rol in de sector</label>
+                                          <p className="mt-1 capitalize">{selectedMembership.industry_role}</p>
+                                        </div>
+                                        <div>
+                                          <label className="text-sm font-medium text-muted-foreground">Jaren ervaring</label>
+                                          <p className="mt-1">{selectedMembership.experience_years} jaar</p>
+                                        </div>
+                                        <div>
+                                          <label className="text-sm font-medium text-muted-foreground">Type lidmaatschap</label>
+                                          <div className="mt-1">{getTypeBadge(selectedMembership.membership_type)}</div>
+                                        </div>
+                                      </div>
                                     </div>
-                                    <div>
-                                      <label className="text-sm font-medium text-muted-foreground">Rol in de sector</label>
-                                      <p className="mt-1 capitalize">{selectedMembership.industry_role}</p>
-                                    </div>
-                                    <div>
-                                      <label className="text-sm font-medium text-muted-foreground">Jaren ervaring</label>
-                                      <p className="mt-1">{selectedMembership.experience_years} jaar</p>
-                                    </div>
-                                    <div>
-                                      <label className="text-sm font-medium text-muted-foreground">Type lidmaatschap</label>
-                                      <div className="mt-1">{getTypeBadge(selectedMembership.membership_type)}</div>
-                                    </div>
-                                  </div>
-                                </div>
 
-                                {/* Specializations */}
-                                <div>
-                                  <h3 className="text-lg font-semibold mb-3 text-primary">Specialisaties & Interesses</h3>
-                                  <div>
-                                    <label className="text-sm font-medium text-muted-foreground">Gekozen specialisaties</label>
-                                    <div className="flex flex-wrap gap-2 mt-2">
-                                      {selectedMembership.specializations.map((spec, idx) => (
-                                        <Badge key={idx} variant="secondary" className="capitalize">
-                                          {spec.replace('-', ' ')}
-                                        </Badge>
-                                      ))}
+                                    {/* Specializations */}
+                                    <div>
+                                      <h3 className="text-lg font-semibold mb-3 text-primary">Specialisaties & Interesses</h3>
+                                      <div>
+                                        <label className="text-sm font-medium text-muted-foreground">Gekozen specialisaties</label>
+                                        <div className="flex flex-wrap gap-2 mt-2">
+                                          {selectedMembership.specializations.map((spec, idx) => (
+                                            <Badge key={idx} variant="secondary" className="capitalize">
+                                              {spec.replace('-', ' ')}
+                                            </Badge>
+                                          ))}
+                                        </div>
+                                      </div>
                                     </div>
-                                  </div>
-                                </div>
 
-                                {/* Payment Information */}
-                                <div>
-                                  <h3 className="text-lg font-semibold mb-3 text-primary">Betaalgegevens</h3>
-                                  <div className="grid grid-cols-2 gap-4">
+                                    {/* Payment Information */}
                                     <div>
-                                      <label className="text-sm font-medium text-muted-foreground">Bedrag</label>
-                                      <p className="mt-1 font-semibold">{formatPrice(selectedMembership.amount)}</p>
+                                      <h3 className="text-lg font-semibold mb-3 text-primary">Betaalgegevens</h3>
+                                      <div className="grid grid-cols-2 gap-4">
+                                        <div>
+                                          <label className="text-sm font-medium text-muted-foreground">Bedrag</label>
+                                          <p className="mt-1 font-semibold">{formatPrice(selectedMembership.amount)}</p>
+                                        </div>
+                                        <div>
+                                          <label className="text-sm font-medium text-muted-foreground">Mollie Payment ID</label>
+                                          <p className="mt-1 text-xs font-mono">{selectedMembership.mollie_payment_id || 'Geen ID'}</p>
+                                        </div>
+                                        <div>
+                                          <label className="text-sm font-medium text-muted-foreground">Aangemeld op</label>
+                                          <p className="mt-1">{new Date(selectedMembership.created_at).toLocaleString('nl-NL')}</p>
+                                        </div>
+                                        <div>
+                                          <label className="text-sm font-medium text-muted-foreground">Laatst bijgewerkt</label>
+                                          <p className="mt-1">{new Date(selectedMembership.updated_at).toLocaleString('nl-NL')}</p>
+                                        </div>
+                                      </div>
                                     </div>
-                                    <div>
-                                      <label className="text-sm font-medium text-muted-foreground">Mollie Payment ID</label>
-                                      <p className="mt-1 text-xs font-mono">{selectedMembership.mollie_payment_id || 'Geen ID'}</p>
-                                    </div>
-                                    <div>
-                                      <label className="text-sm font-medium text-muted-foreground">Aangemeld op</label>
-                                      <p className="mt-1">{new Date(selectedMembership.created_at).toLocaleString('nl-NL')}</p>
-                                    </div>
-                                    <div>
-                                      <label className="text-sm font-medium text-muted-foreground">Laatst bijgewerkt</label>
-                                      <p className="mt-1">{new Date(selectedMembership.updated_at).toLocaleString('nl-NL')}</p>
-                                    </div>
-                                  </div>
-                                </div>
 
-                                {/* Status Update */}
-                                <div className="border-t pt-4">
-                                  <label className="text-sm font-medium text-muted-foreground">Payment status bijwerken</label>
-                                  <Select 
-                                    value={selectedMembership.payment_status} 
-                                    onValueChange={(value) => updatePaymentStatus(selectedMembership.id, value)}
-                                  >
-                                    <SelectTrigger className="w-48 mt-2">
-                                      <SelectValue />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                      <SelectItem value="pending">In behandeling</SelectItem>
-                                      <SelectItem value="paid">Betaald</SelectItem>
-                                      <SelectItem value="failed">Mislukt</SelectItem>
-                                      <SelectItem value="expired">Verlopen</SelectItem>
-                                    </SelectContent>
-                                  </Select>
-                                </div>
+                                    {/* Status Update */}
+                                    <div className="border-t pt-4">
+                                      <label className="text-sm font-medium text-muted-foreground">Payment status bijwerken</label>
+                                      <Select 
+                                        value={selectedMembership.payment_status} 
+                                        onValueChange={(value) => updatePaymentStatus(selectedMembership.id, value)}
+                                      >
+                                        <SelectTrigger className="w-48 mt-2">
+                                          <SelectValue />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                          <SelectItem value="pending">In behandeling</SelectItem>
+                                          <SelectItem value="paid">Betaald</SelectItem>
+                                          <SelectItem value="failed">Mislukt</SelectItem>
+                                          <SelectItem value="expired">Verlopen</SelectItem>
+                                        </SelectContent>
+                                      </Select>
+                                    </div>
+                                  </>
+                                ) : (
+                                  <>
+                                    {/* Edit Mode */}
+                                    <div className="space-y-6">
+                                      {/* Personal Information */}
+                                      <div>
+                                        <h3 className="text-lg font-semibold mb-3 text-primary">Persoonlijke Gegevens</h3>
+                                        <div className="grid grid-cols-2 gap-4">
+                                          <div>
+                                            <label className="text-sm font-medium text-muted-foreground">Voornaam</label>
+                                            <Input
+                                              value={editingMembership.first_name}
+                                              onChange={(e) => setEditingMembership({...editingMembership, first_name: e.target.value})}
+                                              className="mt-1"
+                                            />
+                                          </div>
+                                          <div>
+                                            <label className="text-sm font-medium text-muted-foreground">Achternaam</label>
+                                            <Input
+                                              value={editingMembership.last_name}
+                                              onChange={(e) => setEditingMembership({...editingMembership, last_name: e.target.value})}
+                                              className="mt-1"
+                                            />
+                                          </div>
+                                          <div>
+                                            <label className="text-sm font-medium text-muted-foreground">Email</label>
+                                            <Input
+                                              type="email"
+                                              value={editingMembership.email}
+                                              onChange={(e) => setEditingMembership({...editingMembership, email: e.target.value})}
+                                              className="mt-1"
+                                            />
+                                          </div>
+                                          <div>
+                                            <label className="text-sm font-medium text-muted-foreground">Telefoon</label>
+                                            <Input
+                                              value={editingMembership.phone}
+                                              onChange={(e) => setEditingMembership({...editingMembership, phone: e.target.value})}
+                                              className="mt-1"
+                                            />
+                                          </div>
+                                          <div className="col-span-2">
+                                            <label className="text-sm font-medium text-muted-foreground">Bedrijf</label>
+                                            <Input
+                                              value={editingMembership.company || ''}
+                                              onChange={(e) => setEditingMembership({...editingMembership, company: e.target.value})}
+                                              className="mt-1"
+                                            />
+                                          </div>
+                                        </div>
+                                      </div>
+
+                                      {/* Professional Information */}
+                                      <div>
+                                        <h3 className="text-lg font-semibold mb-3 text-primary">Professionele Gegevens</h3>
+                                        <div className="grid grid-cols-2 gap-4">
+                                          <div>
+                                            <label className="text-sm font-medium text-muted-foreground">Functie</label>
+                                            <Input
+                                              value={editingMembership.job_title}
+                                              onChange={(e) => setEditingMembership({...editingMembership, job_title: e.target.value})}
+                                              className="mt-1"
+                                            />
+                                          </div>
+                                          <div>
+                                            <label className="text-sm font-medium text-muted-foreground">Rol in sector</label>
+                                            <Select 
+                                              value={editingMembership.industry_role} 
+                                              onValueChange={(value) => setEditingMembership({...editingMembership, industry_role: value})}
+                                            >
+                                              <SelectTrigger className="mt-1">
+                                                <SelectValue />
+                                              </SelectTrigger>
+                                              <SelectContent>
+                                                <SelectItem value="architect">Architect</SelectItem>
+                                                <SelectItem value="projectleider">Projectleider</SelectItem>
+                                                <SelectItem value="aannemer">Aannemer</SelectItem>
+                                                <SelectItem value="consultant">Consultant</SelectItem>
+                                                <SelectItem value="developer">Developer</SelectItem>
+                                                <SelectItem value="anders">Anders</SelectItem>
+                                              </SelectContent>
+                                            </Select>
+                                          </div>
+                                          <div>
+                                            <label className="text-sm font-medium text-muted-foreground">Ervaring</label>
+                                            <Select 
+                                              value={editingMembership.experience_years} 
+                                              onValueChange={(value) => setEditingMembership({...editingMembership, experience_years: value})}
+                                            >
+                                              <SelectTrigger className="mt-1">
+                                                <SelectValue />
+                                              </SelectTrigger>
+                                              <SelectContent>
+                                                <SelectItem value="0-2">0-2 jaar</SelectItem>
+                                                <SelectItem value="3-5">3-5 jaar</SelectItem>
+                                                <SelectItem value="6-10">6-10 jaar</SelectItem>
+                                                <SelectItem value="11+">11+ jaar</SelectItem>
+                                              </SelectContent>
+                                            </Select>
+                                          </div>
+                                          <div>
+                                            <label className="text-sm font-medium text-muted-foreground">Type lidmaatschap</label>
+                                            <Select 
+                                              value={editingMembership.membership_type} 
+                                              onValueChange={(value: 'klein' | 'middelgroot' | 'groot') => setEditingMembership({...editingMembership, membership_type: value})}
+                                            >
+                                              <SelectTrigger className="mt-1">
+                                                <SelectValue />
+                                              </SelectTrigger>
+                                              <SelectContent>
+                                                <SelectItem value="klein">Klein</SelectItem>
+                                                <SelectItem value="middelgroot">Middelgroot</SelectItem>
+                                                <SelectItem value="groot">Groot</SelectItem>
+                                              </SelectContent>
+                                            </Select>
+                                          </div>
+                                        </div>
+                                      </div>
+
+                                      {/* Payment Status */}
+                                      <div>
+                                        <h3 className="text-lg font-semibold mb-3 text-primary">Payment Status</h3>
+                                        <Select 
+                                          value={editingMembership.payment_status} 
+                                          onValueChange={(value) => setEditingMembership({...editingMembership, payment_status: value})}
+                                        >
+                                          <SelectTrigger className="w-48">
+                                            <SelectValue />
+                                          </SelectTrigger>
+                                          <SelectContent>
+                                            <SelectItem value="pending">In behandeling</SelectItem>
+                                            <SelectItem value="paid">Betaald</SelectItem>
+                                            <SelectItem value="failed">Mislukt</SelectItem>
+                                            <SelectItem value="expired">Verlopen</SelectItem>
+                                          </SelectContent>
+                                        </Select>
+                                      </div>
+
+                                      {/* Save Button */}
+                                      <div className="border-t pt-4 flex gap-3">
+                                        <Button 
+                                          onClick={() => updateMembership(editingMembership)}
+                                          className="flex items-center gap-2"
+                                        >
+                                          <Save className="w-4 h-4" />
+                                          Opslaan
+                                        </Button>
+                                        <Button 
+                                          variant="outline" 
+                                          onClick={() => {
+                                            setEditingMembership(selectedMembership);
+                                            setIsEditing(false);
+                                          }}
+                                        >
+                                          Annuleren
+                                        </Button>
+                                      </div>
+                                    </div>
+                                  </>
+                                )}
                               </div>
                             )}
                           </DialogContent>
