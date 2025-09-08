@@ -12,10 +12,10 @@ const Navbar = () => {
   return <>
       <nav className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-sm border-b border-border">
         <div className="container mx-auto px-4">
-          <div className="flex items-center justify-between h-16">
+          <div className="flex items-center justify-between h-20">
             {/* Logo */}
             <div className="flex items-center space-x-3">
-              <img src="/lovable-uploads/ed3c3050-db99-4ad7-a365-4fe2ce946578.png" alt="Bouw met Respect logo" className="h-16 w-auto" />
+              <img src="/lovable-uploads/ed3c3050-db99-4ad7-a365-4fe2ce946578.png" alt="Bouw met Respect logo" className="h-20 w-auto" />
               
             </div>
 
