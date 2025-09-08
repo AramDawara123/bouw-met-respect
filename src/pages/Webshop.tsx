@@ -6,6 +6,7 @@ import { ShoppingCart, Coffee, Edit3, ArrowLeft, Plus, Minus, X } from "lucide-r
 import { Link } from "react-router-dom";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 import { useToast } from "@/hooks/use-toast";
+import { MarqueeAnimation } from "@/components/ui/marquee-effect";
 
 const Webshop = () => {
   const { ref: headerRef, isVisible: headerVisible } = useScrollAnimation(0.2);
@@ -201,7 +202,25 @@ const Webshop = () => {
         </div>
       </section>
 
-      {/* Products */}
+      {/* Marquee Section */}
+      <section className="py-8 bg-gradient-to-r from-primary/5 to-secondary/5 overflow-hidden">
+        <div className="flex flex-col gap-4">
+          <MarqueeAnimation
+            direction="left"
+            baseVelocity={-2}
+            className="bg-gradient-to-r from-primary to-secondary text-white py-4 text-4xl md:text-6xl"
+          >
+            Bouw met Respect • Respectvolle Bouwplaats • Hoogwaardige Merchandise
+          </MarqueeAnimation>
+          <MarqueeAnimation
+            direction="right"
+            baseVelocity={-2}
+            className="bg-gradient-to-r from-secondary to-primary text-white py-4 text-4xl md:text-6xl"
+          >
+            Steun de Beweging • Kwaliteit • Bewustwording • Merchandise
+          </MarqueeAnimation>
+        </div>
+      </section>
       <section className="py-16">
         <div className="container mx-auto px-4">
           <div 
