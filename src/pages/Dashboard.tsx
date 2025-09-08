@@ -459,20 +459,51 @@ const Dashboard = () => {
                                       </div>
                                     </div>
 
-                                    {/* Specializations */}
-                                    <div>
-                                      <h3 className="text-lg font-semibold mb-3 text-primary">Specialisaties & Interesses</h3>
-                                      <div>
-                                        <label className="text-sm font-medium text-muted-foreground">Gekozen specialisaties</label>
-                                        <div className="flex flex-wrap gap-2 mt-2">
-                                          {selectedMembership.specializations.map((spec, idx) => (
-                                            <Badge key={idx} variant="secondary" className="capitalize">
-                                              {spec.replace('-', ' ')}
-                                            </Badge>
-                                          ))}
-                                        </div>
-                                      </div>
+                                {/* Specializations */}
+                                <div>
+                                  <h3 className="text-lg font-semibold mb-3 text-primary">Specialisaties & Interesses</h3>
+                                  <div>
+                                    <label className="text-sm font-medium text-muted-foreground">Gekozen specialisaties</label>
+                                    <div className="flex flex-wrap gap-2 mt-2">
+                                      {selectedMembership.specializations.map((spec, idx) => (
+                                        <Badge key={idx} variant="secondary" className="capitalize">
+                                          {spec.replace('-', ' ')}
+                                        </Badge>
+                                      ))}
                                     </div>
+                                  </div>
+                                </div>
+
+                                {/* Open Questions & Answers */}
+                                <div>
+                                  <h3 className="text-lg font-semibold mb-3 text-primary">Motivatie & Visie</h3>
+                                  <div className="space-y-4">
+                                    <div>
+                                      <label className="text-sm font-medium text-muted-foreground">Waarom wil je lid worden van Bouw met Respect?</label>
+                                      <p className="mt-2 p-3 bg-muted/50 rounded-md text-sm">
+                                        {(selectedMembership as any).motivation || 'Niet ingevuld'}
+                                      </p>
+                                    </div>
+                                    <div>
+                                      <label className="text-sm font-medium text-muted-foreground">Hoe pas je respectvolle bouwpraktijken toe in je werk?</label>
+                                      <p className="mt-2 p-3 bg-muted/50 rounded-md text-sm">
+                                        {(selectedMembership as any).respectful_practices || 'Niet ingevuld'}
+                                      </p>
+                                    </div>
+                                    <div>
+                                      <label className="text-sm font-medium text-muted-foreground">Wat betekent een respectvolle bouwplaats voor jou?</label>
+                                      <p className="mt-2 p-3 bg-muted/50 rounded-md text-sm">
+                                        {(selectedMembership as any).respectful_workplace || 'Niet ingevuld'}
+                                      </p>
+                                    </div>
+                                    <div>
+                                      <label className="text-sm font-medium text-muted-foreground">Wat doe jij als je grensoverschrijdend gedrag opmerkt?</label>
+                                      <p className="mt-2 p-3 bg-muted/50 rounded-md text-sm">
+                                        {(selectedMembership as any).boundary_behavior || 'Niet ingevuld'}
+                                      </p>
+                                    </div>
+                                  </div>
+                                </div>
 
                                     {/* Payment Information */}
                                     <div>
