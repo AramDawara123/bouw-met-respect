@@ -98,18 +98,18 @@ const MembershipForm = ({
         }
       });
 
-      if (error) {
-        console.error('Payment creation error:', error);
+      if (error || data?.error) {
+        const msg = (data?.error as string) || (error?.message as string) || 'Onbekende fout';
+        console.error('Payment creation error:', msg);
         toast({
           title: "Fout bij betaling",
-          description: "Er is een fout opgetreden bij het aanmaken van de betaling.",
+          description: msg,
           variant: "destructive"
         });
         return;
       }
 
       if (data?.paymentUrl) {
-        // Redirect to Mollie payment page
         window.location.href = data.paymentUrl;
       } else {
         throw new Error('Geen betaallink ontvangen');

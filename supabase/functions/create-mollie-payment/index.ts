@@ -74,7 +74,6 @@ serve(async (req) => {
         },
         description: `Bouw met Respect ${membershipType.charAt(0).toUpperCase() + membershipType.slice(1)} Lidmaatschap`,
         redirectUrl: `${req.headers.get('origin')}/membership-success`,
-        webhookUrl: `${req.headers.get('origin')}/api/webhook/mollie`, // Optional webhook
         metadata: {
           membershipData: JSON.stringify(membershipData),
           membershipType: membershipType,
@@ -84,9 +83,16 @@ serve(async (req) => {
     });
 
     if (!mollieResponse.ok) {
-      const errorText = await mollieResponse.text();
-      console.error('Mollie API error:', errorText);
-      throw new Error(`Mollie API error: ${mollieResponse.status}`);
+      let errorMsg = `Mollie API error: ${mollieResponse.status}`;
+      try {
+        const errJson = await mollieResponse.json();
+        errorMsg = errJson?.detail || errJson?.message || JSON.stringify(errJson);
+      } catch (_) {
+        const errorText = await mollieResponse.text();
+        errorMsg = errorText || errorMsg;
+      }
+      console.error('Mollie API error:', errorMsg);
+      throw new Error(errorMsg);
     }
 
     const molliePayment = await mollieResponse.json();
