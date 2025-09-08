@@ -159,6 +159,48 @@ export type Database = {
         }
         Relationships: []
       }
+      website_content: {
+        Row: {
+          contact_email: string
+          contact_phone: string
+          created_at: string
+          hero_subtitle: string
+          hero_title: string
+          id: string
+          mission_text: string
+          mission_title: string
+          primary_color: string
+          secondary_color: string
+          updated_at: string
+        }
+        Insert: {
+          contact_email: string
+          contact_phone: string
+          created_at?: string
+          hero_subtitle: string
+          hero_title: string
+          id?: string
+          mission_text: string
+          mission_title: string
+          primary_color: string
+          secondary_color: string
+          updated_at?: string
+        }
+        Update: {
+          contact_email?: string
+          contact_phone?: string
+          created_at?: string
+          hero_subtitle?: string
+          hero_title?: string
+          id?: string
+          mission_text?: string
+          mission_title?: string
+          primary_color?: string
+          secondary_color?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

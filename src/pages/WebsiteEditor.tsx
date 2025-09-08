@@ -160,7 +160,7 @@ const WebsiteEditor = () => {
               <CardHeader>
                 <CardTitle>Contact Gegevens</CardTitle>
               </CardHeader>
-              <CardContent>
+              <CardContent className="space-y-4">
                 <div>
                   <Label htmlFor="contact-email" className="text-sm font-medium">Contact Email</Label>
                   <Input
@@ -170,6 +170,17 @@ const WebsiteEditor = () => {
                     onChange={(e) => setEditedContent(prev => ({...prev, contact_email: e.target.value}))}
                     className="mt-2"
                     placeholder="Email adres voor contact"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="contact-phone" className="text-sm font-medium">Contact Telefoon</Label>
+                  <Input
+                    id="contact-phone"
+                    type="tel"
+                    value={editedContent.contact_phone}
+                    onChange={(e) => setEditedContent(prev => ({...prev, contact_phone: e.target.value}))}
+                    className="mt-2"
+                    placeholder="Telefoonnummer voor contact"
                   />
                 </div>
               </CardContent>
