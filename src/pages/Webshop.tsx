@@ -210,14 +210,14 @@ const Webshop = () => {
             baseVelocity={-2}
             className="bg-gradient-to-r from-primary to-secondary text-white py-4 text-4xl md:text-6xl"
           >
-            Bouw met Respect • Respectvolle Bouwplaats • Hoogwaardige Merchandise
+            Bouw met Respect • Respectvolle Bouwplaats • Hoogwaardige Merchandise • Steun de Beweging
           </MarqueeAnimation>
           <MarqueeAnimation
             direction="right"
             baseVelocity={-2}
             className="bg-gradient-to-r from-secondary to-primary text-white py-4 text-4xl md:text-6xl"
           >
-            Steun de Beweging • Kwaliteit • Bewustwording • Merchandise
+            Merchandise • Steun de Beweging • Kwaliteit • Bewustwording • Respectvolle Bouwsector
           </MarqueeAnimation>
         </div>
       </section>
