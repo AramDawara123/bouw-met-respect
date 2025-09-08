@@ -18,7 +18,26 @@ const Footer = () => {
               Een werkplek waar respect, veiligheid en inclusie centraal staan.
             </p>
             
-            {/* Call to Action */}
+            {/* Newsletter Signup */}
+            <div className="bg-background/5 rounded-lg p-6 mb-8">
+              <h4 className="font-bold text-xl mb-3 flex items-center justify-center lg:justify-start">
+                <div className="w-2 h-2 bg-primary rounded-full mr-3"></div>
+                Nieuwsbrief
+              </h4>
+              <p className="text-background/80 mb-4 text-sm">
+                Blijf op de hoogte van onze laatste nieuws en ontwikkelingen.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-3">
+                <input
+                  type="email"
+                  placeholder="Je e-mailadres"
+                  className="flex-1 px-4 py-2 rounded-md bg-background text-foreground border border-background/20 focus:outline-none focus:ring-2 focus:ring-primary/50"
+                />
+                <button className="px-6 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors font-medium whitespace-nowrap">
+                  Aanmelden
+                </button>
+              </div>
+            </div>
             
           </div>
           
