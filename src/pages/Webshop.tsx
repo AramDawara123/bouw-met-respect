@@ -445,12 +445,24 @@ const Webshop = () => {
         <div className="absolute inset-0 bg-grid-white/[0.02] bg-[size:30px_30px]"></div>
         
         <div className="container mx-auto px-4 text-center relative">
-          <div className="max-w-3xl mx-auto mb-16">
-            <h3 className="text-4xl md:text-5xl font-bold mb-6 text-foreground">
-              Waarom onze merchandise kopen?
+          {/* Decorative elements */}
+          <div className="absolute top-10 left-1/4 w-32 h-32 bg-gradient-to-r from-primary/10 to-secondary/10 rounded-full blur-3xl animate-pulse"></div>
+          <div className="absolute bottom-10 right-1/4 w-24 h-24 bg-gradient-to-r from-secondary/10 to-primary/10 rounded-full blur-2xl animate-pulse" style={{ animationDelay: '1s' }}></div>
+          
+          <div className="max-w-4xl mx-auto mb-20">
+            <div className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-primary/10 to-secondary/10 backdrop-blur-sm rounded-full text-primary font-semibold text-sm mb-8 border border-primary/20">
+              <ShoppingCart className="w-4 h-4 mr-2" />
+              Waarom Bouw met Respect
+            </div>
+            <h3 className="text-5xl md:text-6xl font-bold mb-8 text-foreground leading-tight">
+              Waarom onze <br/>
+              <span className="bg-gradient-to-r from-primary via-secondary to-primary bg-clip-text text-transparent">
+                merchandise kopen?
+              </span>
             </h3>
-            <p className="text-xl text-muted-foreground">
-              Elke aankoop draagt bij aan een betere toekomst voor de bouwsector
+            <p className="text-xl md:text-2xl text-muted-foreground leading-relaxed">
+              Elke aankoop draagt bij aan een betere toekomst voor de bouwsector.<br/>
+              <span className="text-primary font-semibold">Samen bouwen we aan respect.</span>
             </p>
           </div>
           
