@@ -10,16 +10,12 @@ import CallToAction from "@/components/CallToAction";
 import Contact from "@/components/Contact";
 import Footer from "@/components/Footer";
 import MembershipPlans from "@/components/MembershipPlans";
-import StructuredData from "@/components/StructuredData";
 import { Building } from "lucide-react";
 const Index = () => {
   console.log('Index component rendering');
   
   try {
-    return <>
-      <StructuredData type="organization" />
-      <StructuredData type="faq" />
-      <main className="min-h-screen w-full overflow-x-hidden">
+    return <div className="min-h-screen w-full overflow-x-hidden">
         <Hero />
         <MissionStatement />
         <Statistics />
@@ -35,8 +31,7 @@ const Index = () => {
         <CallToAction />
         <Contact />
         <Footer />
-      </main>
-    </>;
+      </div>;
   } catch (error) {
     console.error('Error in Index component:', error);
     throw error;

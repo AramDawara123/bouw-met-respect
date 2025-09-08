@@ -40,7 +40,7 @@ const Hero = () => {
     description: "Van harde cultuur naar respectvolle omgang"
   }];
   return <>
-      <section className="pt-32 pb-16 bg-background" aria-label="Bouw met Respect hoofdsectie">
+      <section className="pt-32 pb-16 bg-background">
         <div className="container mx-auto px-4">
           {/* Header */}
           <div ref={heroRef} className={`grid lg:grid-cols-2 gap-12 items-center mb-16 transition-all duration-1000 ${heroVisible ? 'opacity-100 transform translate-y-0' : 'opacity-0 transform translate-y-8'}`}>
@@ -61,31 +61,25 @@ De beweging voor een veiligere en menselijkere bouwsector</h1>
             </div>
 
             {/* Hero Image - Single Clean Layout */}
-            <aside className={`transition-all duration-1000 delay-400 ${heroVisible ? 'opacity-100 transform translate-x-0' : 'opacity-0 transform translate-x-8'}`}>
+            <div className={`transition-all duration-1000 delay-400 ${heroVisible ? 'opacity-100 transform translate-x-0' : 'opacity-0 transform translate-x-8'}`}>
               <div className="relative">
-                <img 
-                  src="/lovable-uploads/b490bd1a-4422-4f83-8394-d7a2f6d940b9.png" 
-                  alt="Vrouwelijke bouwvakker met veiligheidshelm draagt houten planken - symbool voor diversiteit en veiligheid in de Nederlandse bouwsector" 
-                  className="w-full h-[500px] object-cover rounded-2xl shadow-lg" 
-                  loading="eager"
-                />
+                <img src="/lovable-uploads/b490bd1a-4422-4f83-8394-d7a2f6d940b9.png" alt="Vrouwelijke bouwvakker draagt houten planken" className="w-full h-[500px] object-cover rounded-2xl shadow-lg" />
               </div>
-            </aside>
+            </div>
           </div>
 
           {/* Features Grid - Onze kernwaarden */}
-          <section ref={featuresRef} className="grid md:grid-cols-2 lg:grid-cols-3 gap-6" aria-label="Kernwaarden van Bouw met Respect">
-            <h2 className="sr-only">Onze kernwaarden voor een veiligere bouwsector</h2>
+          <div ref={featuresRef} className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {features.map((feature, index) => <Card key={index} className={`p-8 text-center transition-all duration-500 border-0 bg-muted/30 ${featuresVisible ? 'opacity-100 transform translate-y-0' : 'opacity-0 transform translate-y-8'}`} style={{
             transitionDelay: featuresVisible ? `${index * 100}ms` : '0ms'
           }}>
                 <div className="w-16 h-16 mx-auto mb-6 bg-primary/10 rounded-2xl flex items-center justify-center transition-transform duration-300">
-                  <feature.icon className="w-8 h-8 text-primary" aria-hidden="true" />
+                  <feature.icon className="w-8 h-8 text-primary" />
                 </div>
                 <h3 className="text-xl font-semibold mb-3 text-foreground">{feature.title}</h3>
                 <p className="text-muted-foreground leading-relaxed">{feature.description}</p>
               </Card>)}
-          </section>
+          </div>
         </div>
       </section>
 

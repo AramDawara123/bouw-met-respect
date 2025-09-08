@@ -1,7 +1,3 @@
-User-agent: *
-Allow: /
-
-# SEO optimalisatie voor Nederlandse zoekmachines
 User-agent: Googlebot
 Allow: /
 
@@ -14,5 +10,5 @@ Allow: /
 User-agent: facebookexternalhit
 Allow: /
 
-# Sitemap verwijzing voor betere indexering
-Sitemap: https://bouwmetrespect.nl/sitemap.xml
+User-agent: *
+Allow: /
