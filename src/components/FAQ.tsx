@@ -45,27 +45,27 @@ const FAQ = () => {
             </p>
           </div>
 
-          <div className="space-y-3 sm:space-y-4">
+          <div className="space-y-2 sm:space-y-3 md:space-y-4">
             {faqs.map((faq, index) => (
               <Card key={index} className="border-0 bg-card overflow-hidden">
                 <Button
                   variant="ghost"
-                  className="w-full p-4 sm:p-6 h-auto justify-between text-left hover:bg-muted/50"
+                  className="w-full p-3 sm:p-4 md:p-6 h-auto justify-between text-left hover:bg-muted/50"
                   onClick={() => setOpenIndex(openIndex === index ? null : index)}
                 >
-                  <span className="text-base sm:text-lg font-semibold text-foreground pr-3 sm:pr-4 leading-tight">
+                  <span className="text-sm sm:text-base md:text-lg font-semibold text-foreground pr-2 sm:pr-3 md:pr-4 leading-tight">
                     {faq.question}
                   </span>
                   {openIndex === index ? (
-                    <Minus className="w-4 h-4 sm:w-5 sm:h-5 text-primary flex-shrink-0 mt-0.5" />
+                    <Minus className="w-4 h-4 md:w-5 md:h-5 text-primary flex-shrink-0 mt-0.5" />
                   ) : (
-                    <Plus className="w-4 h-4 sm:w-5 sm:h-5 text-primary flex-shrink-0 mt-0.5" />
+                    <Plus className="w-4 h-4 md:w-5 md:h-5 text-primary flex-shrink-0 mt-0.5" />
                   )}
                 </Button>
                 
                 {openIndex === index && (
-                  <div className="px-4 sm:px-6 pb-4 sm:pb-6 animate-slide-down">
-                    <p className="text-sm sm:text-base text-muted-foreground leading-relaxed">
+                  <div className="px-3 sm:px-4 md:px-6 pb-3 sm:pb-4 md:pb-6 animate-slide-down">
+                    <p className="text-xs sm:text-sm md:text-base text-muted-foreground leading-relaxed">
                       {faq.answer}
                     </p>
                   </div>
