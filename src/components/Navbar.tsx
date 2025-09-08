@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Building, Menu, X, ShoppingCart } from "lucide-react";
+import { Building, Menu, X } from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import MembershipForm from "./MembershipForm";
@@ -35,10 +35,6 @@ const Navbar = () => {
               <a href="#contact" className="text-muted-foreground hover:text-foreground transition-colors">
                 Contact
               </a>
-              <Link to="/webshop" className="text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1">
-                <ShoppingCart className="w-4 h-4" />
-                Shop
-              </Link>
               <Link to="/dashboard" className="text-muted-foreground hover:text-foreground transition-colors">
                 Dashboard
               </Link>
@@ -65,10 +61,6 @@ const Navbar = () => {
                 <a href="#verhalen" className="text-muted-foreground hover:text-foreground transition-colors py-2" onClick={() => setIsMenuOpen(false)}>
                   Verhalen
                 </a>
-                <Link to="/webshop" className="text-muted-foreground hover:text-foreground transition-colors py-2 flex items-center gap-1" onClick={() => setIsMenuOpen(false)}>
-                  <ShoppingCart className="w-4 h-4" />
-                  Shop
-                </Link>
                 <Link to="/dashboard" className="text-muted-foreground hover:text-foreground transition-colors py-2" onClick={() => setIsMenuOpen(false)}>
                   Dashboard
                 </Link>
