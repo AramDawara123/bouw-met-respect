@@ -15,7 +15,7 @@ const Navbar = () => {
           <div className="flex items-center justify-between h-16">
             {/* Logo */}
             <div className="flex items-center space-x-3">
-              <img src="/lovable-uploads/7b41cfaf-011f-4a79-aaa7-a4a6deb29c1c.png" alt="Bouw met Respect logo" className="h-16 w-auto" />
+              <img src="/lovable-uploads/ed3c3050-db99-4ad7-a365-4fe2ce946578.png" alt="Bouw met Respect logo" className="h-16 w-auto" />
               
             </div>
 
