@@ -19,12 +19,7 @@ const Footer = () => {
             </p>
             
             {/* Call to Action */}
-            <div className="flex flex-col sm:flex-row gap-4 items-center lg:items-start">
-              <div className="flex items-center space-x-2 text-background/90 bg-background/10 px-4 py-2 rounded-lg backdrop-blur-sm">
-                <Users className="w-5 h-5" />
-                <span className="font-medium">1250+ professionals aangesloten</span>
-              </div>
-            </div>
+            
           </div>
           
           {/* Community Section */}
