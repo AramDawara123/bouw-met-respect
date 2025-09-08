@@ -349,56 +349,99 @@ const Dashboard = () => {
                               <DialogTitle>Lidmaatschap Details</DialogTitle>
                             </DialogHeader>
                             {selectedMembership && (
-                              <div className="space-y-4">
-                                <div className="grid grid-cols-2 gap-4">
-                                  <div>
-                                    <label className="text-sm font-medium">Voor- en achternaam</label>
-                                    <p>{selectedMembership.first_name} {selectedMembership.last_name}</p>
-                                  </div>
-                                  <div>
-                                    <label className="text-sm font-medium">Email</label>
-                                    <p>{selectedMembership.email}</p>
-                                  </div>
-                                  <div>
-                                    <label className="text-sm font-medium">Telefoon</label>
-                                    <p>{selectedMembership.phone}</p>
-                                  </div>
-                                  <div>
-                                    <label className="text-sm font-medium">Bedrijf</label>
-                                    <p>{selectedMembership.company || '-'}</p>
-                                  </div>
-                                  <div>
-                                    <label className="text-sm font-medium">Functie</label>
-                                    <p>{selectedMembership.job_title}</p>
-                                  </div>
-                                  <div>
-                                    <label className="text-sm font-medium">Sector rol</label>
-                                    <p>{selectedMembership.industry_role}</p>
-                                  </div>
-                                  <div>
-                                    <label className="text-sm font-medium">Ervaring</label>
-                                    <p>{selectedMembership.experience_years} jaar</p>
-                                  </div>
-                                  <div>
-                                    <label className="text-sm font-medium">Type lidmaatschap</label>
-                                    <p>{getTypeBadge(selectedMembership.membership_type)}</p>
+                              <div className="space-y-6">
+                                {/* Personal Information */}
+                                <div>
+                                  <h3 className="text-lg font-semibold mb-3 text-primary">Persoonlijke Gegevens</h3>
+                                  <div className="grid grid-cols-2 gap-4">
+                                    <div>
+                                      <label className="text-sm font-medium text-muted-foreground">Voor- en achternaam</label>
+                                      <p className="mt-1">{selectedMembership.first_name} {selectedMembership.last_name}</p>
+                                    </div>
+                                    <div>
+                                      <label className="text-sm font-medium text-muted-foreground">Email</label>
+                                      <p className="mt-1">{selectedMembership.email}</p>
+                                    </div>
+                                    <div>
+                                      <label className="text-sm font-medium text-muted-foreground">Telefoon</label>
+                                      <p className="mt-1">{selectedMembership.phone}</p>
+                                    </div>
+                                    <div>
+                                      <label className="text-sm font-medium text-muted-foreground">Bedrijf</label>
+                                      <p className="mt-1">{selectedMembership.company || 'Niet opgegeven'}</p>
+                                    </div>
                                   </div>
                                 </div>
+
+                                {/* Professional Information */}
                                 <div>
-                                  <label className="text-sm font-medium">Specialisaties</label>
-                                  <div className="flex flex-wrap gap-2 mt-1">
-                                    {selectedMembership.specializations.map((spec, idx) => (
-                                      <Badge key={idx} variant="outline">{spec}</Badge>
-                                    ))}
+                                  <h3 className="text-lg font-semibold mb-3 text-primary">Professionele Gegevens</h3>
+                                  <div className="grid grid-cols-2 gap-4">
+                                    <div>
+                                      <label className="text-sm font-medium text-muted-foreground">Huidige functie</label>
+                                      <p className="mt-1 capitalize">{selectedMembership.job_title}</p>
+                                    </div>
+                                    <div>
+                                      <label className="text-sm font-medium text-muted-foreground">Rol in de sector</label>
+                                      <p className="mt-1 capitalize">{selectedMembership.industry_role}</p>
+                                    </div>
+                                    <div>
+                                      <label className="text-sm font-medium text-muted-foreground">Jaren ervaring</label>
+                                      <p className="mt-1">{selectedMembership.experience_years} jaar</p>
+                                    </div>
+                                    <div>
+                                      <label className="text-sm font-medium text-muted-foreground">Type lidmaatschap</label>
+                                      <div className="mt-1">{getTypeBadge(selectedMembership.membership_type)}</div>
+                                    </div>
                                   </div>
                                 </div>
+
+                                {/* Specializations */}
                                 <div>
-                                  <label className="text-sm font-medium">Status bijwerken</label>
+                                  <h3 className="text-lg font-semibold mb-3 text-primary">Specialisaties & Interesses</h3>
+                                  <div>
+                                    <label className="text-sm font-medium text-muted-foreground">Gekozen specialisaties</label>
+                                    <div className="flex flex-wrap gap-2 mt-2">
+                                      {selectedMembership.specializations.map((spec, idx) => (
+                                        <Badge key={idx} variant="secondary" className="capitalize">
+                                          {spec.replace('-', ' ')}
+                                        </Badge>
+                                      ))}
+                                    </div>
+                                  </div>
+                                </div>
+
+                                {/* Payment Information */}
+                                <div>
+                                  <h3 className="text-lg font-semibold mb-3 text-primary">Betaalgegevens</h3>
+                                  <div className="grid grid-cols-2 gap-4">
+                                    <div>
+                                      <label className="text-sm font-medium text-muted-foreground">Bedrag</label>
+                                      <p className="mt-1 font-semibold">{formatPrice(selectedMembership.amount)}</p>
+                                    </div>
+                                    <div>
+                                      <label className="text-sm font-medium text-muted-foreground">Mollie Payment ID</label>
+                                      <p className="mt-1 text-xs font-mono">{selectedMembership.mollie_payment_id || 'Geen ID'}</p>
+                                    </div>
+                                    <div>
+                                      <label className="text-sm font-medium text-muted-foreground">Aangemeld op</label>
+                                      <p className="mt-1">{new Date(selectedMembership.created_at).toLocaleString('nl-NL')}</p>
+                                    </div>
+                                    <div>
+                                      <label className="text-sm font-medium text-muted-foreground">Laatst bijgewerkt</label>
+                                      <p className="mt-1">{new Date(selectedMembership.updated_at).toLocaleString('nl-NL')}</p>
+                                    </div>
+                                  </div>
+                                </div>
+
+                                {/* Status Update */}
+                                <div className="border-t pt-4">
+                                  <label className="text-sm font-medium text-muted-foreground">Payment status bijwerken</label>
                                   <Select 
                                     value={selectedMembership.payment_status} 
                                     onValueChange={(value) => updatePaymentStatus(selectedMembership.id, value)}
                                   >
-                                    <SelectTrigger className="w-48 mt-1">
+                                    <SelectTrigger className="w-48 mt-2">
                                       <SelectValue />
                                     </SelectTrigger>
                                     <SelectContent>
