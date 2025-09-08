@@ -1,4 +1,3 @@
-
 import Hero from "@/components/Hero";
 import MissionStatement from "@/components/MissionStatement";
 import Mission from "@/components/Mission";
@@ -12,10 +11,8 @@ import Contact from "@/components/Contact";
 import Footer from "@/components/Footer";
 import MembershipPlans from "@/components/MembershipPlans";
 import { Building } from "lucide-react";
-
 const Index = () => {
-  return (
-    <div className="min-h-screen w-full overflow-x-hidden">
+  return <div className="min-h-screen w-full overflow-x-hidden">
       <Hero />
       <MissionStatement />
       <Statistics />
@@ -24,7 +21,7 @@ const Index = () => {
       {/* Membership Plans Section */}
       <section className="py-24 bg-gradient-to-br from-background via-primary/5 to-secondary/5 relative overflow-hidden">
         {/* Background decoration */}
-        <div className="absolute inset-0 bg-grid-white/[0.02] bg-[size:40px_40px]"></div>
+        
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[400px] bg-gradient-to-r from-primary/10 to-secondary/10 rounded-full blur-3xl opacity-50"></div>
         
         <div className="container mx-auto px-4 relative">
@@ -34,7 +31,7 @@ const Index = () => {
               Lidmaatschappen
             </div>
             <h2 className="text-5xl md:text-6xl font-bold mb-8 text-foreground leading-tight">
-              Kies het juiste <br/>
+              Kies het juiste <br />
               <span className="bg-gradient-to-r from-primary via-secondary to-primary bg-clip-text text-transparent">
                 lidmaatschap
               </span>
@@ -56,8 +53,6 @@ const Index = () => {
       <CallToAction />
       <Contact />
       <Footer />
-    </div>
-  );
+    </div>;
 };
-
 export default Index;
