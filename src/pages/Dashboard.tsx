@@ -9,9 +9,10 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Search, Users, CreditCard, Edit, Trash2, Download, Filter, Eye, Save } from "lucide-react";
+import { Search, Users, CreditCard, Edit, Trash2, Download, Filter, Eye, Save, Home } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { Link } from "react-router-dom";
 
 interface Membership {
   id: string;
@@ -253,6 +254,12 @@ const Dashboard = () => {
             <p className="text-muted-foreground mt-2">Beheer lidmaatschappen en bestellingen</p>
           </div>
           <div className="flex gap-3">
+            <Link to="/">
+              <Button variant="outline" className="flex items-center gap-2">
+                <Home className="w-4 h-4" />
+                Home
+              </Button>
+            </Link>
             <Button onClick={exportToCsv} className="flex items-center gap-2">
               <Download className="w-4 h-4" />
               Export CSV
