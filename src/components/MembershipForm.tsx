@@ -30,9 +30,6 @@ const formSchema = z.object({
   respectfulWorkplace: z.string().min(30, "Beschrijf wat een respectvolle bouwplaats voor jou betekent"),
   boundaryBehavior: z.string().min(30, "Beschrijf hoe je reageert op grensoverschrijdend gedrag"),
   
-  storySharing: z.enum(["no-sharing", "share-with-name", "share-anonymous"], {
-    required_error: "Selecteer een optie voor het delen van je verhaal"
-  }),
   newsletter: z.boolean().default(true),
   terms: z.boolean().refine(val => val === true, {
     message: "Je moet akkoord gaan met de voorwaarden"
@@ -67,7 +64,6 @@ const MembershipForm = ({
       respectfulWorkplace: "",
       boundaryBehavior: "",
       
-      storySharing: "no-sharing",
       newsletter: true,
       terms: false
     }
@@ -303,58 +299,6 @@ const MembershipForm = ({
             <div className="space-y-4">
               <h3 className="text-lg font-semibold">Voorkeuren en toestemmingen</h3>
               
-              <FormField control={form.control} name="storySharing" render={({
-              field
-            }) => (
-                <FormItem className="rounded-md border p-4">
-                  <FormLabel className="text-base font-medium">
-                    Hoe wil je dat we omgaan met je verhaal?
-                  </FormLabel>
-                  <FormControl>
-                    <RadioGroup
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                      className="flex flex-col space-y-3 pt-2"
-                    >
-                      <div className="flex items-start space-x-3">
-                        <RadioGroupItem value="no-sharing" id="no-sharing" />
-                        <div className="space-y-1 leading-none">
-                          <label htmlFor="no-sharing" className="text-sm font-normal cursor-pointer">
-                            Ik wil mijn verhaal niet delen
-                          </label>
-                          <p className="text-xs text-muted-foreground">
-                            Je verhaal blijft privé en wordt niet gebruikt voor bewustwording
-                          </p>
-                        </div>
-                      </div>
-                      <div className="flex items-start space-x-3">
-                        <RadioGroupItem value="share-with-name" id="share-with-name" />
-                        <div className="space-y-1 leading-none">
-                          <label htmlFor="share-with-name" className="text-sm font-normal cursor-pointer">
-                            Ik geef toestemming om mijn verhaal te delen met mijn naam
-                          </label>
-                          <p className="text-xs text-muted-foreground">
-                            Je verhaal kan gebruikt worden met je naam en bedrijf voor bewustwording
-                          </p>
-                        </div>
-                      </div>
-                      <div className="flex items-start space-x-3">
-                        <RadioGroupItem value="share-anonymous" id="share-anonymous" />
-                        <div className="space-y-1 leading-none">
-                          <label htmlFor="share-anonymous" className="text-sm font-normal cursor-pointer">
-                            Ik geef toestemming om mijn verhaal anoniem te delen
-                          </label>
-                          <p className="text-xs text-muted-foreground">
-                            Je verhaal wordt gedeeld zonder naam, bedrijf of identificeerbare informatie
-                          </p>
-                        </div>
-                      </div>
-                    </RadioGroup>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )} />
-
               <FormField control={form.control} name="newsletter" render={({
               field
             }) => <FormItem className="flex flex-row items-start space-x-3 space-y-0">
