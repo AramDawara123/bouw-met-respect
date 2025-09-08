@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
-import { Building, Menu, X } from "lucide-react";
+import { Building, Menu, X, Home } from "lucide-react";
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import MembershipForm from "./MembershipForm";
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -21,6 +22,10 @@ const Navbar = () => {
 
             {/* Desktop Navigation */}
             <div className="hidden md:flex items-center space-x-8">
+              <Link to="/" className="text-muted-foreground hover:text-foreground transition-colors flex items-center gap-2">
+                <Home className="w-4 h-4" />
+                Home
+              </Link>
               <a href="#probleem" className="text-muted-foreground hover:text-foreground transition-colors">
                 Het probleem
               </a>
@@ -30,9 +35,9 @@ const Navbar = () => {
               <a href="#verhalen" className="text-muted-foreground hover:text-foreground transition-colors">
                 Verhalen
               </a>
-              <a href="/blog" className="text-muted-foreground hover:text-foreground transition-colors">
+              <Link to="/blog" className="text-muted-foreground hover:text-foreground transition-colors">
                 Blog
-              </a>
+              </Link>
               <a href="#contact" className="text-muted-foreground hover:text-foreground transition-colors">
                 Contact
               </a>
@@ -50,6 +55,10 @@ const Navbar = () => {
           {/* Mobile Navigation */}
           {isMenuOpen && <div className="md:hidden py-4 border-t border-border">
               <div className="flex flex-col space-y-4">
+                <Link to="/" className="text-muted-foreground hover:text-foreground transition-colors py-2 flex items-center gap-2" onClick={() => setIsMenuOpen(false)}>
+                  <Home className="w-4 h-4" />
+                  Home
+                </Link>
                 <a href="#probleem" className="text-muted-foreground hover:text-foreground transition-colors py-2" onClick={() => setIsMenuOpen(false)}>
                   Het probleem
                 </a>
@@ -59,9 +68,9 @@ const Navbar = () => {
                 <a href="#verhalen" className="text-muted-foreground hover:text-foreground transition-colors py-2" onClick={() => setIsMenuOpen(false)}>
                   Verhalen
                 </a>
-                <a href="/blog" className="text-muted-foreground hover:text-foreground transition-colors py-2" onClick={() => setIsMenuOpen(false)}>
+                <Link to="/blog" className="text-muted-foreground hover:text-foreground transition-colors py-2" onClick={() => setIsMenuOpen(false)}>
                   Blog
-                </a>
+                </Link>
                 <a href="#contact" className="text-muted-foreground hover:text-foreground transition-colors py-2" onClick={() => setIsMenuOpen(false)}>
                   Contact
                 </a>
