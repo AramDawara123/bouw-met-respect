@@ -253,13 +253,6 @@ const Dashboard = () => {
               <Download className="w-4 h-4" />
               Export CSV
             </Button>
-            <Button 
-              onClick={() => window.open('/website-editor', '_blank')}
-              className="flex items-center gap-2 bg-purple-600 hover:bg-purple-700"
-            >
-              <Edit className="w-4 h-4" />
-              Edit Website
-            </Button>
           </div>
         </div>
 
