@@ -54,16 +54,24 @@ const ActionItems = () => {
     {
       icon: Building2,
       size: "Middelgroot",
-      employees: "11-50 medewerkers", 
+      employees: "11-30 medewerkers", 
       price: "€750",
       popular: true
     },
     {
       icon: Award,
       size: "Groot",
-      employees: "50+ medewerkers",
+      employees: "31-50 medewerkers",
       price: "€1250",
       popular: false
+    },
+    {
+      icon: Award,
+      size: "Enterprise",
+      employees: "50+ medewerkers",
+      price: "Offerte",
+      popular: false,
+      isQuote: true
     }
   ];
 
@@ -115,7 +123,7 @@ const ActionItems = () => {
             <p className="text-muted-foreground">Eenvoudig via automatisch incasso met herinneringen</p>
           </div>
           
-          <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-7xl mx-auto">
             {pricingTiers.map((tier, index) => (
               <Card 
                 key={index}
@@ -147,7 +155,7 @@ const ActionItems = () => {
                 
                 <div className="mb-6">
                   <span className="text-4xl font-bold text-primary">{tier.price}</span>
-                  <span className="text-muted-foreground ml-1">/jaar</span>
+                  {!tier.isQuote && <span className="text-muted-foreground ml-1">/jaar</span>}
                 </div>
                 
                 <Button 
@@ -155,7 +163,7 @@ const ActionItems = () => {
                   className="w-full"
                   onClick={() => setFormOpen(true)}
                 >
-                  Aanmelden
+                  {tier.isQuote ? "Offerte aanvragen" : "Aanmelden"}
                   <ArrowRight className="w-4 h-4 ml-2" />
                 </Button>
               </Card>

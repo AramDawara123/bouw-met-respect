@@ -29,7 +29,7 @@ const formSchema = z.object({
   respectfulPractices: z.string().min(30, "Beschrijf hoe je respectvolle bouwpraktijken toepast"),
   respectfulWorkplace: z.string().min(30, "Beschrijf wat een respectvolle bouwplaats voor jou betekent"),
   boundaryBehavior: z.string().min(30, "Beschrijf hoe je reageert op grensoverschrijdend gedrag"),
-  merchandiseMotivation: z.string().min(30, "Vertel waarom je bouw met respect merchandise koopt"),
+  
   storySharing: z.enum(["no-sharing", "share-with-name", "share-anonymous"], {
     required_error: "Selecteer een optie voor het delen van je verhaal"
   }),
@@ -66,7 +66,7 @@ const MembershipForm = ({
       respectfulPractices: "",
       respectfulWorkplace: "",
       boundaryBehavior: "",
-      merchandiseMotivation: "",
+      
       storySharing: "no-sharing",
       newsletter: true,
       terms: false
@@ -297,15 +297,6 @@ const MembershipForm = ({
                     <FormMessage />
                   </FormItem>} />
               
-              <FormField control={form.control} name="merchandiseMotivation" render={({
-              field
-            }) => <FormItem>
-                    <FormLabel>Waarom koop jij bouw met respect merchandise?</FormLabel>
-                    <FormControl>
-                      <Textarea placeholder="Vertel waarom je geinteresseerd bent in onze merchandise..." className="min-h-[100px]" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>} />
             </div>
 
             {/* Voorkeuren en akkoord */}
