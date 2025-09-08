@@ -83,7 +83,7 @@ const MembershipForm = ({
 
   const selectedType = form.watch('membershipType');
   const getAmountFromType = (t: string) => t === 'middelgroot' ? 75000 : t === 'groot' ? 125000 : 25000;
-  const displayPrice = membershipPlan?.yearlyPrice ?? (selectedType === 'middelgroot' ? '€750' : selectedType === 'groot' ? '€1250' : '€250');
+  const displayPrice = (selectedType === 'middelgroot' ? '€750' : selectedType === 'groot' ? '€1250' : '€250');
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     setIsSubmitting(true);
@@ -93,8 +93,8 @@ const MembershipForm = ({
       const { data, error } = await supabase.functions.invoke('create-mollie-payment', {
         body: { 
           membershipData: values,
-          membershipType: membershipPlan?.id || (values as any).membershipType,
-          amount: membershipPlan?.price ?? getAmountFromType((values as any).membershipType)
+          membershipType: (values as any).membershipType,
+          amount: getAmountFromType((values as any).membershipType)
         }
       });
 
@@ -155,7 +155,7 @@ const MembershipForm = ({
                   name="membershipType"
                   render={({ field }) => (
                     <FormItem>
-                      <RadioGroup onValueChange={field.onChange} defaultValue={field.value} className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                      <RadioGroup onValueChange={field.onChange} value={field.value} className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                         <div className={`border rounded-lg p-4 ${form.watch('membershipType')==='klein' ? 'border-primary' : 'border-border'}`}>
                           <div className="flex items-center space-x-3">
                             <RadioGroupItem value="klein" id="klein" />
