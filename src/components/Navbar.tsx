@@ -31,10 +31,7 @@ const Navbar = () => {
               <a href="#verhalen" className="text-muted-foreground hover:text-foreground transition-colors">
                 Verhalen
               </a>
-              <Link to="/webshop" className="text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1">
-                <ShoppingCart className="w-4 h-4" />
-                Shop
-              </Link>
+              
               <a href="#contact" className="text-muted-foreground hover:text-foreground transition-colors">
                 Contact
               </a>
