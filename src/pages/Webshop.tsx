@@ -246,7 +246,7 @@ const Webshop = () => {
               {products.map((product, index) => (
                 <Card 
                   key={product.id}
-                  className={`group relative overflow-hidden bg-gradient-to-br from-card to-card/50 border-2 border-border hover:border-primary/50 hover:shadow-2xl transition-all duration-700 hover:scale-[1.03] ${
+                  className={`group relative overflow-hidden bg-gradient-to-br from-card to-card/50 border-2 border-border hover:border-primary/50 hover:shadow-2xl transition-all duration-700 hover:scale-[1.03] flex flex-col h-full ${
                     productsVisible ? 'opacity-100 transform translate-y-0' : 'opacity-0 transform translate-y-8'
                   }`}
                   style={{ 
@@ -280,7 +280,7 @@ const Webshop = () => {
                      </CardTitle>
                   </CardHeader>
 
-                   <CardContent className="relative space-y-4 sm:space-y-6 p-4 sm:p-6">
+                   <CardContent className="relative space-y-4 sm:space-y-6 p-4 sm:p-6 flex-1">
                      <p className="text-muted-foreground leading-relaxed text-sm sm:text-base lg:text-lg">
                        {product.description}
                      </p>
@@ -297,7 +297,7 @@ const Webshop = () => {
                        ))}
                      </div>
 
-                     <div className="flex flex-col sm:flex-row sm:items-center justify-between pt-4 border-t border-border gap-3 sm:gap-4">
+                     <div className="flex flex-col sm:flex-row sm:items-center justify-between pt-4 border-t border-border gap-3 sm:gap-4 mt-auto">
                        <div className="flex-1">
                          <span className="text-2xl sm:text-3xl font-bold text-primary block">
                            €{product.price.toFixed(2)}
@@ -316,16 +316,16 @@ const Webshop = () => {
                      </div>
                    </CardContent>
 
-                   <CardFooter className="relative pt-0 p-4 sm:p-6">
+                   <CardFooter className="relative pt-0 p-4 sm:p-6 mt-auto">
                      <Button 
                        onClick={() => addToCart(product.id)}
-                       className="w-full h-10 sm:h-12 lg:h-14 text-sm sm:text-base lg:text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300 touch-manipulation"
+                       className="w-full h-12 sm:h-14 lg:h-16 text-sm sm:text-base lg:text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300 touch-manipulation"
                        disabled={!product.inStock}
                        size="lg"
                      >
                        <ShoppingCart className="w-4 h-4 sm:w-5 sm:h-5 mr-1 sm:mr-2" />
-                       <span className="hidden xs:inline">Toevoegen aan winkelwagen</span>
-                       <span className="xs:hidden">Toevoegen</span>
+                       <span className="hidden sm:inline">Toevoegen aan winkelwagen</span>
+                       <span className="sm:hidden">Toevoegen</span>
                      </Button>
                    </CardFooter>
                 </Card>
