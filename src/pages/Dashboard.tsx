@@ -24,7 +24,7 @@ interface Membership {
   industry_role: string;
   experience_years: string;
   specializations: string[];
-  membership_type: 'klein' | 'middelgroot' | 'groot';
+  membership_type: 'klein' | 'middelgroot' | 'groot' | 'offerte';
   payment_status: string;
   amount: number;
   currency: string;
@@ -185,11 +185,12 @@ const Dashboard = () => {
     const colors: Record<string, string> = {
       klein: "bg-blue-100 text-blue-800",
       middelgroot: "bg-yellow-100 text-yellow-800",
-      groot: "bg-purple-100 text-purple-800"
+      groot: "bg-purple-100 text-purple-800",
+      offerte: "bg-green-100 text-green-800"
     };
     return (
       <Badge className={colors[type] || "bg-gray-100 text-gray-800"}>
-        {type}
+        {type === 'offerte' ? 'Offerte' : type}
       </Badge>
     );
   };
@@ -333,12 +334,13 @@ const Dashboard = () => {
                 <SelectTrigger className="w-48">
                   <SelectValue placeholder="Filter op type" />
                 </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Alle types</SelectItem>
-                  <SelectItem value="klein">Klein</SelectItem>
-                  <SelectItem value="middelgroot">Middelgroot</SelectItem>
-                  <SelectItem value="groot">Groot</SelectItem>
-                </SelectContent>
+                                  <SelectContent>
+                                    <SelectItem value="all">Alle types</SelectItem>
+                                    <SelectItem value="klein">Klein</SelectItem>
+                                    <SelectItem value="middelgroot">Middelgroot</SelectItem>
+                                    <SelectItem value="groot">Groot</SelectItem>
+                                    <SelectItem value="offerte">Offerte</SelectItem>
+                                  </SelectContent>
               </Select>
             </div>
           </CardContent>
@@ -618,7 +620,7 @@ const Dashboard = () => {
                                             <label className="text-sm font-medium text-muted-foreground">Type lidmaatschap</label>
                                             <Select 
                                               value={editingMembership.membership_type} 
-                                              onValueChange={(value: 'klein' | 'middelgroot' | 'groot') => setEditingMembership({...editingMembership, membership_type: value})}
+                                              onValueChange={(value: 'klein' | 'middelgroot' | 'groot' | 'offerte') => setEditingMembership({...editingMembership, membership_type: value})}
                                             >
                                               <SelectTrigger className="mt-1">
                                                 <SelectValue />
@@ -627,6 +629,7 @@ const Dashboard = () => {
                                                 <SelectItem value="klein">Klein</SelectItem>
                                                 <SelectItem value="middelgroot">Middelgroot</SelectItem>
                                                 <SelectItem value="groot">Groot</SelectItem>
+                                                <SelectItem value="offerte">Offerte</SelectItem>
                                               </SelectContent>
                                             </Select>
                                           </div>

@@ -104,7 +104,7 @@ const MembershipForm = ({
             industry_role: values.industryRole,
             experience_years: values.experienceYears,
             specializations: values.specializations,
-            membership_type: 'offerte',
+            membership_type: 'offerte' as any,
             payment_status: 'quote_requested',
             amount: 0,
             currency: 'EUR'

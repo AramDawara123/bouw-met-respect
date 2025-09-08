@@ -174,7 +174,7 @@ export type Database = {
       }
     }
     Enums: {
-      membership_type: "klein" | "middelgroot" | "groot"
+      membership_type: "klein" | "middelgroot" | "groot" | "offerte"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -302,7 +302,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      membership_type: ["klein", "middelgroot", "groot"],
+      membership_type: ["klein", "middelgroot", "groot", "offerte"],
     },
   },
 } as const
