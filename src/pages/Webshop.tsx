@@ -314,88 +314,90 @@ const Webshop = () => {
             {/* Cart Summary */}
             {getCartItemCount() > 0 && (
               <div className="mt-20">
-                <Card className="max-w-lg mx-auto border-2 border-primary/20 bg-gradient-to-br from-primary/5 to-secondary/5 shadow-2xl">
-                  <CardHeader className="text-center border-b border-primary/10">
-                    <CardTitle className="flex items-center justify-center gap-3 text-2xl">
-                      <div className="w-10 h-10 bg-primary/20 rounded-full flex items-center justify-center">
-                        <ShoppingCart className="w-5 h-5 text-primary" />
+                <Card className="w-full max-w-2xl mx-auto border-2 border-primary/20 bg-gradient-to-br from-primary/5 to-secondary/5 shadow-2xl">
+                  <CardHeader className="text-center border-b border-primary/10 p-4 sm:p-6">
+                    <CardTitle className="flex items-center justify-center gap-2 sm:gap-3 text-xl sm:text-2xl">
+                      <div className="w-8 h-8 sm:w-10 sm:h-10 bg-primary/20 rounded-full flex items-center justify-center">
+                        <ShoppingCart className="w-4 h-4 sm:w-5 sm:h-5 text-primary" />
                       </div>
-                      Winkelwagen ({getCartItemCount()} items)
+                      <span className="truncate">Winkelwagen ({getCartItemCount()} items)</span>
                     </CardTitle>
                   </CardHeader>
-                  <CardContent className="space-y-4 p-6">
+                  <CardContent className="space-y-3 sm:space-y-4 p-4 sm:p-6">
                     {Object.entries(cart).map(([productId, quantity]) => {
                       const product = products.find(p => p.id === productId);
                       if (!product || quantity === 0) return null;
                       
                       return (
-                        <div key={productId} className="flex items-center justify-between py-4 px-4 bg-background/50 rounded-lg border border-border group hover:shadow-md transition-all duration-300">
-                          <div className="flex items-center space-x-4">
-                            <div className="w-16 h-16 bg-muted rounded-lg overflow-hidden shadow-sm">
+                        <div key={productId} className="flex flex-col sm:flex-row sm:items-center justify-between p-4 bg-background/50 rounded-lg border border-border group hover:shadow-md transition-all duration-300 space-y-3 sm:space-y-0">
+                          <div className="flex items-center space-x-3 flex-1">
+                            <div className="w-12 h-12 sm:w-16 sm:h-16 bg-muted rounded-lg overflow-hidden shadow-sm flex-shrink-0">
                               <img src={product.image} alt={product.name} className="w-full h-full object-cover" />
                             </div>
-                            <div className="flex-1">
-                              <p className="font-semibold text-foreground text-lg">{product.name}</p>
-                              <p className="text-sm text-muted-foreground">€{product.price.toFixed(2)} per stuk</p>
+                            <div className="flex-1 min-w-0">
+                              <p className="font-semibold text-foreground text-sm sm:text-lg truncate">{product.name}</p>
+                              <p className="text-xs sm:text-sm text-muted-foreground">€{product.price.toFixed(2)} per stuk</p>
                             </div>
                           </div>
                           
-                          <div className="flex items-center space-x-4">
+                          <div className="flex items-center justify-between sm:justify-end sm:space-x-4">
                             {/* Quantity Controls */}
-                            <div className="flex items-center space-x-2 bg-muted/50 rounded-lg p-1">
+                            <div className="flex items-center space-x-1 sm:space-x-2 bg-muted/50 rounded-lg p-1">
                               <Button
                                 variant="ghost"
                                 size="sm"
                                 onClick={() => decreaseQuantity(productId)}
-                                className="w-8 h-8 p-0 hover:bg-primary/10"
+                                className="w-8 h-8 sm:w-10 sm:h-10 p-0 hover:bg-primary/10 touch-manipulation"
                               >
-                                <Minus className="w-4 h-4" />
+                                <Minus className="w-3 h-3 sm:w-4 sm:h-4" />
                               </Button>
-                              <span className="w-8 text-center font-semibold text-foreground">
+                              <span className="w-8 sm:w-10 text-center font-semibold text-sm sm:text-base text-foreground">
                                 {quantity}
                               </span>
                               <Button
                                 variant="ghost"
                                 size="sm"
                                 onClick={() => increaseQuantity(productId)}
-                                className="w-8 h-8 p-0 hover:bg-primary/10"
+                                className="w-8 h-8 sm:w-10 sm:h-10 p-0 hover:bg-primary/10 touch-manipulation"
                               >
-                                <Plus className="w-4 h-4" />
+                                <Plus className="w-3 h-3 sm:w-4 sm:h-4" />
                               </Button>
                             </div>
                             
-                            {/* Price */}
-                            <div className="text-right min-w-[80px]">
-                              <p className="font-bold text-lg text-primary">
-                                €{(product.price * quantity).toFixed(2)}
-                              </p>
+                            {/* Price and Remove Button */}
+                            <div className="flex items-center space-x-2 sm:space-x-4">
+                              <div className="text-right">
+                                <p className="font-bold text-base sm:text-lg text-primary">
+                                  €{(product.price * quantity).toFixed(2)}
+                                </p>
+                              </div>
+                              
+                              {/* Remove Button */}
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => removeFromCart(productId)}
+                                className="w-8 h-8 sm:w-10 sm:h-10 p-0 text-muted-foreground hover:text-destructive hover:bg-destructive/10 sm:opacity-0 sm:group-hover:opacity-100 transition-all duration-300 touch-manipulation"
+                              >
+                                <X className="w-4 h-4" />
+                              </Button>
                             </div>
-                            
-                            {/* Remove Button */}
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => removeFromCart(productId)}
-                              className="w-8 h-8 p-0 text-muted-foreground hover:text-destructive hover:bg-destructive/10 opacity-0 group-hover:opacity-100 transition-all duration-300"
-                            >
-                              <X className="w-4 h-4" />
-                            </Button>
                           </div>
                         </div>
                       );
                     })}
-                    <div className="border-t pt-6 mt-6">
-                      <div className="flex justify-between items-center mb-2">
+                    <div className="border-t pt-4 sm:pt-6 mt-4 sm:mt-6">
+                      <div className="flex justify-between items-center mb-2 text-sm sm:text-base">
                         <span className="text-muted-foreground">Subtotaal:</span>
                         <span className="font-semibold">€{getCartTotal().toFixed(2)}</span>
                       </div>
-                      <div className="flex justify-between items-center mb-2">
+                      <div className="flex justify-between items-center mb-2 text-sm sm:text-base">
                         <span className="text-muted-foreground">Verzendkosten:</span>
                         <span className="font-semibold text-green-600">
                           {getCartTotal() >= 25 ? 'Gratis' : '€4.95'}
                         </span>
                       </div>
-                      <div className="flex justify-between items-center text-xl font-bold pt-4 border-t">
+                      <div className="flex justify-between items-center text-lg sm:text-xl font-bold pt-4 border-t">
                         <span>Totaal:</span>
                         <span className="text-primary">
                           €{(getCartTotal() + (getCartTotal() >= 25 ? 0 : 4.95)).toFixed(2)}
@@ -403,9 +405,9 @@ const Webshop = () => {
                       </div>
                     </div>
                   </CardContent>
-                  <CardFooter className="p-6 pt-0">
-                    <Button className="w-full h-14 text-lg font-semibold bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 shadow-lg hover:shadow-xl transition-all duration-300" size="lg">
-                      <ShoppingCart className="w-5 h-5 mr-2" />
+                  <CardFooter className="p-4 sm:p-6 pt-0">
+                    <Button className="w-full h-12 sm:h-14 text-base sm:text-lg font-semibold bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 shadow-lg hover:shadow-xl transition-all duration-300 touch-manipulation" size="lg">
+                      <ShoppingCart className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
                       Naar afrekenen
                     </Button>
                   </CardFooter>
