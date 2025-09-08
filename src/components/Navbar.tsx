@@ -35,6 +35,13 @@ const Navbar = () => {
               <a href="#contact" className="text-muted-foreground hover:text-foreground transition-colors">
                 Contact
               </a>
+              <Link to="/webshop" className="text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1">
+                <ShoppingCart className="w-4 h-4" />
+                Shop
+              </Link>
+              <Link to="/dashboard" className="text-muted-foreground hover:text-foreground transition-colors">
+                Dashboard
+              </Link>
               <Button className="ml-4" onClick={handleMembershipClick}>
                 Sluit je aan bij de beweging
               </Button>
@@ -61,6 +68,9 @@ const Navbar = () => {
                 <Link to="/webshop" className="text-muted-foreground hover:text-foreground transition-colors py-2 flex items-center gap-1" onClick={() => setIsMenuOpen(false)}>
                   <ShoppingCart className="w-4 h-4" />
                   Shop
+                </Link>
+                <Link to="/dashboard" className="text-muted-foreground hover:text-foreground transition-colors py-2" onClick={() => setIsMenuOpen(false)}>
+                  Dashboard
                 </Link>
                 <a href="#contact" className="text-muted-foreground hover:text-foreground transition-colors py-2" onClick={() => setIsMenuOpen(false)}>
                   Contact
