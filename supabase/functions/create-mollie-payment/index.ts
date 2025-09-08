@@ -75,9 +75,8 @@ serve(async (req) => {
         description: `Bouw met Respect ${membershipType.charAt(0).toUpperCase() + membershipType.slice(1)} Lidmaatschap`,
         redirectUrl: `${req.headers.get('origin')}/membership-success`,
         metadata: {
-          membershipData: JSON.stringify(membershipData),
-          membershipType: membershipType,
-          userId: user?.id || null
+          email: membershipData.email,
+          membershipType
         }
       })
     });
