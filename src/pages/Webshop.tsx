@@ -245,68 +245,69 @@ const Webshop = () => {
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                     </div>
-                    <div className="flex items-center justify-between mb-4">
-                      <Badge className="bg-primary/10 text-primary border-primary/20 font-medium px-3 py-1">
-                        {product.category}
-                      </Badge>
-                      {product.inStock && (
-                        <Badge className="bg-green-500/10 text-green-600 border-green-500/20 font-medium">
-                          ✓ Op voorraad
-                        </Badge>
-                      )}
-                    </div>
-                    <CardTitle className="text-2xl font-bold group-hover:text-primary transition-colors duration-300">
-                      {product.name}
-                    </CardTitle>
+                     <div className="flex flex-wrap items-center justify-between gap-2 mb-3 sm:mb-4">
+                       <Badge className="bg-primary/10 text-primary border-primary/20 font-medium px-2 sm:px-3 py-1 text-xs sm:text-sm">
+                         {product.category}
+                       </Badge>
+                       {product.inStock && (
+                         <Badge className="bg-green-500/10 text-green-600 border-green-500/20 font-medium text-xs sm:text-sm">
+                           ✓ Op voorraad
+                         </Badge>
+                       )}
+                     </div>
+                     <CardTitle className="text-lg sm:text-xl lg:text-2xl font-bold group-hover:text-primary transition-colors duration-300 leading-tight">
+                       {product.name}
+                     </CardTitle>
                   </CardHeader>
 
-                  <CardContent className="relative space-y-6">
-                    <p className="text-muted-foreground leading-relaxed text-lg">
-                      {product.description}
-                    </p>
-                    
-                    <div className="space-y-3">
-                      <h4 className="font-semibold text-foreground text-sm uppercase tracking-wide">Kenmerken</h4>
-                      {product.features.map((feature, idx) => (
-                        <div key={idx} className="flex items-center text-muted-foreground group-hover:text-foreground transition-colors duration-300">
-                          <div className="w-6 h-6 bg-primary/20 rounded-full flex items-center justify-center mr-3 flex-shrink-0 group-hover:bg-primary/30 transition-colors duration-300">
-                            <div className="w-2 h-2 bg-primary rounded-full"></div>
-                          </div>
-                          <span className="font-medium">{feature}</span>
-                        </div>
-                      ))}
-                    </div>
+                   <CardContent className="relative space-y-4 sm:space-y-6 p-4 sm:p-6">
+                     <p className="text-muted-foreground leading-relaxed text-sm sm:text-base lg:text-lg">
+                       {product.description}
+                     </p>
+                     
+                     <div className="space-y-2 sm:space-y-3">
+                       <h4 className="font-semibold text-foreground text-xs sm:text-sm uppercase tracking-wide">Kenmerken</h4>
+                       {product.features.map((feature, idx) => (
+                         <div key={idx} className="flex items-center text-muted-foreground group-hover:text-foreground transition-colors duration-300">
+                           <div className="w-4 h-4 sm:w-6 sm:h-6 bg-primary/20 rounded-full flex items-center justify-center mr-2 sm:mr-3 flex-shrink-0 group-hover:bg-primary/30 transition-colors duration-300">
+                             <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-primary rounded-full"></div>
+                           </div>
+                           <span className="font-medium text-xs sm:text-sm lg:text-base">{feature}</span>
+                         </div>
+                       ))}
+                     </div>
 
-                    <div className="flex items-center justify-between pt-4 border-t border-border">
-                      <div>
-                        <span className="text-3xl font-bold text-primary">
-                          €{product.price.toFixed(2)}
-                        </span>
-                        <p className="text-sm text-muted-foreground">Incl. BTW</p>
-                      </div>
-                      {cart[product.id] > 0 && (
-                        <div className="text-right">
-                          <div className="inline-flex items-center px-3 py-1 bg-primary/10 rounded-full">
-                            <span className="text-sm font-medium text-primary">
-                              {cart[product.id]} × in winkelwagen
-                            </span>
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  </CardContent>
+                     <div className="flex flex-col sm:flex-row sm:items-center justify-between pt-4 border-t border-border gap-3 sm:gap-4">
+                       <div className="flex-1">
+                         <span className="text-2xl sm:text-3xl font-bold text-primary block">
+                           €{product.price.toFixed(2)}
+                         </span>
+                         <p className="text-xs sm:text-sm text-muted-foreground">Incl. BTW</p>
+                       </div>
+                       {cart[product.id] > 0 && (
+                         <div className="flex-shrink-0">
+                           <div className="inline-flex items-center px-2 sm:px-3 py-1 bg-primary/10 rounded-full">
+                             <span className="text-xs sm:text-sm font-medium text-primary">
+                               {cart[product.id]} × in winkelwagen
+                             </span>
+                           </div>
+                         </div>
+                       )}
+                     </div>
+                   </CardContent>
 
-                  <CardFooter className="relative pt-0">
-                    <Button 
-                      onClick={() => addToCart(product.id)}
-                      className="w-full h-12 text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
-                      disabled={!product.inStock}
-                      size="lg"
-                    >
-                      <ShoppingCart className="w-5 h-5 mr-2" />
-                      Toevoegen aan winkelwagen
-                    </Button>
-                  </CardFooter>
+                   <CardFooter className="relative pt-0 p-4 sm:p-6">
+                     <Button 
+                       onClick={() => addToCart(product.id)}
+                       className="w-full h-10 sm:h-12 lg:h-14 text-sm sm:text-base lg:text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300 touch-manipulation"
+                       disabled={!product.inStock}
+                       size="lg"
+                     >
+                       <ShoppingCart className="w-4 h-4 sm:w-5 sm:h-5 mr-1 sm:mr-2" />
+                       <span className="hidden xs:inline">Toevoegen aan winkelwagen</span>
+                       <span className="xs:hidden">Toevoegen</span>
+                     </Button>
+                   </CardFooter>
                 </Card>
               ))}
             </div>
