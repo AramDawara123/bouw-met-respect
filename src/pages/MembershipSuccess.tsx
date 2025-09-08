@@ -17,7 +17,7 @@ const MembershipSuccess = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-secondary/5 flex items-center justify-center p-4">
-      <Card className="max-w-2xl w-full shadow-2xl border-2 border-primary/20">
+      <Card className="max-w-2xl w-full shadow-2xl border-2 border-primary/20 mt-16">
         <CardHeader className="text-center pb-8">
           <div className="mx-auto w-20 h-20 bg-gradient-to-r from-green-500 to-green-600 rounded-full flex items-center justify-center mb-6 shadow-lg">
             <CheckCircle className="w-12 h-12 text-white" />
