@@ -83,33 +83,50 @@ const Webshop = () => {
   return (
     <div className="min-h-screen w-full overflow-x-hidden">
       {/* Header */}
-      <header className="bg-background border-b">
+      <header className="bg-background/95 backdrop-blur-sm border-b border-border/50 sticky top-0 z-50">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
-            <Link to="/" className="flex items-center space-x-2 text-primary hover:text-primary/80 transition-colors">
-              <ArrowLeft className="w-4 h-4" />
-              <span className="font-medium">Terug naar website</span>
+            <Link to="/" className="flex items-center space-x-3 text-primary hover:text-primary/80 transition-all duration-300 group">
+              <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform duration-300" />
+              <span className="font-semibold text-lg">Terug naar website</span>
             </Link>
-            <div className="flex items-center space-x-4">
-              <div className="relative">
-                <ShoppingCart className="w-6 h-6 text-muted-foreground" />
+            <div className="flex items-center space-x-6">
+              <div className="relative group">
+                <div className={`p-3 rounded-2xl transition-all duration-300 ${
+                  getCartItemCount() > 0 
+                    ? 'bg-primary/10 text-primary' 
+                    : 'bg-muted text-muted-foreground hover:bg-muted/80'
+                }`}>
+                  <ShoppingCart className="w-6 h-6" />
+                </div>
                 {getCartItemCount() > 0 && (
-                  <Badge className="absolute -top-2 -right-2 w-5 h-5 flex items-center justify-center p-0 text-xs">
-                    {getCartItemCount()}
-                  </Badge>
+                  <div className="absolute -top-2 -right-2 w-6 h-6 bg-gradient-to-r from-primary to-secondary rounded-full flex items-center justify-center animate-pulse">
+                    <span className="text-xs font-bold text-white">
+                      {getCartItemCount()}
+                    </span>
+                  </div>
                 )}
               </div>
-              <span className="font-medium text-foreground">
-                €{getCartTotal().toFixed(2)}
-              </span>
+              <div className="text-right">
+                <p className="text-2xl font-bold text-foreground">
+                  €{(getCartTotal() + (getCartTotal() >= 25 ? 0 : 4.95)).toFixed(2)}
+                </p>
+                <p className="text-sm text-muted-foreground">
+                  {getCartItemCount() > 0 ? `${getCartItemCount()} items` : 'Winkelwagen leeg'}
+                </p>
+              </div>
             </div>
           </div>
         </div>
       </header>
 
       {/* Hero Section */}
-      <section className="py-16 bg-gradient-to-br from-primary/5 to-secondary/5">
-        <div className="container mx-auto px-4">
+      <section className="relative py-24 bg-gradient-to-br from-primary/10 via-background to-secondary/10 overflow-hidden">
+        {/* Background decoration */}
+        <div className="absolute inset-0 bg-grid-white/[0.02] bg-[size:50px_50px]"></div>
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[600px] bg-gradient-to-r from-primary/20 to-secondary/20 rounded-full blur-3xl opacity-30"></div>
+        
+        <div className="container mx-auto px-4 relative">
           <div 
             ref={headerRef}
             className={`text-center transition-all duration-1000 ${
@@ -118,17 +135,34 @@ const Webshop = () => {
                 : 'opacity-0 transform translate-y-8'
             }`}
           >
-            <div className="inline-flex items-center px-4 py-2 bg-primary/10 rounded-full text-primary font-semibold text-sm mb-6">
+            <div className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-primary/20 to-secondary/20 backdrop-blur-sm rounded-full text-primary font-semibold text-sm mb-8 border border-primary/20">
               <ShoppingCart className="w-4 h-4 mr-2" />
               Bouw met Respect Shop
             </div>
-            <h1 className="text-4xl md:text-6xl font-bold mb-6 text-foreground">
-              Merchandise voor een <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">respectvolle bouwplaats</span>
+            <h1 className="text-5xl md:text-7xl font-bold mb-8 text-foreground leading-tight">
+              Merchandise voor een <br/>
+              <span className="bg-gradient-to-r from-primary via-secondary to-primary bg-clip-text text-transparent">
+                respectvolle bouwplaats
+              </span>
             </h1>
-            <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
+            <p className="text-xl md:text-2xl text-muted-foreground max-w-4xl mx-auto leading-relaxed mb-12">
               Laat zien dat je onderdeel bent van de beweging. Koop hoogwaardige merchandise 
               en draag bij aan bewustwording voor een respectvolle bouwsector.
             </p>
+            <div className="flex flex-wrap justify-center gap-4 text-sm text-muted-foreground">
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                Gratis verzending vanaf €25
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                Hoogwaardige kwaliteit
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
+                Steun de beweging
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -144,76 +178,96 @@ const Webshop = () => {
                 : 'opacity-0 transform translate-y-8'
             }`}
           >
-            <div className="text-center mb-12">
-              <h2 className="text-3xl font-bold mb-4 text-foreground">Onze producten</h2>
-              <p className="text-muted-foreground">
-                Hoogwaardige merchandise om je steun voor de beweging te tonen
+            <div className="text-center mb-16">
+              <h2 className="text-4xl md:text-5xl font-bold mb-6 text-foreground">Onze producten</h2>
+              <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+                Hoogwaardige merchandise om je steun voor de beweging te tonen. 
+                Elke aankoop draagt bij aan een respectvolle bouwsector.
               </p>
             </div>
 
-            <div className="grid md:grid-cols-2 lg:grid-cols-2 gap-8 max-w-6xl mx-auto">
+            <div className="grid md:grid-cols-2 gap-12 max-w-7xl mx-auto">
               {products.map((product, index) => (
                 <Card 
                   key={product.id}
-                  className={`group hover:shadow-xl transition-all duration-500 hover:scale-[1.02] ${
+                  className={`group relative overflow-hidden bg-gradient-to-br from-card to-card/50 border-2 border-border hover:border-primary/50 hover:shadow-2xl transition-all duration-700 hover:scale-[1.03] ${
                     productsVisible ? 'opacity-100 transform translate-y-0' : 'opacity-0 transform translate-y-8'
                   }`}
                   style={{ 
-                    transitionDelay: productsVisible ? `${index * 150}ms` : '0ms'
+                    transitionDelay: productsVisible ? `${index * 200}ms` : '0ms'
                   }}
                 >
-                  <CardHeader>
-                    <div className="aspect-square bg-muted rounded-lg overflow-hidden mb-4">
+                  {/* Gradient overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-secondary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                  
+                  <CardHeader className="relative">
+                    <div className="aspect-square bg-gradient-to-br from-muted to-muted/80 rounded-2xl overflow-hidden mb-6 shadow-lg">
                       <img 
                         src={product.image} 
                         alt={product.name}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                       />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                     </div>
-                    <div className="flex items-center justify-between">
-                      <Badge variant="secondary">{product.category}</Badge>
+                    <div className="flex items-center justify-between mb-4">
+                      <Badge className="bg-primary/10 text-primary border-primary/20 font-medium px-3 py-1">
+                        {product.category}
+                      </Badge>
                       {product.inStock && (
-                        <Badge variant="outline" className="text-green-600 border-green-600">
-                          Op voorraad
+                        <Badge className="bg-green-500/10 text-green-600 border-green-500/20 font-medium">
+                          ✓ Op voorraad
                         </Badge>
                       )}
                     </div>
-                    <CardTitle className="text-xl">{product.name}</CardTitle>
+                    <CardTitle className="text-2xl font-bold group-hover:text-primary transition-colors duration-300">
+                      {product.name}
+                    </CardTitle>
                   </CardHeader>
 
-                  <CardContent>
-                    <p className="text-muted-foreground mb-4 leading-relaxed">
+                  <CardContent className="relative space-y-6">
+                    <p className="text-muted-foreground leading-relaxed text-lg">
                       {product.description}
                     </p>
                     
-                    <div className="space-y-2 mb-4">
+                    <div className="space-y-3">
+                      <h4 className="font-semibold text-foreground text-sm uppercase tracking-wide">Kenmerken</h4>
                       {product.features.map((feature, idx) => (
-                        <div key={idx} className="flex items-center text-sm text-muted-foreground">
-                          <div className="w-2 h-2 bg-primary rounded-full mr-3 flex-shrink-0"></div>
-                          {feature}
+                        <div key={idx} className="flex items-center text-muted-foreground group-hover:text-foreground transition-colors duration-300">
+                          <div className="w-6 h-6 bg-primary/20 rounded-full flex items-center justify-center mr-3 flex-shrink-0 group-hover:bg-primary/30 transition-colors duration-300">
+                            <div className="w-2 h-2 bg-primary rounded-full"></div>
+                          </div>
+                          <span className="font-medium">{feature}</span>
                         </div>
                       ))}
                     </div>
 
-                    <div className="flex items-center justify-between">
-                      <span className="text-2xl font-bold text-primary">
-                        €{product.price.toFixed(2)}
-                      </span>
-                      {cart[product.id] > 0 && (
-                        <span className="text-sm text-muted-foreground">
-                          {cart[product.id]} in winkelwagen
+                    <div className="flex items-center justify-between pt-4 border-t border-border">
+                      <div>
+                        <span className="text-3xl font-bold text-primary">
+                          €{product.price.toFixed(2)}
                         </span>
+                        <p className="text-sm text-muted-foreground">Incl. BTW</p>
+                      </div>
+                      {cart[product.id] > 0 && (
+                        <div className="text-right">
+                          <div className="inline-flex items-center px-3 py-1 bg-primary/10 rounded-full">
+                            <span className="text-sm font-medium text-primary">
+                              {cart[product.id]} × in winkelwagen
+                            </span>
+                          </div>
+                        </div>
                       )}
                     </div>
                   </CardContent>
 
-                  <CardFooter>
+                  <CardFooter className="relative pt-0">
                     <Button 
                       onClick={() => addToCart(product.id)}
-                      className="w-full"
+                      className="w-full h-12 text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
                       disabled={!product.inStock}
+                      size="lg"
                     >
-                      <ShoppingCart className="w-4 h-4 mr-2" />
+                      <ShoppingCart className="w-5 h-5 mr-2" />
                       Toevoegen aan winkelwagen
                     </Button>
                   </CardFooter>
@@ -223,39 +277,65 @@ const Webshop = () => {
 
             {/* Cart Summary */}
             {getCartItemCount() > 0 && (
-              <div className="mt-16">
-                <Card className="max-w-md mx-auto">
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <ShoppingCart className="w-5 h-5" />
-                      Winkelwagen
+              <div className="mt-20">
+                <Card className="max-w-lg mx-auto border-2 border-primary/20 bg-gradient-to-br from-primary/5 to-secondary/5 shadow-2xl">
+                  <CardHeader className="text-center border-b border-primary/10">
+                    <CardTitle className="flex items-center justify-center gap-3 text-2xl">
+                      <div className="w-10 h-10 bg-primary/20 rounded-full flex items-center justify-center">
+                        <ShoppingCart className="w-5 h-5 text-primary" />
+                      </div>
+                      Winkelwagen ({getCartItemCount()} items)
                     </CardTitle>
                   </CardHeader>
-                  <CardContent>
+                  <CardContent className="space-y-4 p-6">
                     {Object.entries(cart).map(([productId, quantity]) => {
                       const product = products.find(p => p.id === productId);
                       if (!product || quantity === 0) return null;
                       
                       return (
-                        <div key={productId} className="flex justify-between py-2">
-                          <span className="text-sm">
-                            {product.name} x{quantity}
-                          </span>
-                          <span className="text-sm font-medium">
-                            €{(product.price * quantity).toFixed(2)}
-                          </span>
+                        <div key={productId} className="flex items-center justify-between py-3 px-4 bg-background/50 rounded-lg border border-border">
+                          <div className="flex items-center space-x-3">
+                            <div className="w-12 h-12 bg-muted rounded-lg overflow-hidden">
+                              <img src={product.image} alt={product.name} className="w-full h-full object-cover" />
+                            </div>
+                            <div>
+                              <p className="font-medium text-foreground">{product.name}</p>
+                              <p className="text-sm text-muted-foreground">Aantal: {quantity}</p>
+                            </div>
+                          </div>
+                          <div className="text-right">
+                            <p className="font-bold text-lg text-primary">
+                              €{(product.price * quantity).toFixed(2)}
+                            </p>
+                            <p className="text-xs text-muted-foreground">
+                              €{product.price.toFixed(2)} per stuk
+                            </p>
+                          </div>
                         </div>
                       );
                     })}
-                    <div className="border-t pt-2 mt-2">
-                      <div className="flex justify-between font-semibold">
+                    <div className="border-t pt-6 mt-6">
+                      <div className="flex justify-between items-center mb-2">
+                        <span className="text-muted-foreground">Subtotaal:</span>
+                        <span className="font-semibold">€{getCartTotal().toFixed(2)}</span>
+                      </div>
+                      <div className="flex justify-between items-center mb-2">
+                        <span className="text-muted-foreground">Verzendkosten:</span>
+                        <span className="font-semibold text-green-600">
+                          {getCartTotal() >= 25 ? 'Gratis' : '€4.95'}
+                        </span>
+                      </div>
+                      <div className="flex justify-between items-center text-xl font-bold pt-4 border-t">
                         <span>Totaal:</span>
-                        <span>€{getCartTotal().toFixed(2)}</span>
+                        <span className="text-primary">
+                          €{(getCartTotal() + (getCartTotal() >= 25 ? 0 : 4.95)).toFixed(2)}
+                        </span>
                       </div>
                     </div>
                   </CardContent>
-                  <CardFooter>
-                    <Button className="w-full" size="lg">
+                  <CardFooter className="p-6 pt-0">
+                    <Button className="w-full h-14 text-lg font-semibold bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 shadow-lg hover:shadow-xl transition-all duration-300" size="lg">
+                      <ShoppingCart className="w-5 h-5 mr-2" />
                       Naar afrekenen
                     </Button>
                   </CardFooter>
@@ -267,38 +347,70 @@ const Webshop = () => {
       </section>
 
       {/* Info Section */}
-      <section className="py-16 bg-muted/50">
-        <div className="container mx-auto px-4 text-center">
-          <h3 className="text-2xl font-bold mb-4 text-foreground">
-            Waarom onze merchandise kopen?
-          </h3>
-          <div className="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto">
-            <div>
-              <div className="w-12 h-12 bg-primary/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Coffee className="w-6 h-6 text-primary" />
+      <section className="py-24 bg-gradient-to-br from-muted/30 via-background to-muted/30 relative overflow-hidden">
+        {/* Background decoration */}
+        <div className="absolute inset-0 bg-grid-white/[0.02] bg-[size:30px_30px]"></div>
+        
+        <div className="container mx-auto px-4 text-center relative">
+          <div className="max-w-3xl mx-auto mb-16">
+            <h3 className="text-4xl md:text-5xl font-bold mb-6 text-foreground">
+              Waarom onze merchandise kopen?
+            </h3>
+            <p className="text-xl text-muted-foreground">
+              Elke aankoop draagt bij aan een betere toekomst voor de bouwsector
+            </p>
+          </div>
+          
+          <div className="grid md:grid-cols-3 gap-12 max-w-6xl mx-auto">
+            <div className="group">
+              <div className="w-20 h-20 bg-gradient-to-br from-primary/20 to-primary/30 rounded-3xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 group-hover:shadow-xl transition-all duration-300">
+                <Coffee className="w-10 h-10 text-primary" />
               </div>
-              <h4 className="font-semibold mb-2">Kwaliteit</h4>
-              <p className="text-sm text-muted-foreground">
-                Hoogwaardige materialen die bestand zijn tegen dagelijks gebruik
+              <h4 className="text-2xl font-bold mb-4 group-hover:text-primary transition-colors duration-300">
+                Premium Kwaliteit
+              </h4>
+              <p className="text-muted-foreground leading-relaxed text-lg">
+                Hoogwaardige materialen die bestand zijn tegen dagelijks gebruik op de bouwplaats en kantoor
               </p>
             </div>
-            <div>
-              <div className="w-12 h-12 bg-primary/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Edit3 className="w-6 h-6 text-primary" />
+            
+            <div className="group">
+              <div className="w-20 h-20 bg-gradient-to-br from-secondary/20 to-secondary/30 rounded-3xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 group-hover:shadow-xl transition-all duration-300">
+                <Edit3 className="w-10 h-10 text-secondary" />
               </div>
-              <h4 className="font-semibold mb-2">Bewustwording</h4>
-              <p className="text-sm text-muted-foreground">
-                Draag bij aan bewustwording voor een respectvolle bouwsector
+              <h4 className="text-2xl font-bold mb-4 group-hover:text-secondary transition-colors duration-300">
+                Bewustwording
+              </h4>
+              <p className="text-muted-foreground leading-relaxed text-lg">
+                Draag bij aan bewustwording voor een respectvolle bouwsector en laat anderen zien waar je voor staat
               </p>
             </div>
-            <div>
-              <div className="w-12 h-12 bg-primary/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                <ShoppingCart className="w-6 h-6 text-primary" />
+            
+            <div className="group">
+              <div className="w-20 h-20 bg-gradient-to-br from-green-500/20 to-green-600/30 rounded-3xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 group-hover:shadow-xl transition-all duration-300">
+                <ShoppingCart className="w-10 h-10 text-green-600" />
               </div>
-              <h4 className="font-semibold mb-2">Steun de beweging</h4>
-              <p className="text-sm text-muted-foreground">
-                Opbrengsten worden gebruikt om de beweging te versterken
+              <h4 className="text-2xl font-bold mb-4 group-hover:text-green-600 transition-colors duration-300">
+                Steun de Beweging
+              </h4>
+              <p className="text-muted-foreground leading-relaxed text-lg">
+                Opbrengsten worden gebruikt om de beweging te versterken en meer bedrijven te bereiken
               </p>
+            </div>
+          </div>
+          
+          <div className="mt-16 p-8 bg-gradient-to-r from-primary/10 to-secondary/10 rounded-2xl border border-primary/20 max-w-4xl mx-auto">
+            <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+              <div className="text-left">
+                <h4 className="text-2xl font-bold mb-2 text-foreground">Gratis verzending vanaf €25</h4>
+                <p className="text-muted-foreground">
+                  Bestel voor meer dan €25 en we verzenden gratis naar heel Nederland
+                </p>
+              </div>
+              <div className="flex items-center space-x-2 text-green-600">
+                <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                <span className="font-semibold text-lg">Binnen 2-3 werkdagen geleverd</span>
+              </div>
             </div>
           </div>
         </div>
