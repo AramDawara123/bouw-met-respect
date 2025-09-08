@@ -14,6 +14,69 @@ export type Database = {
   }
   public: {
     Tables: {
+      memberships: {
+        Row: {
+          amount: number | null
+          company: string | null
+          created_at: string
+          currency: string | null
+          email: string
+          experience_years: string
+          first_name: string
+          id: string
+          industry_role: string
+          job_title: string
+          last_name: string
+          mollie_payment_id: string | null
+          newsletter: boolean | null
+          payment_status: string | null
+          phone: string
+          specializations: string[]
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          amount?: number | null
+          company?: string | null
+          created_at?: string
+          currency?: string | null
+          email: string
+          experience_years: string
+          first_name: string
+          id?: string
+          industry_role: string
+          job_title: string
+          last_name: string
+          mollie_payment_id?: string | null
+          newsletter?: boolean | null
+          payment_status?: string | null
+          phone: string
+          specializations: string[]
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          amount?: number | null
+          company?: string | null
+          created_at?: string
+          currency?: string | null
+          email?: string
+          experience_years?: string
+          first_name?: string
+          id?: string
+          industry_role?: string
+          job_title?: string
+          last_name?: string
+          mollie_payment_id?: string | null
+          newsletter?: boolean | null
+          payment_status?: string | null
+          phone?: string
+          specializations?: string[]
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string

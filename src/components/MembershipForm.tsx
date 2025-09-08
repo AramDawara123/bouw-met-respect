@@ -12,6 +12,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useToast } from "@/hooks/use-toast";
 import { Link } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
 const formSchema = z.object({
   firstName: z.string().min(2, "Voornaam moet minimaal 2 karakters bevatten"),
   lastName: z.string().min(2, "Achternaam moet minimaal 2 karakters bevatten"),
@@ -72,16 +73,38 @@ const MembershipForm = ({
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     setIsSubmitting(true);
 
-    // Simuleer API call - hier zou je normaal een echte API aanroep doen
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    console.log("Lidmaatschap aanvraag:", values);
-    toast({
-      title: "Aanvraag verzonden!",
-      description: "We beoordelen je aanvraag en nemen binnen 2 werkdagen contact met je op."
-    });
-    form.reset();
-    onOpenChange(false);
-    setIsSubmitting(false);
+    try {
+      // Call Mollie payment function
+      const { data, error } = await supabase.functions.invoke('create-mollie-payment', {
+        body: { membershipData: values }
+      });
+
+      if (error) {
+        console.error('Payment creation error:', error);
+        toast({
+          title: "Fout bij betaling",
+          description: "Er is een fout opgetreden bij het aanmaken van de betaling.",
+          variant: "destructive"
+        });
+        return;
+      }
+
+      if (data?.paymentUrl) {
+        // Redirect to Mollie payment page
+        window.location.href = data.paymentUrl;
+      } else {
+        throw new Error('Geen betaallink ontvangen');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      toast({
+        title: "Fout",
+        description: "Er is een onverwachte fout opgetreden.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
   return <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[600px] max-h-[80vh] overflow-y-auto">
@@ -340,7 +363,7 @@ const MembershipForm = ({
                 Annuleren
               </Button>
               <Button type="submit" disabled={isSubmitting} className="flex-1">
-                {isSubmitting ? "Aanvraag indienen..." : "Lidmaatschap aanvragen"}
+                {isSubmitting ? "Doorsturen naar betaling..." : "Betaal lidmaatschap (€25)"}
               </Button>
             </div>
           </form>
