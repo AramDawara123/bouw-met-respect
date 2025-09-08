@@ -27,6 +27,7 @@ export type Database = {
           industry_role: string
           job_title: string
           last_name: string
+          membership_type: Database["public"]["Enums"]["membership_type"] | null
           mollie_payment_id: string | null
           newsletter: boolean | null
           payment_status: string | null
@@ -47,6 +48,9 @@ export type Database = {
           industry_role: string
           job_title: string
           last_name: string
+          membership_type?:
+            | Database["public"]["Enums"]["membership_type"]
+            | null
           mollie_payment_id?: string | null
           newsletter?: boolean | null
           payment_status?: string | null
@@ -67,6 +71,9 @@ export type Database = {
           industry_role?: string
           job_title?: string
           last_name?: string
+          membership_type?:
+            | Database["public"]["Enums"]["membership_type"]
+            | null
           mollie_payment_id?: string | null
           newsletter?: boolean | null
           payment_status?: string | null
@@ -167,7 +174,7 @@ export type Database = {
       }
     }
     Enums: {
-      [_ in never]: never
+      membership_type: "klein" | "middelgroot" | "groot"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -294,6 +301,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      membership_type: ["klein", "middelgroot", "groot"],
+    },
   },
 } as const

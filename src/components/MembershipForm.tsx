@@ -40,10 +40,17 @@ const formSchema = z.object({
 interface MembershipFormProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  membershipPlan?: {
+    id: string;
+    name: string;
+    price: number;
+    yearlyPrice: string;
+  };
 }
 const MembershipForm = ({
   open,
-  onOpenChange
+  onOpenChange,
+  membershipPlan
 }: MembershipFormProps) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const {
@@ -76,7 +83,11 @@ const MembershipForm = ({
     try {
       // Call Mollie payment function
       const { data, error } = await supabase.functions.invoke('create-mollie-payment', {
-        body: { membershipData: values }
+        body: { 
+          membershipData: values,
+          membershipType: membershipPlan?.id || 'klein',
+          amount: membershipPlan?.price || 25000
+        }
       });
 
       if (error) {
@@ -109,10 +120,21 @@ const MembershipForm = ({
   return <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[600px] max-h-[80vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Lid worden van Bouw met Respect</DialogTitle>
+          <DialogTitle>
+            {membershipPlan ? `${membershipPlan.name} Lidmaatschap` : 'Lid worden van Bouw met Respect'}
+          </DialogTitle>
           <DialogDescription>
-            Word onderdeel van onze community voor respectvolle en duurzame bouwpraktijken. 
-            Vul het formulier volledig in om je lidmaatschap aan te vragen.
+            {membershipPlan ? (
+              <>
+                Word lid van Bouw met Respect met het {membershipPlan.name} pakket voor {membershipPlan.yearlyPrice} per jaar.
+                Vul het formulier volledig in om je lidmaatschap aan te vragen.
+              </>
+            ) : (
+              <>
+                Word onderdeel van onze community voor respectvolle en duurzame bouwpraktijken. 
+                Vul het formulier volledig in om je lidmaatschap aan te vragen.
+              </>
+            )}
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
@@ -363,7 +385,7 @@ const MembershipForm = ({
                 Annuleren
               </Button>
               <Button type="submit" disabled={isSubmitting} className="flex-1">
-                {isSubmitting ? "Doorsturen naar betaling..." : "Betaal lidmaatschap (€25)"}
+                {isSubmitting ? "Doorsturen naar betaling..." : `Betaal ${membershipPlan?.yearlyPrice || '€250'} per jaar`}
               </Button>
             </div>
           </form>

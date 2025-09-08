@@ -27,13 +27,16 @@ serve(async (req) => {
       user = data.user;
     }
 
-    const { membershipData } = await req.json();
+    const { membershipData, membershipType, amount } = await req.json();
 
-    if (!membershipData) {
-      throw new Error('Membership data is required');
+    if (!membershipData || !membershipType) {
+      throw new Error('Membership data and type are required');
     }
 
-    console.log('Creating Mollie payment for membership:', membershipData);
+    const membershipAmount = amount || 25000; // Default to €250 if not provided
+    const amountInEuros = (membershipAmount / 100).toFixed(2);
+
+    console.log('Creating Mollie payment for membership:', { membershipData, membershipType, amount: membershipAmount });
 
     // Create Mollie payment
     const mollieApiKey = Deno.env.get('MOLLIE_API_KEY');
@@ -51,13 +54,14 @@ serve(async (req) => {
       body: JSON.stringify({
         amount: {
           currency: 'EUR',
-          value: '25.00' // €25.00 for membership
+          value: amountInEuros
         },
-        description: 'Bouw met Respect Lidmaatschap',
+        description: `Bouw met Respect ${membershipType.charAt(0).toUpperCase() + membershipType.slice(1)} Lidmaatschap`,
         redirectUrl: `${req.headers.get('origin')}/membership-success`,
         webhookUrl: `${req.headers.get('origin')}/api/webhook/mollie`, // Optional webhook
         metadata: {
           membershipData: JSON.stringify(membershipData),
+          membershipType: membershipType,
           userId: user?.id || null
         }
       })
@@ -94,8 +98,9 @@ serve(async (req) => {
         specializations: membershipData.specializations,
         newsletter: membershipData.newsletter,
         mollie_payment_id: molliePayment.id,
+        membership_type: membershipType,
         payment_status: 'pending',
-        amount: 2500, // €25.00 in cents
+        amount: membershipAmount,
         currency: 'EUR'
       })
       .select()
