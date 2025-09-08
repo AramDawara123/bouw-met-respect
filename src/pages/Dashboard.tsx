@@ -24,6 +24,10 @@ interface Membership {
   industry_role: string;
   experience_years: string;
   specializations: string[];
+  motivation?: string;
+  respectful_practices?: string;
+  respectful_workplace?: string;
+  boundary_behavior?: string;
   membership_type: 'klein' | 'middelgroot' | 'groot' | 'offerte';
   payment_status: string;
   amount: number;
