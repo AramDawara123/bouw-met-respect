@@ -1,7 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Building, Menu, X } from "lucide-react";
 import { useState } from "react";
-import { Link } from "react-router-dom";
 import MembershipForm from "./MembershipForm";
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -35,9 +34,6 @@ const Navbar = () => {
               <a href="#contact" className="text-muted-foreground hover:text-foreground transition-colors">
                 Contact
               </a>
-              <Link to="/dashboard" className="text-muted-foreground hover:text-foreground transition-colors">
-                Dashboard
-              </Link>
               <Button className="ml-4" onClick={handleMembershipClick}>
                 Sluit je aan bij de beweging
               </Button>
@@ -61,9 +57,6 @@ const Navbar = () => {
                 <a href="#verhalen" className="text-muted-foreground hover:text-foreground transition-colors py-2" onClick={() => setIsMenuOpen(false)}>
                   Verhalen
                 </a>
-                <Link to="/dashboard" className="text-muted-foreground hover:text-foreground transition-colors py-2" onClick={() => setIsMenuOpen(false)}>
-                  Dashboard
-                </Link>
                 <a href="#contact" className="text-muted-foreground hover:text-foreground transition-colors py-2" onClick={() => setIsMenuOpen(false)}>
                   Contact
                 </a>
