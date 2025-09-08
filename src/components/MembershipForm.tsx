@@ -11,6 +11,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useToast } from "@/hooks/use-toast";
+import { Link } from "react-router-dom";
 const formSchema = z.object({
   firstName: z.string().min(2, "Voornaam moet minimaal 2 karakters bevatten"),
   lastName: z.string().min(2, "Achternaam moet minimaal 2 karakters bevatten"),
@@ -318,7 +319,16 @@ const MembershipForm = ({
                     <Checkbox checked={field.value} onCheckedChange={field.onChange} />
                   </FormControl>
                   <FormLabel className="text-sm font-normal">
-                    Ik ga akkoord met de algemene voorwaarden en het privacybeleid
+                    Ik ga akkoord met de{" "}
+                    <Link 
+                      to="/algemene-voorwaarden" 
+                      className="text-primary underline hover:text-primary/80"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      algemene voorwaarden
+                    </Link>
+                    {" "}en het privacybeleid
                   </FormLabel>
                   <FormMessage />
                 </FormItem>
