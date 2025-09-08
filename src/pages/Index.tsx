@@ -12,22 +12,29 @@ import Footer from "@/components/Footer";
 import MembershipPlans from "@/components/MembershipPlans";
 import { Building } from "lucide-react";
 const Index = () => {
-  return <div className="min-h-screen w-full overflow-x-hidden">
-      <Hero />
-      <MissionStatement />
-      <Statistics />
-      <ActionItems />
-      
-      {/* Membership Plans Section */}
-      
-      
-      <ReportSection />
-      <Mission />
-      <Testimonial />
-      <FAQ />
-      <CallToAction />
-      <Contact />
-      <Footer />
-    </div>;
+  console.log('Index component rendering');
+  
+  try {
+    return <div className="min-h-screen w-full overflow-x-hidden">
+        <Hero />
+        <MissionStatement />
+        <Statistics />
+        <ActionItems />
+        
+        {/* Membership Plans Section */}
+        
+        
+        <ReportSection />
+        <Mission />
+        <Testimonial />
+        <FAQ />
+        <CallToAction />
+        <Contact />
+        <Footer />
+      </div>;
+  } catch (error) {
+    console.error('Error in Index component:', error);
+    throw error;
+  }
 };
 export default Index;

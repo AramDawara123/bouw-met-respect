@@ -16,30 +16,34 @@ import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
 
-const App = () => (
-  <ErrorBoundary>
-    <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <div className="overflow-x-hidden min-h-screen">
-            <Navbar />
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/algemene-voorwaarden" element={<AlgemeneVoorwaarden />} />
-              <Route path="/webshop" element={<Webshop />} />
-              <Route path="/membership-success" element={<MembershipSuccess />} />
-              <Route path="/dashboard" element={<Dashboard />} />
-              
-              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </div>
-        </BrowserRouter>
-      </TooltipProvider>
-    </QueryClientProvider>
-  </ErrorBoundary>
-);
+const App = () => {
+  console.log('App component initializing');
+  
+  return (
+    <ErrorBoundary>
+      <QueryClientProvider client={queryClient}>
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
+            <div className="overflow-x-hidden min-h-screen">
+              <Navbar />
+              <Routes>
+                <Route path="/" element={<Index />} />
+                <Route path="/algemene-voorwaarden" element={<AlgemeneVoorwaarden />} />
+                <Route path="/webshop" element={<Webshop />} />
+                <Route path="/membership-success" element={<MembershipSuccess />} />
+                <Route path="/dashboard" element={<Dashboard />} />
+                
+                {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </div>
+          </BrowserRouter>
+        </TooltipProvider>
+      </QueryClientProvider>
+    </ErrorBoundary>
+  );
+};
 
 export default App;
