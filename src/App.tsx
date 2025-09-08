@@ -11,6 +11,8 @@ import AlgemeneVoorwaarden from "./pages/AlgemeneVoorwaarden";
 import Webshop from "./pages/Webshop";
 import MembershipSuccess from "./pages/MembershipSuccess";
 import Dashboard from "./pages/Dashboard";
+import Blog from "./pages/Blog";
+import BlogPost from "./pages/BlogPost";
 
 import NotFound from "./pages/NotFound";
 
@@ -30,6 +32,8 @@ const App = () => {
               <Navbar />
               <Routes>
                 <Route path="/" element={<Index />} />
+                <Route path="/blog" element={<Blog />} />
+                <Route path="/blog/:slug" element={<BlogPost />} />
                 <Route path="/algemene-voorwaarden" element={<AlgemeneVoorwaarden />} />
                 <Route path="/webshop" element={<Webshop />} />
                 <Route path="/membership-success" element={<MembershipSuccess />} />
