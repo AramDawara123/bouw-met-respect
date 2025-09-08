@@ -45,8 +45,8 @@ const Hero = () => {
           {/* Header */}
           <div ref={heroRef} className={`grid lg:grid-cols-2 gap-12 items-center mb-16 transition-all duration-1000 ${heroVisible ? 'opacity-100 transform translate-y-0' : 'opacity-0 transform translate-y-8'}`}>
             <div className={`transition-all duration-1000 delay-200 ${heroVisible ? 'opacity-100 transform translate-x-0' : 'opacity-0 transform -translate-x-8'}`}>
-              <h1 className="text-5xl md:text-6xl font-bold mb-6 text-foreground leading-tight">Bouw met Respect 
-– De beweging voor een veiligere en menselijkere bouwsector</h1>
+              <h1 className="text-5xl md:text-6xl font-bold mb-6 text-foreground leading-tight">Bouw met Respect  – 
+De beweging voor een veiligere en menselijkere bouwsector</h1>
               <p className="text-xl text-muted-foreground mb-8 leading-relaxed">
                 Grensoverschrijdend gedrag en een harde cultuur houden jong talent weg uit de bouw. 
                 Onze beweging gelooft dat verandering begint met respect. Sluit je aan en help mee de sector 
