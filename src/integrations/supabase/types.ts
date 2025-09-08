@@ -17,7 +17,6 @@ export type Database = {
       memberships: {
         Row: {
           amount: number | null
-          boundary_behavior: string | null
           company: string | null
           created_at: string
           currency: string | null
@@ -30,19 +29,15 @@ export type Database = {
           last_name: string
           membership_type: Database["public"]["Enums"]["membership_type"] | null
           mollie_payment_id: string | null
-          motivation: string | null
           newsletter: boolean | null
           payment_status: string | null
           phone: string
-          respectful_practices: string | null
-          respectful_workplace: string | null
           specializations: string[]
           updated_at: string
           user_id: string | null
         }
         Insert: {
           amount?: number | null
-          boundary_behavior?: string | null
           company?: string | null
           created_at?: string
           currency?: string | null
@@ -57,19 +52,15 @@ export type Database = {
             | Database["public"]["Enums"]["membership_type"]
             | null
           mollie_payment_id?: string | null
-          motivation?: string | null
           newsletter?: boolean | null
           payment_status?: string | null
           phone: string
-          respectful_practices?: string | null
-          respectful_workplace?: string | null
           specializations: string[]
           updated_at?: string
           user_id?: string | null
         }
         Update: {
           amount?: number | null
-          boundary_behavior?: string | null
           company?: string | null
           created_at?: string
           currency?: string | null
@@ -84,12 +75,9 @@ export type Database = {
             | Database["public"]["Enums"]["membership_type"]
             | null
           mollie_payment_id?: string | null
-          motivation?: string | null
           newsletter?: boolean | null
           payment_status?: string | null
           phone?: string
-          respectful_practices?: string | null
-          respectful_workplace?: string | null
           specializations?: string[]
           updated_at?: string
           user_id?: string | null
