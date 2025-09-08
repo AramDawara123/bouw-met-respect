@@ -240,7 +240,7 @@ const Dashboard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-primary/5 to-secondary/5 p-4">
+    <div className="min-h-screen bg-gradient-to-br from-background via-primary/5 to-secondary/5 p-4 mt-16">
       <div className="max-w-7xl mx-auto space-y-8">
         {/* Header */}
         <div className="flex items-center justify-between">
