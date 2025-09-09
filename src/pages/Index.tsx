@@ -2,6 +2,7 @@ import Hero from "@/components/Hero";
 import MissionStatement from "@/components/MissionStatement";
 import Mission from "@/components/Mission";
 import Statistics from "@/components/Statistics";
+import Awareness from "@/components/Awareness";
 import ActionItems from "@/components/ActionItems";
 import ReportSection from "@/components/ReportSection";
 import Testimonial from "@/components/Testimonial";
@@ -19,6 +20,7 @@ const Index = () => {
         <Hero />
         <MissionStatement />
         <Statistics />
+        <Awareness />
         <ActionItems />
         
         {/* Membership Plans Section */}
