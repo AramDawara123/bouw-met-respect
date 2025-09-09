@@ -64,7 +64,7 @@ const Footer = () => {
                 <div className="w-10 h-10 bg-background/10 rounded-lg flex items-center justify-center">
                   <Mail className="w-5 h-5" />
                 </div>
-                <div className="text-left">
+                <div className="text-center lg:text-left">
                   <div className="font-medium">Email ons</div>
                   <div className="text-sm opacity-80">info@bouwmetrespect.nl</div>
                 </div>
@@ -74,7 +74,7 @@ const Footer = () => {
                 <div className="w-10 h-10 bg-background/10 rounded-lg flex items-center justify-center">
                   <Linkedin className="w-5 h-5" />
                 </div>
-                <div className="text-left">
+                <div className="text-center lg:text-left">
                   <div className="font-medium">Volg ons</div>
                   <div className="text-sm opacity-80">LinkedIn</div>
                 </div>
