@@ -4,22 +4,15 @@ import { Card } from "@/components/ui/card";
 import { Shield, AlertTriangle, Phone, Mail } from "lucide-react";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 import ReportForm from "@/components/ReportForm";
-
 const ReportSection = () => {
-  const { ref, isVisible } = useScrollAnimation(0.2);
+  const {
+    ref,
+    isVisible
+  } = useScrollAnimation(0.2);
   const [reportFormOpen, setReportFormOpen] = useState(false);
-
-  return (
-    <section id="melding" className="py-24 bg-gradient-to-br from-background via-muted/10 to-background">
+  return <section id="melding" className="py-24 bg-gradient-to-br from-background via-muted/10 to-background">
       <div className="container mx-auto px-4">
-        <div 
-          ref={ref}
-          className={`transition-all duration-1000 ${
-            isVisible 
-              ? 'opacity-100 transform translate-y-0' 
-              : 'opacity-0 transform translate-y-8'
-          }`}
-        >
+        <div ref={ref} className={`transition-all duration-1000 ${isVisible ? 'opacity-100 transform translate-y-0' : 'opacity-0 transform translate-y-8'}`}>
           <div className="text-center mb-16">
             <div className="inline-flex items-center px-4 py-2 bg-red-500/10 rounded-full text-red-600 font-semibold text-sm mb-6">
               <AlertTriangle className="w-4 h-4 mr-2" />
@@ -34,8 +27,8 @@ const ReportSection = () => {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 lg:gap-8 max-w-6xl mx-auto mb-12">
-            <Card className="p-4 sm:p-6 lg:p-8 border-2 border-red-500/20 bg-gradient-to-br from-red-500/5 to-red-600/5">
+          <div className="grid md:grid-cols-2 gap-8 max-w-6xl mx-auto mb-12">
+            <Card className="p-8 border-2 border-red-500/20 bg-gradient-to-br from-red-500/5 to-red-600/5">
               <div className="flex items-start space-x-4">
                 <div className="w-12 h-12 bg-red-500/20 rounded-2xl flex items-center justify-center flex-shrink-0">
                   <Shield className="w-6 h-6 text-red-600" />
@@ -57,15 +50,9 @@ const ReportSection = () => {
                       <div className="w-2 h-2 bg-red-500 rounded-full mr-3"></div>
                       Anoniem mogelijk
                     </li>
-                    <li className="flex items-center text-sm text-muted-foreground">
-                      <div className="w-2 h-2 bg-red-500 rounded-full mr-3"></div>
-                      24/7 beschikbaar
-                    </li>
+                    
                   </ul>
-                  <Button 
-                    onClick={() => setReportFormOpen(true)}
-                    className="w-full bg-red-600 hover:bg-red-700"
-                  >
+                  <Button onClick={() => setReportFormOpen(true)} className="w-full bg-red-600 hover:bg-red-700">
                     Melding maken
                     <Shield className="w-4 h-4 ml-2" />
                   </Button>
@@ -73,7 +60,7 @@ const ReportSection = () => {
               </div>
             </Card>
 
-            <Card className="p-4 sm:p-6 lg:p-8 border-2 border-blue-500/20 bg-gradient-to-br from-blue-500/5 to-blue-600/5">
+            <Card className="p-8 border-2 border-blue-500/20 bg-gradient-to-br from-blue-500/5 to-blue-600/5">
               <div className="flex items-start space-x-4">
                 <div className="w-12 h-12 bg-blue-500/20 rounded-2xl flex items-center justify-center flex-shrink-0">
                   <Phone className="w-6 h-6 text-blue-600" />
@@ -102,11 +89,7 @@ const ReportSection = () => {
                       </div>
                     </div>
                   </div>
-                  <Button 
-                    variant="outline"
-                    className="w-full border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white"
-                    onClick={() => window.location.href = 'tel:0639580341'}
-                  >
+                  <Button variant="outline" className="w-full border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white" onClick={() => window.location.href = 'tel:0639580341'}>
                     Bel nu
                     <Phone className="w-4 h-4 ml-2" />
                   </Button>
@@ -125,8 +108,6 @@ const ReportSection = () => {
       </div>
 
       <ReportForm open={reportFormOpen} onOpenChange={setReportFormOpen} />
-    </section>
-  );
+    </section>;
 };
-
 export default ReportSection;
