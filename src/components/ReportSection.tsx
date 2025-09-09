@@ -35,7 +35,7 @@ const ReportSection = () => {
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 lg:gap-8 max-w-6xl mx-auto mb-12">
-            <Card className="p-8 border-2 border-red-500/20 bg-gradient-to-br from-red-500/5 to-red-600/5">
+            <Card className="p-4 sm:p-6 lg:p-8 border-2 border-red-500/20 bg-gradient-to-br from-red-500/5 to-red-600/5">
               <div className="flex items-start space-x-4">
                 <div className="w-12 h-12 bg-red-500/20 rounded-2xl flex items-center justify-center flex-shrink-0">
                   <Shield className="w-6 h-6 text-red-600" />
@@ -73,7 +73,7 @@ const ReportSection = () => {
               </div>
             </Card>
 
-            <Card className="p-8 border-2 border-blue-500/20 bg-gradient-to-br from-blue-500/5 to-blue-600/5">
+            <Card className="p-4 sm:p-6 lg:p-8 border-2 border-blue-500/20 bg-gradient-to-br from-blue-500/5 to-blue-600/5">
               <div className="flex items-start space-x-4">
                 <div className="w-12 h-12 bg-blue-500/20 rounded-2xl flex items-center justify-center flex-shrink-0">
                   <Phone className="w-6 h-6 text-blue-600" />
