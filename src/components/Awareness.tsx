@@ -56,7 +56,7 @@ const Awareness = () => {
                     alt={item.subtitle}
                     className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-transparent to-transparent" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-background/30 via-transparent to-transparent" />
                 </div>
                 
                 <div className="p-6">
