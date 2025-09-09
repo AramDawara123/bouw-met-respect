@@ -50,25 +50,31 @@ const FAQ = () => {
               <Card key={index} className="border-0 bg-card overflow-hidden">
                 <Button
                   variant="ghost"
-                  className="w-full p-4 sm:p-5 md:p-6 h-auto justify-between text-left hover:bg-muted/50"
+                  aria-expanded={openIndex === index}
+                  aria-controls={`faq-panel-${index}`}
+                  className="w-full p-4 sm:p-5 md:p-6 h-auto justify-between items-start text-left hover:bg-muted/50 whitespace-normal"
                   onClick={() => setOpenIndex(openIndex === index ? null : index)}
                 >
-                  <span className="text-base sm:text-lg md:text-xl font-semibold text-foreground pr-3 sm:pr-4 md:pr-5 leading-snug">
+                  <span className="flex-1 min-w-0 text-base sm:text-lg md:text-xl font-semibold text-foreground pr-3 sm:pr-4 md:pr-5 leading-snug break-words">
                     {faq.question}
                   </span>
                   {openIndex === index ? (
-                    <Minus className="w-5 h-5 md:w-6 md:h-6 text-primary flex-shrink-0" />
+                    <Minus className="w-5 h-5 md:w-6 md:h-6 text-primary flex-shrink-0 self-start mt-0.5" />
                   ) : (
-                    <Plus className="w-5 h-5 md:w-6 md:h-6 text-primary flex-shrink-0" />
+                    <Plus className="w-5 h-5 md:w-6 md:h-6 text-primary flex-shrink-0 self-start mt-0.5" />
                   )}
                 </Button>
                 
                 {openIndex === index && (
-                  <div className="px-4 sm:px-5 md:px-6 pb-4 sm:pb-5 md:pb-6 animate-slide-down">
-                    <p className="text-sm sm:text-base md:text-lg text-muted-foreground leading-relaxed">
-                      {faq.answer}
-                    </p>
-                  </div>
+                  <div
+                      id={`faq-panel-${index}`}
+                      role="region"
+                      className="px-4 sm:px-5 md:px-6 pb-4 sm:pb-5 md:pb-6 animate-slide-down"
+                    >
+                      <p className="text-sm sm:text-base md:text-lg text-muted-foreground leading-relaxed">
+                        {faq.answer}
+                      </p>
+                    </div>
                 )}
               </Card>
             ))}
