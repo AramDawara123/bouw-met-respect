@@ -100,10 +100,10 @@ const ActionItems = () => {
             <Target className="w-4 h-4 mr-2" />
             Waarde voor bedrijven
           </div>
-          <h2 className="text-4xl md:text-6xl font-bold mb-6 text-foreground bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-6 text-foreground bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
             Investeer in sociale veiligheid
           </h2>
-          <p className="text-xl text-muted-foreground max-w-4xl mx-auto mb-8 leading-relaxed">
+          <p className="text-lg sm:text-xl text-muted-foreground max-w-4xl mx-auto mb-8 leading-relaxed px-4">
             Ontdek waarom steeds meer bedrijven zich aansluiten bij onze beweging 
             en investeren in een sociaal veilige bouwplaats. Een kleine investering met grote impact.
           </p>
@@ -123,11 +123,11 @@ const ActionItems = () => {
             <p className="text-muted-foreground">Eenvoudig via automatisch incasso met herinneringen</p>
           </div>
           
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-7xl mx-auto">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8 max-w-7xl mx-auto px-4">
             {pricingTiers.map((tier, index) => (
               <Card 
                 key={index}
-                className={`relative p-8 text-center transition-all duration-500 border-2 hover:shadow-2xl hover:scale-105 ${
+                className={`relative p-4 sm:p-6 lg:p-8 text-center transition-all duration-500 border-2 hover:shadow-2xl hover:scale-105 ${
                   tier.popular 
                     ? 'border-primary shadow-xl bg-gradient-to-br from-primary/5 to-primary/10' 
                     : 'border-border hover:border-primary/50 bg-card'
@@ -174,12 +174,12 @@ const ActionItems = () => {
         {/* Business Values Cards */}
         <div 
           ref={cardsRef}
-          className="grid md:grid-cols-2 gap-8 max-w-6xl mx-auto"
+          className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 lg:gap-8 max-w-6xl mx-auto px-4"
         >
           {businessValues.map((value, index) => (
             <Card 
               key={index} 
-              className={`group relative p-8 transition-all duration-700 border-0 hover:shadow-2xl hover:scale-[1.02] bg-gradient-to-br ${value.gradient} backdrop-blur-sm ${
+              className={`group relative p-4 sm:p-6 lg:p-8 transition-all duration-700 border-0 hover:shadow-2xl hover:scale-[1.02] bg-gradient-to-br ${value.gradient} backdrop-blur-sm ${
                 cardsVisible 
                   ? 'opacity-100 transform translate-x-0' 
                   : 'opacity-0 transform ' + (index % 2 === 0 ? '-translate-x-12' : 'translate-x-12')
