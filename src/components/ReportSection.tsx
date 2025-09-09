@@ -14,14 +14,28 @@ const ReportSection = () => {
       <div className="container mx-auto px-4">
         <div ref={ref} className={`transition-all duration-1000 ${isVisible ? 'opacity-100 transform translate-y-0' : 'opacity-0 transform translate-y-8'}`}>
           <div className="text-center mb-16">
+            {/* Icons at the top */}
+            <div className="flex justify-center items-center gap-4 mb-8">
+              <img 
+                src="/lovable-uploads/279d19f0-d46f-4c9c-96ab-f2ca307a0797.png" 
+                alt="Shield icon" 
+                className="w-16 h-16"
+              />
+              <img 
+                src="/lovable-uploads/57ee5fd1-0371-463e-880a-4d53b9e64436.png" 
+                alt="Phone icon" 
+                className="w-16 h-16"
+              />
+            </div>
+            
             <div className="inline-flex items-center px-4 py-2 bg-red-500/10 rounded-full text-red-600 font-semibold text-sm mb-6">
               <AlertTriangle className="w-4 h-4 mr-2" />
               Veilige melding
             </div>
-            <h2 className="text-4xl md:text-6xl font-bold mb-6 text-foreground">
+            <h2 className="text-4xl md:text-6xl font-bold mb-6 text-foreground text-center">
               Meld grensoverschrijdend gedrag
             </h2>
-            <p className="text-xl text-muted-foreground max-w-4xl mx-auto mb-8 leading-relaxed">
+            <p className="text-xl text-muted-foreground max-w-4xl mx-auto mb-8 leading-relaxed text-center">
               Je veiligheid en welzijn zijn belangrijk. Meld grensoverschrijdend gedrag veilig en vertrouwelijk.
               Samen zorgen we voor een respectvolle bouwplaats voor iedereen.
             </p>
