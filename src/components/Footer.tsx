@@ -22,31 +22,31 @@ const Footer = () => {
           {/* Community Section */}
           <div className="text-center lg:text-left">
             <h4 className="font-bold text-xl mb-6 flex items-center justify-center lg:justify-start">
-              <div className="w-2 h-2 bg-primary rounded-full mr-3"></div>
+              <div className="w-2 h-2 bg-primary rounded-full mr-3 hidden lg:block"></div>
               Community
             </h4>
             <ul className="space-y-4 text-background/80">
               <li>
                 <a href="#" className="hover:text-background transition-colors flex items-center justify-center lg:justify-start group">
-                  <ArrowRight className="w-4 h-4 mr-2 opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <ArrowRight className="w-4 h-4 mr-2 opacity-0 group-hover:opacity-100 transition-opacity hidden lg:block" />
                   Word lid
                 </a>
               </li>
               <li>
                 <a href="#" className="hover:text-background transition-colors flex items-center justify-center lg:justify-start group">
-                  <ArrowRight className="w-4 h-4 mr-2 opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <ArrowRight className="w-4 h-4 mr-2 opacity-0 group-hover:opacity-100 transition-opacity hidden lg:block" />
                   Events
                 </a>
               </li>
               <li>
                 <a href="#" className="hover:text-background transition-colors flex items-center justify-center lg:justify-start group">
-                  <ArrowRight className="w-4 h-4 mr-2 opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <ArrowRight className="w-4 h-4 mr-2 opacity-0 group-hover:opacity-100 transition-opacity hidden lg:block" />
                   Verhalen
                 </a>
               </li>
               <li>
                 <a href="#" className="hover:text-background transition-colors flex items-center justify-center lg:justify-start group">
-                  <ArrowRight className="w-4 h-4 mr-2 opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <ArrowRight className="w-4 h-4 mr-2 opacity-0 group-hover:opacity-100 transition-opacity hidden lg:block" />
                   Resources
                 </a>
               </li>
@@ -56,7 +56,7 @@ const Footer = () => {
           {/* Contact Section */}
           <div className="text-center lg:text-left">
             <h4 className="font-bold text-xl mb-6 flex items-center justify-center lg:justify-start">
-              <div className="w-2 h-2 bg-primary rounded-full mr-3"></div>
+              <div className="w-2 h-2 bg-primary rounded-full mr-3 hidden lg:block"></div>
               Contact
             </h4>
             <div className="space-y-4">
@@ -85,7 +85,7 @@ const Footer = () => {
           {/* Newsletter Section */}
           <div className="text-center lg:text-left">
             <h4 className="font-bold text-xl mb-6 flex items-center justify-center lg:justify-start">
-              <div className="w-2 h-2 bg-primary rounded-full mr-3"></div>
+              <div className="w-2 h-2 bg-primary rounded-full mr-3 hidden lg:block"></div>
               Nieuwsbrief
             </h4>
             <p className="text-background/70 mb-6 text-sm leading-relaxed">
