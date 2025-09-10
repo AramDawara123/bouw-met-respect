@@ -1,6 +1,59 @@
 import { Heart, Linkedin, Mail, Building, ArrowRight, Users } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
+
 const Footer = () => {
+  const [email, setEmail] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const { toast } = useToast();
+
+  const handleNewsletterSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!email) {
+      toast({
+        title: "Fout",
+        description: "Vul een geldig e-mailadres in",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      const { data, error } = await supabase.functions.invoke('mailchimp-newsletter', {
+        body: { email }
+      });
+
+      if (error) {
+        console.error("Error:", error);
+        toast({
+          title: "Fout",
+          description: "Er is een fout opgetreden. Probeer het opnieuw.",
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Gelukt!",
+          description: "Je bent succesvol aangemeld voor onze nieuwsbrief",
+        });
+        setEmail("");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      toast({
+        title: "Fout",
+        description: "Er is een fout opgetreden. Probeer het opnieuw.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return <footer className="bg-foreground text-background py-20">
       <div className="container mx-auto px-4">
         {/* Main Content */}
@@ -91,16 +144,24 @@ const Footer = () => {
             <p className="text-background/70 mb-6 text-sm leading-relaxed">
               Ontvang maandelijks updates over onze initiatieven, events en inspirerende verhalen uit de bouwsector.
             </p>
-            <div className="space-y-3">
+            <form onSubmit={handleNewsletterSubmit} className="space-y-3">
               <input
                 type="email"
                 placeholder="Je e-mailadres"
-                className="w-full px-4 py-3 rounded-lg bg-background/10 text-background border border-background/20 placeholder:text-background/50 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50 transition-all"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                disabled={isLoading}
+                className="w-full px-4 py-3 rounded-lg bg-background/10 text-background border border-background/20 placeholder:text-background/50 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50 transition-all disabled:opacity-50"
               />
-              <button className="w-full px-6 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-all duration-300 font-medium shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
-                Aanmelden
+              <button 
+                type="submit"
+                disabled={isLoading}
+                className="w-full px-6 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-all duration-300 font-medium shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+              >
+                {isLoading ? "Aanmelden..." : "Aanmelden"}
               </button>
-            </div>
+            </form>
             <p className="text-background/50 text-xs mt-3">
               Je kunt je op elk moment uitschrijven. We respecteren je privacy.
             </p>
