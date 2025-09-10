@@ -22,16 +22,13 @@ pop3_port = 54326
 
 [storage]
 enabled = true
-port = 54327
 image_transformation = { enabled = true }
 
 [auth]
 enabled = true
-port = 54328
 
 [edge_runtime]
 enabled = true
-port = 54329
 
 [functions.create-mollie-payment]
 verify_jwt = false

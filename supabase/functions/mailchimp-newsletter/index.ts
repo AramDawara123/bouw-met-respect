@@ -32,9 +32,9 @@ const handler = async (req: Request): Promise<Response> => {
 
     const mailchimpApiKey = Deno.env.get("MAILCHIMP_API_KEY");
     if (!mailchimpApiKey) {
-      console.error("MAILCHIMP_API_KEY not found");
+      console.error("MAILCHIMP_API_KEY not found in environment variables");
       return new Response(
-        JSON.stringify({ error: "Server configuration error" }),
+        JSON.stringify({ error: "Mailchimp API key niet geconfigureerd. Neem contact op met de beheerder." }),
         {
           status: 500,
           headers: { "Content-Type": "application/json", ...corsHeaders },
@@ -66,7 +66,7 @@ const handler = async (req: Request): Promise<Response> => {
         const error = await audienceResponse.text();
         console.error("Failed to get audience:", error);
         return new Response(
-          JSON.stringify({ error: "Failed to access newsletter list" }),
+          JSON.stringify({ error: "Kan geen toegang krijgen tot de nieuwsbrief lijst. Controleer de API key." }),
           {
             status: 500,
             headers: { "Content-Type": "application/json", ...corsHeaders },
@@ -79,7 +79,7 @@ const handler = async (req: Request): Promise<Response> => {
       if (!audienceData.lists || audienceData.lists.length === 0) {
         console.error("No audience lists found");
         return new Response(
-          JSON.stringify({ error: "No newsletter list configured" }),
+          JSON.stringify({ error: "Geen nieuwsbrief lijst gevonden in je Mailchimp account." }),
           {
             status: 500,
             headers: { "Content-Type": "application/json", ...corsHeaders },
@@ -125,7 +125,7 @@ const handler = async (req: Request): Promise<Response> => {
       }
       
       return new Response(
-        JSON.stringify({ error: "Aanmelding mislukt. Probeer het opnieuw." }),
+        JSON.stringify({ error: `Aanmelding mislukt: ${error.detail || error.title || 'Onbekende fout'}` }),
         {
           status: 500,
           headers: { "Content-Type": "application/json", ...corsHeaders },

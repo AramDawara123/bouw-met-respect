@@ -29,10 +29,17 @@ const Footer = () => {
       });
 
       if (error) {
-        console.error("Error:", error);
+        console.error("Supabase Error:", error);
         toast({
           title: "Fout",
-          description: "Er is een fout opgetreden. Probeer het opnieuw.",
+          description: `Er is een fout opgetreden: ${error.message || 'Onbekende fout'}`,
+          variant: "destructive",
+        });
+      } else if (data?.error) {
+        console.error("Function Error:", data.error);
+        toast({
+          title: "Fout",
+          description: data.error || "Er is een fout opgetreden bij het aanmelden.",
           variant: "destructive",
         });
       } else {
@@ -42,11 +49,11 @@ const Footer = () => {
         });
         setEmail("");
       }
-    } catch (error) {
-      console.error("Error:", error);
+    } catch (error: any) {
+      console.error("Network Error:", error);
       toast({
         title: "Fout",
-        description: "Er is een fout opgetreden. Probeer het opnieuw.",
+        description: `Netwerkfout: ${error.message || 'Controleer je internetverbinding'}`,
         variant: "destructive",
       });
     } finally {
