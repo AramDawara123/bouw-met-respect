@@ -17,8 +17,11 @@ const handler = async (req: Request): Promise<Response> => {
     return new Response(null, { headers: corsHeaders });
   }
 
+  console.log("Newsletter function called");
+  
   try {
     const { email, firstName, lastName }: NewsletterRequest = await req.json();
+    console.log("Request data:", { email, firstName, lastName });
     
     if (!email) {
       return new Response(
@@ -31,6 +34,7 @@ const handler = async (req: Request): Promise<Response> => {
     }
 
     const mailchimpApiKey = Deno.env.get("MAILCHIMP_API_KEY");
+    console.log("API Key found:", mailchimpApiKey ? "Yes" : "No");
     if (!mailchimpApiKey) {
       console.error("MAILCHIMP_API_KEY not found in environment variables");
       return new Response(

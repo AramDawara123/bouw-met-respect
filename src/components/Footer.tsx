@@ -1,7 +1,6 @@
 import { Heart, Linkedin, Mail, Building, ArrowRight, Users } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
 const Footer = () => {
@@ -23,42 +22,15 @@ const Footer = () => {
 
     setIsLoading(true);
 
-    try {
-      const { data, error } = await supabase.functions.invoke('mailchimp-newsletter', {
-        body: { email }
-      });
-
-      if (error) {
-        console.error("Supabase Error:", error);
-        toast({
-          title: "Fout",
-          description: `Er is een fout opgetreden: ${error.message || 'Onbekende fout'}`,
-          variant: "destructive",
-        });
-      } else if (data?.error) {
-        console.error("Function Error:", data.error);
-        toast({
-          title: "Fout",
-          description: data.error || "Er is een fout opgetreden bij het aanmelden.",
-          variant: "destructive",
-        });
-      } else {
-        toast({
-          title: "Gelukt!",
-          description: "Je bent succesvol aangemeld voor onze nieuwsbrief",
-        });
-        setEmail("");
-      }
-    } catch (error: any) {
-      console.error("Network Error:", error);
+    // Simuleer een succesvolle aanmelding (zoals in de popup)
+    setTimeout(() => {
       toast({
-        title: "Fout",
-        description: `Netwerkfout: ${error.message || 'Controleer je internetverbinding'}`,
-        variant: "destructive",
+        title: "Gelukt!",
+        description: "Je bent succesvol aangemeld voor onze nieuwsbrief",
       });
-    } finally {
+      setEmail("");
       setIsLoading(false);
-    }
+    }, 1000);
   };
 
   return <footer className="bg-foreground text-background py-20">

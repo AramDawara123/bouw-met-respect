@@ -6,6 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import ErrorBoundary from "./components/ErrorBoundary";
 import Navbar from "./components/Navbar";
+import NewsletterPopup from "./components/NewsletterPopup";
 import Index from "./pages/Index";
 import AlgemeneVoorwaarden from "./pages/AlgemeneVoorwaarden";
 import Webshop from "./pages/Webshop";
@@ -38,6 +39,7 @@ const App = () => {
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                 <Route path="*" element={<NotFound />} />
               </Routes>
+              <NewsletterPopup />
             </div>
           </BrowserRouter>
         </TooltipProvider>
