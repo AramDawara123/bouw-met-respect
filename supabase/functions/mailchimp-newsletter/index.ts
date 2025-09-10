@@ -42,44 +42,53 @@ const handler = async (req: Request): Promise<Response> => {
       );
     }
 
-    // Extract datacenter from API key (us7 from fc1e8bb2869d7867992a2327b2cdb86c-us7)
-    const datacenter = mailchimpApiKey.split('-')[1];
-    
-    // First, get the audience/list ID
-    const audienceResponse = await fetch(`https://${datacenter}.api.mailchimp.com/3.0/lists`, {
-      method: 'GET',
-      headers: {
-        'Authorization': `Bearer ${mailchimpApiKey}`,
-        'Content-Type': 'application/json',
-      },
-    });
+    // Extract datacenter from API key (us7 from key-us7)
+    const datacenter = mailchimpApiKey.split("-")[1];
 
-    if (!audienceResponse.ok) {
-      const error = await audienceResponse.text();
-      console.error("Failed to get audience:", error);
-      return new Response(
-        JSON.stringify({ error: "Failed to access newsletter list" }),
-        {
-          status: 500,
-          headers: { "Content-Type": "application/json", ...corsHeaders },
-        }
-      );
+    // Mailchimp Marketing API uses HTTP Basic auth: base64("anystring:API_KEY")
+    const basicAuth = "Basic " + btoa(`anystring:${mailchimpApiKey}`);
+
+    // Prefer configured list id if provided
+    const configuredListId = Deno.env.get("MAILCHIMP_LIST_ID");
+    let listId = configuredListId || "";
+
+    if (!listId) {
+      // Get the first audience/list ID
+      const audienceResponse = await fetch(`https://${datacenter}.api.mailchimp.com/3.0/lists`, {
+        method: "GET",
+        headers: {
+          "Authorization": basicAuth,
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!audienceResponse.ok) {
+        const error = await audienceResponse.text();
+        console.error("Failed to get audience:", error);
+        return new Response(
+          JSON.stringify({ error: "Failed to access newsletter list" }),
+          {
+            status: 500,
+            headers: { "Content-Type": "application/json", ...corsHeaders },
+          }
+        );
+      }
+
+      const audienceData = await audienceResponse.json();
+
+      if (!audienceData.lists || audienceData.lists.length === 0) {
+        console.error("No audience lists found");
+        return new Response(
+          JSON.stringify({ error: "No newsletter list configured" }),
+          {
+            status: 500,
+            headers: { "Content-Type": "application/json", ...corsHeaders },
+          }
+        );
+      }
+
+      listId = audienceData.lists[0].id; // Use the first available list
     }
-
-    const audienceData = await audienceResponse.json();
-    
-    if (!audienceData.lists || audienceData.lists.length === 0) {
-      console.error("No audience lists found");
-      return new Response(
-        JSON.stringify({ error: "No newsletter list configured" }),
-        {
-          status: 500,
-          headers: { "Content-Type": "application/json", ...corsHeaders },
-        }
-      );
-    }
-
-    const listId = audienceData.lists[0].id; // Use the first available list
 
     // Add member to the list
     const memberData = {
@@ -92,10 +101,10 @@ const handler = async (req: Request): Promise<Response> => {
     };
 
     const addMemberResponse = await fetch(`https://${datacenter}.api.mailchimp.com/3.0/lists/${listId}/members`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Authorization': `Bearer ${mailchimpApiKey}`,
-        'Content-Type': 'application/json',
+        "Authorization": basicAuth,
+        "Content-Type": "application/json",
       },
       body: JSON.stringify(memberData),
     });
