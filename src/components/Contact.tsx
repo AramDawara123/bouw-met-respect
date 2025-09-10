@@ -5,6 +5,8 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Mail, Phone, MapPin, Send, AlertTriangle } from "lucide-react";
 import { useState } from "react";
+import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 import ReportForm from "./ReportForm";
 
 const Contact = () => {
@@ -15,10 +17,58 @@ const Contact = () => {
     message: ''
   });
   const [reportFormOpen, setReportFormOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { toast } = useToast();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Form submitted:', formData);
+    setIsSubmitting(true);
+
+    try {
+      // Send email notification
+      const { data, error } = await supabase.functions.invoke('send-contact-email', {
+        body: {
+          name: formData.name,
+          email: formData.email,
+          subject: `Contact formulier van ${formData.company}`,
+          message: formData.message
+        }
+      });
+
+      if (error || data?.error) {
+        console.error('Email sending error:', error || data?.error);
+        toast({
+          title: "Fout",
+          description: "Er is een fout opgetreden bij het versturen van je bericht. Probeer het opnieuw.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // Success
+      toast({
+        title: "Bericht verzonden!",
+        description: "Je bericht is succesvol verzonden. We nemen zo snel mogelijk contact met je op.",
+      });
+
+      // Reset form
+      setFormData({
+        name: '',
+        email: '',
+        company: '',
+        message: ''
+      });
+
+    } catch (error) {
+      console.error('Error submitting form:', error);
+      toast({
+        title: "Fout",
+        description: "Er is een onverwachte fout opgetreden. Probeer het opnieuw.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -121,9 +171,9 @@ const Contact = () => {
                 />
               </div>
 
-              <Button type="submit" size="lg" className="w-full">
+              <Button type="submit" size="lg" className="w-full" disabled={isSubmitting}>
                 <Send className="w-5 h-5 mr-2" />
-                Verstuur bericht
+                {isSubmitting ? "Versturen..." : "Verstuur bericht"}
               </Button>
             </form>
           </Card>

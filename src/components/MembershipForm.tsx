@@ -89,6 +89,31 @@ const MembershipForm = ({
     setIsSubmitting(true);
 
     try {
+      // Send email notification for all membership types
+      const { data: emailData, error: emailError } = await supabase.functions.invoke('send-membership-email', {
+        body: {
+          firstName: values.firstName,
+          lastName: values.lastName,
+          email: values.email,
+          phone: values.phone,
+          company: values.company,
+          jobTitle: values.jobTitle,
+          industryRole: values.industryRole,
+          experienceYears: values.experienceYears,
+          specializations: values.specializations,
+          motivation: values.motivation,
+          respectfulPractices: values.respectfulPractices,
+          respectfulWorkplace: values.respectfulWorkplace,
+          boundaryBehavior: values.boundaryBehavior,
+          membershipType: values.membershipType
+        }
+      });
+
+      if (emailError || emailData?.error) {
+        console.error('Email sending error:', emailError || emailData?.error);
+        // Continue with the flow even if email fails
+      }
+
       // Handle offerte requests differently
       if (values.membershipType === 'offerte') {
         // Store offerte request directly in memberships table
