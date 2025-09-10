@@ -23,7 +23,7 @@ pop3_port = 54326
 [storage]
 enabled = true
 port = 54327
-image_transformation = {"enabled": true}
+image_transformation = { enabled = true }
 
 [auth]
 enabled = true
