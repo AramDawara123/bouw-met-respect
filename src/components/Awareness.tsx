@@ -43,32 +43,44 @@ const Awareness = () => {
             {awarenessItems.map((item, index) => (
               <Card 
                 key={index} 
-                className={`overflow-hidden transition-all duration-700 border-0 bg-background/80 backdrop-blur-sm ${
+                className={`relative overflow-hidden transition-all duration-700 border-0 bg-transparent ${
                   awarenessVisible ? 'opacity-100 transform translate-y-0' : 'opacity-0 transform translate-y-8'
                 }`}
                 style={{
                   transitionDelay: awarenessVisible ? `${index * 200}ms` : '0ms'
                 }}
               >
-                <div className="relative aspect-[4/5] overflow-hidden">
+                <div className="relative aspect-[4/5] overflow-hidden rounded-lg">
                   <img 
                     src={item.image} 
                     alt={item.subtitle}
                     className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-background/60 via-background/20 to-transparent" />
-                </div>
-                
-                <div className="p-6">
-                  <h3 className="text-xl font-semibold mb-2 text-foreground">
-                    {item.title}
-                  </h3>
-                  <p className="text-sm font-medium text-primary mb-3">
-                    {item.subtitle}
-                  </p>
-                  <p className="text-muted-foreground leading-relaxed">
-                    {item.description}
-                  </p>
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                  
+                  {/* Yellow text overlay */}
+                  <div className="absolute top-4 left-4 right-4">
+                    <h3 className="text-2xl font-bold text-yellow-400 mb-2 leading-tight">
+                      {item.title}
+                    </h3>
+                    <p className="text-yellow-300 text-sm font-medium italic">
+                      {item.subtitle}
+                    </p>
+                  </div>
+                  
+                  {/* Bottom content */}
+                  <div className="absolute bottom-4 left-4 right-4">
+                    <p className="text-white text-sm leading-relaxed">
+                      {item.description}
+                    </p>
+                  </div>
+                  
+                  {/* Logo/Badge in bottom right */}
+                  <div className="absolute bottom-4 right-4">
+                    <div className="bg-yellow-400 text-black px-3 py-1 rounded font-bold text-sm">
+                      BMR
+                    </div>
+                  </div>
                 </div>
               </Card>
             ))}
