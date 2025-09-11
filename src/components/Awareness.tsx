@@ -50,13 +50,13 @@ const Awareness = () => {
                   transitionDelay: awarenessVisible ? `${index * 200}ms` : '0ms'
                 }}
               >
-                <div className="relative aspect-square overflow-hidden">
+                <div className="relative aspect-[4/5] overflow-hidden">
                   <img 
                     src={item.image} 
                     alt={item.subtitle}
                     className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-background/30 via-transparent to-transparent" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-background/60 via-background/20 to-transparent" />
                 </div>
                 
                 <div className="p-6">
