@@ -19,8 +19,8 @@ const Navbar = () => {
               
             </div>
 
-            {/* Desktop Navigation */}
-            <div className="hidden md:flex items-center space-x-8">
+            {/* Desktop and Tablet Navigation */}
+            <div className="hidden sm:flex items-center space-x-8">
               <a href="#probleem" className="text-muted-foreground hover:text-foreground transition-colors">
                 Het probleem
               </a>
@@ -40,13 +40,13 @@ const Navbar = () => {
             </div>
 
             {/* Mobile Menu Button */}
-            <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="md:hidden p-2 text-foreground">
+            <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="sm:hidden p-2 text-foreground">
               {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </button>
           </div>
 
           {/* Mobile Navigation */}
-          {isMenuOpen && <div className="md:hidden py-4 border-t border-border">
+          {isMenuOpen && <div className="sm:hidden py-4 border-t border-border">
               <div className="flex flex-col space-y-4">
                 <a href="#probleem" className="text-muted-foreground hover:text-foreground transition-colors py-2" onClick={() => setIsMenuOpen(false)}>
                   Het probleem
