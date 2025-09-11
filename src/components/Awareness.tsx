@@ -30,7 +30,7 @@ const Awareness = () => {
             <Card 
               key={index} 
               className={`relative overflow-hidden border-0 shadow-lg group transition-all duration-700 ${
-                awarenessVisible ? 'animate-fadeIn' : 'opacity-0'
+                awarenessVisible ? 'animate-fade-in' : 'opacity-0'
               }`}
               style={{ animationDelay: `${index * 200}ms` }}
             >
@@ -74,7 +74,7 @@ const Awareness = () => {
             <Card 
               key={index} 
               className={`relative overflow-hidden border-0 shadow-lg group transition-all duration-700 ${
-                awarenessVisible ? 'animate-fadeIn' : 'opacity-0'
+                awarenessVisible ? 'animate-fade-in' : 'opacity-0'
               }`}
               style={{ animationDelay: `${index * 200}ms` }}
             >
