@@ -21,17 +21,17 @@ const ReportSection = () => {
               <AlertTriangle className="w-4 h-4 mr-2" />
               Veilige melding
             </div>
-            <h2 className="text-4xl md:text-6xl font-bold mb-6 text-foreground text-center">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-6xl font-bold mb-6 text-foreground text-center">
               Meld grensoverschrijdend gedrag
             </h2>
-            <p className="text-xl text-muted-foreground max-w-4xl mx-auto mb-8 leading-relaxed text-center">
+            <p className="text-base sm:text-lg lg:text-xl text-muted-foreground max-w-4xl mx-auto mb-8 leading-relaxed text-center px-4">
               Je veiligheid en welzijn zijn belangrijk. Meld grensoverschrijdend gedrag veilig en vertrouwelijk.
               Samen zorgen we voor een respectvolle bouwplaats voor iedereen.
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-8 max-w-6xl mx-auto mb-12">
-            <Card className="p-8 border-2 border-red-500/20 bg-gradient-to-br from-red-500/5 to-red-600/5">
+          <div className="grid grid-cols-1 sm:grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 max-w-6xl mx-auto mb-12">
+            <Card className="p-4 sm:p-6 lg:p-8 border-2 border-red-500/20 bg-gradient-to-br from-red-500/5 to-red-600/5">
               <div className="flex items-start space-x-4">
                 <div className="w-12 h-12 bg-red-500/20 rounded-2xl flex items-center justify-center flex-shrink-0">
                   <Shield className="w-6 h-6 text-red-600" />
@@ -63,7 +63,7 @@ const ReportSection = () => {
               </div>
             </Card>
 
-            <Card className="p-8 border-2 border-blue-500/20 bg-gradient-to-br from-blue-500/5 to-blue-600/5">
+            <Card className="p-4 sm:p-6 lg:p-8 border-2 border-blue-500/20 bg-gradient-to-br from-blue-500/5 to-blue-600/5">
               <div className="flex items-start space-x-4">
                 <div className="w-12 h-12 bg-blue-500/20 rounded-2xl flex items-center justify-center flex-shrink-0">
                   <Phone className="w-6 h-6 text-blue-600" />
