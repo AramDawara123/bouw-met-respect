@@ -10,28 +10,28 @@ const Statistics = () => {
     { 
       icon: Users, 
       title: "Gesprekken gevoerd", 
-      value: 1250, 
+      value: 0, 
       suffix: "+",
       description: "Met vakmensen en jongeren in de bouw"
     },
     { 
       icon: Award, 
       title: "Bedrijven aangesloten", 
-      value: 89, 
+      value: 0, 
       suffix: "",
       description: "Die actief werken aan sociale veiligheid"
     },
     { 
       icon: Target, 
       title: "Succesvolle projecten", 
-      value: 45, 
+      value: 0, 
       suffix: "+",
       description: "Gericht op respect op de werkvloer"
     },
     { 
       icon: TrendingUp, 
       title: "Voelt zich gesteund", 
-      value: 73, 
+      value: 0, 
       suffix: "%",
       description: "Van deelnemers sinds aansluiting bij community"
     }
