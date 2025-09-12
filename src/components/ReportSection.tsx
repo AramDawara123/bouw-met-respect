@@ -87,7 +87,7 @@ const ReportSection = () => {
                     <div className="flex items-center space-x-3">
                       <Mail className="w-4 h-4 text-blue-600" />
                       <div>
-                        <p className="font-medium text-foreground">meldpunt@bouwmetrespect.nl</p>
+                        <p className="font-medium text-foreground">info@bouwmetrespect.nl</p>
                         <p className="text-xs text-muted-foreground">Reactie binnen 24 uur</p>
                       </div>
                     </div>
