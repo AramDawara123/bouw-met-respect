@@ -36,23 +36,11 @@ const Awareness = () => {
                 
                 {/* BMR Badge */}
                 <div className="absolute top-3 left-3">
-                  <div className="bg-primary text-primary-foreground px-2 py-1 text-xs font-bold rounded">
-                    BMR
-                  </div>
+                  
                 </div>
                 
                 {/* Content overlay */}
-                <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
-                  <h3 className="text-xl font-bold mb-1 text-yellow-400">
-                    {item.title}
-                  </h3>
-                  <p className="text-base font-semibold mb-2 text-yellow-400">
-                    {item.subtitle}
-                  </p>
-                  <p className="text-sm leading-relaxed text-white/90">
-                    {item.description}
-                  </p>
-                </div>
+                
               </div>
             </Card>)}
         </div>
