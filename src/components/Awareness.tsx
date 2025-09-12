@@ -5,6 +5,7 @@ const Awareness = () => {
     ref: awarenessRef,
     isVisible: awarenessVisible
   } = useScrollAnimation(0.1);
+  
   const awarenessItems = [{
     image: "/lovable-uploads/af5847a3-a5b8-4469-a490-1a2dd06dd44b.png",
     title: "Herken de signalen",
@@ -21,57 +22,89 @@ const Awareness = () => {
     subtitle: "Aan een respectvolle werkomgeving",
     description: "Sluit je aan bij onze beweging voor een veiligere en respectvollere bouwsector."
   }];
-  return <section id="probleem" className="py-16 px-4" ref={awarenessRef}>
+  
+  return (
+    <section id="probleem" className="py-16 px-4" ref={awarenessRef}>
       <div className="container mx-auto">
         {/* Desktop Layout - 3 columns */}
         <div className="hidden xl:grid grid-cols-3 gap-8">
-          {awarenessItems.map((item, index) => <Card key={index} className={`relative overflow-hidden border-0 shadow-lg group transition-all duration-700 ${awarenessVisible ? 'animate-fade-in' : 'opacity-0'}`} style={{
-          animationDelay: `${index * 200}ms`
-        }}>
-              <div className="aspect-[3/4] relative">
-                <img src={item.image} alt={item.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
-                
-                {/* Gradient overlay for better text readability */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+          {awarenessItems.map((item, index) => (
+            <Card 
+              key={index} 
+              className={`relative overflow-hidden border-0 shadow-lg group transition-all duration-700 ${awarenessVisible ? 'animate-fade-in' : 'opacity-0'}`} 
+              style={{ animationDelay: `${index * 200}ms` }}
+            >
+              <div className="aspect-[16/10] relative">
+                <img 
+                  src={item.image} 
+                  alt={item.title} 
+                  className="w-full h-full object-contain transition-transform duration-500 group-hover:scale-105" 
+                />
                 
                 {/* BMR Badge */}
-                <div className="absolute top-3 left-3">
-                  
-                </div>
-                
-                {/* Content overlay */}
-                
-              </div>
-            </Card>)}
-        </div>
-
-        {/* Tablet Layout - stacked vertically */}
-        <div className="hidden sm:block xl:hidden space-y-6">
-          {awarenessItems.map((item, index) => <Card key={index} className={`relative overflow-hidden border-0 shadow-lg group transition-all duration-700 ${awarenessVisible ? 'animate-fade-in' : 'opacity-0'}`} style={{
-          animationDelay: `${index * 200}ms`
-        }}>
-              
-            </Card>)}
-        </div>
-
-        {/* Mobile Layout - no text overlay */}
-        <div className="sm:hidden space-y-4">
-          {awarenessItems.map((item, index) => <Card key={index} className={`relative overflow-hidden border-0 shadow-lg group transition-all duration-700 ${awarenessVisible ? 'animate-fade-in' : 'opacity-0'}`} style={{
-          animationDelay: `${index * 200}ms`
-        }}>
-              <div className="aspect-[4/3] relative">
-                <img src={item.image} alt={item.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
-                
-                {/* BMR Badge only */}
                 <div className="absolute top-3 left-3">
                   <div className="bg-primary text-primary-foreground px-2 py-1 text-xs font-bold rounded">
                     BMR
                   </div>
                 </div>
               </div>
-            </Card>)}
+            </Card>
+          ))}
+        </div>
+
+        {/* Tablet Layout - stacked vertically */}
+        <div className="hidden sm:block xl:hidden space-y-6">
+          {awarenessItems.map((item, index) => (
+            <Card 
+              key={index} 
+              className={`relative overflow-hidden border-0 shadow-lg group transition-all duration-700 ${awarenessVisible ? 'animate-fade-in' : 'opacity-0'}`} 
+              style={{ animationDelay: `${index * 200}ms` }}
+            >
+              <div className="aspect-[16/10] relative">
+                <img 
+                  src={item.image} 
+                  alt={item.title} 
+                  className="w-full h-full object-contain transition-transform duration-500 group-hover:scale-105" 
+                />
+                
+                {/* BMR Badge */}
+                <div className="absolute top-3 left-3">
+                  <div className="bg-primary text-primary-foreground px-2 py-1 text-xs font-bold rounded">
+                    BMR
+                  </div>
+                </div>
+              </div>
+            </Card>
+          ))}
+        </div>
+
+        {/* Mobile Layout - no text overlay */}
+        <div className="sm:hidden space-y-4">
+          {awarenessItems.map((item, index) => (
+            <Card 
+              key={index} 
+              className={`relative overflow-hidden border-0 shadow-lg group transition-all duration-700 ${awarenessVisible ? 'animate-fade-in' : 'opacity-0'}`} 
+              style={{ animationDelay: `${index * 200}ms` }}
+            >
+              <div className="aspect-[16/10] relative">
+                <img 
+                  src={item.image} 
+                  alt={item.title} 
+                  className="w-full h-full object-contain transition-transform duration-500 group-hover:scale-105" 
+                />
+                
+                {/* BMR Badge */}
+                <div className="absolute top-3 left-3">
+                  <div className="bg-primary text-primary-foreground px-2 py-1 text-xs font-bold rounded">
+                    BMR
+                  </div>
+                </div>
+              </div>
+            </Card>
+          ))}
         </div>
       </div>
-    </section>;
+    </section>
+  );
 };
 export default Awareness;
