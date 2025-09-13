@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { ShoppingCart, Coffee, Edit3, ArrowLeft, Plus, Minus, X } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
@@ -13,6 +14,7 @@ const Webshop = () => {
   const { ref: headerRef, isVisible: headerVisible } = useScrollAnimation(0.2);
   const { ref: productsRef, isVisible: productsVisible } = useScrollAnimation(0.1);
   const [cart, setCart] = useState<{[key: string]: number}>({});
+  const [isCartOpen, setIsCartOpen] = useState(false);
   const { toast } = useToast();
 
   const products = [
@@ -126,22 +128,115 @@ const Webshop = () => {
               <span className="font-semibold text-lg">Terug naar website</span>
             </Link>
             <div className="flex items-center space-x-6">
-              <div className="relative group">
-                <div className={`p-3 rounded-2xl transition-all duration-300 ${
-                  getCartItemCount() > 0 
-                    ? 'bg-primary/10 text-primary' 
-                    : 'bg-muted text-muted-foreground hover:bg-muted/80'
-                }`}>
-                  <ShoppingCart className="w-6 h-6" />
-                </div>
-                {getCartItemCount() > 0 && (
-                  <div className="absolute -top-2 -right-2 w-6 h-6 bg-gradient-to-r from-primary to-secondary rounded-full flex items-center justify-center animate-pulse">
-                    <span className="text-xs font-bold text-white">
-                      {getCartItemCount()}
-                    </span>
+              <Sheet open={isCartOpen} onOpenChange={setIsCartOpen}>
+                <SheetTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    className="relative group p-3 rounded-2xl transition-all duration-300 hover:bg-primary/10"
+                  >
+                    <div className={`transition-all duration-300 ${
+                      getCartItemCount() > 0 
+                        ? 'text-primary' 
+                        : 'text-muted-foreground'
+                    }`}>
+                      <ShoppingCart className="w-6 h-6" />
+                    </div>
+                    {getCartItemCount() > 0 && (
+                      <div className="absolute -top-1 -right-1 w-6 h-6 bg-gradient-to-r from-primary to-secondary rounded-full flex items-center justify-center animate-pulse">
+                        <span className="text-xs font-bold text-white">
+                          {getCartItemCount()}
+                        </span>
+                      </div>
+                    )}
+                  </Button>
+                </SheetTrigger>
+                <SheetContent className="w-full sm:max-w-lg">
+                  <SheetHeader>
+                    <SheetTitle className="flex items-center gap-2">
+                      <ShoppingCart className="w-5 h-5" />
+                      Winkelwagen ({getCartItemCount()} items)
+                    </SheetTitle>
+                  </SheetHeader>
+                  <div className="mt-6 space-y-4 max-h-[60vh] overflow-y-auto">
+                    {Object.entries(cart).length === 0 ? (
+                      <div className="text-center py-8">
+                        <ShoppingCart className="w-16 h-16 mx-auto text-muted-foreground mb-4" />
+                        <p className="text-muted-foreground">Je winkelwagen is leeg</p>
+                      </div>
+                    ) : (
+                      Object.entries(cart).map(([productId, quantity]) => {
+                        const product = products.find(p => p.id === productId);
+                        if (!product) return null;
+                        
+                        return (
+                          <div key={productId} className="flex items-center space-x-4 p-4 border rounded-lg">
+                            <img 
+                              src={product.image} 
+                              alt={product.name}
+                              className="w-16 h-16 object-cover rounded-lg"
+                            />
+                            <div className="flex-1">
+                              <h4 className="font-semibold text-sm">{product.name}</h4>
+                              <p className="text-sm text-muted-foreground">€{product.price.toFixed(2)}</p>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => decreaseQuantity(productId)}
+                                className="w-8 h-8 p-0"
+                              >
+                                <Minus className="w-3 h-3" />
+                              </Button>
+                              <span className="w-8 text-center font-semibold">{quantity}</span>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => increaseQuantity(productId)}
+                                className="w-8 h-8 p-0"
+                              >
+                                <Plus className="w-3 h-3" />
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => removeFromCart(productId)}
+                                className="w-8 h-8 p-0 text-destructive hover:bg-destructive/10"
+                              >
+                                <X className="w-3 h-3" />
+                              </Button>
+                            </div>
+                          </div>
+                        );
+                      })
+                    )}
                   </div>
-                )}
-              </div>
+                  {getCartItemCount() > 0 && (
+                    <div className="mt-6 space-y-4 border-t pt-4">
+                      <div className="space-y-2">
+                        <div className="flex justify-between text-sm">
+                          <span>Subtotaal:</span>
+                          <span>€{getCartTotal().toFixed(2)}</span>
+                        </div>
+                        <div className="flex justify-between text-sm">
+                          <span>Verzendkosten:</span>
+                          <span className={getCartTotal() >= 25 ? 'text-green-600' : ''}>
+                            {getCartTotal() >= 25 ? 'Gratis' : '€4.95'}
+                          </span>
+                        </div>
+                        <div className="flex justify-between font-bold text-lg border-t pt-2">
+                          <span>Totaal:</span>
+                          <span>€{(getCartTotal() + (getCartTotal() >= 25 ? 0 : 4.95)).toFixed(2)}</span>
+                        </div>
+                      </div>
+                      <Button className="w-full" size="lg">
+                        <ShoppingCart className="w-4 h-4 mr-2" />
+                        Naar afrekenen
+                      </Button>
+                    </div>
+                  )}
+                </SheetContent>
+              </Sheet>
               <div className="text-right">
                 <p className="text-2xl font-bold text-foreground">
                   €{(getCartTotal() + (getCartTotal() >= 25 ? 0 : 4.95)).toFixed(2)}
@@ -332,110 +427,6 @@ const Webshop = () => {
                 </Card>
               ))}
             </div>
-
-            {/* Cart Summary */}
-            {getCartItemCount() > 0 && (
-              <div className="mt-20">
-                <Card className="w-full max-w-2xl mx-auto border-2 border-primary/20 bg-gradient-to-br from-primary/5 to-secondary/5 shadow-2xl">
-                  <CardHeader className="text-center border-b border-primary/10 p-4 sm:p-6">
-                    <CardTitle className="flex items-center justify-center gap-2 sm:gap-3 text-xl sm:text-2xl">
-                      <div className="w-8 h-8 sm:w-10 sm:h-10 bg-primary/20 rounded-full flex items-center justify-center">
-                        <ShoppingCart className="w-4 h-4 sm:w-5 sm:h-5 text-primary" />
-                      </div>
-                      <span className="truncate">Winkelwagen ({getCartItemCount()} items)</span>
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-3 sm:space-y-4 p-4 sm:p-6">
-                    {Object.entries(cart).map(([productId, quantity]) => {
-                      const product = products.find(p => p.id === productId);
-                      if (!product || quantity === 0) return null;
-                      
-                      return (
-                        <div key={productId} className="flex flex-col sm:flex-row sm:items-center justify-between p-4 bg-background/50 rounded-lg border border-border group hover:shadow-md transition-all duration-300 space-y-3 sm:space-y-0">
-                          <div className="flex items-center space-x-3 flex-1">
-                            <div className="w-12 h-12 sm:w-16 sm:h-16 bg-muted rounded-lg overflow-hidden shadow-sm flex-shrink-0">
-                              <img src={product.image} alt={product.name} className="w-full h-full object-cover" />
-                            </div>
-                            <div className="flex-1 min-w-0">
-                              <p className="font-semibold text-foreground text-sm sm:text-lg truncate">{product.name}</p>
-                              <p className="text-xs sm:text-sm text-muted-foreground">€{product.price.toFixed(2)} per stuk</p>
-                            </div>
-                          </div>
-                          
-                          <div className="flex items-center justify-between sm:justify-end sm:space-x-4">
-                            {/* Quantity Controls */}
-                            <div className="flex items-center space-x-1 sm:space-x-2 bg-muted/50 rounded-lg p-1">
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => decreaseQuantity(productId)}
-                                className="w-8 h-8 sm:w-10 sm:h-10 p-0 hover:bg-primary/10 touch-manipulation"
-                              >
-                                <Minus className="w-3 h-3 sm:w-4 sm:h-4" />
-                              </Button>
-                              <span className="w-8 sm:w-10 text-center font-semibold text-sm sm:text-base text-foreground">
-                                {quantity}
-                              </span>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => increaseQuantity(productId)}
-                                className="w-8 h-8 sm:w-10 sm:h-10 p-0 hover:bg-primary/10 touch-manipulation"
-                              >
-                                <Plus className="w-3 h-3 sm:w-4 sm:h-4" />
-                              </Button>
-                            </div>
-                            
-                            {/* Price and Remove Button */}
-                            <div className="flex items-center space-x-2 sm:space-x-4">
-                              <div className="text-right">
-                                <p className="font-bold text-base sm:text-lg text-primary">
-                                  €{(product.price * quantity).toFixed(2)}
-                                </p>
-                              </div>
-                              
-                              {/* Remove Button */}
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => removeFromCart(productId)}
-                                className="w-8 h-8 sm:w-10 sm:h-10 p-0 text-muted-foreground hover:text-destructive hover:bg-destructive/10 sm:opacity-0 sm:group-hover:opacity-100 transition-all duration-300 touch-manipulation"
-                              >
-                                <X className="w-4 h-4" />
-                              </Button>
-                            </div>
-                          </div>
-                        </div>
-                      );
-                    })}
-                    <div className="border-t pt-4 sm:pt-6 mt-4 sm:mt-6">
-                      <div className="flex justify-between items-center mb-2 text-sm sm:text-base">
-                        <span className="text-muted-foreground">Subtotaal:</span>
-                        <span className="font-semibold">€{getCartTotal().toFixed(2)}</span>
-                      </div>
-                      <div className="flex justify-between items-center mb-2 text-sm sm:text-base">
-                        <span className="text-muted-foreground">Verzendkosten:</span>
-                        <span className="font-semibold text-green-600">
-                          {getCartTotal() >= 25 ? 'Gratis' : '€4.95'}
-                        </span>
-                      </div>
-                      <div className="flex justify-between items-center text-lg sm:text-xl font-bold pt-4 border-t">
-                        <span>Totaal:</span>
-                        <span className="text-primary">
-                          €{(getCartTotal() + (getCartTotal() >= 25 ? 0 : 4.95)).toFixed(2)}
-                        </span>
-                      </div>
-                    </div>
-                  </CardContent>
-                  <CardFooter className="p-4 sm:p-6 pt-0">
-                    <Button className="w-full h-12 sm:h-14 text-base sm:text-lg font-semibold bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 shadow-lg hover:shadow-xl transition-all duration-300 touch-manipulation" size="lg">
-                      <ShoppingCart className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
-                      Naar afrekenen
-                    </Button>
-                  </CardFooter>
-                </Card>
-              </div>
-            )}
           </div>
         </div>
       </section>
