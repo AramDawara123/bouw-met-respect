@@ -3,7 +3,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import ErrorBoundary from "./components/ErrorBoundary";
 import Navbar from "./components/Navbar";
 import NewsletterPopup from "./components/NewsletterPopup";
@@ -17,6 +17,28 @@ import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
 
+const AppContent = () => {
+  const location = useLocation();
+  const showNavbar = location.pathname !== '/webshop';
+  
+  return (
+    <div className="overflow-x-hidden min-h-screen">
+      {showNavbar && <Navbar />}
+      <Routes>
+        <Route path="/" element={<Index />} />
+        <Route path="/algemene-voorwaarden" element={<AlgemeneVoorwaarden />} />
+        <Route path="/webshop" element={<Webshop />} />
+        <Route path="/membership-success" element={<MembershipSuccess />} />
+        <Route path="/dashboard" element={<Dashboard />} />
+        
+        {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+      <NewsletterPopup />
+    </div>
+  );
+};
+
 const App = () => {
   console.log('App component initializing');
   
@@ -27,20 +49,7 @@ const App = () => {
           <Toaster />
           <Sonner />
           <BrowserRouter>
-            <div className="overflow-x-hidden min-h-screen">
-              <Navbar />
-              <Routes>
-                <Route path="/" element={<Index />} />
-                <Route path="/algemene-voorwaarden" element={<AlgemeneVoorwaarden />} />
-                <Route path="/webshop" element={<Webshop />} />
-                <Route path="/membership-success" element={<MembershipSuccess />} />
-                <Route path="/dashboard" element={<Dashboard />} />
-                
-                {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-              <NewsletterPopup />
-            </div>
+            <AppContent />
           </BrowserRouter>
         </TooltipProvider>
       </QueryClientProvider>
