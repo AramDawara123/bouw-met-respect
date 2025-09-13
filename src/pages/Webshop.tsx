@@ -318,16 +318,16 @@ const Webshop = () => {
                    </CardContent>
 
                    <CardFooter className="relative pt-0 p-4 sm:p-6 mt-auto">
-                     <Button 
-                       onClick={() => addToCart(product.id)}
-                       className="w-full h-12 sm:h-14 lg:h-16 text-sm sm:text-base lg:text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300 touch-manipulation"
-                       disabled={!product.inStock}
-                       size="lg"
-                     >
-                       <ShoppingCart className="w-4 h-4 sm:w-5 sm:h-5 mr-1 sm:mr-2" />
-                       <span className="hidden sm:inline">Toevoegen aan winkelwagen</span>
-                       <span className="sm:hidden">Toevoegen</span>
-                     </Button>
+                      <Button 
+                        onClick={() => addToCart(product.id)}
+                        className="w-full h-12 sm:h-14 lg:h-16 text-sm sm:text-base lg:text-base font-semibold shadow-lg hover:shadow-xl transition-all duration-300 touch-manipulation px-2 sm:px-4"
+                        disabled={!product.inStock}
+                        size="lg"
+                      >
+                        <ShoppingCart className="w-4 h-4 sm:w-5 sm:h-5 mr-1 sm:mr-2 flex-shrink-0" />
+                        <span className="hidden sm:inline truncate">Toevoegen aan winkelwagen</span>
+                        <span className="sm:hidden">Toevoegen</span>
+                      </Button>
                    </CardFooter>
                 </Card>
               ))}
