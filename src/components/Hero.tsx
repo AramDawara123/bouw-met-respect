@@ -54,7 +54,7 @@ const Hero = () => {
   return (
     <>
       {/* Hero Section with Background Image */}
-      <section className="relative min-h-screen flex items-center justify-center pt-20 pb-16">
+      <section className="relative min-h-screen flex items-center justify-center pt-20 pb-16 lg:mt-16">
         {/* Background Image */}
         <div 
           className="absolute inset-0 bg-cover bg-center bg-no-repeat"
