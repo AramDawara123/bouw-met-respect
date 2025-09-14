@@ -11,6 +11,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Search, Users, CreditCard, Edit, Trash2, Download, Filter, Eye, Save, Home } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { supabaseAdmin } from "@/integrations/supabase/admin-client";
 import { useToast } from "@/hooks/use-toast";
 import { Link } from "react-router-dom";
 
@@ -55,7 +56,8 @@ const Dashboard = () => {
 
   const fetchMemberships = async () => {
     try {
-      const { data, error } = await supabase
+      // Use admin client to bypass RLS policies
+      const { data, error } = await supabaseAdmin
         .from('memberships')
         .select('*')
         .order('created_at', { ascending: false });
@@ -76,7 +78,7 @@ const Dashboard = () => {
 
   const updatePaymentStatus = async (id: string, status: string) => {
     try {
-      const { error } = await supabase
+      const { error } = await supabaseAdmin
         .from('memberships')
         .update({ payment_status: status, updated_at: new Date().toISOString() })
         .eq('id', id);
@@ -100,7 +102,7 @@ const Dashboard = () => {
 
   const updateMembership = async (updatedMembership: Membership) => {
     try {
-      const { error } = await supabase
+      const { error } = await supabaseAdmin
         .from('memberships')
         .update({
           first_name: updatedMembership.first_name,
@@ -141,7 +143,7 @@ const Dashboard = () => {
     if (!confirm('Weet je zeker dat je dit lidmaatschap wilt verwijderen?')) return;
     
     try {
-      const { error } = await supabase
+      const { error } = await supabaseAdmin
         .from('memberships')
         .delete()
         .eq('id', id);
