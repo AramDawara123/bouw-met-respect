@@ -245,15 +245,15 @@ const Dashboard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-primary/5 to-secondary/5 p-2 sm:p-4 mt-16">
-      <div className="max-w-7xl mx-auto space-y-4 sm:space-y-8">
+    <div className="min-h-screen bg-gradient-to-br from-background via-primary/5 to-secondary/5 p-2 sm:p-4 lg:p-6 xl:p-8 mt-16">
+      <div className="max-w-4xl lg:max-w-6xl xl:max-w-7xl mx-auto space-y-4 sm:space-y-6 lg:space-y-8">
         {/* Header */}
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-          <div>
-            <h1 className="text-3xl sm:text-4xl font-bold text-foreground">Admin Dashboard</h1>
+        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 md:gap-6">
+          <div className="flex-1">
+            <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-foreground">Admin Dashboard</h1>
             <p className="text-muted-foreground mt-2">Beheer lidmaatschappen en bestellingen</p>
           </div>
-          <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+          <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto md:flex-shrink-0">
             <Link to="/" className="w-full sm:w-auto">
               <Button variant="outline" className="flex items-center gap-2 w-full sm:w-auto">
                 <Home className="w-4 h-4" />
@@ -268,7 +268,7 @@ const Dashboard = () => {
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 xl:gap-8">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Totaal Leden</CardTitle>
@@ -319,19 +319,19 @@ const Dashboard = () => {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="flex flex-col sm:flex-row flex-wrap gap-4">
-              <div className="flex items-center gap-2 w-full sm:w-auto">
+            <div className="flex flex-col md:flex-row flex-wrap gap-4">
+              <div className="flex items-center gap-2 w-full md:w-auto md:flex-1">
                 <Search className="w-4 h-4 text-muted-foreground" />
                 <Input
                   placeholder="Zoek op naam, email of bedrijf..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full sm:w-64"
+                  className="w-full md:max-w-md"
                 />
               </div>
               
               <Select value={statusFilter} onValueChange={setStatusFilter}>
-                <SelectTrigger className="w-full sm:w-48">
+                <SelectTrigger className="w-full md:w-48">
                   <SelectValue placeholder="Filter op status" />
                 </SelectTrigger>
                 <SelectContent>
@@ -344,7 +344,7 @@ const Dashboard = () => {
               </Select>
               
               <Select value={typeFilter} onValueChange={setTypeFilter}>
-                <SelectTrigger className="w-full sm:w-48">
+                <SelectTrigger className="w-full md:w-48">
                   <SelectValue placeholder="Filter op type" />
                 </SelectTrigger>
                                   <SelectContent>
@@ -369,32 +369,32 @@ const Dashboard = () => {
               <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Naam</TableHead>
-                  <TableHead className="hidden sm:table-cell">Email</TableHead>
-                  <TableHead className="hidden md:table-cell">Bedrijf</TableHead>
-                  <TableHead>Type</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead className="hidden lg:table-cell">Bedrag</TableHead>
-                  <TableHead className="hidden md:table-cell">Datum</TableHead>
-                  <TableHead>Acties</TableHead>
+                  <TableHead className="min-w-[150px]">Naam</TableHead>
+                  <TableHead className="hidden sm:table-cell min-w-[180px]">Email</TableHead>
+                  <TableHead className="hidden md:table-cell min-w-[120px]">Bedrijf</TableHead>
+                  <TableHead className="min-w-[100px]">Type</TableHead>
+                  <TableHead className="min-w-[100px]">Status</TableHead>
+                  <TableHead className="hidden lg:table-cell min-w-[100px]">Bedrag</TableHead>
+                  <TableHead className="hidden md:table-cell min-w-[100px]">Datum</TableHead>
+                  <TableHead className="min-w-[120px]">Acties</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {filteredMemberships.map((membership) => (
                   <TableRow key={membership.id}>
-                    <TableCell className="font-medium">
+                    <TableCell className="font-medium min-w-[150px]">
                       <div>
                         <div>{membership.first_name} {membership.last_name}</div>
                         <div className="text-sm text-muted-foreground sm:hidden">{membership.email}</div>
                         <div className="text-sm text-muted-foreground md:hidden">{membership.company || '-'}</div>
                       </div>
                     </TableCell>
-                    <TableCell className="hidden sm:table-cell">{membership.email}</TableCell>
-                    <TableCell className="hidden md:table-cell">{membership.company || '-'}</TableCell>
-                    <TableCell>{getTypeBadge(membership.membership_type)}</TableCell>
-                    <TableCell>{getStatusBadge(membership.payment_status)}</TableCell>
-                    <TableCell className="hidden lg:table-cell">{formatPrice(membership.amount)}</TableCell>
-                    <TableCell className="hidden md:table-cell">{new Date(membership.created_at).toLocaleDateString()}</TableCell>
+                    <TableCell className="hidden sm:table-cell min-w-[180px]">{membership.email}</TableCell>
+                    <TableCell className="hidden md:table-cell min-w-[120px]">{membership.company || '-'}</TableCell>
+                    <TableCell className="min-w-[100px]">{getTypeBadge(membership.membership_type)}</TableCell>
+                    <TableCell className="min-w-[100px]">{getStatusBadge(membership.payment_status)}</TableCell>
+                    <TableCell className="hidden lg:table-cell min-w-[100px]">{formatPrice(membership.amount)}</TableCell>
+                    <TableCell className="hidden md:table-cell min-w-[100px]">{new Date(membership.created_at).toLocaleDateString()}</TableCell>
                     <TableCell>
                       <div className="flex items-center gap-2">
                         <Dialog>
