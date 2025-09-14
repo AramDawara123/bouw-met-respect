@@ -9,31 +9,31 @@ const Statistics = () => {
   const stats = [
     { 
       icon: Users, 
-      title: "Gesprekken gevoerd", 
-      value: 0, 
+      title: "Jaar ervaring", 
+      value: 15, 
       suffix: "+",
-      description: "Met vakmensen en jongeren in de bouw"
+      description: "In de bouwsector en organisatieontwikkeling"
     },
     { 
       icon: Award, 
-      title: "Bedrijven aangesloten", 
-      value: 0, 
+      title: "Onderzoek uitgevoerd", 
+      value: 3, 
       suffix: "",
-      description: "Die actief werken aan sociale veiligheid"
+      description: "Naar grensoverschrijdend gedrag in de bouw"
     },
     { 
       icon: Target, 
-      title: "Succesvolle projecten", 
-      value: 0, 
+      title: "Workshops ontwikkeld", 
+      value: 5, 
       suffix: "+",
-      description: "Gericht op respect op de werkvloer"
+      description: "Voor bewustwording en cultuurverandering"
     },
     { 
       icon: TrendingUp, 
-      title: "Voelt zich gesteund", 
-      value: 0, 
+      title: "Commitment", 
+      value: 100, 
       suffix: "%",
-      description: "Van deelnemers sinds aansluiting bij community"
+      description: "Voor een veiligere en respectvolle bouwsector"
     }
   ];
 
