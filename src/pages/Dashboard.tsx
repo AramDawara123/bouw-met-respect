@@ -245,22 +245,22 @@ const Dashboard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-primary/5 to-secondary/5 p-4 mt-16">
-      <div className="max-w-7xl mx-auto space-y-8">
+    <div className="min-h-screen bg-gradient-to-br from-background via-primary/5 to-secondary/5 p-2 sm:p-4 mt-16">
+      <div className="max-w-7xl mx-auto space-y-4 sm:space-y-8">
         {/* Header */}
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div>
-            <h1 className="text-4xl font-bold text-foreground">Admin Dashboard</h1>
+            <h1 className="text-3xl sm:text-4xl font-bold text-foreground">Admin Dashboard</h1>
             <p className="text-muted-foreground mt-2">Beheer lidmaatschappen en bestellingen</p>
           </div>
-          <div className="flex gap-3">
-            <Link to="/">
-              <Button variant="outline" className="flex items-center gap-2">
+          <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+            <Link to="/" className="w-full sm:w-auto">
+              <Button variant="outline" className="flex items-center gap-2 w-full sm:w-auto">
                 <Home className="w-4 h-4" />
                 Home
               </Button>
             </Link>
-            <Button onClick={exportToCsv} className="flex items-center gap-2">
+            <Button onClick={exportToCsv} className="flex items-center gap-2 w-full sm:w-auto">
               <Download className="w-4 h-4" />
               Export CSV
             </Button>
@@ -268,7 +268,7 @@ const Dashboard = () => {
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Totaal Leden</CardTitle>
@@ -319,19 +319,19 @@ const Dashboard = () => {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="flex flex-wrap gap-4">
-              <div className="flex items-center gap-2">
+            <div className="flex flex-col sm:flex-row flex-wrap gap-4">
+              <div className="flex items-center gap-2 w-full sm:w-auto">
                 <Search className="w-4 h-4 text-muted-foreground" />
                 <Input
                   placeholder="Zoek op naam, email of bedrijf..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-64"
+                  className="w-full sm:w-64"
                 />
               </div>
               
               <Select value={statusFilter} onValueChange={setStatusFilter}>
-                <SelectTrigger className="w-48">
+                <SelectTrigger className="w-full sm:w-48">
                   <SelectValue placeholder="Filter op status" />
                 </SelectTrigger>
                 <SelectContent>
@@ -344,7 +344,7 @@ const Dashboard = () => {
               </Select>
               
               <Select value={typeFilter} onValueChange={setTypeFilter}>
-                <SelectTrigger className="w-48">
+                <SelectTrigger className="w-full sm:w-48">
                   <SelectValue placeholder="Filter op type" />
                 </SelectTrigger>
                                   <SelectContent>
@@ -365,16 +365,17 @@ const Dashboard = () => {
             <CardTitle>Lidmaatschappen ({filteredMemberships.length})</CardTitle>
           </CardHeader>
           <CardContent>
-            <Table>
+            <div className="overflow-x-auto">
+              <Table>
               <TableHeader>
                 <TableRow>
                   <TableHead>Naam</TableHead>
-                  <TableHead>Email</TableHead>
-                  <TableHead>Bedrijf</TableHead>
+                  <TableHead className="hidden sm:table-cell">Email</TableHead>
+                  <TableHead className="hidden md:table-cell">Bedrijf</TableHead>
                   <TableHead>Type</TableHead>
                   <TableHead>Status</TableHead>
-                  <TableHead>Bedrag</TableHead>
-                  <TableHead>Datum</TableHead>
+                  <TableHead className="hidden lg:table-cell">Bedrag</TableHead>
+                  <TableHead className="hidden md:table-cell">Datum</TableHead>
                   <TableHead>Acties</TableHead>
                 </TableRow>
               </TableHeader>
@@ -382,14 +383,18 @@ const Dashboard = () => {
                 {filteredMemberships.map((membership) => (
                   <TableRow key={membership.id}>
                     <TableCell className="font-medium">
-                      {membership.first_name} {membership.last_name}
+                      <div>
+                        <div>{membership.first_name} {membership.last_name}</div>
+                        <div className="text-sm text-muted-foreground sm:hidden">{membership.email}</div>
+                        <div className="text-sm text-muted-foreground md:hidden">{membership.company || '-'}</div>
+                      </div>
                     </TableCell>
-                    <TableCell>{membership.email}</TableCell>
-                    <TableCell>{membership.company || '-'}</TableCell>
+                    <TableCell className="hidden sm:table-cell">{membership.email}</TableCell>
+                    <TableCell className="hidden md:table-cell">{membership.company || '-'}</TableCell>
                     <TableCell>{getTypeBadge(membership.membership_type)}</TableCell>
                     <TableCell>{getStatusBadge(membership.payment_status)}</TableCell>
-                    <TableCell>{formatPrice(membership.amount)}</TableCell>
-                    <TableCell>{new Date(membership.created_at).toLocaleDateString()}</TableCell>
+                    <TableCell className="hidden lg:table-cell">{formatPrice(membership.amount)}</TableCell>
+                    <TableCell className="hidden md:table-cell">{new Date(membership.created_at).toLocaleDateString()}</TableCell>
                     <TableCell>
                       <div className="flex items-center gap-2">
                         <Dialog>
@@ -406,15 +411,15 @@ const Dashboard = () => {
                               <Eye className="w-4 h-4" />
                             </Button>
                           </DialogTrigger>
-                          <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+                          <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto w-[95vw] sm:w-full">
                             <DialogHeader>
-                              <div className="flex items-center justify-between">
+                              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                                 <DialogTitle>Lidmaatschap Details</DialogTitle>
                                 <Button
                                   variant="outline"
                                   size="sm"
                                   onClick={() => setIsEditing(!isEditing)}
-                                  className="flex items-center gap-2"
+                                  className="flex items-center gap-2 w-full sm:w-auto"
                                 >
                                   <Edit className="w-4 h-4" />
                                   {isEditing ? 'Annuleren' : 'Bewerken'}
@@ -429,7 +434,7 @@ const Dashboard = () => {
                                     {/* Personal Information */}
                                     <div>
                                       <h3 className="text-lg font-semibold mb-3 text-primary">Persoonlijke Gegevens</h3>
-                                      <div className="grid grid-cols-2 gap-4">
+                                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                         <div>
                                           <label className="text-sm font-medium text-muted-foreground">Voor- en achternaam</label>
                                           <p className="mt-1">{selectedMembership.first_name} {selectedMembership.last_name}</p>
@@ -452,7 +457,7 @@ const Dashboard = () => {
                                     {/* Professional Information */}
                                     <div>
                                       <h3 className="text-lg font-semibold mb-3 text-primary">Professionele Gegevens</h3>
-                                      <div className="grid grid-cols-2 gap-4">
+                                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                         <div>
                                           <label className="text-sm font-medium text-muted-foreground">Huidige functie</label>
                                           <p className="mt-1 capitalize">{selectedMembership.job_title}</p>
@@ -521,7 +526,7 @@ const Dashboard = () => {
                                     {/* Payment Information */}
                                     <div>
                                       <h3 className="text-lg font-semibold mb-3 text-primary">Betaalgegevens</h3>
-                                      <div className="grid grid-cols-2 gap-4">
+                                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                         <div>
                                           <label className="text-sm font-medium text-muted-foreground">Bedrag</label>
                                           <p className="mt-1 font-semibold">{formatPrice(selectedMembership.amount)}</p>
@@ -567,7 +572,7 @@ const Dashboard = () => {
                                       {/* Personal Information */}
                                       <div>
                                         <h3 className="text-lg font-semibold mb-3 text-primary">Persoonlijke Gegevens</h3>
-                                        <div className="grid grid-cols-2 gap-4">
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                           <div>
                                             <label className="text-sm font-medium text-muted-foreground">Voornaam</label>
                                             <Input
@@ -601,7 +606,7 @@ const Dashboard = () => {
                                               className="mt-1"
                                             />
                                           </div>
-                                          <div className="col-span-2">
+                                          <div className="sm:col-span-2">
                                             <label className="text-sm font-medium text-muted-foreground">Bedrijf</label>
                                             <Input
                                               value={editingMembership.company || ''}
@@ -615,7 +620,7 @@ const Dashboard = () => {
                                       {/* Professional Information */}
                                       <div>
                                         <h3 className="text-lg font-semibold mb-3 text-primary">Professionele Gegevens</h3>
-                                        <div className="grid grid-cols-2 gap-4">
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                           <div>
                                             <label className="text-sm font-medium text-muted-foreground">Functie</label>
                                             <Input
@@ -700,10 +705,10 @@ const Dashboard = () => {
                                       </div>
 
                                       {/* Save Button */}
-                                      <div className="border-t pt-4 flex gap-3">
+                                      <div className="border-t pt-4 flex flex-col sm:flex-row gap-3">
                                         <Button 
                                           onClick={() => updateMembership(editingMembership)}
-                                          className="flex items-center gap-2"
+                                          className="flex items-center gap-2 w-full sm:w-auto"
                                         >
                                           <Save className="w-4 h-4" />
                                           Opslaan
@@ -714,6 +719,7 @@ const Dashboard = () => {
                                             setEditingMembership(selectedMembership);
                                             setIsEditing(false);
                                           }}
+                                          className="w-full sm:w-auto"
                                         >
                                           Annuleren
                                         </Button>
@@ -739,6 +745,7 @@ const Dashboard = () => {
                 ))}
               </TableBody>
             </Table>
+            </div>
           </CardContent>
         </Card>
       </div>
