@@ -58,7 +58,7 @@ const Hero = () => {
         {/* Background Image */}
         <div 
           className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-          style={{ backgroundImage: 'url(/lovable-uploads/construction-workers.png)' }}
+          style={{ backgroundImage: 'url(/lovable-uploads/diverse-construction-team.png)' }}
         >
           <div className="absolute inset-0 bg-background/70"></div>
         </div>
