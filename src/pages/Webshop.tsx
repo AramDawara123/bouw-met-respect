@@ -120,7 +120,7 @@ const Webshop = () => {
   return (
     <div className="min-h-screen w-full overflow-x-hidden">
       {/* Header */}
-      <header className="bg-background/95 backdrop-blur-sm border-b border-border/50 sticky top-0 z-50">
+      <header className="bg-background/98 backdrop-blur-md border-b border-border/50 sticky top-0 z-50 transition-all duration-300 shadow-sm">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <Link to="/" className="flex items-center space-x-3 text-primary hover:text-primary/80 transition-all duration-300 group">
@@ -142,7 +142,7 @@ const Webshop = () => {
                       <ShoppingCart className="w-6 h-6" />
                     </div>
                     {getCartItemCount() > 0 && (
-                      <div className="absolute -top-1 -right-1 w-6 h-6 bg-gradient-to-r from-primary to-secondary rounded-full flex items-center justify-center animate-pulse">
+                      <div className="absolute -top-1 -right-1 w-6 h-6 bg-gradient-to-r from-primary to-secondary rounded-full flex items-center justify-center">
                         <span className="text-xs font-bold text-white">
                           {getCartItemCount()}
                         </span>
@@ -157,7 +157,7 @@ const Webshop = () => {
                       Winkelwagen ({getCartItemCount()} items)
                     </SheetTitle>
                   </SheetHeader>
-                  <div className="mt-6 space-y-4 max-h-[60vh] overflow-y-auto">
+                  <div className="mt-6 space-y-4 max-h-[60vh] overflow-y-auto scroll-smooth" style={{ scrollBehavior: 'smooth', scrollbarWidth: 'thin' }}>
                     {Object.entries(cart).length === 0 ? (
                       <div className="text-center py-8">
                         <ShoppingCart className="w-16 h-16 mx-auto text-muted-foreground mb-4" />
@@ -251,9 +251,9 @@ const Webshop = () => {
       </header>
 
       {/* Hero Section */}
-      <section className="relative py-24 bg-gradient-to-br from-primary/10 via-background to-secondary/10 overflow-hidden">
+      <section className="relative py-24 bg-gradient-to-br from-primary/5 via-background to-secondary/5 overflow-hidden">
         {/* Background decoration */}
-        <div className="absolute inset-0 bg-[url('/lovable-uploads/b490bd1a-4422-4f83-8394-d7a2f6d940b9.png')] bg-cover bg-center bg-no-repeat opacity-20"></div>
+        <div className="absolute inset-0 bg-[url('/webshop-hero-bg.jpg')] bg-cover bg-center bg-no-repeat opacity-30"></div>
         <div className="absolute inset-0 bg-gradient-to-br from-background/80 via-background/60 to-background/80"></div>
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[600px] bg-gradient-to-r from-primary/20 to-secondary/20 rounded-full blur-3xl opacity-30"></div>
         
@@ -438,8 +438,8 @@ const Webshop = () => {
         
         <div className="container mx-auto px-4 text-center relative">
           {/* Decorative elements */}
-          <div className="absolute top-10 left-1/4 w-32 h-32 bg-gradient-to-r from-primary/10 to-secondary/10 rounded-full blur-3xl animate-pulse"></div>
-          <div className="absolute bottom-10 right-1/4 w-24 h-24 bg-gradient-to-r from-secondary/10 to-primary/10 rounded-full blur-2xl animate-pulse" style={{ animationDelay: '1s' }}></div>
+          <div className="absolute top-10 left-1/4 w-32 h-32 bg-gradient-to-r from-primary/10 to-secondary/10 rounded-full blur-3xl"></div>
+          <div className="absolute bottom-10 right-1/4 w-24 h-24 bg-gradient-to-r from-secondary/10 to-primary/10 rounded-full blur-2xl"></div>
           
           <div className="max-w-4xl mx-auto mb-20">
             <div className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-primary/10 to-secondary/10 backdrop-blur-sm rounded-full text-primary font-semibold text-sm mb-8 border border-primary/20">
