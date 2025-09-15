@@ -74,6 +74,48 @@ const Login = () => {
     }
   };
 
+  const createAdminAccount = async () => {
+    setLoading(true);
+    
+    try {
+      // First try to sign up the admin account
+      const { error: signUpError } = await supabase.auth.signUp({
+        email: "info@bouwmetrespect.nl",
+        password: "admin123",
+        options: {
+          emailRedirectTo: `${window.location.origin}/dashboard`
+        }
+      });
+
+      if (signUpError && !signUpError.message.includes("already registered")) {
+        throw signUpError;
+      }
+
+      // Then try to sign in immediately
+      const { error: signInError } = await supabase.auth.signInWithPassword({
+        email: "info@bouwmetrespect.nl",
+        password: "admin123",
+      });
+
+      if (signInError) throw signInError;
+
+      toast({
+        title: "Admin account gereed!",
+        description: "Je bent ingelogd als admin",
+      });
+
+      navigate("/dashboard");
+    } catch (error: any) {
+      console.log("Admin account setup:", error.message);
+      toast({
+        title: "Account setup",
+        description: "Admin account bestaat al - probeer in te loggen",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-primary/5 to-secondary/5 p-4">
       <div className="w-full max-w-md">
@@ -95,7 +137,7 @@ const Login = () => {
                 <Input
                   id="email"
                   type="email"
-                  placeholder="admin@example.com"
+                  placeholder="info@bouwmetrespect.nl"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
@@ -128,12 +170,24 @@ const Login = () => {
                 >
                   Account aanmaken
                 </Button>
+                <Button 
+                  type="button"
+                  variant="secondary"
+                  className="w-full"
+                  onClick={createAdminAccount}
+                  disabled={loading}
+                >
+                  🚀 Admin Account Aanmaken
+                </Button>
               </div>
             </form>
             
             <div className="mt-6 p-4 bg-muted rounded-lg">
-              <p className="text-sm text-muted-foreground">
-                <strong>Admin toegang:</strong> Gebruik het email adres info@smbgeveltechniek.nl om automatisch admin rechten te krijgen.
+              <p className="text-sm text-muted-foreground mb-2">
+                <strong>Admin toegang:</strong> Gebruik het email adres info@bouwmetrespect.nl om automatisch admin rechten te krijgen.
+              </p>
+              <p className="text-xs text-muted-foreground">
+                💡 <strong>Snelle setup:</strong> Klik op "Admin Account Aanmaken" om direct een admin account te maken met wachtwoord: admin123
               </p>
             </div>
           </CardContent>
