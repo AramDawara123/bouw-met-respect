@@ -11,7 +11,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Search, Users, CreditCard, Edit, Trash2, Download, Filter, Eye, Save, Home } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { supabaseAdmin } from "@/integrations/supabase/admin-client";
 import { useToast } from "@/hooks/use-toast";
 import { Link } from "react-router-dom";
 
@@ -48,16 +47,58 @@ const Dashboard = () => {
   const [selectedMembership, setSelectedMembership] = useState<Membership | null>(null);
   const [editingMembership, setEditingMembership] = useState<Membership | null>(null);
   const [isEditing, setIsEditing] = useState(false);
+  const [user, setUser] = useState(null);
+  const [isAdmin, setIsAdmin] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
-    fetchMemberships();
+    checkAuthAndFetch();
   }, []);
+
+  const checkAuthAndFetch = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        toast({
+          title: "Niet ingelogd",
+          description: "Je moet ingelogd zijn om het dashboard te gebruiken",
+          variant: "destructive"
+        });
+        setLoading(false);
+        return;
+      }
+
+      setUser(user);
+
+      // Check if user is admin
+      const { data: adminCheck } = await supabase.rpc('verify_admin_access');
+      if (!adminCheck) {
+        toast({
+          title: "Geen toegang",
+          description: "Je hebt geen admin rechten",
+          variant: "destructive"
+        });
+        setLoading(false);
+        return;
+      }
+
+      setIsAdmin(true);
+      await fetchMemberships();
+    } catch (error) {
+      console.error('Auth check error:', error);
+      toast({
+        title: "Fout",
+        description: "Er ging iets mis bij het controleren van toegang",
+        variant: "destructive"
+      });
+      setLoading(false);
+    }
+  };
 
   const fetchMemberships = async () => {
     try {
-      // Use admin client to bypass RLS policies
-      const { data, error } = await supabaseAdmin
+      // Use regular client - RLS policies will allow admin access
+      const { data, error } = await supabase
         .from('memberships')
         .select('*')
         .order('created_at', { ascending: false });
@@ -78,7 +119,7 @@ const Dashboard = () => {
 
   const updatePaymentStatus = async (id: string, status: string) => {
     try {
-      const { error } = await supabaseAdmin
+      const { error } = await supabase
         .from('memberships')
         .update({ payment_status: status, updated_at: new Date().toISOString() })
         .eq('id', id);
@@ -102,7 +143,7 @@ const Dashboard = () => {
 
   const updateMembership = async (updatedMembership: Membership) => {
     try {
-      const { error } = await supabaseAdmin
+      const { error } = await supabase
         .from('memberships')
         .update({
           first_name: updatedMembership.first_name,
@@ -143,7 +184,7 @@ const Dashboard = () => {
     if (!confirm('Weet je zeker dat je dit lidmaatschap wilt verwijderen?')) return;
     
     try {
-      const { error } = await supabaseAdmin
+      const { error } = await supabase
         .from('memberships')
         .delete()
         .eq('id', id);
@@ -242,6 +283,26 @@ const Dashboard = () => {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
+
+  if (!user || !isAdmin) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Card className="w-full max-w-md">
+          <CardContent className="pt-6">
+            <div className="text-center">
+              <h2 className="text-2xl font-bold mb-4">Dashboard Toegang</h2>
+              <p className="text-muted-foreground mb-4">
+                Je moet ingelogd zijn als admin om het dashboard te gebruiken.
+              </p>
+              <Link to="/">
+                <Button>Terug naar Home</Button>
+              </Link>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     );
   }

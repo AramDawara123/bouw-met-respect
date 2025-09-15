@@ -12,6 +12,7 @@ import AlgemeneVoorwaarden from "./pages/AlgemeneVoorwaarden";
 import Webshop from "./pages/Webshop";
 import MembershipSuccess from "./pages/MembershipSuccess";
 import Dashboard from "./pages/Dashboard";
+import Login from "./pages/Login";
 
 import NotFound from "./pages/NotFound";
 
@@ -19,7 +20,7 @@ const queryClient = new QueryClient();
 
 const AppContent = () => {
   const location = useLocation();
-  const showNavbar = location.pathname !== '/webshop';
+  const showNavbar = location.pathname !== '/webshop' && location.pathname !== '/login';
   
   return (
     <div className="overflow-x-hidden min-h-screen">
@@ -30,6 +31,7 @@ const AppContent = () => {
         <Route path="/webshop" element={<Webshop />} />
         <Route path="/membership-success" element={<MembershipSuccess />} />
         <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/login" element={<Login />} />
         
         {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
         <Route path="*" element={<NotFound />} />
