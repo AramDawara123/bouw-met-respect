@@ -17,7 +17,7 @@ const Statistics = () => {
     { 
       icon: Target, 
       title: "Doelstelling", 
-      value: 2024, 
+      value: 2025, 
       suffix: "",
       description: "Het jaar waarin we samen het verschil gaan maken"
     },
