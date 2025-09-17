@@ -135,6 +135,7 @@ const Webshop = () => {
 
   const checkout = async () => {
     try {
+      console.log('[Webshop] Checkout clicked');
       setIsCheckingOut(true);
       const items = Object.entries(cart).map(([productId, quantity]) => {
         const product = products.find(p => p.id === productId);
@@ -149,6 +150,7 @@ const Webshop = () => {
 
       if (!items.length) {
         toast({ title: "Winkelwagen leeg", description: "Voeg eerst producten toe.", variant: "destructive" });
+        console.warn('[Webshop] No items to checkout');
         return;
       }
 
@@ -156,13 +158,21 @@ const Webshop = () => {
         body: { items }
       });
 
+      console.log('[Webshop] create-shop-order response', { data, error });
       if (error || (data as any)?.error) {
         throw new Error(error?.message || (data as any)?.error || 'Afrekenen mislukt');
       }
 
-      window.location.href = (data as any).paymentUrl;
+      const paymentUrl = (data as any)?.paymentUrl;
+      if (!paymentUrl) {
+        console.error('[Webshop] No paymentUrl in response');
+        toast({ title: "Afrekenen mislukt", description: "Geen betaal-link ontvangen van server.", variant: "destructive" });
+        return;
+      }
+      window.location.href = paymentUrl;
     } catch (e: any) {
       toast({ title: "Afrekenen mislukt", description: e.message || String(e), variant: "destructive" });
+      console.error('[Webshop] Checkout error', e);
     } finally {
       setIsCheckingOut(false);
     }
