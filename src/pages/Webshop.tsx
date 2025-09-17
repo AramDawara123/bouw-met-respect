@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -9,13 +9,29 @@ import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 import { useToast } from "@/hooks/use-toast";
 import { MarqueeAnimation } from "@/components/ui/marquee-effect";
 import Footer from "@/components/Footer";
+import { supabase } from "@/integrations/supabase/client";
 
 const Webshop = () => {
   const { ref: headerRef, isVisible: headerVisible } = useScrollAnimation(0.2);
   const { ref: productsRef, isVisible: productsVisible } = useScrollAnimation(0.1);
   const [cart, setCart] = useState<{[key: string]: number}>({});
   const [isCartOpen, setIsCartOpen] = useState(false);
+  const [isCheckingOut, setIsCheckingOut] = useState(false);
   const { toast } = useToast();
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const status = params.get('status');
+    if (status === 'paid') {
+      toast({
+        title: "Bedankt!",
+        description: "Je betaling is ontvangen.",
+      });
+      const url = new URL(window.location.href);
+      url.searchParams.delete('status');
+      window.history.replaceState({}, '', url.toString());
+    }
+  }, []);
 
   const products = [
     {
@@ -115,6 +131,41 @@ const Webshop = () => {
 
   const getCartItemCount = () => {
     return Object.values(cart).reduce((total, quantity) => total + quantity, 0);
+  };
+
+  const checkout = async () => {
+    try {
+      setIsCheckingOut(true);
+      const items = Object.entries(cart).map(([productId, quantity]) => {
+        const product = products.find(p => p.id === productId);
+        if (!product) return null;
+        return {
+          id: product.id,
+          name: product.name,
+          price: product.price,
+          quantity
+        };
+      }).filter(Boolean);
+
+      if (!items.length) {
+        toast({ title: "Winkelwagen leeg", description: "Voeg eerst producten toe.", variant: "destructive" });
+        return;
+      }
+
+      const { data, error } = await supabase.functions.invoke('create-shop-order', {
+        body: { items }
+      });
+
+      if (error || (data as any)?.error) {
+        throw new Error(error?.message || (data as any)?.error || 'Afrekenen mislukt');
+      }
+
+      window.location.href = (data as any).paymentUrl;
+    } catch (e: any) {
+      toast({ title: "Afrekenen mislukt", description: e.message || String(e), variant: "destructive" });
+    } finally {
+      setIsCheckingOut(false);
+    }
   };
 
   return (
@@ -229,9 +280,9 @@ const Webshop = () => {
                           <span>€{(getCartTotal() + (getCartTotal() >= 25 ? 0 : 4.95)).toFixed(2)}</span>
                         </div>
                       </div>
-                      <Button className="w-full" size="lg">
+                      <Button className="w-full" size="lg" onClick={checkout} disabled={isCheckingOut}>
                         <ShoppingCart className="w-4 h-4 mr-2" />
-                        Naar afrekenen
+                        {isCheckingOut ? 'Bezig met afrekenen...' : 'Naar afrekenen'}
                       </Button>
                     </div>
                   )}
