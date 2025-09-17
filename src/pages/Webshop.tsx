@@ -10,6 +10,8 @@ import { useToast } from "@/hooks/use-toast";
 import { MarqueeAnimation } from "@/components/ui/marquee-effect";
 import Footer from "@/components/Footer";
 import { supabase } from "@/integrations/supabase/client";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 const Webshop = () => {
   const { ref: headerRef, isVisible: headerVisible } = useScrollAnimation(0.2);
@@ -17,6 +19,17 @@ const Webshop = () => {
   const [cart, setCart] = useState<{[key: string]: number}>({});
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isCheckingOut, setIsCheckingOut] = useState(false);
+  const [customer, setCustomer] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    phone: "",
+    street: "",
+    houseNumber: "",
+    postcode: "",
+    city: "",
+    country: "Nederland"
+  });
   const { toast } = useToast();
 
   useEffect(() => {
@@ -133,6 +146,19 @@ const Webshop = () => {
     return Object.values(cart).reduce((total, quantity) => total + quantity, 0);
   };
 
+  const validateCustomer = () => {
+    const missing: string[] = [];
+    if (!customer.firstName) missing.push("voornaam");
+    if (!customer.lastName) missing.push("achternaam");
+    if (!customer.email) missing.push("e-mail");
+    if (!customer.phone) missing.push("telefoon");
+    if (!customer.street) missing.push("straat");
+    if (!customer.houseNumber) missing.push("huisnummer");
+    if (!customer.postcode) missing.push("postcode");
+    if (!customer.city) missing.push("plaats");
+    return missing;
+  };
+
   const checkout = async () => {
     try {
       console.log('[Webshop] Checkout clicked');
@@ -154,8 +180,14 @@ const Webshop = () => {
         return;
       }
 
+      const missing = validateCustomer();
+      if (missing.length) {
+        toast({ title: "Gegevens incompleet", description: `Vul nog in: ${missing.join(', ')}` , variant: "destructive" });
+        return;
+      }
+
       const { data, error } = await supabase.functions.invoke('create-shop-order', {
-        body: { items }
+        body: { items, customer }
       });
 
       console.log('[Webshop] create-shop-order response', { data, error });
@@ -274,6 +306,46 @@ const Webshop = () => {
                   </div>
                   {getCartItemCount() > 0 && (
                     <div className="mt-6 space-y-4 border-t pt-4">
+                      {/* Customer details form */}
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                          <Label htmlFor="firstName">Voornaam</Label>
+                          <Input id="firstName" value={customer.firstName} onChange={(e) => setCustomer({ ...customer, firstName: e.target.value })} placeholder="Jan" />
+                        </div>
+                        <div>
+                          <Label htmlFor="lastName">Achternaam</Label>
+                          <Input id="lastName" value={customer.lastName} onChange={(e) => setCustomer({ ...customer, lastName: e.target.value })} placeholder="Jansen" />
+                        </div>
+                        <div className="sm:col-span-2">
+                          <Label htmlFor="email">E-mail</Label>
+                          <Input id="email" type="email" value={customer.email} onChange={(e) => setCustomer({ ...customer, email: e.target.value })} placeholder="jan@voorbeeld.nl" />
+                        </div>
+                        <div className="sm:col-span-2">
+                          <Label htmlFor="phone">Telefoon</Label>
+                          <Input id="phone" value={customer.phone} onChange={(e) => setCustomer({ ...customer, phone: e.target.value })} placeholder="0612345678" />
+                        </div>
+                        <div className="sm:col-span-2">
+                          <Label htmlFor="street">Straat</Label>
+                          <Input id="street" value={customer.street} onChange={(e) => setCustomer({ ...customer, street: e.target.value })} placeholder="Hoofdstraat" />
+                        </div>
+                        <div>
+                          <Label htmlFor="houseNumber">Huisnummer</Label>
+                          <Input id="houseNumber" value={customer.houseNumber} onChange={(e) => setCustomer({ ...customer, houseNumber: e.target.value })} placeholder="12A" />
+                        </div>
+                        <div>
+                          <Label htmlFor="postcode">Postcode</Label>
+                          <Input id="postcode" value={customer.postcode} onChange={(e) => setCustomer({ ...customer, postcode: e.target.value })} placeholder="1234 AB" />
+                        </div>
+                        <div className="sm:col-span-2">
+                          <Label htmlFor="city">Plaats</Label>
+                          <Input id="city" value={customer.city} onChange={(e) => setCustomer({ ...customer, city: e.target.value })} placeholder="Amsterdam" />
+                        </div>
+                        <div className="sm:col-span-2">
+                          <Label htmlFor="country">Land</Label>
+                          <Input id="country" value={customer.country} onChange={(e) => setCustomer({ ...customer, country: e.target.value })} placeholder="Nederland" />
+                        </div>
+                      </div>
+
                       <div className="space-y-2">
                         <div className="flex justify-between text-sm">
                           <span>Subtotaal:</span>

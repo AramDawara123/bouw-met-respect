@@ -25,7 +25,7 @@ serve(async (req) => {
       user = data.user;
     }
 
-    const { items, email } = await req.json();
+    const { items, customer } = await req.json();
 
     if (!Array.isArray(items) || items.length === 0) {
       throw new Error('Geen items ontvangen');
@@ -61,7 +61,8 @@ serve(async (req) => {
         redirectUrl: `${origin}/webshop?status=paid`,
         webhookUrl: webhookUrl || undefined,
         metadata: {
-          email: email || user?.email || null,
+          email: (customer?.email) || user?.email || null,
+          customer,
           items,
           subtotalCents,
           shippingCents,
@@ -96,14 +97,23 @@ serve(async (req) => {
         .from('orders')
         .insert({
           user_id: user?.id || null,
-          email: email || user?.email || null,
+          email: (customer?.email) || user?.email || null,
           items,
           subtotal: subtotalCents,
           shipping: shippingCents,
           total: totalCents,
           currency: 'EUR',
           payment_status: 'pending',
-          mollie_payment_id: molliePayment.id
+          mollie_payment_id: molliePayment.id,
+          customer_first_name: customer?.firstName || null,
+          customer_last_name: customer?.lastName || null,
+          customer_email: customer?.email || null,
+          customer_phone: customer?.phone || null,
+          address_street: customer?.street || null,
+          address_house_number: customer?.houseNumber || null,
+          address_postcode: customer?.postcode || null,
+          address_city: customer?.city || null,
+          address_country: customer?.country || null
         });
 
       if (insertError) {
