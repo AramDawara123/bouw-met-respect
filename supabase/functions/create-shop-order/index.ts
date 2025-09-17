@@ -41,7 +41,7 @@ serve(async (req) => {
     const totalCents = subtotalCents + shippingCents;
     const totalEuroValue = (totalCents / 100).toFixed(2);
 
-    const mollieApiKey = Deno.env.get('MOLLIE_API_KEY');
+    const mollieApiKey = Deno.env.get('live_AaMAbMqxnuJtnQw3VfRBgmtkQ9SnTUMOLLIE_API_KEY');
     if (!mollieApiKey) {
       throw new Error('Mollie API key niet geconfigureerd');
     }
