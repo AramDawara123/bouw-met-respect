@@ -41,7 +41,7 @@ serve(async (req) => {
     const totalCents = subtotalCents + shippingCents;
     const totalEuroValue = (totalCents / 100).toFixed(2);
 
-    const mollieApiKey = Deno.env.get('live_AaMAbMqxnuJtnQw3VfRBgmtkQ9SnTUMOLLIE_API_KEY');
+    const mollieApiKey = Deno.env.get('MOLLIE_API_KEY');
     if (!mollieApiKey) {
       throw new Error('Mollie API key niet geconfigureerd');
     }
@@ -84,28 +84,33 @@ serve(async (req) => {
 
     const molliePayment = await mollieResponse.json();
 
-    const supabaseService = createClient(
-      Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
-      { auth: { persistSession: false } }
-    );
+    // Try to store the order, but do not block checkout if it fails
+    try {
+      const supabaseService = createClient(
+        Deno.env.get('SUPABASE_URL') ?? '',
+        Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
+        { auth: { persistSession: false } }
+      );
 
-    const { error: insertError } = await supabaseService
-      .from('orders')
-      .insert({
-        user_id: user?.id || null,
-        email: email || user?.email || null,
-        items,
-        subtotal: subtotalCents,
-        shipping: shippingCents,
-        total: totalCents,
-        currency: 'EUR',
-        payment_status: 'pending',
-        mollie_payment_id: molliePayment.id
-      });
+      const { error: insertError } = await supabaseService
+        .from('orders')
+        .insert({
+          user_id: user?.id || null,
+          email: email || user?.email || null,
+          items,
+          subtotal: subtotalCents,
+          shipping: shippingCents,
+          total: totalCents,
+          currency: 'EUR',
+          payment_status: 'pending',
+          mollie_payment_id: molliePayment.id
+        });
 
-    if (insertError) {
-      throw new Error(`Database error: ${insertError.message}`);
+      if (insertError) {
+        console.error('Order save failed, continuing to checkout:', insertError.message);
+      }
+    } catch (dbErr) {
+      console.error('Order save threw exception, continuing to checkout:', dbErr);
     }
 
     return new Response(
