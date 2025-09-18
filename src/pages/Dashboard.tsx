@@ -38,44 +38,17 @@ interface Membership {
   updated_at: string;
 }
 
-interface Order {
-  id: string;
-  user_id?: string | null;
-  email?: string | null;
-  items: any[];
-  subtotal: number;
-  shipping: number;
-  total: number;
-  currency: string;
-  payment_status: string;
-  mollie_payment_id?: string | null;
-  created_at: string;
-  updated_at: string;
-  customer_first_name?: string | null;
-  customer_last_name?: string | null;
-  customer_email?: string | null;
-  customer_phone?: string | null;
-  address_street?: string | null;
-  address_house_number?: string | null;
-  address_postcode?: string | null;
-  address_city?: string | null;
-  address_country?: string | null;
-}
-
 const Dashboard = () => {
   const [memberships, setMemberships] = useState<Membership[]>([]);
-  const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [typeFilter, setTypeFilter] = useState("all");
-  const [orderStatusFilter, setOrderStatusFilter] = useState("all");
   const [selectedMembership, setSelectedMembership] = useState<Membership | null>(null);
   const [editingMembership, setEditingMembership] = useState<Membership | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [user, setUser] = useState(null);
   const [isAdmin, setIsAdmin] = useState(false);
-  const [viewMode, setViewMode] = useState<'memberships' | 'orders'>("memberships");
   const { toast } = useToast();
 
   useEffect(() => {
@@ -110,7 +83,7 @@ const Dashboard = () => {
       }
 
       setIsAdmin(true);
-      await Promise.all([fetchMemberships(), fetchOrders()]);
+      await fetchMemberships();
     } catch (error) {
       console.error('Auth check error:', error);
       toast({
@@ -144,24 +117,6 @@ const Dashboard = () => {
     }
   };
 
-  const fetchOrders = async () => {
-    try {
-      const { data, error } = await supabase
-        .from('orders')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-      setOrders(data || []);
-    } catch (error) {
-      console.error('Error fetching orders:', error);
-      toast({
-        title: "Fout",
-        description: "Kon bestellingen niet laden",
-        variant: "destructive"
-      });
-    }
-  };
 
   const updatePaymentStatus = async (id: string, status: string) => {
     try {
@@ -292,79 +247,37 @@ const Dashboard = () => {
   const formatPrice = (amount: number) => `€${(amount / 100).toFixed(2)}`;
 
   const exportToCsv = () => {
-    if (viewMode === 'memberships') {
-      const csvContent = [
-        ["Naam", "Email", "Bedrijf", "Type", "Status", "Bedrag", "Datum"].join(","),
-        ...filteredMemberships.map(m => [
-          `${m.first_name} ${m.last_name}`,
-          m.email,
-          m.company || "",
-          m.membership_type,
-          m.payment_status,
-          formatPrice(m.amount),
-          new Date(m.created_at).toLocaleDateString()
-        ].join(","))
-      ].join("\n");
-      const blob = new Blob([csvContent], { type: "text/csv" });
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.setAttribute("hidden", "");
-      a.setAttribute("href", url);
-      a.setAttribute("download", "lidmaatschappen.csv");
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-    } else {
-      const csvContent = [
-        ["Naam", "Email", "Telefoon", "Adres", "Status", "Totaal", "Datum"].join(","),
-        ...filteredOrders.map(o => [
-          `${o.customer_first_name || ''} ${o.customer_last_name || ''}`.trim() || '-',
-          o.customer_email || o.email || '-',
-          o.customer_phone || '-',
-          `${o.address_street || ''} ${o.address_house_number || ''}, ${o.address_postcode || ''} ${o.address_city || ''}`.trim(),
-          o.payment_status,
-          formatPrice(o.total),
-          new Date(o.created_at).toLocaleDateString()
-        ].join(","))
-      ].join("\n");
-      const blob = new Blob([csvContent], { type: "text/csv" });
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.setAttribute("hidden", "");
-      a.setAttribute("href", url);
-      a.setAttribute("download", "bestellingen.csv");
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-    }
+    const csvContent = [
+      ["Naam", "Email", "Bedrijf", "Type", "Status", "Bedrag", "Datum"].join(","),
+      ...filteredMemberships.map(m => [
+        `${m.first_name} ${m.last_name}`,
+        m.email,
+        m.company || "",
+        m.membership_type,
+        m.payment_status,
+        formatPrice(m.amount),
+        new Date(m.created_at).toLocaleDateString()
+      ].join(","))
+    ].join("\n");
+    const blob = new Blob([csvContent], { type: "text/csv" });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.setAttribute("hidden", "");
+    a.setAttribute("href", url);
+    a.setAttribute("download", "lidmaatschappen.csv");
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
   };
 
-  const stats = viewMode === 'memberships'
-    ? {
-        total: memberships.length,
-        paid: memberships.filter(m => m.payment_status === 'paid').length,
-        pending: memberships.filter(m => m.payment_status === 'pending').length,
-        revenue: memberships
-          .filter(m => m.payment_status === 'paid')
-          .reduce((sum, m) => sum + m.amount, 0)
-      }
-    : {
-        total: orders.length,
-        paid: orders.filter(o => o.payment_status === 'paid').length,
-        pending: orders.filter(o => o.payment_status === 'pending').length,
-        revenue: orders
-          .filter(o => o.payment_status === 'paid')
-          .reduce((sum, o) => sum + o.total, 0)
-      };
-
-  const filteredOrders = orders.filter(order => {
-    const name = `${order.customer_first_name || ''} ${order.customer_last_name || ''}`.toLowerCase();
-    const email = (order.customer_email || order.email || '').toLowerCase();
-    const address = `${order.address_street || ''} ${order.address_house_number || ''} ${order.address_postcode || ''} ${order.address_city || ''}`.toLowerCase();
-    const matchesSearch = name.includes(searchTerm.toLowerCase()) || email.includes(searchTerm.toLowerCase()) || address.includes(searchTerm.toLowerCase());
-    const matchesStatus = orderStatusFilter === 'all' || order.payment_status === orderStatusFilter;
-    return matchesSearch && matchesStatus;
-  });
+  const stats = {
+    total: memberships.length,
+    paid: memberships.filter(m => m.payment_status === 'paid').length,
+    pending: memberships.filter(m => m.payment_status === 'pending').length,
+    revenue: memberships
+      .filter(m => m.payment_status === 'paid')
+      .reduce((sum, m) => sum + m.amount, 0)
+  };
 
   if (loading) {
     return (
@@ -417,26 +330,13 @@ const Dashboard = () => {
           </div>
         </div>
 
-        {/* View Toggle */}
-        <Card>
-          <CardContent className="pt-6">
-            <div className="flex items-center gap-3">
-              <Button variant={viewMode === 'memberships' ? 'default' : 'outline'} onClick={() => setViewMode('memberships')} className="flex items-center gap-2">
-                <Users className="w-4 h-4" /> Lidmaatschappen
-              </Button>
-              <Button variant={viewMode === 'orders' ? 'default' : 'outline'} onClick={() => setViewMode('orders')} className="flex items-center gap-2">
-                <ShoppingBag className="w-4 h-4" /> Bestellingen
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 xl:gap-8">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">{viewMode === 'memberships' ? 'Totaal Leden' : 'Totaal Bestellingen'}</CardTitle>
-              {viewMode === 'memberships' ? <Users className="w-4 h-4 text-muted-foreground" /> : <ShoppingBag className="w-4 h-4 text-muted-foreground" />}
+              <CardTitle className="text-sm font-medium">Totaal Leden</CardTitle>
+              <Users className="w-4 h-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{stats.total}</div>
@@ -487,59 +387,41 @@ const Dashboard = () => {
               <div className="flex items-center gap-2 w-full md:w-auto md:flex-1">
                 <Search className="w-4 h-4 text-muted-foreground" />
                 <Input
-                  placeholder={viewMode === 'memberships' ? "Zoek op naam, email of bedrijf..." : "Zoek op naam, email of adres..."}
+                  placeholder="Zoek op naam, email of bedrijf..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="w-full md:max-w-md"
                 />
               </div>
-              {viewMode === 'memberships' ? (
-                <>
-                  <Select value={statusFilter} onValueChange={setStatusFilter}>
-                    <SelectTrigger className="w-full md:w-48">
-                      <SelectValue placeholder="Filter op status" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">Alle statussen</SelectItem>
-                      <SelectItem value="paid">Betaald</SelectItem>
-                      <SelectItem value="pending">In behandeling</SelectItem>
-                      <SelectItem value="failed">Mislukt</SelectItem>
-                      <SelectItem value="expired">Verlopen</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <Select value={typeFilter} onValueChange={setTypeFilter}>
-                    <SelectTrigger className="w-full md:w-48">
-                      <SelectValue placeholder="Filter op type" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">Alle types</SelectItem>
-                      <SelectItem value="klein">Klein</SelectItem>
-                      <SelectItem value="middelgroot">Middelgroot</SelectItem>
-                      <SelectItem value="groot">Groot</SelectItem>
-                      <SelectItem value="offerte">Offerte</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </>
-              ) : (
-                <Select value={orderStatusFilter} onValueChange={setOrderStatusFilter}>
-                  <SelectTrigger className="w-full md:w-48">
-                    <SelectValue placeholder="Filter op status" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">Alle statussen</SelectItem>
-                    <SelectItem value="paid">Betaald</SelectItem>
-                    <SelectItem value="pending">In behandeling</SelectItem>
-                    <SelectItem value="failed">Mislukt</SelectItem>
-                    <SelectItem value="expired">Verlopen</SelectItem>
-                  </SelectContent>
-                </Select>
-              )}
+              <Select value={statusFilter} onValueChange={setStatusFilter}>
+                <SelectTrigger className="w-full md:w-48">
+                  <SelectValue placeholder="Filter op status" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Alle statussen</SelectItem>
+                  <SelectItem value="paid">Betaald</SelectItem>
+                  <SelectItem value="pending">In behandeling</SelectItem>
+                  <SelectItem value="failed">Mislukt</SelectItem>
+                  <SelectItem value="expired">Verlopen</SelectItem>
+                </SelectContent>
+              </Select>
+              <Select value={typeFilter} onValueChange={setTypeFilter}>
+                <SelectTrigger className="w-full md:w-48">
+                  <SelectValue placeholder="Filter op type" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Alle types</SelectItem>
+                  <SelectItem value="klein">Klein</SelectItem>
+                  <SelectItem value="middelgroot">Middelgroot</SelectItem>
+                  <SelectItem value="groot">Groot</SelectItem>
+                  <SelectItem value="offerte">Offerte</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
           </CardContent>
         </Card>
 
         {/* Memberships Table */}
-        {viewMode === 'memberships' && (
         <Card>
           <CardHeader>
             <CardTitle>Lidmaatschappen ({filteredMemberships.length})</CardTitle>
@@ -928,53 +810,6 @@ const Dashboard = () => {
             </div>
           </CardContent>
         </Card>
-        )}
-
-        {/* Orders Table */}
-        {viewMode === 'orders' && (
-        <Card>
-          <CardHeader>
-            <CardTitle>Bestellingen ({filteredOrders.length})</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="overflow-x-auto">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="min-w-[180px]">Klant</TableHead>
-                    <TableHead className="hidden sm:table-cell min-w-[180px]">Contact</TableHead>
-                    <TableHead className="min-w-[220px]">Adres</TableHead>
-                    <TableHead className="min-w-[100px]">Status</TableHead>
-                    <TableHead className="hidden lg:table-cell min-w-[100px]">Totaal</TableHead>
-                    <TableHead className="hidden md:table-cell min-w-[140px]">Datum</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {filteredOrders.map((order) => (
-                    <TableRow key={order.id}>
-                      <TableCell className="min-w-[180px]">
-                        <div className="font-medium">{`${order.customer_first_name || ''} ${order.customer_last_name || ''}`.trim() || '-'}</div>
-                        <div className="text-xs text-muted-foreground">{order.mollie_payment_id || '-'}</div>
-                      </TableCell>
-                      <TableCell className="hidden sm:table-cell min-w-[180px]">
-                        <div>{order.customer_email || order.email || '-'}</div>
-                        <div className="text-xs text-muted-foreground">{order.customer_phone || '-'}</div>
-                      </TableCell>
-                      <TableCell className="min-w-[220px]">
-                        {`${order.address_street || ''} ${order.address_house_number || ''}`.trim()}<br/>
-                        {`${order.address_postcode || ''} ${order.address_city || ''}`.trim()}
-                      </TableCell>
-                      <TableCell>{getStatusBadge(order.payment_status)}</TableCell>
-                      <TableCell className="hidden lg:table-cell">{formatPrice(order.total)}</TableCell>
-                      <TableCell className="hidden md:table-cell">{new Date(order.created_at).toLocaleDateString()}</TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
-          </CardContent>
-        </Card>
-        )}
       </div>
     </div>
   );
