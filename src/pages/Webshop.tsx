@@ -250,7 +250,7 @@ const Webshop = () => {
                       Winkelwagen ({getCartItemCount()} items)
                     </SheetTitle>
                   </SheetHeader>
-                  <div className="mt-6 space-y-4 max-h-[60vh] overflow-y-auto scroll-smooth" style={{ scrollBehavior: 'smooth', scrollbarWidth: 'thin' }}>
+                  <div className="mt-6 space-y-4 max-h-[60vh] overflow-y-auto scroll-smooth pb-28" style={{ scrollBehavior: 'smooth', scrollbarWidth: 'thin' }}>
                     {Object.entries(cart).length === 0 ? (
                       <div className="text-center py-8">
                         <ShoppingCart className="w-16 h-16 mx-auto text-muted-foreground mb-4" />
@@ -346,26 +346,29 @@ const Webshop = () => {
                         </div>
                       </div>
 
-                      <div className="space-y-2">
-                        <div className="flex justify-between text-sm">
-                          <span>Subtotaal:</span>
-                          <span>€{getCartTotal().toFixed(2)}</span>
+                      {/* Sticky checkout bar */}
+                      <div className="sticky bottom-0 left-0 right-0 -mx-6 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 border-t border-border p-4">
+                        <div className="space-y-2">
+                          <div className="flex justify-between text-sm">
+                            <span>Subtotaal:</span>
+                            <span>€{getCartTotal().toFixed(2)}</span>
+                          </div>
+                          <div className="flex justify-between text-sm">
+                            <span>Verzendkosten:</span>
+                            <span className={getCartTotal() >= 25 ? 'text-green-600' : ''}>
+                              {getCartTotal() >= 25 ? 'Gratis' : '€4.95'}
+                            </span>
+                          </div>
+                          <div className="flex justify-between font-bold text-lg border-t pt-2">
+                            <span>Totaal:</span>
+                            <span>€{(getCartTotal() + (getCartTotal() >= 25 ? 0 : 4.95)).toFixed(2)}</span>
+                          </div>
                         </div>
-                        <div className="flex justify-between text-sm">
-                          <span>Verzendkosten:</span>
-                          <span className={getCartTotal() >= 25 ? 'text-green-600' : ''}>
-                            {getCartTotal() >= 25 ? 'Gratis' : '€4.95'}
-                          </span>
-                        </div>
-                        <div className="flex justify-between font-bold text-lg border-t pt-2">
-                          <span>Totaal:</span>
-                          <span>€{(getCartTotal() + (getCartTotal() >= 25 ? 0 : 4.95)).toFixed(2)}</span>
-                        </div>
+                        <Button className="w-full mt-4" size="lg" onClick={checkout} disabled={isCheckingOut}>
+                          <ShoppingCart className="w-4 h-4 mr-2" />
+                          {isCheckingOut ? 'Bezig met afrekenen...' : 'Naar afrekenen'}
+                        </Button>
                       </div>
-                      <Button className="w-full" size="lg" onClick={checkout} disabled={isCheckingOut}>
-                        <ShoppingCart className="w-4 h-4 mr-2" />
-                        {isCheckingOut ? 'Bezig met afrekenen...' : 'Naar afrekenen'}
-                      </Button>
                     </div>
                   )}
                 </SheetContent>
