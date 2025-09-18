@@ -96,6 +96,78 @@ export type Database = {
         }
         Relationships: []
       }
+      orders: {
+        Row: {
+          address_city: string | null
+          address_country: string | null
+          address_house_number: string | null
+          address_postcode: string | null
+          address_street: string | null
+          created_at: string
+          currency: string
+          customer_email: string | null
+          customer_first_name: string | null
+          customer_last_name: string | null
+          customer_phone: string | null
+          email: string | null
+          id: string
+          items: Json
+          mollie_payment_id: string | null
+          payment_status: string
+          shipping: number
+          subtotal: number
+          total: number
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          address_city?: string | null
+          address_country?: string | null
+          address_house_number?: string | null
+          address_postcode?: string | null
+          address_street?: string | null
+          created_at?: string
+          currency?: string
+          customer_email?: string | null
+          customer_first_name?: string | null
+          customer_last_name?: string | null
+          customer_phone?: string | null
+          email?: string | null
+          id?: string
+          items?: Json
+          mollie_payment_id?: string | null
+          payment_status?: string
+          shipping?: number
+          subtotal?: number
+          total?: number
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          address_city?: string | null
+          address_country?: string | null
+          address_house_number?: string | null
+          address_postcode?: string | null
+          address_street?: string | null
+          created_at?: string
+          currency?: string
+          customer_email?: string | null
+          customer_first_name?: string | null
+          customer_last_name?: string | null
+          customer_phone?: string | null
+          email?: string | null
+          id?: string
+          items?: Json
+          mollie_payment_id?: string | null
+          payment_status?: string
+          shipping?: number
+          subtotal?: number
+          total?: number
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string
