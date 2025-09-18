@@ -418,6 +418,19 @@ const Dashboard = () => {
           </div>
         </div>
 
+        {/* View Mode Tabs */}
+        <Tabs value={viewMode} onValueChange={(value) => setViewMode(value as 'memberships' | 'orders')}>
+          <TabsList className="grid w-full max-w-md grid-cols-2">
+            <TabsTrigger value="memberships" className="flex items-center gap-2">
+              <Users className="w-4 h-4" />
+              Lidmaatschappen
+            </TabsTrigger>
+            <TabsTrigger value="orders" className="flex items-center gap-2">
+              <ShoppingBag className="w-4 h-4" />
+              Bestellingen
+            </TabsTrigger>
+          </TabsList>
+        </Tabs>
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 xl:gap-8">
