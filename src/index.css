@@ -28,8 +28,8 @@
     --muted: 217 32% 92%;
     --muted-foreground: 217 91% 17%;
 
-    /* Accent: Helder Geel (Bright Yellow) */
-    --accent: 45 100% 60%;
+    /* Accent: Zand Geel (Sand Yellow) */
+    --accent: 50 85% 76%;
     --accent-foreground: 217 91% 17%;
 
     --destructive: 0 84% 60%;
@@ -43,7 +43,7 @@
     --radius: 0.75rem;
 
     /* Custom gradient variables using blue and yellow palette */
-    --hero-gradient: linear-gradient(135deg, hsl(217 91% 60%) 0%, hsl(45 100% 60%) 100%);
+    --hero-gradient: linear-gradient(135deg, hsl(217 91% 60%) 0%, hsl(50 85% 76%) 100%);
     --card-gradient: linear-gradient(145deg, hsl(0 0% 100%) 0%, hsl(217 32% 95%) 100%);
     
     /* Dark theme variants */
