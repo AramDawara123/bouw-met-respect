@@ -211,7 +211,7 @@ const Webshop = () => {
   };
 
   return (
-    <div className="min-h-screen w-full overflow-x-hidden">
+    <div className="min-h-screen sticky w-full overflow-x-hidden">
       {/* Header */}
       <header className="bg-background/98 backdrop-blur-md border-b border-border/50 sticky top-0 z-50 transition-all duration-300 shadow-sm">
         <div className="container mx-auto px-4 py-4">
