@@ -7,44 +7,44 @@
 
 @layer base {
   :root {
-    /* Kalk Wit background */
-    --background: 0 0% 96%;
-    --foreground: 194 46% 15%;
+    /* Light background */
+    --background: 0 0% 98%;
+    --foreground: 217 91% 17%;
 
     --card: 0 0% 100%;
-    --card-foreground: 194 46% 15%;
+    --card-foreground: 217 91% 17%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 194 46% 15%;
+    --popover-foreground: 217 91% 17%;
 
-    /* Primary: Bouw Geel (Construction Yellow) */
-    --primary: 50 98% 50%;
-    --primary-foreground: 194 46% 15%;
+    /* Primary: Kader Blauw (Frame Blue) */
+    --primary: 217 91% 60%;
+    --primary-foreground: 0 0% 98%;
 
-    /* Secondary: Lei Grijs (Slate Grey) */
-    --secondary: 194 13% 37%;
+    /* Secondary: Donker Blauw (Dark Blue) */
+    --secondary: 217 91% 17%;
     --secondary-foreground: 0 0% 98%;
 
-    --muted: 182 16% 90%;
-    --muted-foreground: 194 13% 37%;
+    --muted: 217 32% 92%;
+    --muted-foreground: 217 91% 17%;
 
-    /* Accent: Zand Geel (Sand Yellow) */
-    --accent: 50 85% 76%;
-    --accent-foreground: 194 46% 15%;
+    /* Accent: Helder Geel (Bright Yellow) */
+    --accent: 45 100% 60%;
+    --accent-foreground: 217 91% 17%;
 
-    --destructive: 0 84.2% 60.2%;
+    --destructive: 0 84% 60%;
     --destructive-foreground: 210 40% 98%;
 
-    /* Blauw Staal borders */
-    --border: 182 16% 66%;
-    --input: 182 16% 66%;
-    --ring: 50 98% 50%;
+    /* Borders */
+    --border: 217 32% 82%;
+    --input: 217 32% 82%;
+    --ring: 217 91% 60%;
 
     --radius: 0.75rem;
 
-    /* Custom gradient variables using new palette */
-    --hero-gradient: linear-gradient(135deg, hsl(50 98% 50%) 0%, hsl(194 46% 15%) 100%);
-    --card-gradient: linear-gradient(145deg, hsl(0 0% 100%) 0%, hsl(182 16% 90%) 100%);
+    /* Custom gradient variables using blue and yellow palette */
+    --hero-gradient: linear-gradient(135deg, hsl(217 91% 60%) 0%, hsl(45 100% 60%) 100%);
+    --card-gradient: linear-gradient(145deg, hsl(0 0% 100%) 0%, hsl(217 32% 95%) 100%);
     
     /* Dark theme variants */
     --nacht-blauw: 194 46% 15%;
