@@ -37,7 +37,7 @@ const Navbar = () => {
               </a>
               <Link to="/webshop" className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors">
                 <ShoppingCart className="w-4 h-4" />
-                Winkelwagen
+                Webshop
               </Link>
               <Button className="ml-4" onClick={handleMembershipClick}>
                 Sluit je aan bij de beweging
