@@ -33,7 +33,7 @@ const AppContent = () => {
         <Route path="/membership-success" element={<MembershipSuccess />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/bedrijven" element={<CompanyProfiles />} />
+        <Route path="/onze-partners" element={<CompanyProfiles />} />
         
         {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
         <Route path="*" element={<NotFound />} />

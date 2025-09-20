@@ -31,6 +31,9 @@ const Navbar = () => {
               <a href="#verhalen" className="text-muted-foreground hover:text-foreground transition-colors">
                 Verhalen
               </a>
+              <Link to="/onze-partners" className="text-muted-foreground hover:text-foreground transition-colors">
+                Onze Partners
+              </Link>
               <a href="#contact" className="text-muted-foreground hover:text-foreground transition-colors">
                 Contact
               </a>
@@ -61,12 +64,15 @@ const Navbar = () => {
                 <a href="#verhalen" className="text-muted-foreground hover:text-foreground transition-colors py-2" onClick={() => setIsMenuOpen(false)}>
                   Verhalen
                 </a>
+                <Link to="/onze-partners" className="text-muted-foreground hover:text-foreground transition-colors py-2" onClick={() => setIsMenuOpen(false)}>
+                  Onze Partners
+                </Link>
                 <a href="#contact" className="text-muted-foreground hover:text-foreground transition-colors py-2" onClick={() => setIsMenuOpen(false)}>
                   Contact
                 </a>
                 <Link to="/webshop" className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors py-2" onClick={() => setIsMenuOpen(false)}>
                   <ShoppingCart className="w-4 h-4" />
-                  Winkelwagen
+                  Webshop
                 </Link>
                 <Button className="w-full mt-4" onClick={handleMembershipClick}>
                   Sluit je aan bij de beweging
