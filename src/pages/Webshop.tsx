@@ -693,9 +693,7 @@ const Webshop = () => {
               <AccordionItem value="item-1" className="bg-white/80 backdrop-blur-sm rounded-2xl border-0 shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden">
                 <AccordionTrigger className="px-8 py-6 text-left hover:no-underline group">
                   <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                      <span className="text-white font-bold">🚚</span>
-                    </div>
+                    
                     <span className="text-xl font-bold text-gray-900 group-hover:text-blue-700 transition-colors duration-300">
                       Hoe lang duurt de levering?
                     </span>
@@ -714,9 +712,7 @@ const Webshop = () => {
               <AccordionItem value="item-2" className="bg-white/80 backdrop-blur-sm rounded-2xl border-0 shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden">
                 <AccordionTrigger className="px-8 py-6 text-left hover:no-underline group">
                   <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                      <span className="text-white font-bold">↺</span>
-                    </div>
+                    
                     <span className="text-xl font-bold text-gray-900 group-hover:text-green-700 transition-colors duration-300">
                       Kan ik mijn bestelling retourneren?
                     </span>
@@ -735,9 +731,7 @@ const Webshop = () => {
               <AccordionItem value="item-3" className="bg-white/80 backdrop-blur-sm rounded-2xl border-0 shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden">
                 <AccordionTrigger className="px-8 py-6 text-left hover:no-underline group">
                   <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-600 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                      <span className="text-white font-bold">💎</span>
-                    </div>
+                    
                     <span className="text-xl font-bold text-gray-900 group-hover:text-purple-700 transition-colors duration-300">
                       Zijn de producten van goede kwaliteit?
                     </span>
@@ -756,9 +750,7 @@ const Webshop = () => {
               <AccordionItem value="item-4" className="bg-white/80 backdrop-blur-sm rounded-2xl border-0 shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden">
                 <AccordionTrigger className="px-8 py-6 text-left hover:no-underline group">
                   <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-red-600 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                      <span className="text-white font-bold">🎯</span>
-                    </div>
+                    
                     <span className="text-xl font-bold text-gray-900 group-hover:text-orange-700 transition-colors duration-300">
                       Waarvoor worden de opbrengsten gebruikt?
                     </span>
@@ -777,9 +769,7 @@ const Webshop = () => {
               <AccordionItem value="item-5" className="bg-white/80 backdrop-blur-sm rounded-2xl border-0 shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden">
                 <AccordionTrigger className="px-8 py-6 text-left hover:no-underline group">
                   <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                      <span className="text-white font-bold">💳</span>
-                    </div>
+                    
                     <span className="text-xl font-bold text-gray-900 group-hover:text-cyan-700 transition-colors duration-300">
                       Kan ik betalen met iDEAL?
                     </span>
@@ -798,9 +788,7 @@ const Webshop = () => {
               <AccordionItem value="item-6" className="bg-white/80 backdrop-blur-sm rounded-2xl border-0 shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden">
                 <AccordionTrigger className="px-8 py-6 text-left hover:no-underline group">
                   <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 bg-gradient-to-br from-yellow-500 to-orange-600 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                      <span className="text-white font-bold">📄</span>
-                    </div>
+                    
                     <span className="text-xl font-bold text-gray-900 group-hover:text-yellow-700 transition-colors duration-300">
                       Krijg ik een factuur voor mijn bestelling?
                     </span>
