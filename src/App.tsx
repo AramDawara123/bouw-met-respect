@@ -13,6 +13,7 @@ import Webshop from "./pages/Webshop";
 import MembershipSuccess from "./pages/MembershipSuccess";
 import Dashboard from "./pages/Dashboard";
 import Login from "./pages/Login";
+import CompanyProfiles from "./pages/CompanyProfiles";
 
 import NotFound from "./pages/NotFound";
 
@@ -32,6 +33,7 @@ const AppContent = () => {
         <Route path="/membership-success" element={<MembershipSuccess />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/bedrijven" element={<CompanyProfiles />} />
         
         {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
         <Route path="*" element={<NotFound />} />
