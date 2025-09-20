@@ -395,46 +395,40 @@ const Webshop = () => {
       </header>
 
       {/* Hero Section */}
-      <section className="relative py-32 bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 overflow-hidden">
+      <section className="relative py-32 bg-gradient-to-br from-primary/5 via-background to-secondary/5 overflow-hidden">
         {/* Background decoration */}
-        <div className="absolute inset-0 bg-[url('/src/assets/webshop-hero-bg.jpg')] bg-cover bg-center bg-no-repeat opacity-20"></div>
-        <div className="absolute inset-0 bg-gradient-to-br from-slate-900/90 via-blue-900/80 to-indigo-900/90"></div>
-        
-        {/* Animated background elements */}
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-gradient-to-r from-blue-500/20 to-indigo-500/20 rounded-full blur-3xl opacity-60 animate-pulse"></div>
-        <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-gradient-to-r from-purple-500/20 to-pink-500/20 rounded-full blur-3xl opacity-60 animate-pulse" style={{
-        animationDelay: '1s'
-      }}></div>
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[400px] bg-gradient-to-r from-yellow-400/10 to-orange-400/10 rounded-full blur-3xl opacity-40"></div>
+        <div className="absolute inset-0 bg-[url('/src/assets/webshop-hero-bg.jpg')] bg-cover bg-center bg-no-repeat opacity-30"></div>
+        <div className="absolute inset-0 bg-gradient-to-br from-background/80 via-background/60 to-background/80"></div>
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[600px] bg-gradient-to-r from-primary/20 to-secondary/20 rounded-full blur-3xl opacity-30"></div>
         
         <div className="container mx-auto px-4 relative">
           <div ref={headerRef} className={`text-center transition-all duration-1000 ${headerVisible ? 'opacity-100 transform translate-y-0' : 'opacity-0 transform translate-y-8'}`}>
-            <div className="inline-flex items-center px-8 py-4 bg-white/10 backdrop-blur-md rounded-full text-white font-semibold text-sm mb-10 border border-white/20 shadow-lg">
-              <ShoppingCart className="w-5 h-5 mr-3" />
+            <div className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-primary/20 to-secondary/20 backdrop-blur-sm rounded-full text-primary font-semibold text-sm mb-8 border border-primary/20">
+              <ShoppingCart className="w-4 h-4 mr-2" />
               Bouw met Respect Shop
             </div>
-            <h1 className="text-6xl md:text-8xl font-bold mb-10 text-white leading-tight">
-              Merchandise voor een <br />
-              <span className="bg-gradient-to-r from-yellow-400 via-orange-400 to-red-400 bg-clip-text text-transparent">
+            <h1 className="text-5xl md:text-7xl font-bold mb-8 text-foreground leading-tight">
+              Merchandise voor een <br/>
+              <span className="bg-gradient-to-r from-primary via-secondary to-primary bg-clip-text text-transparent">
                 respectvolle bouwplaats
               </span>
             </h1>
-            <p className="text-xl md:text-2xl text-white/80 max-w-4xl mx-auto leading-relaxed mb-16">
+            <p className="text-xl md:text-2xl text-muted-foreground max-w-4xl mx-auto leading-relaxed mb-12">
               Laat zien dat je onderdeel bent van de beweging. Koop hoogwaardige merchandise 
               en draag bij aan bewustwording voor een respectvolle bouwsector.
             </p>
-            <div className="flex flex-wrap justify-center gap-6 text-base">
-              <div className="flex items-center gap-3 px-4 py-2 bg-white/10 backdrop-blur-sm rounded-full border border-white/20">
-                <div className="w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
-                <span className="text-white font-medium">Gratis verzending vanaf €25</span>
+            <div className="flex flex-wrap justify-center gap-4 text-sm text-muted-foreground">
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                Gratis verzending vanaf €25
               </div>
-              <div className="flex items-center gap-3 px-4 py-2 bg-white/10 backdrop-blur-sm rounded-full border border-white/20">
-                <div className="w-3 h-3 bg-blue-400 rounded-full animate-pulse"></div>
-                <span className="text-white font-medium">Hoogwaardige kwaliteit</span>
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                Hoogwaardige kwaliteit
               </div>
-              <div className="flex items-center gap-3 px-4 py-2 bg-white/10 backdrop-blur-sm rounded-full border border-white/20">
-                <div className="w-3 h-3 bg-purple-400 rounded-full animate-pulse"></div>
-                <span className="text-white font-medium">Steun de beweging</span>
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
+                Steun de beweging
               </div>
             </div>
           </div>
@@ -573,96 +567,81 @@ const Webshop = () => {
       </section>
 
       {/* Info Section */}
-      <section className="py-32 bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-900 relative overflow-hidden">
+      <section className="py-24 bg-gradient-to-br from-muted/30 via-background to-muted/30 relative overflow-hidden">
         {/* Background decoration */}
-        <div className="absolute inset-0 bg-[url('/src/assets/webshop-hero-bg.jpg')] bg-cover bg-center bg-no-repeat opacity-10"></div>
-        <div className="absolute inset-0 bg-gradient-to-br from-indigo-900/95 via-purple-900/90 to-pink-900/95"></div>
-        
-        {/* Animated background elements */}
-        <div className="absolute top-1/4 left-1/6 w-96 h-96 bg-gradient-to-r from-yellow-400/20 to-orange-400/20 rounded-full blur-3xl opacity-60 animate-pulse"></div>
-        <div className="absolute bottom-1/4 right-1/6 w-80 h-80 bg-gradient-to-r from-pink-400/20 to-red-400/20 rounded-full blur-3xl opacity-60 animate-pulse" style={{
-        animationDelay: '2s'
-      }}></div>
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[600px] bg-gradient-to-r from-blue-400/10 to-purple-400/10 rounded-full blur-3xl opacity-40"></div>
+        <div className="absolute inset-0 bg-grid-white/[0.02] bg-[size:30px_30px]"></div>
         
         <div className="container mx-auto px-4 text-center relative">
-          <div className="max-w-5xl mx-auto mb-24">
-            <div className="inline-flex items-center px-10 py-5 bg-white/15 backdrop-blur-md rounded-full text-white font-bold text-lg mb-12 border border-white/20 shadow-2xl">
-              <ShoppingCart className="w-6 h-6 mr-4" />
+          {/* Decorative elements */}
+          <div className="absolute top-10 left-1/4 w-32 h-32 bg-gradient-to-r from-primary/10 to-secondary/10 rounded-full blur-3xl"></div>
+          <div className="absolute bottom-10 right-1/4 w-24 h-24 bg-gradient-to-r from-secondary/10 to-primary/10 rounded-full blur-2xl"></div>
+          
+          <div className="max-w-4xl mx-auto mb-20">
+            <div className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-primary/10 to-secondary/10 backdrop-blur-sm rounded-full text-primary font-semibold text-sm mb-8 border border-primary/20">
+              <ShoppingCart className="w-4 h-4 mr-2" />
               Waarom Bouw met Respect
             </div>
-            <h3 className="text-6xl md:text-8xl font-bold mb-12 text-white leading-tight">
-              Waarom onze <br />
-              <span className="bg-gradient-to-r from-yellow-400 via-orange-400 to-red-400 bg-clip-text text-transparent">
+            <h3 className="text-5xl md:text-6xl font-bold mb-8 text-foreground leading-tight">
+              Waarom onze <br/>
+              <span className="bg-gradient-to-r from-primary via-secondary to-primary bg-clip-text text-transparent">
                 merchandise kopen?
               </span>
             </h3>
-            <p className="text-2xl md:text-3xl text-white/90 leading-relaxed mb-8">
-              Elke aankoop draagt bij aan een betere toekomst voor de bouwsector.
-            </p>
-            <p className="text-xl text-yellow-300 font-semibold">
-              Samen bouwen we aan respect.
+            <p className="text-xl md:text-2xl text-muted-foreground leading-relaxed">
+              Elke aankoop draagt bij aan een betere toekomst voor de bouwsector.<br/>
+              <span className="text-primary font-semibold">Samen bouwen we aan respect.</span>
             </p>
           </div>
           
           <div className="grid md:grid-cols-3 gap-12 max-w-6xl mx-auto">
-            <div className="group relative">
-              <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-white/5 rounded-3xl opacity-0 group-hover:opacity-100 transition-all duration-500"></div>
-              <div className="relative p-8 text-center">
-                <div className="w-24 h-24 bg-gradient-to-br from-yellow-400/80 to-orange-500/80 rounded-full flex items-center justify-center mx-auto mb-8 group-hover:scale-110 group-hover:shadow-2xl transition-all duration-500 shadow-lg">
-                  <Coffee className="w-12 h-12 text-white" />
-                </div>
-                <h4 className="text-3xl font-bold mb-6 text-white group-hover:text-yellow-300 transition-colors duration-300">
-                  Premium Kwaliteit
-                </h4>
-                <p className="text-white/80 leading-relaxed text-lg">
-                  Hoogwaardige materialen die bestand zijn tegen dagelijks gebruik op de bouwplaats en kantoor
-                </p>
+            <div className="group">
+              <div className="w-20 h-20 bg-gradient-to-br from-primary/20 to-primary/30 rounded-3xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 group-hover:shadow-xl transition-all duration-300">
+                <Coffee className="w-10 h-10 text-primary" />
               </div>
+              <h4 className="text-2xl font-bold mb-4 group-hover:text-primary transition-colors duration-300">
+                Premium Kwaliteit
+              </h4>
+              <p className="text-muted-foreground leading-relaxed text-lg">
+                Hoogwaardige materialen die bestand zijn tegen dagelijks gebruik op de bouwplaats en kantoor
+              </p>
             </div>
             
-            <div className="group relative">
-              <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-white/5 rounded-3xl opacity-0 group-hover:opacity-100 transition-all duration-500"></div>
-              <div className="relative p-8 text-center">
-                <div className="w-24 h-24 bg-gradient-to-br from-blue-400/80 to-purple-500/80 rounded-full flex items-center justify-center mx-auto mb-8 group-hover:scale-110 group-hover:shadow-2xl transition-all duration-500 shadow-lg">
-                  <Edit3 className="w-12 h-12 text-white" />
-                </div>
-                <h4 className="text-3xl font-bold mb-6 text-white group-hover:text-blue-300 transition-colors duration-300">
-                  Bewustwording
-                </h4>
-                <p className="text-white/80 leading-relaxed text-lg">
-                  Draag bij aan bewustwording voor een respectvolle bouwsector en laat anderen zien waar je voor staat
-                </p>
+            <div className="group">
+              <div className="w-20 h-20 bg-gradient-to-br from-secondary/20 to-secondary/30 rounded-3xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 group-hover:shadow-xl transition-all duration-300">
+                <Edit3 className="w-10 h-10 text-secondary" />
               </div>
+              <h4 className="text-2xl font-bold mb-4 group-hover:text-secondary transition-colors duration-300">
+                Bewustwording
+              </h4>
+              <p className="text-muted-foreground leading-relaxed text-lg">
+                Draag bij aan bewustwording voor een respectvolle bouwsector en laat anderen zien waar je voor staat
+              </p>
             </div>
             
-            <div className="group relative">
-              <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-white/5 rounded-3xl opacity-0 group-hover:opacity-100 transition-all duration-500"></div>
-              <div className="relative p-8 text-center">
-                <div className="w-24 h-24 bg-gradient-to-br from-green-400/80 to-emerald-500/80 rounded-full flex items-center justify-center mx-auto mb-8 group-hover:scale-110 group-hover:shadow-2xl transition-all duration-500 shadow-lg">
-                  <ShoppingCart className="w-12 h-12 text-white" />
-                </div>
-                <h4 className="text-3xl font-bold mb-6 text-white group-hover:text-green-300 transition-colors duration-300">
-                  Steun de Beweging
-                </h4>
-                <p className="text-white/80 leading-relaxed text-lg">
-                  Opbrengsten worden gebruikt om de beweging te versterken en meer bedrijven te bereiken
-                </p>
+            <div className="group">
+              <div className="w-20 h-20 bg-gradient-to-br from-green-500/20 to-green-600/30 rounded-3xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 group-hover:shadow-xl transition-all duration-300">
+                <ShoppingCart className="w-10 h-10 text-green-600" />
               </div>
+              <h4 className="text-2xl font-bold mb-4 group-hover:text-green-600 transition-colors duration-300">
+                Steun de Beweging
+              </h4>
+              <p className="text-muted-foreground leading-relaxed text-lg">
+                Opbrengsten worden gebruikt om de beweging te versterken en meer bedrijven te bereiken
+              </p>
             </div>
           </div>
           
-          <div className="mt-20 p-10 bg-white/20 backdrop-blur-md rounded-3xl border border-white/30 max-w-5xl mx-auto shadow-2xl">
-            <div className="flex flex-col md:flex-row items-center justify-between gap-8">
-              <div className="text-center md:text-left">
-                <h4 className="text-3xl font-bold mb-4 text-white">Gratis verzending vanaf €25</h4>
-                <p className="text-white/80 text-lg">
+          <div className="mt-16 p-8 bg-gradient-to-r from-primary/10 to-secondary/10 rounded-2xl border border-primary/20 max-w-4xl mx-auto">
+            <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+              <div className="text-left">
+                <h4 className="text-2xl font-bold mb-2 text-foreground">Gratis verzending vanaf €25</h4>
+                <p className="text-muted-foreground">
                   Bestel voor meer dan €25 en we verzenden gratis naar heel Nederland
                 </p>
               </div>
-              <div className="flex items-center gap-3 px-6 py-3 bg-green-500/20 backdrop-blur-sm rounded-full border border-green-400/30">
-                <div className="w-4 h-4 bg-green-400 rounded-full animate-pulse"></div>
-                <span className="font-bold text-lg text-green-300">Binnen 2-3 werkdagen geleverd</span>
+              <div className="flex items-center space-x-2 text-green-600">
+                <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                <span className="font-semibold text-lg">Binnen 2-3 werkdagen geleverd</span>
               </div>
             </div>
           </div>
