@@ -395,21 +395,21 @@ const Webshop = () => {
       </header>
 
       {/* Hero Section */}
-      <section className="relative py-32 bg-gradient-to-br from-primary/5 via-background to-secondary/5 overflow-hidden">
+      <section className="relative py-32 hero-gradient overflow-hidden">
         {/* Background decoration */}
         <div className="absolute inset-0 bg-[url('/src/assets/webshop-hero-bg.jpg')] bg-cover bg-center bg-no-repeat opacity-30"></div>
         <div className="absolute inset-0 bg-gradient-to-br from-background/80 via-background/60 to-background/80"></div>
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[600px] bg-gradient-to-r from-primary/20 to-secondary/20 rounded-full blur-3xl opacity-30"></div>
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[600px] bg-gradient-to-r from-primary/20 to-accent/20 rounded-full blur-3xl opacity-30"></div>
         
         <div className="container mx-auto px-4 relative">
           <div ref={headerRef} className={`text-center transition-all duration-1000 ${headerVisible ? 'opacity-100 transform translate-y-0' : 'opacity-0 transform translate-y-8'}`}>
-            <div className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-primary/20 to-secondary/20 backdrop-blur-sm rounded-full text-primary font-semibold text-sm mb-8 border border-primary/20">
+            <div className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-primary/20 to-accent/20 backdrop-blur-sm rounded-full text-primary font-semibold text-sm mb-8 border border-primary/20">
               <ShoppingCart className="w-4 h-4 mr-2" />
               Bouw met Respect Shop
             </div>
             <h1 className="text-5xl md:text-7xl font-bold mb-8 text-foreground leading-tight">
               Merchandise voor een <br/>
-              <span className="bg-gradient-to-r from-primary via-secondary to-primary bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent">
                 respectvolle bouwplaats
               </span>
             </h1>
@@ -577,13 +577,13 @@ const Webshop = () => {
           <div className="absolute bottom-10 right-1/4 w-24 h-24 bg-gradient-to-r from-secondary/10 to-primary/10 rounded-full blur-2xl"></div>
           
           <div className="max-w-4xl mx-auto mb-20">
-            <div className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-primary/10 to-secondary/10 backdrop-blur-sm rounded-full text-primary font-semibold text-sm mb-8 border border-primary/20">
+            <div className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-primary/10 to-accent/10 backdrop-blur-sm rounded-full text-primary font-semibold text-sm mb-8 border border-primary/20">
               <ShoppingCart className="w-4 h-4 mr-2" />
               Waarom Bouw met Respect
             </div>
             <h3 className="text-5xl md:text-6xl font-bold mb-8 text-foreground leading-tight">
               Waarom onze <br/>
-              <span className="bg-gradient-to-r from-primary via-secondary to-primary bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent">
                 merchandise kopen?
               </span>
             </h3>
@@ -607,10 +607,10 @@ const Webshop = () => {
             </div>
             
             <div className="group">
-              <div className="w-20 h-20 bg-gradient-to-br from-secondary/20 to-secondary/30 rounded-3xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 group-hover:shadow-xl transition-all duration-300">
-                <Edit3 className="w-10 h-10 text-secondary" />
+              <div className="w-20 h-20 bg-gradient-to-br from-accent/20 to-accent/30 rounded-3xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 group-hover:shadow-xl transition-all duration-300">
+                <Edit3 className="w-10 h-10 text-accent" />
               </div>
-              <h4 className="text-2xl font-bold mb-4 group-hover:text-secondary transition-colors duration-300">
+              <h4 className="text-2xl font-bold mb-4 group-hover:text-accent transition-colors duration-300">
                 Bewustwording
               </h4>
               <p className="text-muted-foreground leading-relaxed text-lg">
@@ -631,7 +631,7 @@ const Webshop = () => {
             </div>
           </div>
           
-          <div className="mt-16 p-8 bg-gradient-to-r from-primary/10 to-secondary/10 rounded-2xl border border-primary/20 max-w-4xl mx-auto">
+          <div className="mt-16 p-8 bg-gradient-to-r from-primary/10 to-accent/10 rounded-2xl border border-primary/20 max-w-4xl mx-auto">
             <div className="flex flex-col md:flex-row items-center justify-between gap-6">
               <div className="text-left">
                 <h4 className="text-2xl font-bold mb-2 text-foreground">Gratis verzending vanaf €25</h4>
