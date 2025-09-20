@@ -31,9 +31,6 @@ const Navbar = () => {
               <a href="#verhalen" className="text-muted-foreground hover:text-foreground transition-colors">
                 Verhalen
               </a>
-              <Link to="/bedrijven" className="text-muted-foreground hover:text-foreground transition-colors">
-                Bedrijven
-              </Link>
               <a href="#contact" className="text-muted-foreground hover:text-foreground transition-colors">
                 Contact
               </a>
@@ -64,9 +61,6 @@ const Navbar = () => {
                 <a href="#verhalen" className="text-muted-foreground hover:text-foreground transition-colors py-2" onClick={() => setIsMenuOpen(false)}>
                   Verhalen
                 </a>
-                <Link to="/bedrijven" className="text-muted-foreground hover:text-foreground transition-colors py-2" onClick={() => setIsMenuOpen(false)}>
-                  Bedrijven
-                </Link>
                 <a href="#contact" className="text-muted-foreground hover:text-foreground transition-colors py-2" onClick={() => setIsMenuOpen(false)}>
                   Contact
                 </a>

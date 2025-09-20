@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -9,10 +9,11 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Search, Users, CreditCard, Edit, Trash2, Download, Filter, Eye, Save, Home, ShoppingBag } from "lucide-react";
+import { Search, Users, CreditCard, Edit, Trash2, Download, Filter, Eye, Save, Home, ShoppingBag, Building2, Plus, Globe, Mail, Phone } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Link } from "react-router-dom";
+import CompanyProfileForm from "@/components/CompanyProfileForm";
 
 interface Membership {
   id: string;
@@ -62,9 +63,25 @@ interface Order {
   address_country?: string | null;
 }
 
+interface CompanyProfile {
+  id: string;
+  name: string;
+  description: string | null;
+  website: string | null;
+  logo_url: string | null;
+  industry: string | null;
+  contact_email: string | null;
+  contact_phone: string | null;
+  is_featured: boolean;
+  display_order: number;
+  created_at: string;
+  updated_at: string;
+}
+
 const Dashboard = () => {
   const [memberships, setMemberships] = useState<Membership[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
+  const [profiles, setProfiles] = useState<CompanyProfile[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
@@ -75,7 +92,9 @@ const Dashboard = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [user, setUser] = useState(null);
   const [isAdmin, setIsAdmin] = useState(false);
-  const [viewMode, setViewMode] = useState<'memberships' | 'orders'>("memberships");
+  const [viewMode, setViewMode] = useState<'memberships' | 'orders' | 'profiles'>("memberships");
+  const [showProfileForm, setShowProfileForm] = useState(false);
+  const [editingProfile, setEditingProfile] = useState<CompanyProfile | null>(null);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -110,7 +129,7 @@ const Dashboard = () => {
       }
 
       setIsAdmin(true);
-      await Promise.all([fetchMemberships(), fetchOrders()]);
+      await Promise.all([fetchMemberships(), fetchOrders(), fetchProfiles()]);
     } catch (error) {
       console.error('Auth check error:', error);
       toast({
@@ -158,6 +177,26 @@ const Dashboard = () => {
       toast({
         title: "Fout",
         description: "Kon bestellingen niet laden",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const fetchProfiles = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('company_profiles')
+        .select('*')
+        .order('display_order', { ascending: true })
+        .order('name', { ascending: true });
+
+      if (error) throw error;
+      setProfiles(data || []);
+    } catch (error) {
+      console.error('Error fetching profiles:', error);
+      toast({
+        title: "Fout",
+        description: "Kon bedrijfsprofielen niet laden",
         variant: "destructive"
       });
     }
@@ -251,6 +290,48 @@ const Dashboard = () => {
         variant: "destructive"
       });
     }
+  };
+
+  const handleEditProfile = (profile: CompanyProfile) => {
+    setEditingProfile(profile);
+    setShowProfileForm(true);
+  };
+
+  const handleDeleteProfile = async (id: string) => {
+    if (!confirm('Weet je zeker dat je dit bedrijfsprofiel wilt verwijderen?')) return;
+
+    try {
+      const { error } = await supabase
+        .from('company_profiles')
+        .delete()
+        .eq('id', id);
+
+      if (error) throw error;
+
+      toast({
+        title: "Succes",
+        description: "Bedrijfsprofiel succesvol verwijderd.",
+      });
+
+      fetchProfiles();
+    } catch (error) {
+      console.error('Error deleting profile:', error);
+      toast({
+        title: "Fout",
+        description: "Kon bedrijfsprofiel niet verwijderen.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleProfileFormClose = () => {
+    setShowProfileForm(false);
+    setEditingProfile(null);
+  };
+
+  const handleProfileFormSuccess = () => {
+    fetchProfiles();
+    handleProfileFormClose();
   };
 
   const filteredMemberships = memberships.filter(membership => {
@@ -349,13 +430,20 @@ const Dashboard = () => {
           .filter(m => m.payment_status === 'paid')
           .reduce((sum, m) => sum + m.amount, 0)
       }
-    : {
+    : viewMode === 'orders'
+    ? {
         total: orders.length,
         paid: orders.filter(o => o.payment_status === 'paid').length,
         pending: orders.filter(o => o.payment_status === 'pending').length,
         revenue: orders
           .filter(o => o.payment_status === 'paid')
           .reduce((sum, o) => sum + o.total, 0)
+      }
+    : {
+        total: profiles.length,
+        paid: profiles.filter(p => p.is_featured).length,
+        pending: profiles.filter(p => !p.is_featured).length,
+        revenue: 0
       };
 
   const filteredOrders = orders.filter(order => {
@@ -419,8 +507,8 @@ const Dashboard = () => {
         </div>
 
         {/* View Mode Tabs */}
-        <Tabs value={viewMode} onValueChange={(value) => setViewMode(value as 'memberships' | 'orders')}>
-          <TabsList className="grid w-full max-w-md grid-cols-2">
+        <Tabs value={viewMode} onValueChange={(value) => setViewMode(value as 'memberships' | 'orders' | 'profiles')}>
+          <TabsList className="grid w-full max-w-lg grid-cols-3">
             <TabsTrigger value="memberships" className="flex items-center gap-2">
               <Users className="w-4 h-4" />
               Lidmaatschappen
@@ -429,6 +517,10 @@ const Dashboard = () => {
               <ShoppingBag className="w-4 h-4" />
               Bestellingen
             </TabsTrigger>
+            <TabsTrigger value="profiles" className="flex items-center gap-2">
+              <Building2 className="w-4 h-4" />
+              Bedrijven
+            </TabsTrigger>
           </TabsList>
         </Tabs>
 
@@ -436,8 +528,16 @@ const Dashboard = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 xl:gap-8">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">{viewMode === 'memberships' ? 'Totaal Leden' : 'Totaal Bestellingen'}</CardTitle>
-              {viewMode === 'memberships' ? <Users className="w-4 h-4 text-muted-foreground" /> : <ShoppingBag className="w-4 h-4 text-muted-foreground" />}
+              <CardTitle className="text-sm font-medium">
+                {viewMode === 'memberships' ? 'Totaal Leden' : viewMode === 'orders' ? 'Totaal Bestellingen' : 'Totaal Bedrijven'}
+              </CardTitle>
+              {viewMode === 'memberships' ? (
+                <Users className="w-4 h-4 text-muted-foreground" />
+              ) : viewMode === 'orders' ? (
+                <ShoppingBag className="w-4 h-4 text-muted-foreground" />
+              ) : (
+                <Building2 className="w-4 h-4 text-muted-foreground" />
+              )}
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{stats.total}</div>
@@ -446,7 +546,9 @@ const Dashboard = () => {
           
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Betaald</CardTitle>
+              <CardTitle className="text-sm font-medium">
+                {viewMode === 'profiles' ? 'Featured' : 'Betaald'}
+              </CardTitle>
               <CreditCard className="w-4 h-4 text-green-600" />
             </CardHeader>
             <CardContent>
@@ -456,7 +558,9 @@ const Dashboard = () => {
           
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">In Behandeling</CardTitle>
+              <CardTitle className="text-sm font-medium">
+                {viewMode === 'profiles' ? 'Regulier' : 'In Behandeling'}
+              </CardTitle>
               <CreditCard className="w-4 h-4 text-yellow-600" />
             </CardHeader>
             <CardContent>
@@ -470,7 +574,9 @@ const Dashboard = () => {
               <CreditCard className="w-4 h-4 text-primary" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-primary">{formatPrice(stats.revenue)}</div>
+              <div className="text-2xl font-bold text-primary">
+                {viewMode === 'profiles' ? '-' : formatPrice(stats.revenue)}
+              </div>
             </CardContent>
           </Card>
         </div>
@@ -976,6 +1082,137 @@ const Dashboard = () => {
           </CardContent>
         </Card>
         )}
+
+        {/* Company Profiles Section */}
+        {viewMode === 'profiles' && (
+          <Card>
+            <CardHeader>
+              <div className="flex justify-between items-center">
+                <CardTitle>Bedrijfsprofielen ({profiles.length})</CardTitle>
+                <Button onClick={() => setShowProfileForm(true)} className="flex items-center gap-2">
+                  <Plus className="w-4 h-4" />
+                  Nieuw Profiel
+                </Button>
+              </div>
+            </CardHeader>
+            <CardContent>
+              {profiles.length === 0 ? (
+                <div className="text-center py-12">
+                  <Building2 className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
+                  <h3 className="text-xl font-semibold mb-2">Geen bedrijfsprofielen gevonden</h3>
+                  <p className="text-muted-foreground">
+                    Voeg het eerste bedrijfsprofiel toe om te beginnen.
+                  </p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {profiles.map((profile) => (
+                    <Card key={profile.id} className="group hover:shadow-lg transition-shadow">
+                      <CardHeader className="pb-4">
+                        <div className="flex items-start justify-between">
+                          <div className="flex items-center gap-3">
+                            {profile.logo_url ? (
+                              <img
+                                src={profile.logo_url}
+                                alt={`${profile.name} logo`}
+                                className="w-12 h-12 object-contain rounded-lg border"
+                              />
+                            ) : (
+                              <div className="w-12 h-12 bg-muted rounded-lg flex items-center justify-center">
+                                <Building2 className="w-6 h-6 text-muted-foreground" />
+                              </div>
+                            )}
+                            <div>
+                              <CardTitle className="text-lg">{profile.name}</CardTitle>
+                              {profile.industry && (
+                                <Badge variant="secondary" className="mt-1">
+                                  {profile.industry}
+                                </Badge>
+                              )}
+                            </div>
+                          </div>
+                          {profile.is_featured && (
+                            <Badge variant="default">Featured</Badge>
+                          )}
+                        </div>
+                      </CardHeader>
+                      <CardContent>
+                        {profile.description && (
+                          <CardDescription className="mb-4 line-clamp-3">
+                            {profile.description}
+                          </CardDescription>
+                        )}
+                        
+                        <div className="space-y-2">
+                          {profile.website && (
+                            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                              <Globe className="w-4 h-4" />
+                              <a
+                                href={profile.website}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="hover:text-primary truncate"
+                              >
+                                {profile.website.replace(/^https?:\/\//, '')}
+                              </a>
+                            </div>
+                          )}
+                          {profile.contact_email && (
+                            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                              <Mail className="w-4 h-4" />
+                              <a
+                                href={`mailto:${profile.contact_email}`}
+                                className="hover:text-primary truncate"
+                              >
+                                {profile.contact_email}
+                              </a>
+                            </div>
+                          )}
+                          {profile.contact_phone && (
+                            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                              <Phone className="w-4 h-4" />
+                              <a
+                                href={`tel:${profile.contact_phone}`}
+                                className="hover:text-primary"
+                              >
+                                {profile.contact_phone}
+                              </a>
+                            </div>
+                          )}
+                        </div>
+
+                        <div className="flex gap-2 mt-4 pt-4 border-t">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleEditProfile(profile)}
+                          >
+                            Bewerken
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleDeleteProfile(profile.id)}
+                            className="text-destructive hover:text-destructive"
+                          >
+                            Verwijderen
+                          </Button>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        )}
+
+        <CompanyProfileForm
+          open={showProfileForm}
+          onOpenChange={handleProfileFormClose}
+          onSuccess={handleProfileFormSuccess}
+          editingProfile={editingProfile}
+        />
       </div>
     </div>
   );
