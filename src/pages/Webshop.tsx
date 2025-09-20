@@ -3,7 +3,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
-import { ShoppingCart, Coffee, Edit3, ArrowLeft, Plus, Minus, X } from "lucide-react";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { ShoppingCart, Coffee, Edit3, ArrowLeft, Plus, Minus, X, ChevronDown } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 import { useToast } from "@/hooks/use-toast";
@@ -703,71 +704,152 @@ const Webshop = () => {
       </section>
 
       {/* FAQ Section */}
-      <section className="py-20 bg-blue-50">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
-            <h3 className="text-4xl font-bold mb-6 text-gray-900">
-              Veelgestelde Vragen
+      <section className="py-24 bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 relative overflow-hidden">
+        {/* Background decorations */}
+        <div className="absolute top-0 left-1/4 w-96 h-96 bg-gradient-to-r from-blue-200/30 to-indigo-200/30 rounded-full blur-3xl opacity-60"></div>
+        <div className="absolute bottom-0 right-1/4 w-80 h-80 bg-gradient-to-r from-purple-200/30 to-pink-200/30 rounded-full blur-3xl opacity-60"></div>
+        
+        <div className="container mx-auto px-4 relative">
+          <div className="text-center mb-20">
+            <div className="inline-flex items-center px-8 py-4 bg-white/80 backdrop-blur-md rounded-full text-blue-700 font-bold text-base mb-10 border border-blue-200 shadow-lg">
+              ❓ Veelgestelde Vragen
+            </div>
+            <h3 className="text-5xl md:text-6xl font-bold mb-8 text-gray-900 leading-tight">
+              Alles wat je wilt <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">weten</span>
             </h3>
-            <p className="text-xl text-gray-700 max-w-3xl mx-auto">
-              Alles wat je wilt weten over onze merchandise en bestellen
+            <p className="text-xl text-gray-700 max-w-3xl mx-auto leading-relaxed">
+              Vind snel antwoorden op de meest gestelde vragen over onze merchandise en het bestelproces
             </p>
           </div>
 
-          <div className="max-w-4xl mx-auto space-y-6">
-            <div className="bg-white rounded-xl p-6 shadow-lg">
-              <h4 className="text-xl font-bold text-gray-900 mb-3">
-                Hoe lang duurt de levering?
-              </h4>
-              <p className="text-gray-700">
-                We leveren binnen 2-3 werkdagen in heel Nederland. Bij bestellingen boven €25 is de verzending gratis.
-              </p>
-            </div>
+          <div className="max-w-4xl mx-auto">
+            <Accordion type="single" collapsible className="space-y-4">
+              <AccordionItem value="item-1" className="bg-white/80 backdrop-blur-sm rounded-2xl border-0 shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden">
+                <AccordionTrigger className="px-8 py-6 text-left hover:no-underline group">
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                      <span className="text-white font-bold">🚚</span>
+                    </div>
+                    <span className="text-xl font-bold text-gray-900 group-hover:text-blue-700 transition-colors duration-300">
+                      Hoe lang duurt de levering?
+                    </span>
+                  </div>
+                </AccordionTrigger>
+                <AccordionContent className="px-8 pb-6">
+                  <div className="pl-16">
+                    <p className="text-gray-700 text-lg leading-relaxed">
+                      We leveren binnen <span className="font-semibold text-blue-600">2-3 werkdagen</span> in heel Nederland. 
+                      Bij bestellingen boven <span className="font-semibold text-green-600">€25</span> is de verzending gratis!
+                    </p>
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
 
-            <div className="bg-white rounded-xl p-6 shadow-lg">
-              <h4 className="text-xl font-bold text-gray-900 mb-3">
-                Kan ik mijn bestelling retourneren?
-              </h4>
-              <p className="text-gray-700">
-                Ja, je hebt 30 dagen retourrecht. Stuur ons een email en we regelen de retour voor je.
-              </p>
-            </div>
+              <AccordionItem value="item-2" className="bg-white/80 backdrop-blur-sm rounded-2xl border-0 shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden">
+                <AccordionTrigger className="px-8 py-6 text-left hover:no-underline group">
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                      <span className="text-white font-bold">↺</span>
+                    </div>
+                    <span className="text-xl font-bold text-gray-900 group-hover:text-green-700 transition-colors duration-300">
+                      Kan ik mijn bestelling retourneren?
+                    </span>
+                  </div>
+                </AccordionTrigger>
+                <AccordionContent className="px-8 pb-6">
+                  <div className="pl-16">
+                    <p className="text-gray-700 text-lg leading-relaxed">
+                      Ja, je hebt <span className="font-semibold text-green-600">30 dagen retourrecht</span>. 
+                      Stuur ons een email en we regelen de retour voor je. Geen vragen gesteld!
+                    </p>
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
 
-            <div className="bg-white rounded-xl p-6 shadow-lg">
-              <h4 className="text-xl font-bold text-gray-900 mb-3">
-                Zijn de producten van goede kwaliteit?
-              </h4>
-              <p className="text-gray-700">
-                Absoluut! We werken alleen met hoogwaardige materialen die bestand zijn tegen dagelijks gebruik op de bouwplaats.
-              </p>
-            </div>
+              <AccordionItem value="item-3" className="bg-white/80 backdrop-blur-sm rounded-2xl border-0 shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden">
+                <AccordionTrigger className="px-8 py-6 text-left hover:no-underline group">
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-600 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                      <span className="text-white font-bold">💎</span>
+                    </div>
+                    <span className="text-xl font-bold text-gray-900 group-hover:text-purple-700 transition-colors duration-300">
+                      Zijn de producten van goede kwaliteit?
+                    </span>
+                  </div>
+                </AccordionTrigger>
+                <AccordionContent className="px-8 pb-6">
+                  <div className="pl-16">
+                    <p className="text-gray-700 text-lg leading-relaxed">
+                      Absoluut! We werken alleen met <span className="font-semibold text-purple-600">hoogwaardige materialen</span> 
+                      die bestand zijn tegen dagelijks gebruik op de bouwplaats en in het kantoor.
+                    </p>
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
 
-            <div className="bg-white rounded-xl p-6 shadow-lg">
-              <h4 className="text-xl font-bold text-gray-900 mb-3">
-                Waarvoor worden de opbrengsten gebruikt?
-              </h4>
-              <p className="text-gray-700">
-                Alle opbrengsten worden gebruikt om de Bouw met Respect beweging te versterken en meer bedrijven te bereiken voor een respectvolle bouwsector.
-              </p>
-            </div>
+              <AccordionItem value="item-4" className="bg-white/80 backdrop-blur-sm rounded-2xl border-0 shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden">
+                <AccordionTrigger className="px-8 py-6 text-left hover:no-underline group">
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-red-600 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                      <span className="text-white font-bold">🎯</span>
+                    </div>
+                    <span className="text-xl font-bold text-gray-900 group-hover:text-orange-700 transition-colors duration-300">
+                      Waarvoor worden de opbrengsten gebruikt?
+                    </span>
+                  </div>
+                </AccordionTrigger>
+                <AccordionContent className="px-8 pb-6">
+                  <div className="pl-16">
+                    <p className="text-gray-700 text-lg leading-relaxed">
+                      Alle opbrengsten worden gebruikt om de <span className="font-semibold text-orange-600">Bouw met Respect beweging</span> 
+                      te versterken en meer bedrijven te bereiken voor een respectvolle bouwsector.
+                    </p>
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
 
-            <div className="bg-white rounded-xl p-6 shadow-lg">
-              <h4 className="text-xl font-bold text-gray-900 mb-3">
-                Kan ik betalen met iDEAL?
-              </h4>
-              <p className="text-gray-700">
-                Ja, we accepteren alle gangbare betaalmethoden waaronder iDEAL, creditcard en bankoverschrijving via Mollie.
-              </p>
-            </div>
+              <AccordionItem value="item-5" className="bg-white/80 backdrop-blur-sm rounded-2xl border-0 shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden">
+                <AccordionTrigger className="px-8 py-6 text-left hover:no-underline group">
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                      <span className="text-white font-bold">💳</span>
+                    </div>
+                    <span className="text-xl font-bold text-gray-900 group-hover:text-cyan-700 transition-colors duration-300">
+                      Kan ik betalen met iDEAL?
+                    </span>
+                  </div>
+                </AccordionTrigger>
+                <AccordionContent className="px-8 pb-6">
+                  <div className="pl-16">
+                    <p className="text-gray-700 text-lg leading-relaxed">
+                      Ja, we accepteren alle gangbare betaalmethoden waaronder <span className="font-semibold text-cyan-600">iDEAL, creditcard en bankoverschrijving</span> 
+                      via ons veilige Mollie payment platform.
+                    </p>
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
 
-            <div className="bg-white rounded-xl p-6 shadow-lg">
-              <h4 className="text-xl font-bold text-gray-900 mb-3">
-                Krijg ik een factuur voor mijn bestelling?
-              </h4>
-              <p className="text-gray-700">
-                Ja, na je bestelling ontvang je automatisch een factuur per email die je kunt gebruiken voor je administratie.
-              </p>
-            </div>
+              <AccordionItem value="item-6" className="bg-white/80 backdrop-blur-sm rounded-2xl border-0 shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden">
+                <AccordionTrigger className="px-8 py-6 text-left hover:no-underline group">
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 bg-gradient-to-br from-yellow-500 to-orange-600 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                      <span className="text-white font-bold">📄</span>
+                    </div>
+                    <span className="text-xl font-bold text-gray-900 group-hover:text-yellow-700 transition-colors duration-300">
+                      Krijg ik een factuur voor mijn bestelling?
+                    </span>
+                  </div>
+                </AccordionTrigger>
+                <AccordionContent className="px-8 pb-6">
+                  <div className="pl-16">
+                    <p className="text-gray-700 text-lg leading-relaxed">
+                      Ja, na je bestelling ontvang je automatisch een <span className="font-semibold text-yellow-600">factuur per email</span> 
+                      die je kunt gebruiken voor je administratie en eventuele belastingaftrek.
+                    </p>
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
           </div>
         </div>
       </section>
