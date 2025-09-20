@@ -42,6 +42,10 @@ const CompanyProfiles = () => {
         ascending: true
       });
       if (error) throw error;
+      console.log('Fetched profiles:', data);
+      data?.forEach(profile => {
+        console.log(`Profile: ${profile.name}, Logo URL: ${profile.logo_url}`);
+      });
       setProfiles(data || []);
     } catch (error) {
       console.error('Error fetching profiles:', error);
@@ -106,23 +110,35 @@ const CompanyProfiles = () => {
                 
                 <CardHeader className="pb-4 pt-6">
                   <div className="flex items-center gap-4">
-                    {profile.logo_url ? (
-                      <img 
-                        src={profile.logo_url} 
-                        alt={`${profile.name} logo`} 
-                        className="w-16 h-16 object-contain rounded-lg border-2 border-gray-200 bg-white p-2 shadow-sm" 
-                        loading="lazy"
-                        decoding="async"
-                        onError={(e) => {
-                          console.log('Logo failed to load:', profile.logo_url);
-                          e.currentTarget.style.display = 'none';
-                        }}
-                      />
-                    ) : (
-                      <div className="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center border-2 border-gray-200">
-                        <Building2 className="w-8 h-8 text-gray-500" />
-                      </div>
-                    )}
+                    <div className="relative w-16 h-16">
+                      {profile.logo_url ? (
+                        <>
+                          <img 
+                            src={profile.logo_url} 
+                            alt={`${profile.name} logo`} 
+                            className="w-16 h-16 object-contain rounded-lg border-2 border-blue-200 bg-white p-2 shadow-md hover:shadow-lg transition-shadow" 
+                            loading="lazy"
+                            decoding="async"
+                            onLoad={() => console.log(`Logo loaded successfully: ${profile.name}`)}
+                            onError={(e) => {
+                              console.error(`Logo failed to load for ${profile.name}:`, profile.logo_url);
+                              const target = e.currentTarget;
+                              target.style.display = 'none';
+                              const fallback = target.nextElementSibling as HTMLElement;
+                              if (fallback) fallback.style.display = 'flex';
+                            }}
+                          />
+                          <div className="hidden w-16 h-16 bg-red-100 rounded-lg flex items-center justify-center border-2 border-red-200">
+                            <Building2 className="w-8 h-8 text-red-500" />
+                          </div>
+                        </>
+                      ) : (
+                        <div className="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center border-2 border-gray-200">
+                          <Building2 className="w-8 h-8 text-gray-500" />
+                          <span className="sr-only">Geen logo beschikbaar</span>
+                        </div>
+                      )}
+                    </div>
                     
                     <div>
                       <CardTitle className="text-xl font-bold text-gray-900 mb-2">
