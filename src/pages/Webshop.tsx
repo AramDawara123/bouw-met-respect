@@ -702,70 +702,70 @@ const Webshop = () => {
         </div>
       </section>
 
-      {/* Customer Reviews Section */}
+      {/* FAQ Section */}
       <section className="py-20 bg-blue-50">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
             <h3 className="text-4xl font-bold mb-6 text-gray-900">
-              Wat onze klanten zeggen
+              Veelgestelde Vragen
             </h3>
             <p className="text-xl text-gray-700 max-w-3xl mx-auto">
-              Ontdek waarom professionals in de bouwsector kiezen voor onze merchandise
+              Alles wat je wilt weten over onze merchandise en bestellen
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+          <div className="max-w-4xl mx-auto space-y-6">
             <div className="bg-white rounded-xl p-6 shadow-lg">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold">
-                  M
-                </div>
-                <div>
-                  <h4 className="font-bold text-gray-900">Marco van der Berg</h4>
-                  <p className="text-sm text-gray-600">Projectleider</p>
-                </div>
-              </div>
-              <div className="flex mb-3">
-                <span className="text-yellow-400">⭐⭐⭐⭐⭐</span>
-              </div>
+              <h4 className="text-xl font-bold text-gray-900 mb-3">
+                Hoe lang duurt de levering?
+              </h4>
               <p className="text-gray-700">
-                "Geweldige kwaliteit! De thermosbeker houdt mijn koffie perfect warm."
+                We leveren binnen 2-3 werkdagen in heel Nederland. Bij bestellingen boven €25 is de verzending gratis.
               </p>
             </div>
 
             <div className="bg-white rounded-xl p-6 shadow-lg">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center text-white font-bold">
-                  S
-                </div>
-                <div>
-                  <h4 className="font-bold text-gray-900">Sandra Jansen</h4>
-                  <p className="text-sm text-gray-600">Architect</p>
-                </div>
-              </div>
-              <div className="flex mb-3">
-                <span className="text-yellow-400">⭐⭐⭐⭐⭐</span>
-              </div>
+              <h4 className="text-xl font-bold text-gray-900 mb-3">
+                Kan ik mijn bestelling retourneren?
+              </h4>
               <p className="text-gray-700">
-                "De pennen schrijven fantastisch en zien er professioneel uit!"
+                Ja, je hebt 30 dagen retourrecht. Stuur ons een email en we regelen de retour voor je.
               </p>
             </div>
 
             <div className="bg-white rounded-xl p-6 shadow-lg">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 bg-purple-500 rounded-full flex items-center justify-center text-white font-bold">
-                  R
-                </div>
-                <div>
-                  <h4 className="font-bold text-gray-900">Rick Vermeulen</h4>
-                  <p className="text-sm text-gray-600">Aannemer</p>
-                </div>
-              </div>
-              <div className="flex mb-3">
-                <span className="text-yellow-400">⭐⭐⭐⭐⭐</span>
-              </div>
+              <h4 className="text-xl font-bold text-gray-900 mb-3">
+                Zijn de producten van goede kwaliteit?
+              </h4>
               <p className="text-gray-700">
-                "Trots om deze merchandise te dragen. Laat zien dat we serieus zijn!"
+                Absoluut! We werken alleen met hoogwaardige materialen die bestand zijn tegen dagelijks gebruik op de bouwplaats.
+              </p>
+            </div>
+
+            <div className="bg-white rounded-xl p-6 shadow-lg">
+              <h4 className="text-xl font-bold text-gray-900 mb-3">
+                Waarvoor worden de opbrengsten gebruikt?
+              </h4>
+              <p className="text-gray-700">
+                Alle opbrengsten worden gebruikt om de Bouw met Respect beweging te versterken en meer bedrijven te bereiken voor een respectvolle bouwsector.
+              </p>
+            </div>
+
+            <div className="bg-white rounded-xl p-6 shadow-lg">
+              <h4 className="text-xl font-bold text-gray-900 mb-3">
+                Kan ik betalen met iDEAL?
+              </h4>
+              <p className="text-gray-700">
+                Ja, we accepteren alle gangbare betaalmethoden waaronder iDEAL, creditcard en bankoverschrijving via Mollie.
+              </p>
+            </div>
+
+            <div className="bg-white rounded-xl p-6 shadow-lg">
+              <h4 className="text-xl font-bold text-gray-900 mb-3">
+                Krijg ik een factuur voor mijn bestelling?
+              </h4>
+              <p className="text-gray-700">
+                Ja, na je bestelling ontvang je automatisch een factuur per email die je kunt gebruiken voor je administratie.
               </p>
             </div>
           </div>
