@@ -55,22 +55,20 @@ const Hero = () => {
     <>
       {/* Hero Section with Background Image */}
       <section className="relative min-h-screen flex items-center justify-center pt-20 pb-16 lg:mt-16">
-        {/* Background Image - Diverse Construction Workers */}
+        {/* Background Image - Responsive */}
         <div className="absolute inset-0">
-          {/* Mobile Background - Portrait oriented diverse team */}
-          <div 
-            className="md:hidden absolute inset-0 bg-cover bg-center bg-no-repeat"
-            style={{ backgroundImage: 'url(https://images.unsplash.com/photo-1504307651254-35680f356dfd?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80)' }}
-          ></div>
-          {/* Desktop Background - Wide diverse construction team */}
+          {/* Desktop Background */}
           <div 
             className="hidden md:block absolute inset-0 bg-cover bg-center bg-no-repeat"
-            style={{ backgroundImage: 'url(https://images.unsplash.com/photo-1581094794329-c8112a89af12?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80)' }}
+            style={{ backgroundImage: 'url(/lovable-uploads/73f1d5f7-784d-4f62-afe1-8e5ebef9771f.png)' }}
           ></div>
-          {/* Fallback gradient background */}
-          <div className="absolute inset-0 bg-gradient-to-br from-blue-600 via-indigo-700 to-purple-800 opacity-20"></div>
+          {/* Mobile Background */}
+          <div 
+            className="md:hidden absolute inset-0 bg-cover bg-center bg-no-repeat"
+            style={{ backgroundImage: 'url(/lovable-uploads/a1441b5c-4e80-4aa5-9535-e2d1a585a97d.png)' }}
+          ></div>
           {/* Overlay for better text readability */}
-          <div className="absolute inset-0 bg-gradient-to-br from-slate-900/75 via-blue-900/65 to-indigo-900/75"></div>
+          <div className="absolute inset-0 bg-gradient-to-br from-slate-900/80 via-blue-900/70 to-indigo-900/80"></div>
         </div>
         
         {/* Content Overlay */}
