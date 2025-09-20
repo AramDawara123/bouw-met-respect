@@ -20,6 +20,7 @@ interface CompanyProfile {
   updated_at: string;
 }
 
+// READ-ONLY COMPANY PROFILES PAGE - NO EDITING ALLOWED
 const CompanyProfiles = () => {
   const [profiles, setProfiles] = useState<CompanyProfile[]>([]);
   const [loading, setLoading] = useState(true);
@@ -64,13 +65,19 @@ const CompanyProfiles = () => {
   return (
     <div className="min-h-screen bg-background pt-24">
       <div className="container mx-auto px-4 py-8">
+        {/* HEADER - NO EDIT BUTTONS */}
         <div className="mb-8">
           <h1 className="text-4xl font-bold text-foreground mb-2">
-            Bedrijfsprofielen - Alleen Weergave
+            Bedrijfsprofielen
           </h1>
           <p className="text-muted-foreground text-lg">
-            Ontdek bedrijven die bouwen met respect (geen bewerkingsmogelijkheden)
+            Ontdek bedrijven die bouwen met respect
           </p>
+          <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-md">
+            <p className="text-sm text-blue-700 font-medium">
+              🔒 Deze pagina is alleen voor weergave. Voor het toevoegen of bewerken van bedrijfsprofielen, ga naar het Dashboard.
+            </p>
+          </div>
         </div>
 
         {profiles.length === 0 ? (
@@ -120,7 +127,7 @@ const CompanyProfiles = () => {
                     </CardDescription>
                   )}
                   
-                  <div className="space-y-3">
+                  <div className="space-y-3 mb-4">
                     {profile.website && (
                       <div className="flex items-center gap-2 text-sm text-muted-foreground">
                         <Globe className="w-4 h-4 text-primary" />
@@ -158,11 +165,7 @@ const CompanyProfiles = () => {
                     )}
                   </div>
                   
-                  <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded-md">
-                    <p className="text-sm text-green-700">
-                      ✅ Deze pagina is alleen voor weergave. Bewerken kan via het Dashboard.
-                    </p>
-                  </div>
+                  {/* NO EDIT BUTTONS - ONLY VIEW */}
                 </CardContent>
               </Card>
             ))}
