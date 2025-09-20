@@ -4,6 +4,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Building2, Globe, Mail, Phone } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+
 interface CompanyProfile {
   id: string;
   name: string;
@@ -23,22 +24,20 @@ interface CompanyProfile {
 const CompanyProfiles = () => {
   const [profiles, setProfiles] = useState<CompanyProfile[]>([]);
   const [loading, setLoading] = useState(true);
-  const {
-    toast
-  } = useToast();
+  const { toast } = useToast();
+
   useEffect(() => {
     fetchProfiles();
   }, []);
+
   const fetchProfiles = async () => {
     try {
-      const {
-        data,
-        error
-      } = await supabase.from('company_profiles').select('*').order('display_order', {
-        ascending: true
-      }).order('name', {
-        ascending: true
-      });
+      const { data, error } = await supabase
+        .from('company_profiles')
+        .select('*')
+        .order('display_order', { ascending: true })
+        .order('name', { ascending: true });
+
       if (error) throw error;
       setProfiles(data || []);
     } catch (error) {
@@ -46,28 +45,26 @@ const CompanyProfiles = () => {
       toast({
         title: "Fout",
         description: "Kon bedrijfsprofielen niet laden.",
-        variant: "destructive"
+        variant: "destructive",
       });
     } finally {
       setLoading(false);
     }
   };
+
   if (loading) {
-    return <div className="min-h-screen bg-background pt-24">
+    return (
+      <div className="min-h-screen bg-background pt-24">
         <div className="container mx-auto px-4 py-8">
           <div className="text-center">Loading...</div>
         </div>
-      </div>;
+      </div>
+    );
   }
-<<<<<<< HEAD
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 pt-24">
       <div className="container mx-auto px-4 py-12">
-=======
-  return <div className="min-h-screen bg-background pt-24">
-      <div className="container mx-auto px-4 py-8">
->>>>>>> 26fd33c9aded7666aba64c9c5d64bece23c5cfe0
         {/* HEADER - NO EDIT BUTTONS */}
         <div className="text-center mb-16 animate-fade-in">
           <div className="inline-flex items-center gap-3 mb-6">
@@ -81,7 +78,6 @@ const CompanyProfiles = () => {
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed mb-8">
             Ontdek de bedrijven die samen met ons bouwen aan een respectvolle en veilige bouwsector
           </p>
-<<<<<<< HEAD
           <div className="inline-flex items-center gap-2 px-6 py-3 bg-white/80 backdrop-blur-sm border border-blue-200/50 rounded-full shadow-sm">
             <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
             <p className="text-sm text-blue-700 font-medium">
@@ -151,44 +147,11 @@ const CompanyProfiles = () => {
                   {profile.description && (
                     <div className="mb-6">
                       <p className="text-gray-600 leading-relaxed text-center line-clamp-3">
-=======
-          
-        </div>
-
-        {profiles.length === 0 ? <div className="text-center py-12">
-            <Building2 className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
-            <h3 className="text-xl font-semibold mb-2">Geen bedrijfsprofielen gevonden</h3>
-            <p className="text-muted-foreground">
-              Er zijn nog geen bedrijfsprofielen toegevoegd.
-            </p>
-          </div> : <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {profiles.map(profile => <Card key={profile.id} className="group hover:shadow-lg transition-shadow">
-                <CardHeader className="pb-4">
-                  <div className="flex items-start justify-between">
-                    <div className="flex items-center gap-3">
-                      {profile.logo_url ? <img src={profile.logo_url} alt={`${profile.name} logo`} className="w-16 h-16 object-contain rounded-lg border bg-white p-2" /> : <div className="w-16 h-16 bg-muted rounded-lg flex items-center justify-center">
-                          <Building2 className="w-8 h-8 text-muted-foreground" />
-                        </div>}
-                      <div>
-                        <CardTitle className="text-xl font-semibold">{profile.name}</CardTitle>
-                        {profile.industry && <Badge variant="secondary" className="mt-2 text-sm">
-                            {profile.industry}
-                          </Badge>}
-                      </div>
-                    </div>
-                    {profile.is_featured && <Badge className="bg-yellow-500 text-white">Uitgelicht</Badge>}
-                  </div>
-                </CardHeader>
-                <CardContent className="pt-4">
-                  {profile.description && <div className="mb-4">
-                      <h4 className="text-sm font-medium text-foreground mb-2">Beschrijving</h4>
-                      <p className="text-sm text-muted-foreground leading-relaxed">
->>>>>>> 26fd33c9aded7666aba64c9c5d64bece23c5cfe0
                         {profile.description}
                       </p>
-                    </div>}
+                    </div>
+                  )}
                   
-<<<<<<< HEAD
                   <div className="space-y-4">
                     {profile.website && (
                       <div className="group/item flex items-center gap-3 p-3 rounded-xl bg-gradient-to-r from-blue-50 to-indigo-50 hover:from-blue-100 hover:to-indigo-100 transition-all duration-300">
@@ -237,44 +200,23 @@ const CompanyProfiles = () => {
                             href={`tel:${profile.contact_phone}`}
                             className="text-gray-900 hover:text-purple-700 font-medium transition-colors duration-200"
                           >
-=======
-                  <div className="space-y-3 mb-4">
-                    {profile.website && <div className="flex items-center gap-2 text-sm">
-                        <Globe className="w-4 h-4 text-primary flex-shrink-0" />
-                        <div>
-                          <span className="text-xs text-muted-foreground block">Website</span>
-                          <a href={profile.website} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline truncate">
-                            {profile.website.replace(/^https?:\/\//, '')}
-                          </a>
-                        </div>
-                      </div>}
-                    {profile.contact_email && <div className="flex items-center gap-2 text-sm">
-                        <Mail className="w-4 h-4 text-primary flex-shrink-0" />
-                        <div>
-                          <span className="text-xs text-muted-foreground block">Email</span>
-                          <a href={`mailto:${profile.contact_email}`} className="text-primary hover:underline truncate">
-                            {profile.contact_email}
-                          </a>
-                        </div>
-                      </div>}
-                    {profile.contact_phone && <div className="flex items-center gap-2 text-sm">
-                        <Phone className="w-4 h-4 text-primary flex-shrink-0" />
-                        <div>
-                          <span className="text-xs text-muted-foreground block">Telefoon</span>
-                          <a href={`tel:${profile.contact_phone}`} className="text-primary hover:underline">
->>>>>>> 26fd33c9aded7666aba64c9c5d64bece23c5cfe0
                             {profile.contact_phone}
                           </a>
                         </div>
-                      </div>}
+                      </div>
+                    )}
                   </div>
                   
                   {/* Decorative bottom border */}
                   <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-12 h-1 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                 </CardContent>
-              </Card>)}
-          </div>}
+              </Card>
+            ))}
+          </div>
+        )}
       </div>
-    </div>;
+    </div>
+  );
 };
+
 export default CompanyProfiles;
