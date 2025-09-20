@@ -1,9 +1,11 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { Building2, Globe, Mail, Phone } from "lucide-react";
+import { Building2, Globe, Mail, Phone, ArrowLeft } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
 interface CompanyProfile {
   id: string;
   name: string;
@@ -61,15 +63,31 @@ const CompanyProfiles = () => {
   }
   return <div className="min-h-screen bg-gray-50 pt-24">
       <div className="container mx-auto px-4 py-12">
-        {/* HEADER - NO EDIT BUTTONS */}
-        <div className="text-center mb-12">
-          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-            Onze Partners
-          </h1>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto mb-6">
-            Ontdek de bedrijven die samen met ons bouwen aan een respectvolle en veilige bouwsector
-          </p>
+        {/* HEADER WITH BACK BUTTON */}
+        <div className="flex flex-col md:flex-row items-center justify-between mb-12 gap-6">
+          <Link to="/" className="self-start">
+            <Button variant="outline" className="flex items-center gap-2 hover:bg-primary/10 transition-colors">
+              <ArrowLeft className="w-4 h-4" />
+              Terug naar Home
+            </Button>
+          </Link>
           
+          <div className="text-center flex-1">
+            <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+              Onze Partners
+            </h1>
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto mb-6">
+              Ontdek de bedrijven die samen met ons bouwen aan een respectvolle en veilige bouwsector
+            </p>
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-100 rounded-full">
+              <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+              <p className="text-sm text-blue-700 font-medium">
+                Alleen weergave - Bewerken via Dashboard
+              </p>
+            </div>
+          </div>
+          
+          <div className="w-32 hidden md:block"></div> {/* Spacer for centering */}
         </div>
 
         {profiles.length === 0 ? <div className="text-center py-20">
@@ -88,9 +106,21 @@ const CompanyProfiles = () => {
                 
                 <CardHeader className="pb-4 pt-6">
                   <div className="flex items-center gap-4">
-                    {profile.logo_url ? <img src={profile.logo_url} alt={`${profile.name} logo`} className="w-16 h-16 object-contain rounded-lg border bg-white p-2" /> : <div className="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center">
+                    {profile.logo_url ? (
+                      <img 
+                        src={profile.logo_url} 
+                        alt={`${profile.name} logo`} 
+                        className="w-16 h-16 object-contain rounded-lg border-2 border-gray-200 bg-white p-2 shadow-sm" 
+                        onError={(e) => {
+                          console.log('Logo failed to load:', profile.logo_url);
+                          e.currentTarget.style.display = 'none';
+                        }}
+                      />
+                    ) : (
+                      <div className="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center border-2 border-gray-200">
                         <Building2 className="w-8 h-8 text-gray-500" />
-                      </div>}
+                      </div>
+                    )}
                     
                     <div>
                       <CardTitle className="text-xl font-bold text-gray-900 mb-2">
