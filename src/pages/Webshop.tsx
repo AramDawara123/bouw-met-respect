@@ -389,11 +389,15 @@ const Webshop = () => {
       </header>
 
       {/* Hero Section */}
-      <section className="relative py-24 bg-gradient-to-br from-primary/5 via-background to-secondary/5 overflow-hidden">
+      <section className="relative py-32 bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 overflow-hidden">
         {/* Background decoration */}
-        <div className="absolute inset-0 bg-[url('/webshop-hero-bg.jpg')] bg-cover bg-center bg-no-repeat opacity-30"></div>
-        <div className="absolute inset-0 bg-gradient-to-br from-background/80 via-background/60 to-background/80"></div>
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[600px] bg-gradient-to-r from-primary/20 to-secondary/20 rounded-full blur-3xl opacity-30"></div>
+        <div className="absolute inset-0 bg-[url('/src/assets/webshop-hero-bg.jpg')] bg-cover bg-center bg-no-repeat opacity-20"></div>
+        <div className="absolute inset-0 bg-gradient-to-br from-slate-900/90 via-blue-900/80 to-indigo-900/90"></div>
+        
+        {/* Animated background elements */}
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-gradient-to-r from-blue-500/20 to-indigo-500/20 rounded-full blur-3xl opacity-60 animate-pulse"></div>
+        <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-gradient-to-r from-purple-500/20 to-pink-500/20 rounded-full blur-3xl opacity-60 animate-pulse" style={{animationDelay: '1s'}}></div>
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[400px] bg-gradient-to-r from-yellow-400/10 to-orange-400/10 rounded-full blur-3xl opacity-40"></div>
         
         <div className="container mx-auto px-4 relative">
           <div 
@@ -404,32 +408,32 @@ const Webshop = () => {
                 : 'opacity-0 transform translate-y-8'
             }`}
           >
-            <div className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-primary/20 to-secondary/20 backdrop-blur-sm rounded-full text-primary font-semibold text-sm mb-8 border border-primary/20">
-              <ShoppingCart className="w-4 h-4 mr-2" />
+            <div className="inline-flex items-center px-8 py-4 bg-white/10 backdrop-blur-md rounded-full text-white font-semibold text-sm mb-10 border border-white/20 shadow-lg">
+              <ShoppingCart className="w-5 h-5 mr-3" />
               Bouw met Respect Shop
             </div>
-            <h1 className="text-5xl md:text-7xl font-bold mb-8 text-foreground leading-tight">
+            <h1 className="text-6xl md:text-8xl font-bold mb-10 text-white leading-tight">
               Merchandise voor een <br/>
-              <span className="bg-gradient-to-r from-primary via-secondary to-primary bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-yellow-400 via-orange-400 to-red-400 bg-clip-text text-transparent">
                 respectvolle bouwplaats
               </span>
             </h1>
-            <p className="text-xl md:text-2xl text-muted-foreground max-w-4xl mx-auto leading-relaxed mb-12">
+            <p className="text-xl md:text-2xl text-white/80 max-w-4xl mx-auto leading-relaxed mb-16">
               Laat zien dat je onderdeel bent van de beweging. Koop hoogwaardige merchandise 
               en draag bij aan bewustwording voor een respectvolle bouwsector.
             </p>
-            <div className="flex flex-wrap justify-center gap-4 text-sm text-muted-foreground">
-              <div className="flex items-center gap-2">
-                <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                Gratis verzending vanaf €25
+            <div className="flex flex-wrap justify-center gap-6 text-base">
+              <div className="flex items-center gap-3 px-4 py-2 bg-white/10 backdrop-blur-sm rounded-full border border-white/20">
+                <div className="w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
+                <span className="text-white font-medium">Gratis verzending vanaf €25</span>
               </div>
-              <div className="flex items-center gap-2">
-                <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                Hoogwaardige kwaliteit
+              <div className="flex items-center gap-3 px-4 py-2 bg-white/10 backdrop-blur-sm rounded-full border border-white/20">
+                <div className="w-3 h-3 bg-blue-400 rounded-full animate-pulse"></div>
+                <span className="text-white font-medium">Hoogwaardige kwaliteit</span>
               </div>
-              <div className="flex items-center gap-2">
-                <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
-                Steun de beweging
+              <div className="flex items-center gap-3 px-4 py-2 bg-white/10 backdrop-blur-sm rounded-full border border-white/20">
+                <div className="w-3 h-3 bg-purple-400 rounded-full animate-pulse"></div>
+                <span className="text-white font-medium">Steun de beweging</span>
               </div>
             </div>
           </div>
@@ -455,11 +459,11 @@ const Webshop = () => {
           </MarqueeAnimation>
         </div>
       </section>
-      <section className="py-20 relative overflow-hidden">
+      <section className="py-24 relative overflow-hidden bg-gradient-to-br from-gray-50 via-blue-50 to-indigo-50">
         {/* Background decoration */}
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/3 via-background to-secondary/3"></div>
-        <div className="absolute top-0 left-1/4 w-96 h-96 bg-gradient-to-r from-primary/10 to-secondary/10 rounded-full blur-3xl opacity-50"></div>
-        <div className="absolute bottom-0 right-1/4 w-80 h-80 bg-gradient-to-r from-secondary/10 to-primary/10 rounded-full blur-3xl opacity-50"></div>
+        <div className="absolute inset-0 bg-gradient-to-br from-white/50 via-blue-50/30 to-indigo-50/50"></div>
+        <div className="absolute top-0 left-1/4 w-96 h-96 bg-gradient-to-r from-blue-200/30 to-indigo-200/30 rounded-full blur-3xl opacity-60"></div>
+        <div className="absolute bottom-0 right-1/4 w-80 h-80 bg-gradient-to-r from-purple-200/30 to-pink-200/30 rounded-full blur-3xl opacity-60"></div>
         
         <div className="container mx-auto px-4 relative">
           <div 
@@ -471,14 +475,14 @@ const Webshop = () => {
             }`}
           >
             <div className="text-center mb-20">
-              <div className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-primary/20 to-secondary/20 backdrop-blur-sm rounded-full text-primary font-semibold text-sm mb-8 border border-primary/20">
-                <ShoppingCart className="w-4 h-4 mr-2" />
+              <div className="inline-flex items-center px-8 py-4 bg-white/80 backdrop-blur-md rounded-full text-blue-700 font-bold text-base mb-10 border border-blue-200 shadow-lg">
+                <ShoppingCart className="w-5 h-5 mr-3" />
                 Premium Merchandise
               </div>
-              <h2 className="text-5xl md:text-6xl font-bold mb-8 text-foreground leading-tight">
-                Onze <span className="bg-gradient-to-r from-primary via-secondary to-primary bg-clip-text text-transparent">exclusieve</span> collectie
+              <h2 className="text-5xl md:text-6xl font-bold mb-8 text-gray-900 leading-tight">
+                Onze <span className="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent">exclusieve</span> collectie
               </h2>
-              <p className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
+              <p className="text-xl md:text-2xl text-gray-700 max-w-3xl mx-auto leading-relaxed">
                 Hoogwaardige merchandise om je steun voor de beweging te tonen. 
                 Elke aankoop draagt bij aan een respectvolle bouwsector.
               </p>
