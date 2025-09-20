@@ -12,11 +12,18 @@ import Footer from "@/components/Footer";
 import { supabase } from "@/integrations/supabase/client";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-
 const Webshop = () => {
-  const { ref: headerRef, isVisible: headerVisible } = useScrollAnimation(0.2);
-  const { ref: productsRef, isVisible: productsVisible } = useScrollAnimation(0.1);
-  const [cart, setCart] = useState<{[key: string]: number}>({});
+  const {
+    ref: headerRef,
+    isVisible: headerVisible
+  } = useScrollAnimation(0.2);
+  const {
+    ref: productsRef,
+    isVisible: productsVisible
+  } = useScrollAnimation(0.1);
+  const [cart, setCart] = useState<{
+    [key: string]: number;
+  }>({});
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isCheckingOut, setIsCheckingOut] = useState(false);
   const [customer, setCustomer] = useState({
@@ -30,88 +37,81 @@ const Webshop = () => {
     city: "",
     country: "Nederland"
   });
-  const { toast } = useToast();
-
+  const {
+    toast
+  } = useToast();
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const status = params.get('status');
     if (status === 'paid') {
       toast({
         title: "Bedankt!",
-        description: "Je betaling is ontvangen.",
+        description: "Je betaling is ontvangen."
       });
       const url = new URL(window.location.href);
       url.searchParams.delete('status');
       window.history.replaceState({}, '', url.toString());
     }
   }, []);
-
-  const products = [
-    {
-      id: "koffiebeker-keramiek",
-      name: "Bouw met Respect Koffiebeker",
-      description: "Hoogwaardige keramische koffiebeker met ons logo. Perfect voor op kantoor of de bouwkeet.",
-      price: 12.95,
-      image: "/lovable-uploads/132795ea-2daa-4305-a106-02650a9bf06c.png",
-      category: "Drinkbekers",
-      inStock: true,
-      features: ["Keramiek", "Vaatwasserbestendig", "350ml inhoud"]
-    },
-    {
-      id: "koffiebeker-rvs",
-      name: "RVS Thermosbeker",
-      description: "Robuuste roestvrijstalen thermosbeker die je koffie urenlang warm houdt. Ideaal voor bouwplaatsen.",
-      price: 18.95,
-      image: "/lovable-uploads/2a13d9d8-47a2-4787-9cba-80dfe398fd9e.png",
-      category: "Drinkbekers",
-      inStock: true,
-      features: ["Dubbelwandige isolatie", "Lekvrij", "500ml inhoud"]
-    },
-    {
-      id: "pen-set",
-      name: "Bouw met Respect Pen Set",
-      description: "Set van 3 hoogwaardige balpennen met ons logo. Ideaal voor het tekenen van contracten en plannen.",
-      price: 8.95,
-      image: "/lovable-uploads/370194bf-f017-421b-ab19-49ae1435a82e.png",
-      category: "Schrijfwaren",
-      inStock: true,
-      features: ["Set van 3 stuks", "Blauwe inkt", "Herbruikbaar"]
-    },
-    {
-      id: "pen-premium",
-      name: "Premium Metalen Pen",
-      description: "Elegante metalen pen met gegraveerd logo. Perfect voor belangrijke ondertekeningen.",
-      price: 15.95,
-      image: "/lovable-uploads/6a653db4-1d30-46c2-83c1-760e5459fb7d.png",
-      category: "Schrijfwaren",
-      inStock: true,
-      features: ["Metalen behuizing", "Gegraveerd logo", "Geschenkdoosje"]
-    }
-  ];
-
+  const products = [{
+    id: "koffiebeker-keramiek",
+    name: "Bouw met Respect Koffiebeker",
+    description: "Hoogwaardige keramische koffiebeker met ons logo. Perfect voor op kantoor of de bouwkeet.",
+    price: 12.95,
+    image: "/lovable-uploads/132795ea-2daa-4305-a106-02650a9bf06c.png",
+    category: "Drinkbekers",
+    inStock: true,
+    features: ["Keramiek", "Vaatwasserbestendig", "350ml inhoud"]
+  }, {
+    id: "koffiebeker-rvs",
+    name: "RVS Thermosbeker",
+    description: "Robuuste roestvrijstalen thermosbeker die je koffie urenlang warm houdt. Ideaal voor bouwplaatsen.",
+    price: 18.95,
+    image: "/lovable-uploads/2a13d9d8-47a2-4787-9cba-80dfe398fd9e.png",
+    category: "Drinkbekers",
+    inStock: true,
+    features: ["Dubbelwandige isolatie", "Lekvrij", "500ml inhoud"]
+  }, {
+    id: "pen-set",
+    name: "Bouw met Respect Pen Set",
+    description: "Set van 3 hoogwaardige balpennen met ons logo. Ideaal voor het tekenen van contracten en plannen.",
+    price: 8.95,
+    image: "/lovable-uploads/370194bf-f017-421b-ab19-49ae1435a82e.png",
+    category: "Schrijfwaren",
+    inStock: true,
+    features: ["Set van 3 stuks", "Blauwe inkt", "Herbruikbaar"]
+  }, {
+    id: "pen-premium",
+    name: "Premium Metalen Pen",
+    description: "Elegante metalen pen met gegraveerd logo. Perfect voor belangrijke ondertekeningen.",
+    price: 15.95,
+    image: "/lovable-uploads/6a653db4-1d30-46c2-83c1-760e5459fb7d.png",
+    category: "Schrijfwaren",
+    inStock: true,
+    features: ["Metalen behuizing", "Gegraveerd logo", "Geschenkdoosje"]
+  }];
   const addToCart = (productId: string) => {
     setCart(prev => ({
       ...prev,
       [productId]: (prev[productId] || 0) + 1
     }));
-    
     const product = products.find(p => p.id === productId);
     toast({
       title: "Toegevoegd aan winkelwagen",
       description: `${product?.name} is toegevoegd aan je winkelwagen.`
     });
   };
-
   const increaseQuantity = (productId: string) => {
     setCart(prev => ({
       ...prev,
       [productId]: (prev[productId] || 0) + 1
     }));
   };
-
   const decreaseQuantity = (productId: string) => {
     setCart(prev => {
-      const newCart = { ...prev };
+      const newCart = {
+        ...prev
+      };
       if (newCart[productId] > 1) {
         newCart[productId] = newCart[productId] - 1;
       } else {
@@ -120,32 +120,29 @@ const Webshop = () => {
       return newCart;
     });
   };
-
   const removeFromCart = (productId: string) => {
     setCart(prev => {
-      const newCart = { ...prev };
+      const newCart = {
+        ...prev
+      };
       delete newCart[productId];
       return newCart;
     });
-    
     const product = products.find(p => p.id === productId);
     toast({
       title: "Verwijderd uit winkelwagen",
       description: `${product?.name} is verwijderd uit je winkelwagen.`
     });
   };
-
   const getCartTotal = () => {
     return Object.entries(cart).reduce((total, [productId, quantity]) => {
       const product = products.find(p => p.id === productId);
       return total + (product?.price || 0) * quantity;
     }, 0);
   };
-
   const getCartItemCount = () => {
     return Object.values(cart).reduce((total, quantity) => total + quantity, 0);
   };
-
   const validateCustomer = () => {
     const missing: string[] = [];
     if (!customer.firstName) missing.push("voornaam");
@@ -158,7 +155,6 @@ const Webshop = () => {
     if (!customer.city) missing.push("plaats");
     return missing;
   };
-
   const checkout = async () => {
     try {
       console.log('[Webshop] Checkout clicked');
@@ -173,45 +169,63 @@ const Webshop = () => {
           quantity
         };
       }).filter(Boolean);
-
       if (!items.length) {
-        toast({ title: "Winkelwagen leeg", description: "Voeg eerst producten toe.", variant: "destructive" });
+        toast({
+          title: "Winkelwagen leeg",
+          description: "Voeg eerst producten toe.",
+          variant: "destructive"
+        });
         console.warn('[Webshop] No items to checkout');
         return;
       }
-
       const missing = validateCustomer();
       if (missing.length) {
-        toast({ title: "Gegevens incompleet", description: `Vul nog in: ${missing.join(', ')}` , variant: "destructive" });
+        toast({
+          title: "Gegevens incompleet",
+          description: `Vul nog in: ${missing.join(', ')}`,
+          variant: "destructive"
+        });
         return;
       }
-
-      const { data, error } = await supabase.functions.invoke('create-shop-order', {
-        body: { items, customer }
+      const {
+        data,
+        error
+      } = await supabase.functions.invoke('create-shop-order', {
+        body: {
+          items,
+          customer
+        }
       });
-
-      console.log('[Webshop] create-shop-order response', { data, error });
+      console.log('[Webshop] create-shop-order response', {
+        data,
+        error
+      });
       if (error || (data as any)?.error) {
         throw new Error(error?.message || (data as any)?.error || 'Afrekenen mislukt');
       }
-
       const paymentUrl = (data as any)?.paymentUrl;
       if (!paymentUrl) {
         console.error('[Webshop] No paymentUrl in response');
-        toast({ title: "Afrekenen mislukt", description: "Geen betaal-link ontvangen van server.", variant: "destructive" });
+        toast({
+          title: "Afrekenen mislukt",
+          description: "Geen betaal-link ontvangen van server.",
+          variant: "destructive"
+        });
         return;
       }
       window.location.href = paymentUrl;
     } catch (e: any) {
-      toast({ title: "Afrekenen mislukt", description: e.message || String(e), variant: "destructive" });
+      toast({
+        title: "Afrekenen mislukt",
+        description: e.message || String(e),
+        variant: "destructive"
+      });
       console.error('[Webshop] Checkout error', e);
     } finally {
       setIsCheckingOut(false);
     }
   };
-
-  return (
-    <div className="min-h-screen sticky w-full overflow-x-hidden">
+  return <div className="min-h-screen sticky w-full overflow-x-hidden">
       {/* Header */}
       <header className="bg-background/98 backdrop-blur-md border-b border-border/50 sticky top-0 z-50 transition-all duration-300 shadow-sm">
         <div className="container mx-auto px-4 py-4">
@@ -223,24 +237,15 @@ const Webshop = () => {
             <div className="flex items-center space-x-6">
               <Sheet open={isCartOpen} onOpenChange={setIsCartOpen}>
                 <SheetTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    className="relative group p-3 rounded-2xl transition-all duration-300 hover:bg-primary/10"
-                  >
-                    <div className={`transition-all duration-300 ${
-                      getCartItemCount() > 0 
-                        ? 'text-primary' 
-                        : 'text-muted-foreground'
-                    }`}>
+                  <Button variant="ghost" className="relative group p-3 rounded-2xl transition-all duration-300 hover:bg-primary/10">
+                    <div className={`transition-all duration-300 ${getCartItemCount() > 0 ? 'text-primary' : 'text-muted-foreground'}`}>
                       <ShoppingCart className="w-6 h-6" />
                     </div>
-                    {getCartItemCount() > 0 && (
-                      <div className="absolute -top-1 -right-1 w-6 h-6 bg-gradient-to-r from-primary to-secondary rounded-full flex items-center justify-center">
+                    {getCartItemCount() > 0 && <div className="absolute -top-1 -right-1 w-6 h-6 bg-gradient-to-r from-primary to-secondary rounded-full flex items-center justify-center">
                         <span className="text-xs font-bold text-white">
                           {getCartItemCount()}
                         </span>
-                      </div>
-                    )}
+                      </div>}
                   </Button>
                 </SheetTrigger>
                 <SheetContent className="w-full sm:max-w-lg">
@@ -250,107 +255,108 @@ const Webshop = () => {
                       Winkelwagen ({getCartItemCount()} items)
                     </SheetTitle>
                   </SheetHeader>
-                  <div className="mt-6 space-y-4 max-h-[70vh] sm:max-h-[75vh] overflow-y-auto scroll-smooth pb-40" style={{ scrollBehavior: 'smooth', scrollbarWidth: 'thin' }}>
-                    {Object.entries(cart).length === 0 ? (
-                      <div className="text-center py-8">
+                  <div className="mt-6 space-y-4 max-h-[70vh] sm:max-h-[75vh] overflow-y-auto scroll-smooth pb-40" style={{
+                  scrollBehavior: 'smooth',
+                  scrollbarWidth: 'thin'
+                }}>
+                    {Object.entries(cart).length === 0 ? <div className="text-center py-8">
                         <ShoppingCart className="w-16 h-16 mx-auto text-muted-foreground mb-4" />
                         <p className="text-muted-foreground">Je winkelwagen is leeg</p>
-                      </div>
-                    ) : (
-                      Object.entries(cart).map(([productId, quantity]) => {
-                        const product = products.find(p => p.id === productId);
-                        if (!product) return null;
-                        
-                        return (
-                          <div key={productId} className="flex items-center space-x-4 p-4 border rounded-lg">
-                            <img 
-                              src={product.image} 
-                              alt={product.name}
-                              className="w-16 h-16 object-cover rounded-lg"
-                            />
+                      </div> : Object.entries(cart).map(([productId, quantity]) => {
+                    const product = products.find(p => p.id === productId);
+                    if (!product) return null;
+                    return <div key={productId} className="flex items-center space-x-4 p-4 border rounded-lg">
+                            <img src={product.image} alt={product.name} className="w-16 h-16 object-cover rounded-lg" />
                             <div className="flex-1">
                               <h4 className="font-semibold text-sm">{product.name}</h4>
                               <p className="text-sm text-muted-foreground">€{product.price.toFixed(2)}</p>
                             </div>
                             <div className="flex items-center space-x-2">
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => decreaseQuantity(productId)}
-                                className="w-8 h-8 p-0"
-                              >
+                              <Button variant="outline" size="sm" onClick={() => decreaseQuantity(productId)} className="w-8 h-8 p-0">
                                 <Minus className="w-3 h-3" />
                               </Button>
                               <span className="w-8 text-center font-semibold">{quantity}</span>
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => increaseQuantity(productId)}
-                                className="w-8 h-8 p-0"
-                              >
+                              <Button variant="outline" size="sm" onClick={() => increaseQuantity(productId)} className="w-8 h-8 p-0">
                                 <Plus className="w-3 h-3" />
                               </Button>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => removeFromCart(productId)}
-                                className="w-8 h-8 p-0 text-destructive hover:bg-destructive/10"
-                              >
+                              <Button variant="ghost" size="sm" onClick={() => removeFromCart(productId)} className="w-8 h-8 p-0 text-destructive hover:bg-destructive/10">
                                 <X className="w-3 h-3" />
                               </Button>
                             </div>
-                          </div>
-                        );
-                      })
-                    )}
+                          </div>;
+                  })}
 
-                    {getCartItemCount() > 0 && (
-                      <div className="mt-6 space-y-4 border-t pt-4">
+                    {getCartItemCount() > 0 && <div className="mt-6 space-y-4 border-t pt-4">
                         {/* Customer details form */}
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                           <div>
                             <Label htmlFor="firstName">Voornaam</Label>
-                            <Input id="firstName" value={customer.firstName} onChange={(e) => setCustomer({ ...customer, firstName: e.target.value })} placeholder="Jan" />
+                            <Input id="firstName" value={customer.firstName} onChange={e => setCustomer({
+                          ...customer,
+                          firstName: e.target.value
+                        })} placeholder="Jan" />
                           </div>
                           <div>
                             <Label htmlFor="lastName">Achternaam</Label>
-                            <Input id="lastName" value={customer.lastName} onChange={(e) => setCustomer({ ...customer, lastName: e.target.value })} placeholder="Jansen" />
+                            <Input id="lastName" value={customer.lastName} onChange={e => setCustomer({
+                          ...customer,
+                          lastName: e.target.value
+                        })} placeholder="Jansen" />
                           </div>
                           <div className="sm:col-span-2">
                             <Label htmlFor="email">E-mail</Label>
-                            <Input id="email" type="email" value={customer.email} onChange={(e) => setCustomer({ ...customer, email: e.target.value })} placeholder="jan@voorbeeld.nl" />
+                            <Input id="email" type="email" value={customer.email} onChange={e => setCustomer({
+                          ...customer,
+                          email: e.target.value
+                        })} placeholder="jan@voorbeeld.nl" />
                           </div>
                           <div className="sm:col-span-2">
                             <Label htmlFor="phone">Telefoon</Label>
-                            <Input id="phone" value={customer.phone} onChange={(e) => setCustomer({ ...customer, phone: e.target.value })} placeholder="0612345678" />
+                            <Input id="phone" value={customer.phone} onChange={e => setCustomer({
+                          ...customer,
+                          phone: e.target.value
+                        })} placeholder="0612345678" />
                           </div>
                           <div className="sm:col-span-2">
                             <Label htmlFor="street">Straat</Label>
-                            <Input id="street" value={customer.street} onChange={(e) => setCustomer({ ...customer, street: e.target.value })} placeholder="Hoofdstraat" />
+                            <Input id="street" value={customer.street} onChange={e => setCustomer({
+                          ...customer,
+                          street: e.target.value
+                        })} placeholder="Hoofdstraat" />
                           </div>
                           <div>
                             <Label htmlFor="houseNumber">Huisnummer</Label>
-                            <Input id="houseNumber" value={customer.houseNumber} onChange={(e) => setCustomer({ ...customer, houseNumber: e.target.value })} placeholder="12A" />
+                            <Input id="houseNumber" value={customer.houseNumber} onChange={e => setCustomer({
+                          ...customer,
+                          houseNumber: e.target.value
+                        })} placeholder="12A" />
                           </div>
                           <div>
                             <Label htmlFor="postcode">Postcode</Label>
-                            <Input id="postcode" value={customer.postcode} onChange={(e) => setCustomer({ ...customer, postcode: e.target.value })} placeholder="1234 AB" />
+                            <Input id="postcode" value={customer.postcode} onChange={e => setCustomer({
+                          ...customer,
+                          postcode: e.target.value
+                        })} placeholder="1234 AB" />
                           </div>
                           <div className="sm:col-span-2">
                             <Label htmlFor="city">Plaats</Label>
-                            <Input id="city" value={customer.city} onChange={(e) => setCustomer({ ...customer, city: e.target.value })} placeholder="Amsterdam" />
+                            <Input id="city" value={customer.city} onChange={e => setCustomer({
+                          ...customer,
+                          city: e.target.value
+                        })} placeholder="Amsterdam" />
                           </div>
                           <div className="sm:col-span-2">
                             <Label htmlFor="country">Land</Label>
-                            <Input id="country" value={customer.country} onChange={(e) => setCustomer({ ...customer, country: e.target.value })} placeholder="Nederland" />
+                            <Input id="country" value={customer.country} onChange={e => setCustomer({
+                          ...customer,
+                          country: e.target.value
+                        })} placeholder="Nederland" />
                           </div>
                         </div>
-                      </div>
-                    )}
+                      </div>}
                   </div>
 
-                  {getCartItemCount() > 0 && (
-                    <div className="sticky bottom-0 left-0 right-0 -mx-6 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 border-t border-border p-4">
+                  {getCartItemCount() > 0 && <div className="sticky bottom-0 left-0 right-0 -mx-6 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 border-t border-border p-4">
                       <div className="space-y-2">
                         <div className="flex justify-between text-sm">
                           <span>Subtotaal:</span>
@@ -371,8 +377,7 @@ const Webshop = () => {
                         <ShoppingCart className="w-4 h-4 mr-2" />
                         {isCheckingOut ? 'Bezig met afrekenen...' : 'Naar afrekenen'}
                       </Button>
-                    </div>
-                  )}
+                    </div>}
                 </SheetContent>
               </Sheet>
               <div className="text-right">
@@ -396,24 +401,19 @@ const Webshop = () => {
         
         {/* Animated background elements */}
         <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-gradient-to-r from-blue-500/20 to-indigo-500/20 rounded-full blur-3xl opacity-60 animate-pulse"></div>
-        <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-gradient-to-r from-purple-500/20 to-pink-500/20 rounded-full blur-3xl opacity-60 animate-pulse" style={{animationDelay: '1s'}}></div>
+        <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-gradient-to-r from-purple-500/20 to-pink-500/20 rounded-full blur-3xl opacity-60 animate-pulse" style={{
+        animationDelay: '1s'
+      }}></div>
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[400px] bg-gradient-to-r from-yellow-400/10 to-orange-400/10 rounded-full blur-3xl opacity-40"></div>
         
         <div className="container mx-auto px-4 relative">
-          <div 
-            ref={headerRef}
-            className={`text-center transition-all duration-1000 ${
-              headerVisible 
-                ? 'opacity-100 transform translate-y-0' 
-                : 'opacity-0 transform translate-y-8'
-            }`}
-          >
+          <div ref={headerRef} className={`text-center transition-all duration-1000 ${headerVisible ? 'opacity-100 transform translate-y-0' : 'opacity-0 transform translate-y-8'}`}>
             <div className="inline-flex items-center px-8 py-4 bg-white/10 backdrop-blur-md rounded-full text-white font-semibold text-sm mb-10 border border-white/20 shadow-lg">
               <ShoppingCart className="w-5 h-5 mr-3" />
               Bouw met Respect Shop
             </div>
             <h1 className="text-6xl md:text-8xl font-bold mb-10 text-white leading-tight">
-              Merchandise voor een <br/>
+              Merchandise voor een <br />
               <span className="bg-gradient-to-r from-yellow-400 via-orange-400 to-red-400 bg-clip-text text-transparent">
                 respectvolle bouwplaats
               </span>
@@ -443,18 +443,10 @@ const Webshop = () => {
       {/* Marquee Section */}
       <section className="py-8 bg-gradient-to-r from-primary/5 to-secondary/5 overflow-hidden">
         <div className="flex flex-col gap-4">
-          <MarqueeAnimation
-            direction="left"
-            baseVelocity={-2}
-            className="bg-gradient-to-r from-primary to-secondary text-white py-4 text-4xl md:text-6xl"
-          >
+          <MarqueeAnimation direction="left" baseVelocity={-2} className="bg-gradient-to-r from-primary to-secondary text-white py-4 text-4xl md:text-6xl">
             Bouw met Respect • Respectvolle Bouwplaats • Hoogwaardige Merchandise • Steun de Beweging
           </MarqueeAnimation>
-          <MarqueeAnimation
-            direction="right"
-            baseVelocity={-2}
-            className="bg-gradient-to-r from-secondary to-primary text-white py-4 text-4xl md:text-6xl"
-          >
+          <MarqueeAnimation direction="right" baseVelocity={-2} className="bg-gradient-to-r from-secondary to-primary text-white py-4 text-4xl md:text-6xl">
             Merchandise • Steun de Beweging • Kwaliteit • Bewustwording • Respectvolle Bouwsector
           </MarqueeAnimation>
         </div>
@@ -466,14 +458,7 @@ const Webshop = () => {
         <div className="absolute bottom-0 right-1/4 w-80 h-80 bg-gradient-to-r from-purple-200/30 to-pink-200/30 rounded-full blur-3xl opacity-60"></div>
         
         <div className="container mx-auto px-4 relative">
-          <div 
-            ref={productsRef}
-            className={`transition-all duration-1000 ${
-              productsVisible 
-                ? 'opacity-100 transform translate-y-0' 
-                : 'opacity-0 transform translate-y-8'
-            }`}
-          >
+          <div ref={productsRef} className={`transition-all duration-1000 ${productsVisible ? 'opacity-100 transform translate-y-0' : 'opacity-0 transform translate-y-8'}`}>
             <div className="text-center mb-20">
               <div className="inline-flex items-center px-8 py-4 bg-white/80 backdrop-blur-md rounded-full text-blue-700 font-bold text-base mb-10 border border-blue-200 shadow-lg">
                 <ShoppingCart className="w-5 h-5 mr-3" />
@@ -489,34 +474,25 @@ const Webshop = () => {
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 gap-8 max-w-8xl mx-auto px-4">
-              {products.map((product, index) => (
-                <Card 
-                  key={product.id}
-                  className={`group relative overflow-hidden bg-gradient-to-br from-card/95 to-card/80 backdrop-blur-sm border-2 border-border/30 hover:border-primary/40 hover:shadow-2xl hover:shadow-primary/10 transition-all duration-700 hover:scale-[1.02] flex flex-col h-full ${
-                    productsVisible ? 'opacity-100 transform translate-y-0' : 'opacity-0 transform translate-y-8'
-                  }`}
-                  style={{ 
-                    transitionDelay: productsVisible ? `${index * 150}ms` : '0ms'
-                  }}
-                >
+              {products.map((product, index) => <Card key={product.id} className={`group relative overflow-hidden bg-gradient-to-br from-card/95 to-card/80 backdrop-blur-sm border-2 border-border/30 hover:border-primary/40 hover:shadow-2xl hover:shadow-primary/10 transition-all duration-700 hover:scale-[1.02] flex flex-col h-full ${productsVisible ? 'opacity-100 transform translate-y-0' : 'opacity-0 transform translate-y-8'}`} style={{
+              transitionDelay: productsVisible ? `${index * 150}ms` : '0ms'
+            }}>
                   {/* Animated gradient overlay */}
                   <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-secondary/5 opacity-0 group-hover:opacity-100 transition-all duration-700"></div>
                   <div className="absolute inset-0 bg-gradient-to-t from-background/10 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500"></div>
                   
                   {/* Floating elements */}
                   <div className="absolute top-4 right-4 w-3 h-3 bg-primary/30 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-500 animate-pulse"></div>
-                  <div className="absolute top-6 right-8 w-2 h-2 bg-secondary/40 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-700 animate-pulse" style={{ animationDelay: '0.3s' }}></div>
+                  <div className="absolute top-6 right-8 w-2 h-2 bg-secondary/40 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-700 animate-pulse" style={{
+                animationDelay: '0.3s'
+              }}></div>
                   
                   <CardHeader className="relative p-6">
                     <div className="aspect-square bg-gradient-to-br from-muted/50 to-muted/80 rounded-3xl overflow-hidden mb-6 shadow-xl group-hover:shadow-2xl transition-all duration-700 relative">
                       {/* Image glow effect */}
                       <div className="absolute inset-0 bg-gradient-to-t from-primary/20 via-transparent to-secondary/20 opacity-0 group-hover:opacity-100 transition-opacity duration-700 z-10"></div>
                       
-                      <img 
-                        src={product.image} 
-                        alt={product.name}
-                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000 ease-out"
-                      />
+                      <img src={product.image} alt={product.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000 ease-out" />
                       
                       {/* Shimmer effect */}
                       <div className="absolute inset-0 -translate-x-full group-hover:translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent transition-transform duration-1000 ease-out"></div>
@@ -526,12 +502,10 @@ const Webshop = () => {
                       <Badge className="bg-primary/15 text-primary border-primary/30 font-semibold px-3 py-1.5 text-sm rounded-full group-hover:bg-primary/25 transition-colors duration-300">
                         {product.category}
                       </Badge>
-                      {product.inStock && (
-                        <Badge className="bg-green-500/15 text-green-600 border-green-500/30 font-semibold text-sm rounded-full flex items-center gap-1.5 px-3 py-1.5 group-hover:bg-green-500/25 transition-colors duration-300">
+                      {product.inStock && <Badge className="bg-green-500/15 text-green-600 border-green-500/30 font-semibold text-sm rounded-full flex items-center gap-1.5 px-3 py-1.5 group-hover:bg-green-500/25 transition-colors duration-300">
                           <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
                           Op voorraad
-                        </Badge>
-                      )}
+                        </Badge>}
                     </div>
                     
                     <CardTitle className="text-xl lg:text-2xl font-bold group-hover:text-primary transition-all duration-300 leading-tight mb-1">
@@ -546,14 +520,12 @@ const Webshop = () => {
                     
                     <div className="space-y-3">
                       <h4 className="font-semibold text-foreground text-sm uppercase tracking-wider text-primary/80">Kenmerken</h4>
-                      {product.features.map((feature, idx) => (
-                        <div key={idx} className="flex items-center text-muted-foreground group-hover:text-foreground/90 transition-all duration-300">
+                      {product.features.map((feature, idx) => <div key={idx} className="flex items-center text-muted-foreground group-hover:text-foreground/90 transition-all duration-300">
                           <div className="w-6 h-6 bg-primary/15 rounded-full flex items-center justify-center mr-3 flex-shrink-0 group-hover:bg-primary/25 group-hover:scale-110 transition-all duration-300">
                             <div className="w-2 h-2 bg-primary rounded-full"></div>
                           </div>
                           <span className="font-medium text-sm">{feature}</span>
-                        </div>
-                      ))}
+                        </div>)}
                     </div>
 
                     <div className="flex flex-col sm:flex-row sm:items-end justify-between pt-6 border-t border-border/50 gap-4 mt-auto">
@@ -563,26 +535,19 @@ const Webshop = () => {
                         </span>
                         <p className="text-sm text-muted-foreground">Incl. BTW & verzending</p>
                       </div>
-                      {cart[product.id] > 0 && (
-                        <div className="flex-shrink-0">
+                      {cart[product.id] > 0 && <div className="flex-shrink-0">
                           <div className="inline-flex items-center px-3 py-2 bg-gradient-to-r from-primary/15 to-secondary/15 rounded-full border border-primary/20">
                             <ShoppingCart className="w-3 h-3 mr-2 text-primary" />
                             <span className="text-sm font-semibold text-primary">
                               {cart[product.id]}× in wagen
                             </span>
                           </div>
-                        </div>
-                      )}
+                        </div>}
                     </div>
                   </CardContent>
 
                   <CardFooter className="relative pt-0 p-6 mt-auto">
-                    <Button 
-                      onClick={() => addToCart(product.id)}
-                      className="w-full h-14 text-base font-semibold shadow-lg hover:shadow-xl hover:shadow-primary/20 transition-all duration-300 group-hover:scale-[1.02] transform-gpu"
-                      disabled={!product.inStock}
-                      size="lg"
-                    >
+                    <Button onClick={() => addToCart(product.id)} className="w-full h-14 text-base font-semibold shadow-lg hover:shadow-xl hover:shadow-primary/20 transition-all duration-300 group-hover:scale-[1.02] transform-gpu" disabled={!product.inStock} size="lg">
                       <ShoppingCart className="w-5 h-5 mr-2 flex-shrink-0 group-hover:rotate-12 transition-transform duration-300" />
                       <span className="hidden sm:inline">Toevoegen aan winkelwagen</span>
                       <span className="sm:hidden">In winkelwagen</span>
@@ -591,8 +556,7 @@ const Webshop = () => {
                   
                   {/* Corner accent */}
                   <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-bl from-primary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                </Card>
-              ))}
+                </Card>)}
             </div>
             
             {/* Floating call-to-action */}
@@ -615,7 +579,9 @@ const Webshop = () => {
         
         {/* Animated background elements */}
         <div className="absolute top-1/4 left-1/6 w-96 h-96 bg-gradient-to-r from-yellow-400/20 to-orange-400/20 rounded-full blur-3xl opacity-60 animate-pulse"></div>
-        <div className="absolute bottom-1/4 right-1/6 w-80 h-80 bg-gradient-to-r from-pink-400/20 to-red-400/20 rounded-full blur-3xl opacity-60 animate-pulse" style={{animationDelay: '2s'}}></div>
+        <div className="absolute bottom-1/4 right-1/6 w-80 h-80 bg-gradient-to-r from-pink-400/20 to-red-400/20 rounded-full blur-3xl opacity-60 animate-pulse" style={{
+        animationDelay: '2s'
+      }}></div>
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[600px] bg-gradient-to-r from-blue-400/10 to-purple-400/10 rounded-full blur-3xl opacity-40"></div>
         
         <div className="container mx-auto px-4 text-center relative">
@@ -625,7 +591,7 @@ const Webshop = () => {
               Waarom Bouw met Respect
             </div>
             <h3 className="text-6xl md:text-8xl font-bold mb-12 text-white leading-tight">
-              Waarom onze <br/>
+              Waarom onze <br />
               <span className="bg-gradient-to-r from-yellow-400 via-orange-400 to-red-400 bg-clip-text text-transparent">
                 merchandise kopen?
               </span>
@@ -773,55 +739,12 @@ const Webshop = () => {
       </section>
 
       {/* Special Offer Section */}
-      <section className="py-16 bg-red-500 text-white text-center">
-        <div className="container mx-auto px-4">
-          <h3 className="text-4xl font-bold mb-4">
-            Bestel nu en krijg 10% korting
-          </h3>
-          <p className="text-xl mb-6">
-            Op je eerste bestelling + gratis verzending
-          </p>
-          <div className="inline-block bg-white/20 px-6 py-3 rounded-full">
-            <span className="font-bold text-lg">Code: RESPECT10</span>
-          </div>
-        </div>
-      </section>
+      
 
       {/* Trust Badges Section */}
-      <section className="py-12 bg-gray-100">
-        <div className="container mx-auto px-4">
-          <div className="flex flex-wrap justify-center items-center gap-8">
-            <div className="flex items-center gap-2">
-              <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center">
-                <span className="text-white text-xs">✓</span>
-              </div>
-              <span className="text-gray-700 font-medium">Veilig Betalen</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center">
-                <span className="text-white text-xs">🚚</span>
-              </div>
-              <span className="text-gray-700 font-medium">Snelle Levering</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="w-6 h-6 bg-purple-500 rounded-full flex items-center justify-center">
-                <span className="text-white text-xs">↺</span>
-              </div>
-              <span className="text-gray-700 font-medium">30 Dagen Retour</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="w-6 h-6 bg-orange-500 rounded-full flex items-center justify-center">
-                <span className="text-white text-xs">💎</span>
-              </div>
-              <span className="text-gray-700 font-medium">Premium Kwaliteit</span>
-            </div>
-          </div>
-        </div>
-      </section>
+      
       
       <Footer />
-    </div>
-  );
+    </div>;
 };
-
 export default Webshop;
