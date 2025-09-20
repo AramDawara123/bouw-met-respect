@@ -124,10 +124,7 @@ const CompanyProfiles = () => {
               Ontdek bedrijven die bouwen met respect
             </p>
           </div>
-          {isAdmin && <Button onClick={() => setShowForm(true)} className="flex items-center gap-2">
-              <Plus className="w-4 h-4" />
-              Nieuw Profiel
-            </Button>}
+          {isAdmin}
         </div>
 
         {profiles.length === 0 ? <div className="text-center py-12">
@@ -154,39 +151,7 @@ const CompanyProfiles = () => {
                     {profile.is_featured && <Badge variant="default">Featured</Badge>}
                   </div>
                 </CardHeader>
-                <CardContent>
-                  {profile.description && <CardDescription className="mb-4 line-clamp-3">
-                      {profile.description}
-                    </CardDescription>}
-                  
-                  <div className="space-y-2">
-                    {profile.website && <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                        <Globe className="w-4 h-4" />
-                        <a href={profile.website} target="_blank" rel="noopener noreferrer" className="hover:text-primary truncate">
-                          {profile.website.replace(/^https?:\/\//, '')}
-                        </a>
-                      </div>}
-                    {profile.contact_email && <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                        <Mail className="w-4 h-4" />
-                        <a href={`mailto:${profile.contact_email}`} className="hover:text-primary truncate">
-                          {profile.contact_email}
-                        </a>
-                      </div>}
-                    {profile.contact_phone && <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                        <Phone className="w-4 h-4" />
-                        <a href={`tel:${profile.contact_phone}`} className="hover:text-primary">
-                          {profile.contact_phone}
-                        </a>
-                      </div>}
-                  </div>
-
-                  {isAdmin && <div className="flex gap-2 mt-4 pt-4 border-t">
-                      
-                      <Button variant="outline" size="sm" onClick={() => handleDelete(profile.id)} className="text-destructive hover:text-destructive">
-                        Verwijderen
-                      </Button>
-                    </div>}
-                </CardContent>
+                
               </Card>)}
           </div>}
 
