@@ -703,17 +703,11 @@ const Webshop = () => {
       </section>
 
       {/* Customer Reviews Section */}
-      <section className="py-24 bg-gradient-to-br from-white via-blue-50 to-indigo-50 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-blue-100/20 via-transparent to-purple-100/20"></div>
-        <div className="absolute top-1/4 right-1/4 w-64 h-64 bg-gradient-to-r from-yellow-200/30 to-orange-200/30 rounded-full blur-3xl"></div>
-        
-        <div className="container mx-auto px-4 relative">
+      <section className="py-20 bg-blue-50">
+        <div className="container mx-auto px-4">
           <div className="text-center mb-16">
-            <div className="inline-flex items-center px-8 py-4 bg-white/80 backdrop-blur-md rounded-full text-blue-700 font-bold text-base mb-8 border border-blue-200 shadow-lg">
-              ⭐ Klantbeoordelingen
-            </div>
-            <h3 className="text-5xl md:text-6xl font-bold mb-6 text-gray-900 leading-tight">
-              Wat onze <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">klanten</span> zeggen
+            <h3 className="text-4xl font-bold mb-6 text-gray-900">
+              Wat onze klanten zeggen
             </h3>
             <p className="text-xl text-gray-700 max-w-3xl mx-auto">
               Ontdek waarom professionals in de bouwsector kiezen voor onze merchandise
@@ -721,63 +715,57 @@ const Webshop = () => {
           </div>
 
           <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-            <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 border border-blue-100">
-              <div className="flex items-center gap-4 mb-6">
-                <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center text-white font-bold text-lg">
+            <div className="bg-white rounded-xl p-6 shadow-lg">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold">
                   M
                 </div>
                 <div>
                   <h4 className="font-bold text-gray-900">Marco van der Berg</h4>
-                  <p className="text-sm text-gray-600">Projectleider, BouwCorp</p>
+                  <p className="text-sm text-gray-600">Projectleider</p>
                 </div>
               </div>
-              <div className="flex mb-4">
-                {[...Array(5)].map((_, i) => (
-                  <span key={i} className="text-yellow-400 text-xl">⭐</span>
-                ))}
+              <div className="flex mb-3">
+                <span className="text-yellow-400">⭐⭐⭐⭐⭐</span>
               </div>
-              <p className="text-gray-700 leading-relaxed">
-                "Geweldige kwaliteit! De thermosbeker houdt mijn koffie perfect warm tijdens lange werkdagen op de bouwplaats."
+              <p className="text-gray-700">
+                "Geweldige kwaliteit! De thermosbeker houdt mijn koffie perfect warm."
               </p>
             </div>
 
-            <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 border border-blue-100">
-              <div className="flex items-center gap-4 mb-6">
-                <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center text-white font-bold text-lg">
+            <div className="bg-white rounded-xl p-6 shadow-lg">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center text-white font-bold">
                   S
                 </div>
                 <div>
                   <h4 className="font-bold text-gray-900">Sandra Jansen</h4>
-                  <p className="text-sm text-gray-600">Architect, Studio Design</p>
+                  <p className="text-sm text-gray-600">Architect</p>
                 </div>
               </div>
-              <div className="flex mb-4">
-                {[...Array(5)].map((_, i) => (
-                  <span key={i} className="text-yellow-400 text-xl">⭐</span>
-                ))}
+              <div className="flex mb-3">
+                <span className="text-yellow-400">⭐⭐⭐⭐⭐</span>
               </div>
-              <p className="text-gray-700 leading-relaxed">
-                "De pennen schrijven fantastisch en het logo ziet er professioneel uit. Perfect voor belangrijke contracten!"
+              <p className="text-gray-700">
+                "De pennen schrijven fantastisch en zien er professioneel uit!"
               </p>
             </div>
 
-            <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 border border-blue-100">
-              <div className="flex items-center gap-4 mb-6">
-                <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-600 rounded-full flex items-center justify-center text-white font-bold text-lg">
+            <div className="bg-white rounded-xl p-6 shadow-lg">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-10 h-10 bg-purple-500 rounded-full flex items-center justify-center text-white font-bold">
                   R
                 </div>
                 <div>
                   <h4 className="font-bold text-gray-900">Rick Vermeulen</h4>
-                  <p className="text-sm text-gray-600">Aannemer, Vermeulen Bouw</p>
+                  <p className="text-sm text-gray-600">Aannemer</p>
                 </div>
               </div>
-              <div className="flex mb-4">
-                {[...Array(5)].map((_, i) => (
-                  <span key={i} className="text-yellow-400 text-xl">⭐</span>
-                ))}
+              <div className="flex mb-3">
+                <span className="text-yellow-400">⭐⭐⭐⭐⭐</span>
               </div>
-              <p className="text-gray-700 leading-relaxed">
-                "Trots om deze merchandise te dragen. Het laat zien dat we serieus zijn over respectvol bouwen!"
+              <p className="text-gray-700">
+                "Trots om deze merchandise te dragen. Laat zien dat we serieus zijn!"
               </p>
             </div>
           </div>
@@ -785,61 +773,45 @@ const Webshop = () => {
       </section>
 
       {/* Special Offer Section */}
-      <section className="py-20 bg-gradient-to-r from-orange-500 via-red-500 to-pink-500 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-orange-600/90 via-red-600/90 to-pink-600/90"></div>
-        <div className="absolute top-0 left-0 w-full h-full bg-[url('data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fill-rule="evenodd"%3E%3Cg fill="%23ffffff" fill-opacity="0.1"%3E%3Ccircle cx="30" cy="30" r="4"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] opacity-20"></div>
-        
-        <div className="container mx-auto px-4 text-center relative">
-          <div className="max-w-4xl mx-auto">
-            <div className="inline-flex items-center px-6 py-3 bg-white/20 backdrop-blur-md rounded-full text-white font-bold text-lg mb-8 border border-white/30">
-              🔥 Beperkte Tijd
-            </div>
-            <h3 className="text-5xl md:text-7xl font-bold mb-8 text-white leading-tight">
-              Bestel nu en krijg
-              <span className="block bg-gradient-to-r from-yellow-300 to-orange-300 bg-clip-text text-transparent">
-                10% korting
-              </span>
-            </h3>
-            <p className="text-2xl text-white/90 mb-10">
-              Op je eerste bestelling + gratis verzending
-            </p>
-            <div className="flex flex-wrap justify-center gap-4 mb-8">
-              <div className="bg-white/20 backdrop-blur-sm px-6 py-3 rounded-full border border-white/30">
-                <span className="text-white font-bold text-lg">Code: RESPECT10</span>
-              </div>
-            </div>
-            <p className="text-lg text-white/80">
-              Geldig tot eind van de maand • Automatisch toegepast bij checkout
-            </p>
+      <section className="py-16 bg-red-500 text-white text-center">
+        <div className="container mx-auto px-4">
+          <h3 className="text-4xl font-bold mb-4">
+            Bestel nu en krijg 10% korting
+          </h3>
+          <p className="text-xl mb-6">
+            Op je eerste bestelling + gratis verzending
+          </p>
+          <div className="inline-block bg-white/20 px-6 py-3 rounded-full">
+            <span className="font-bold text-lg">Code: RESPECT10</span>
           </div>
         </div>
       </section>
 
       {/* Trust Badges Section */}
-      <section className="py-16 bg-white">
+      <section className="py-12 bg-gray-100">
         <div className="container mx-auto px-4">
-          <div className="flex flex-wrap justify-center items-center gap-8 opacity-60">
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
-                <span className="text-white text-sm font-bold">✓</span>
+          <div className="flex flex-wrap justify-center items-center gap-8">
+            <div className="flex items-center gap-2">
+              <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center">
+                <span className="text-white text-xs">✓</span>
               </div>
               <span className="text-gray-700 font-medium">Veilig Betalen</span>
             </div>
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
-                <span className="text-white text-sm font-bold">🚚</span>
+            <div className="flex items-center gap-2">
+              <div className="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center">
+                <span className="text-white text-xs">🚚</span>
               </div>
               <span className="text-gray-700 font-medium">Snelle Levering</span>
             </div>
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 bg-purple-500 rounded-full flex items-center justify-center">
-                <span className="text-white text-sm font-bold">↺</span>
+            <div className="flex items-center gap-2">
+              <div className="w-6 h-6 bg-purple-500 rounded-full flex items-center justify-center">
+                <span className="text-white text-xs">↺</span>
               </div>
               <span className="text-gray-700 font-medium">30 Dagen Retour</span>
             </div>
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 bg-orange-500 rounded-full flex items-center justify-center">
-                <span className="text-white text-sm font-bold">💎</span>
+            <div className="flex items-center gap-2">
+              <div className="w-6 h-6 bg-orange-500 rounded-full flex items-center justify-center">
+                <span className="text-white text-xs">💎</span>
               </div>
               <span className="text-gray-700 font-medium">Premium Kwaliteit</span>
             </div>
