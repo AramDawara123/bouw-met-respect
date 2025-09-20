@@ -228,7 +228,7 @@ const Webshop = () => {
   };
   return <div className="min-h-screen sticky w-full overflow-x-hidden">
       {/* Header */}
-      <header className="bg-background/98 backdrop-blur-md border-b border-border/50 sticky top-0 z-50 transition-all duration-300 shadow-sm">
+      <header className="bg-white/95 backdrop-blur-lg border-b border-gray-200/50 sticky top-0 z-[100] transition-all duration-300 shadow-lg hover:shadow-xl">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <Link to="/" className="flex items-center space-x-3 text-primary hover:text-primary/80 transition-all duration-300 group">
