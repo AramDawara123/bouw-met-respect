@@ -2,10 +2,9 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
-import { Plus, Building2, Globe, Mail, Phone } from "lucide-react";
+import { Building2, Globe, Mail, Phone } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import CompanyProfileForm from "@/components/CompanyProfileForm";
 
 interface CompanyProfile {
   id: string;
@@ -24,28 +23,12 @@ interface CompanyProfile {
 
 const CompanyProfiles = () => {
   const [profiles, setProfiles] = useState<CompanyProfile[]>([]);
-  const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [showForm, setShowForm] = useState(false);
-  const [editingProfile, setEditingProfile] = useState<CompanyProfile | null>(null);
   const { toast } = useToast();
 
   useEffect(() => {
-    checkAdminAccess();
     fetchProfiles();
   }, []);
-
-  const checkAdminAccess = async () => {
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user) {
-        const { data } = await supabase.rpc('verify_admin_access');
-        setIsAdmin(data || false);
-      }
-    } catch (error) {
-      console.error('Error checking admin access:', error);
-    }
-  };
 
   const fetchProfiles = async () => {
     try {
@@ -67,48 +50,6 @@ const CompanyProfiles = () => {
     } finally {
       setLoading(false);
     }
-  };
-
-  const handleEdit = (profile: CompanyProfile) => {
-    setEditingProfile(profile);
-    setShowForm(true);
-  };
-
-  const handleDelete = async (id: string) => {
-    if (!confirm('Weet je zeker dat je dit bedrijfsprofiel wilt verwijderen?')) return;
-
-    try {
-      const { error } = await supabase
-        .from('company_profiles')
-        .delete()
-        .eq('id', id);
-
-      if (error) throw error;
-
-      toast({
-        title: "Succes",
-        description: "Bedrijfsprofiel succesvol verwijderd.",
-      });
-
-      fetchProfiles();
-    } catch (error) {
-      console.error('Error deleting profile:', error);
-      toast({
-        title: "Fout",
-        description: "Kon bedrijfsprofiel niet verwijderen.",
-        variant: "destructive",
-      });
-    }
-  };
-
-  const handleFormClose = () => {
-    setShowForm(false);
-    setEditingProfile(null);
-  };
-
-  const handleFormSuccess = () => {
-    fetchProfiles();
-    handleFormClose();
   };
 
   if (loading) {
@@ -133,12 +74,7 @@ const CompanyProfiles = () => {
               Ontdek bedrijven die bouwen met respect
             </p>
           </div>
-          {isAdmin && (
-            <Button onClick={() => setShowForm(true)} className="flex items-center gap-2">
-              <Plus className="w-4 h-4" />
-              Nieuw Profiel
-            </Button>
-          )}
+          
         </div>
 
         {profiles.length === 0 ? (
@@ -146,7 +82,7 @@ const CompanyProfiles = () => {
             <Building2 className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
             <h3 className="text-xl font-semibold mb-2">Geen bedrijfsprofielen gevonden</h3>
             <p className="text-muted-foreground">
-              {isAdmin ? "Voeg het eerste bedrijfsprofiel toe om te beginnen." : "Er zijn nog geen bedrijfsprofielen toegevoegd."}
+              Er zijn nog geen bedrijfsprofielen toegevoegd.
             </p>
           </div>
         ) : (
@@ -226,37 +162,14 @@ const CompanyProfiles = () => {
                     )}
                   </div>
 
-                  {isAdmin && (
-                    <div className="flex gap-2 mt-4 pt-4 border-t">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => handleEdit(profile)}
-                      >
-                        Bewerken
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => handleDelete(profile.id)}
-                        className="text-destructive hover:text-destructive"
-                      >
-                        Verwijderen
-                      </Button>
-                    </div>
-                  )}
+                  
                 </CardContent>
               </Card>
             ))}
           </div>
         )}
 
-        <CompanyProfileForm
-          open={showForm}
-          onOpenChange={handleFormClose}
-          onSuccess={handleFormSuccess}
-          editingProfile={editingProfile}
-        />
+        
       </div>
     </div>
   );
