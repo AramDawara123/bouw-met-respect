@@ -64,16 +64,13 @@ const CompanyProfiles = () => {
   return (
     <div className="min-h-screen bg-background pt-24">
       <div className="container mx-auto px-4 py-8">
-        <div className="flex justify-between items-center mb-8">
-          <div>
-            <h1 className="text-4xl font-bold text-foreground mb-2">
-              Bedrijfsprofielen
-            </h1>
-            <p className="text-muted-foreground text-lg">
-              Ontdek bedrijven die bouwen met respect
-            </p>
-          </div>
-          
+        <div className="mb-8">
+          <h1 className="text-4xl font-bold text-foreground mb-2">
+            Bedrijfsprofielen
+          </h1>
+          <p className="text-muted-foreground text-lg">
+            Ontdek bedrijven die bouwen met respect
+          </p>
         </div>
 
         {profiles.length === 0 ? (
@@ -103,30 +100,30 @@ const CompanyProfiles = () => {
                         </div>
                       )}
                       <div>
-                        <CardTitle className="text-lg">{profile.name}</CardTitle>
+                        <CardTitle className="text-xl font-semibold">{profile.name}</CardTitle>
                         {profile.industry && (
-                          <Badge variant="secondary" className="mt-1">
+                          <Badge variant="secondary" className="mt-2 text-sm">
                             {profile.industry}
                           </Badge>
                         )}
                       </div>
                     </div>
                     {profile.is_featured && (
-                      <Badge variant="default">Featured</Badge>
+                      <Badge className="bg-yellow-500 text-white">Uitgelicht</Badge>
                     )}
                   </div>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="pt-4">
                   {profile.description && (
-                    <CardDescription className="mb-4 line-clamp-3">
+                    <CardDescription className="mb-4 line-clamp-3 text-sm text-gray-600">
                       {profile.description}
                     </CardDescription>
                   )}
                   
-                  <div className="space-y-2">
+                  <div className="space-y-3">
                     {profile.website && (
                       <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                        <Globe className="w-4 h-4" />
+                        <Globe className="w-4 h-4 text-primary" />
                         <a
                           href={profile.website}
                           target="_blank"
@@ -139,7 +136,7 @@ const CompanyProfiles = () => {
                     )}
                     {profile.contact_email && (
                       <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                        <Mail className="w-4 h-4" />
+                        <Mail className="w-4 h-4 text-primary" />
                         <a
                           href={`mailto:${profile.contact_email}`}
                           className="hover:text-primary truncate"
@@ -150,7 +147,7 @@ const CompanyProfiles = () => {
                     )}
                     {profile.contact_phone && (
                       <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                        <Phone className="w-4 h-4" />
+                        <Phone className="w-4 h-4 text-primary" />
                         <a
                           href={`tel:${profile.contact_phone}`}
                           className="hover:text-primary"
@@ -160,15 +157,11 @@ const CompanyProfiles = () => {
                       </div>
                     )}
                   </div>
-
-                  
                 </CardContent>
               </Card>
             ))}
           </div>
         )}
-
-        
       </div>
     </div>
   );
