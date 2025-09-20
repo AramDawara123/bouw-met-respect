@@ -66,10 +66,10 @@ const CompanyProfiles = () => {
       <div className="container mx-auto px-4 py-8">
         <div className="mb-8">
           <h1 className="text-4xl font-bold text-foreground mb-2">
-            Bedrijfsprofielen
+            Bedrijfsprofielen - Alleen Weergave
           </h1>
           <p className="text-muted-foreground text-lg">
-            Ontdek bedrijven die bouwen met respect
+            Ontdek bedrijven die bouwen met respect (geen bewerkingsmogelijkheden)
           </p>
         </div>
 
@@ -156,6 +156,12 @@ const CompanyProfiles = () => {
                         </a>
                       </div>
                     )}
+                  </div>
+                  
+                  <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded-md">
+                    <p className="text-sm text-green-700">
+                      ✅ Deze pagina is alleen voor weergave. Bewerken kan via het Dashboard.
+                    </p>
                   </div>
                 </CardContent>
               </Card>
