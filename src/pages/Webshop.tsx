@@ -267,7 +267,13 @@ const Webshop = () => {
                     const product = products.find(p => p.id === productId);
                     if (!product) return null;
                     return <div key={productId} className="flex items-center space-x-4 p-4 border rounded-lg">
-                            <img src={product.image} alt={product.name} className="w-16 h-16 object-cover rounded-lg" />
+                            <img 
+                              src={product.image} 
+                              alt={product.name} 
+                              className="w-16 h-16 object-cover rounded-lg" 
+                              loading="lazy"
+                              decoding="async"
+                            />
                             <div className="flex-1">
                               <h4 className="font-semibold text-sm">{product.name}</h4>
                               <p className="text-sm text-muted-foreground">€{product.price.toFixed(2)}</p>
@@ -402,7 +408,7 @@ const Webshop = () => {
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[600px] bg-gradient-to-r from-primary/20 to-accent/20 rounded-full blur-3xl opacity-30"></div>
         
         <div className="container mx-auto px-4 relative">
-          <div ref={headerRef} className={`text-center transition-all duration-1000 ${headerVisible ? 'opacity-100 transform translate-y-0' : 'opacity-0 transform translate-y-8'}`}>
+          <div ref={headerRef} className={`text-center transition-all duration-500 ${headerVisible ? 'opacity-100 transform translate-y-0' : 'opacity-0 transform translate-y-8'}`}>
             <div className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-primary/20 to-accent/20 backdrop-blur-sm rounded-full text-primary font-semibold text-sm mb-8 border border-primary/20">
               <ShoppingCart className="w-4 h-4 mr-2" />
               Bouw met Respect Shop
@@ -448,7 +454,7 @@ const Webshop = () => {
         <div className="absolute bottom-0 right-1/4 w-80 h-80 bg-gradient-to-r from-accent/10 to-primary/10 rounded-full blur-3xl opacity-50"></div>
         
         <div className="container mx-auto px-4 relative">
-          <div ref={productsRef} className={`transition-all duration-1000 ${productsVisible ? 'opacity-100 transform translate-y-0' : 'opacity-0 transform translate-y-8'}`}>
+          <div ref={productsRef} className={`transition-all duration-500 ${productsVisible ? 'opacity-100 transform translate-y-0' : 'opacity-0 transform translate-y-8'}`}>
             <div className="text-center mb-20">
               <div className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-primary/20 to-accent/20 backdrop-blur-sm rounded-full text-primary font-semibold text-sm mb-8 border border-primary/20">
                 <ShoppingCart className="w-4 h-4 mr-2" />
@@ -478,14 +484,20 @@ const Webshop = () => {
               }}></div>
                   
                   <CardHeader className="relative p-6">
-                    <div className="aspect-square bg-gradient-to-br from-muted/50 to-muted/80 rounded-3xl overflow-hidden mb-6 shadow-xl group-hover:shadow-2xl transition-all duration-700 relative">
+                    <div className="aspect-square bg-gradient-to-br from-muted/50 to-muted/80 rounded-3xl overflow-hidden mb-6 shadow-xl group-hover:shadow-2xl transition-all duration-300 relative">
                       {/* Image glow effect */}
-                      <div className="absolute inset-0 bg-gradient-to-t from-primary/20 via-transparent to-secondary/20 opacity-0 group-hover:opacity-100 transition-opacity duration-700 z-10"></div>
+                      <div className="absolute inset-0 bg-gradient-to-t from-primary/20 via-transparent to-secondary/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10"></div>
                       
-                      <img src={product.image} alt={product.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000 ease-out" />
+                      <img 
+                        src={product.image} 
+                        alt={product.name} 
+                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500 ease-out" 
+                        loading="lazy"
+                        decoding="async"
+                      />
                       
                       {/* Shimmer effect */}
-                      <div className="absolute inset-0 -translate-x-full group-hover:translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent transition-transform duration-1000 ease-out"></div>
+                      <div className="absolute inset-0 -translate-x-full group-hover:translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent transition-transform duration-500 ease-out"></div>
                     </div>
                     
                     <div className="flex flex-wrap items-center justify-between gap-3 mb-4">

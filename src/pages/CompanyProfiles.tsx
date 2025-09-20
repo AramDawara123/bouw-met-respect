@@ -111,6 +111,8 @@ const CompanyProfiles = () => {
                         src={profile.logo_url} 
                         alt={`${profile.name} logo`} 
                         className="w-16 h-16 object-contain rounded-lg border-2 border-gray-200 bg-white p-2 shadow-sm" 
+                        loading="lazy"
+                        decoding="async"
                         onError={(e) => {
                           console.log('Logo failed to load:', profile.logo_url);
                           e.currentTarget.style.display = 'none';
