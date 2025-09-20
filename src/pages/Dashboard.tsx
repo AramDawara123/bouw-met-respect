@@ -1123,30 +1123,30 @@ const Dashboard = () => {
                               </div>
                             )}
                             <div>
-                              <CardTitle className="text-lg">{profile.name}</CardTitle>
+                              <CardTitle className="text-xl font-semibold">{profile.name}</CardTitle>
                               {profile.industry && (
-                                <Badge variant="secondary" className="mt-1">
+                                <Badge variant="secondary" className="mt-2 text-sm">
                                   {profile.industry}
                                 </Badge>
                               )}
                             </div>
                           </div>
                           {profile.is_featured && (
-                            <Badge variant="default">Featured</Badge>
+                            <Badge className="bg-yellow-500 text-white">Uitgelicht</Badge>
                           )}
                         </div>
                       </CardHeader>
-                      <CardContent>
+                      <CardContent className="pt-4">
                         {profile.description && (
-                          <CardDescription className="mb-4 line-clamp-3">
+                          <CardDescription className="mb-4 line-clamp-3 text-sm text-gray-600">
                             {profile.description}
                           </CardDescription>
                         )}
                         
-                        <div className="space-y-2">
+                        <div className="space-y-3 mb-4">
                           {profile.website && (
                             <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                              <Globe className="w-4 h-4" />
+                              <Globe className="w-4 h-4 text-primary" />
                               <a
                                 href={profile.website}
                                 target="_blank"
@@ -1159,7 +1159,7 @@ const Dashboard = () => {
                           )}
                           {profile.contact_email && (
                             <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                              <Mail className="w-4 h-4" />
+                              <Mail className="w-4 h-4 text-primary" />
                               <a
                                 href={`mailto:${profile.contact_email}`}
                                 className="hover:text-primary truncate"
@@ -1170,7 +1170,7 @@ const Dashboard = () => {
                           )}
                           {profile.contact_phone && (
                             <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                              <Phone className="w-4 h-4" />
+                              <Phone className="w-4 h-4 text-primary" />
                               <a
                                 href={`tel:${profile.contact_phone}`}
                                 className="hover:text-primary"
@@ -1181,21 +1181,22 @@ const Dashboard = () => {
                           )}
                         </div>
 
-                        <div className="flex gap-2 mt-4 pt-4 border-t">
+                        <div className="flex flex-wrap gap-2 mt-auto pt-4 border-t border-gray-200">
                           <Button
                             variant="outline"
                             size="sm"
                             onClick={() => handleEditProfile(profile)}
+                            className="flex-1 sm:flex-none"
                           >
-                            Bewerken
+                            <Edit className="w-4 h-4 mr-2" /> Bewerken
                           </Button>
                           <Button
-                            variant="outline"
+                            variant="destructive"
                             size="sm"
                             onClick={() => handleDeleteProfile(profile.id)}
-                            className="text-destructive hover:text-destructive"
+                            className="flex-1 sm:flex-none"
                           >
-                            Verwijderen
+                            <Trash2 className="w-4 h-4 mr-2" /> Verwijderen
                           </Button>
                         </div>
                       </CardContent>
