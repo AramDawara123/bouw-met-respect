@@ -99,11 +99,11 @@ const CompanyProfiles = () => {
                         <img
                           src={profile.logo_url}
                           alt={`${profile.name} logo`}
-                          className="w-12 h-12 object-contain rounded-lg border"
+                          className="w-16 h-16 object-contain rounded-lg border bg-white p-2"
                         />
                       ) : (
-                        <div className="w-12 h-12 bg-muted rounded-lg flex items-center justify-center">
-                          <Building2 className="w-6 h-6 text-muted-foreground" />
+                        <div className="w-16 h-16 bg-muted rounded-lg flex items-center justify-center">
+                          <Building2 className="w-8 h-8 text-muted-foreground" />
                         </div>
                       )}
                       <div>
@@ -122,45 +122,57 @@ const CompanyProfiles = () => {
                 </CardHeader>
                 <CardContent className="pt-4">
                   {profile.description && (
-                    <CardDescription className="mb-4 line-clamp-3 text-sm text-gray-600">
-                      {profile.description}
-                    </CardDescription>
+                    <div className="mb-4">
+                      <h4 className="text-sm font-medium text-foreground mb-2">Beschrijving</h4>
+                      <p className="text-sm text-muted-foreground leading-relaxed">
+                        {profile.description}
+                      </p>
+                    </div>
                   )}
                   
                   <div className="space-y-3 mb-4">
                     {profile.website && (
-                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                        <Globe className="w-4 h-4 text-primary" />
-                        <a
-                          href={profile.website}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="hover:text-primary truncate"
-                        >
-                          {profile.website.replace(/^https?:\/\//, '')}
-                        </a>
+                      <div className="flex items-center gap-2 text-sm">
+                        <Globe className="w-4 h-4 text-primary flex-shrink-0" />
+                        <div>
+                          <span className="text-xs text-muted-foreground block">Website</span>
+                          <a
+                            href={profile.website}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-primary hover:underline truncate"
+                          >
+                            {profile.website.replace(/^https?:\/\//, '')}
+                          </a>
+                        </div>
                       </div>
                     )}
                     {profile.contact_email && (
-                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                        <Mail className="w-4 h-4 text-primary" />
-                        <a
-                          href={`mailto:${profile.contact_email}`}
-                          className="hover:text-primary truncate"
-                        >
-                          {profile.contact_email}
-                        </a>
+                      <div className="flex items-center gap-2 text-sm">
+                        <Mail className="w-4 h-4 text-primary flex-shrink-0" />
+                        <div>
+                          <span className="text-xs text-muted-foreground block">Email</span>
+                          <a
+                            href={`mailto:${profile.contact_email}`}
+                            className="text-primary hover:underline truncate"
+                          >
+                            {profile.contact_email}
+                          </a>
+                        </div>
                       </div>
                     )}
                     {profile.contact_phone && (
-                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                        <Phone className="w-4 h-4 text-primary" />
-                        <a
-                          href={`tel:${profile.contact_phone}`}
-                          className="hover:text-primary"
-                        >
-                          {profile.contact_phone}
-                        </a>
+                      <div className="flex items-center gap-2 text-sm">
+                        <Phone className="w-4 h-4 text-primary flex-shrink-0" />
+                        <div>
+                          <span className="text-xs text-muted-foreground block">Telefoon</span>
+                          <a
+                            href={`tel:${profile.contact_phone}`}
+                            className="text-primary hover:underline"
+                          >
+                            {profile.contact_phone}
+                          </a>
+                        </div>
                       </div>
                     )}
                   </div>
