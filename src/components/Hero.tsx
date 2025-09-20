@@ -55,20 +55,12 @@ const Hero = () => {
     <>
       {/* Hero Section with Background Image */}
       <section className="relative min-h-screen flex items-center justify-center pt-20 pb-16 lg:mt-16">
-        {/* Background Image - Responsive */}
-        <div className="absolute inset-0">
-          {/* Desktop Background */}
-          <div 
-            className="hidden md:block absolute inset-0 bg-cover bg-center bg-no-repeat"
-            style={{ backgroundImage: 'url(/lovable-uploads/73f1d5f7-784d-4f62-afe1-8e5ebef9771f.png)' }}
-          ></div>
-          {/* Mobile Background */}
-          <div 
-            className="md:hidden absolute inset-0 bg-cover bg-center bg-no-repeat"
-            style={{ backgroundImage: 'url(/lovable-uploads/a1441b5c-4e80-4aa5-9535-e2d1a585a97d.png)' }}
-          ></div>
-          {/* Overlay for better text readability */}
-          <div className="absolute inset-0 bg-gradient-to-br from-slate-900/80 via-blue-900/70 to-indigo-900/80"></div>
+        {/* Background Image */}
+        <div 
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+          style={{ backgroundImage: 'url(/lovable-uploads/b490bd1a-4422-4f83-8394-d7a2f6d940b9.png)' }}
+        >
+          <div className="absolute inset-0 bg-background/70"></div>
         </div>
         
         {/* Content Overlay */}
@@ -79,21 +71,21 @@ const Hero = () => {
               heroVisible ? 'opacity-100 transform translate-y-0' : 'opacity-0 transform translate-y-8'
             }`}
           >
-            <h1 className="text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold mb-6 text-white leading-tight">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold mb-6 text-foreground leading-tight">
               Bouw met Respect
             </h1>
-            <p className="text-lg md:text-xl lg:text-2xl text-white/90 mb-8 leading-relaxed max-w-3xl mx-auto">
+            <p className="text-lg md:text-xl lg:text-2xl text-muted-foreground mb-8 leading-relaxed max-w-3xl mx-auto">
               De beweging voor een veiligere en respectvolle bouwsector. Sluit je aan en help mee 
               de sector aantrekkelijker maken voor iedereen.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button 
                 size="lg" 
-                className="text-lg px-10 py-6 bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 text-white font-bold shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300 border-0" 
+                className="text-lg px-8 py-4" 
                 onClick={() => setIsMembershipFormOpen(true)}
               >
                 Sluit je aan bij de beweging
-                <ArrowRight className="ml-3 w-6 h-6" />
+                <ArrowRight className="ml-2 w-5 h-5" />
               </Button>
             </div>
           </div>
