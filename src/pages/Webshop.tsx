@@ -436,13 +436,10 @@ const Webshop = () => {
       </section>
 
       {/* Marquee Section */}
-      <section className="py-8 bg-gradient-to-r from-primary/5 to-secondary/5 overflow-hidden">
+      <section className="py-8 bg-gradient-to-r from-primary/5 to-accent/5 overflow-hidden">
         <div className="flex flex-col gap-4">
-          <MarqueeAnimation direction="left" baseVelocity={-2} className="bg-gradient-to-r from-primary to-secondary text-white py-4 text-4xl md:text-6xl">
-            Bouw met Respect • Respectvolle Bouwplaats • Hoogwaardige Merchandise • Steun de Beweging
-          </MarqueeAnimation>
-          <MarqueeAnimation direction="right" baseVelocity={-2} className="bg-gradient-to-r from-secondary to-primary text-white py-4 text-4xl md:text-6xl">
-            Merchandise • Steun de Beweging • Kwaliteit • Bewustwording • Respectvolle Bouwsector
+          <MarqueeAnimation direction="left" baseVelocity={-1} className="bg-gradient-to-r from-primary to-accent text-white py-6 text-4xl md:text-6xl">
+            Bouw met Respect • Respectvolle Bouwplaats • Hoogwaardige Merchandise • Steun de Beweging • Premium Kwaliteit • Samen Bouwen aan Respect
           </MarqueeAnimation>
         </div>
       </section>
