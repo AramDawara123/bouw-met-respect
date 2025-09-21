@@ -53,8 +53,41 @@ const PartnerDashboard = () => {
   const checkAuthAndFetch = async () => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
+      
+      // Demo mode - allow access without authentication for testing
       if (!user) {
-        navigate('/login');
+        console.log('No user found, enabling demo mode');
+        setUser({ id: 'demo-user', email: 'demo@example.com' });
+        setPartnerMembership({
+          id: 'demo-partnership',
+          first_name: 'Demo',
+          last_name: 'Gebruiker',
+          email: 'demo@example.com',
+          phone: '+31 6 12345678',
+          company_name: 'Demo Bedrijf BV',
+          website: 'https://demo-bedrijf.nl',
+          industry: 'Bouw & Constructie',
+          description: 'Een demo bedrijf voor testdoeleinden',
+          payment_status: 'paid',
+          amount: 25000,
+          created_at: new Date().toISOString()
+        });
+        
+        // Demo company profile
+        setCompanyProfile({
+          id: 'demo-profile',
+          name: 'Demo Bedrijf BV',
+          description: 'Een vooraanstaand bouwbedrijf gespecialiseerd in duurzame constructies en renovaties. Wij leveren hoogwaardige diensten met respect voor het milieu.',
+          website: 'https://demo-bedrijf.nl',
+          logo_url: '/placeholder.svg',
+          industry: 'Bouw & Constructie',
+          contact_email: 'info@demo-bedrijf.nl',
+          contact_phone: '+31 6 12345678',
+          is_featured: true,
+          display_order: 1,
+          partner_membership_id: 'demo-partnership'
+        });
+        setLoading(false);
         return;
       }
 
@@ -185,6 +218,17 @@ const PartnerDashboard = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-primary/5 to-secondary/5 p-4 lg:p-8 mt-16">
       <div className="max-w-4xl mx-auto space-y-6">
+        {/* Demo Mode Banner */}
+        {user?.id === 'demo-user' && (
+          <div className="bg-yellow-100 border border-yellow-300 rounded-lg p-4 mb-6">
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
+              <p className="text-yellow-800 font-medium">
+                Demo Modus - Dit is een voorbeeld van het Partner Dashboard
+              </p>
+            </div>
+          </div>
+        )}
         {/* Header */}
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
           <div className="flex items-center gap-4">

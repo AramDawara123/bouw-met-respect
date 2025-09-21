@@ -6,6 +6,61 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+// Generate random password
+function generateRandomPassword(): string {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*';
+  let password = '';
+  for (let i = 0; i < 12; i++) {
+    password += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return password;
+}
+
+// Send welcome email with login credentials
+async function sendWelcomeEmail(email: string, firstName: string, password: string, companyName: string) {
+  try {
+    const response = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${Deno.env.get('RESEND_API_KEY')}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        from: 'Bouw met Respect <noreply@bouwmetrespect.nl>',
+        to: [email],
+        subject: 'Welkom bij Bouw met Respect - Je partner account is klaar!',
+        html: `
+          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+            <h2 style="color: #2563eb;">Welkom bij Bouw met Respect!</h2>
+            <p>Beste ${firstName},</p>
+            <p>Gefeliciteerd! Je betaling is succesvol verwerkt en je partner account is aangemaakt.</p>
+            
+            <div style="background-color: #f3f4f6; padding: 20px; border-radius: 8px; margin: 20px 0;">
+              <h3 style="color: #1f2937; margin-top: 0;">Je inloggegevens:</h3>
+              <p><strong>Email:</strong> ${email}</p>
+              <p><strong>Wachtwoord:</strong> ${password}</p>
+              <p><strong>Bedrijf:</strong> ${companyName}</p>
+            </div>
+            
+            <p>Je kunt nu inloggen op je <a href="https://bouwmetrespect.nl/partner-dashboard" style="color: #2563eb;">Partner Dashboard</a> om je bedrijfsprofiel te beheren.</p>
+            
+            <p>Voor vragen kun je altijd contact met ons opnemen.</p>
+            
+            <p>Met vriendelijke groet,<br>
+            Het Bouw met Respect team</p>
+          </div>
+        `,
+      }),
+    });
+
+    if (!response.ok) {
+      console.error('Failed to send welcome email:', await response.text());
+    }
+  } catch (error) {
+    console.error('Error sending welcome email:', error);
+  }
+}
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
@@ -69,6 +124,71 @@ serve(async (req) => {
 
       if (error) {
         return new Response(`Partner DB update error: ${error.message}`, { headers: corsHeaders, status: 500 });
+      }
+
+      // If payment is successful, create user account and company profile
+      if (newStatus === 'paid') {
+        try {
+          // Get partner membership details
+          const { data: partnerData, error: partnerError } = await supabaseService
+            .from('partner_memberships')
+            .select('*')
+            .eq('mollie_payment_id', paymentId)
+            .single();
+
+          if (partnerError || !partnerData) {
+            console.error('Error fetching partner data:', partnerError);
+          } else {
+            // Generate random password
+            const password = generateRandomPassword();
+            
+            // Create user account
+            const { data: authData, error: authError } = await supabaseService.auth.admin.createUser({
+              email: partnerData.email,
+              password: password,
+              email_confirm: true,
+              user_metadata: {
+                first_name: partnerData.first_name,
+                last_name: partnerData.last_name,
+                company_name: partnerData.company_name
+              }
+            });
+
+            if (authError) {
+              console.error('Error creating user:', authError);
+            } else if (authData.user) {
+              // Update partner membership with user_id
+              await supabaseService
+                .from('partner_memberships')
+                .update({ user_id: authData.user.id })
+                .eq('id', partnerData.id);
+
+              // Create company profile
+              const { error: profileError } = await supabaseService
+                .from('company_profiles')
+                .insert({
+                  name: partnerData.company_name,
+                  description: partnerData.description || `Welkom bij ${partnerData.company_name}`,
+                  website: partnerData.website,
+                  industry: partnerData.industry,
+                  contact_email: partnerData.email,
+                  contact_phone: partnerData.phone,
+                  partner_membership_id: partnerData.id,
+                  is_featured: false,
+                  display_order: 999
+                });
+
+              if (profileError) {
+                console.error('Error creating company profile:', profileError);
+              }
+
+              // Send welcome email with login credentials
+              await sendWelcomeEmail(partnerData.email, partnerData.first_name, password, partnerData.company_name);
+            }
+          }
+        } catch (error) {
+          console.error('Error in post-payment processing:', error);
+        }
       }
     } else {
       // Regular order payment

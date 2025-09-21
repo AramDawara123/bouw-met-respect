@@ -9,7 +9,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Search, Users, CreditCard, Edit, Trash2, Download, Filter, Eye, Save, Home, ShoppingBag, Building2, Plus, Globe, Mail, Phone, Package } from "lucide-react";
+import { Search, Users, CreditCard, Edit, Trash2, Download, Filter, Eye, Save, Home, ShoppingBag, Building2, Plus, Globe, Mail, Phone, Package, Printer } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Link } from "react-router-dom";
@@ -92,11 +92,29 @@ interface CompanyProfile {
   updated_at: string;
 }
 
+interface PartnerAccount {
+  id: string;
+  first_name: string;
+  last_name: string;
+  email: string;
+  phone: string;
+  company_name: string;
+  website: string | null;
+  industry: string | null;
+  description: string | null;
+  payment_status: string;
+  amount: number;
+  created_at: string;
+  user_id: string | null;
+  company_profile: CompanyProfile | null;
+}
+
 const Dashboard = () => {
   const [memberships, setMemberships] = useState<Membership[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
   const [profiles, setProfiles] = useState<CompanyProfile[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
+  const [partners, setPartners] = useState<PartnerAccount[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
@@ -110,7 +128,7 @@ const Dashboard = () => {
   const [isEditingProduct, setIsEditingProduct] = useState(false);
   const [user, setUser] = useState(null);
   const [isAdmin, setIsAdmin] = useState(false);
-  const [viewMode, setViewMode] = useState<'memberships' | 'orders' | 'profiles' | 'products'>("memberships");
+  const [viewMode, setViewMode] = useState<'memberships' | 'orders' | 'profiles' | 'products' | 'partners'>("memberships");
   const [showProfileForm, setShowProfileForm] = useState(false);
   const [editingProfile, setEditingProfile] = useState<CompanyProfile | null>(null);
   const { toast } = useToast();
@@ -147,7 +165,7 @@ const Dashboard = () => {
       }
 
       setIsAdmin(true);
-      await Promise.all([fetchMemberships(), fetchOrders(), fetchProfiles(), fetchProducts()]);
+      await Promise.all([fetchMemberships(), fetchOrders(), fetchProfiles(), fetchProducts(), fetchPartners()]);
     } catch (error) {
       console.error('Auth check error:', error);
       toast({
@@ -265,6 +283,54 @@ const Dashboard = () => {
     }
   };
 
+  const fetchPartners = async () => {
+    try {
+      console.log('🔄 Fetching partners...');
+      const { data, error } = await supabase
+        .from('partner_memberships')
+        .select(`
+          *,
+          company_profiles (
+            id,
+            name,
+            description,
+            website,
+            logo_url,
+            industry,
+            contact_email,
+            contact_phone,
+            is_featured,
+            display_order,
+            created_at,
+            updated_at
+          )
+        `)
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        console.error('❌ Partners fetch error:', error);
+        toast({
+          title: "Database Fout",
+          description: `${error.message} (Code: ${error.code})`,
+          variant: "destructive"
+        });
+        setPartners([]);
+        return;
+      }
+
+      console.log('✅ Partners fetched successfully:', data);
+      console.log(`🤝 Total partners: ${data?.length || 0}`);
+      setPartners(data || []);
+    } catch (error) {
+      console.error('💥 Unexpected error fetching partners:', error);
+      toast({
+        title: "Onverwachte Fout",
+        description: "Er ging iets mis bij het laden van partners",
+        variant: "destructive"
+      });
+      setPartners([]);
+    }
+  };
 
   const updatePaymentStatus = async (id: string, status: string) => {
     try {
@@ -436,6 +502,121 @@ const Dashboard = () => {
 
   const formatPrice = (amount: number) => `€${(amount / 100).toFixed(2)}`;
 
+  const printOrderDetails = (order: Order) => {
+    const printWindow = window.open('', '_blank');
+    if (!printWindow) return;
+
+    const orderDate = new Date(order.created_at).toLocaleDateString('nl-NL');
+    const orderTime = new Date(order.created_at).toLocaleTimeString('nl-NL');
+    
+    printWindow.document.write(`
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>Bestelling ${order.id}</title>
+        <style>
+          body { font-family: Arial, sans-serif; margin: 20px; line-height: 1.6; }
+          .header { border-bottom: 2px solid #2563eb; padding-bottom: 10px; margin-bottom: 20px; }
+          .section { margin-bottom: 20px; }
+          .section h3 { color: #2563eb; margin-bottom: 10px; }
+          .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+          .info-item { margin-bottom: 8px; }
+          .label { font-weight: bold; color: #374151; }
+          .value { color: #6b7280; }
+          .status { padding: 4px 8px; border-radius: 4px; font-weight: bold; }
+          .status-paid { background-color: #dcfce7; color: #166534; }
+          .status-pending { background-color: #fef3c7; color: #92400e; }
+          .status-failed { background-color: #fee2e2; color: #991b1b; }
+          .products { margin-top: 20px; }
+          .product-item { border: 1px solid #e5e7eb; padding: 10px; margin-bottom: 10px; border-radius: 4px; }
+          .total { font-size: 18px; font-weight: bold; color: #2563eb; margin-top: 20px; }
+          @media print { body { margin: 0; } }
+        </style>
+      </head>
+      <body>
+        <div class="header">
+          <h1>Bestelling Details</h1>
+          <p><strong>Bestelling ID:</strong> ${order.id}</p>
+          <p><strong>Datum:</strong> ${orderDate} om ${orderTime}</p>
+        </div>
+
+        <div class="section">
+          <h3>Klantgegevens</h3>
+          <div class="info-grid">
+            <div>
+              <div class="info-item">
+                <span class="label">Naam:</span>
+                <span class="value">${order.customer_first_name || ''} ${order.customer_last_name || ''}</span>
+              </div>
+              <div class="info-item">
+                <span class="label">Email:</span>
+                <span class="value">${order.customer_email || order.email || 'Niet opgegeven'}</span>
+              </div>
+              <div class="info-item">
+                <span class="label">Telefoon:</span>
+                <span class="value">${order.customer_phone || 'Niet opgegeven'}</span>
+              </div>
+            </div>
+            <div>
+              <div class="info-item">
+                <span class="label">Status:</span>
+                <span class="status status-${order.payment_status}">${order.payment_status === 'paid' ? 'Betaald' : order.payment_status === 'pending' ? 'In Behandeling' : 'Mislukt'}</span>
+              </div>
+              <div class="info-item">
+                <span class="label">Totaal:</span>
+                <span class="value">€${(order.total / 100).toFixed(2)}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section">
+          <h3>Verzendadres</h3>
+          <div class="info-item">
+            <span class="label">Straat:</span>
+            <span class="value">${order.address_street || 'Niet opgegeven'} ${order.address_house_number || ''}</span>
+          </div>
+          <div class="info-item">
+            <span class="label">Postcode & Plaats:</span>
+            <span class="value">${order.address_postcode || 'Niet opgegeven'} ${order.address_city || 'Niet opgegeven'}</span>
+          </div>
+          <div class="info-item">
+            <span class="label">Land:</span>
+            <span class="value">${order.address_country || 'Nederland'}</span>
+          </div>
+        </div>
+
+        <div class="section products">
+          <h3>Bestelde Producten</h3>
+          ${order.items ? JSON.parse(order.items).map((item: any) => `
+            <div class="product-item">
+              <div><strong>${item.name}</strong></div>
+              <div>Prijs: €${(item.price / 100).toFixed(2)}</div>
+              <div>Aantal: ${item.quantity}</div>
+              <div>Subtotaal: €${((item.price * item.quantity) / 100).toFixed(2)}</div>
+            </div>
+          `).join('') : '<p>Geen producten gevonden</p>'}
+        </div>
+
+        <div class="total">
+          Totaalbedrag: €${(order.total / 100).toFixed(2)}
+        </div>
+
+        <script>
+          window.onload = function() {
+            window.print();
+            window.onafterprint = function() {
+              window.close();
+            };
+          };
+        </script>
+      </body>
+      </html>
+    `);
+    
+    printWindow.document.close();
+  };
+
   const exportToCsv = () => {
     if (viewMode === 'memberships') {
       const csvContent = [
@@ -509,11 +690,20 @@ const Dashboard = () => {
         pending: profiles.filter(p => !p.is_featured).length,
         revenue: 0
       }
-    : {
+    : viewMode === 'products'
+    ? {
         total: products.length,
         paid: products.filter(p => p.in_stock).length,
         pending: products.filter(p => !p.in_stock).length,
         revenue: products.reduce((sum, p) => sum + p.price, 0)
+      }
+    : {
+        total: partners.length,
+        paid: partners.filter(p => p.payment_status === 'paid').length,
+        pending: partners.filter(p => p.payment_status === 'pending').length,
+        revenue: partners
+          .filter(p => p.payment_status === 'paid')
+          .reduce((sum, p) => sum + p.amount, 0)
       };
 
   const filteredOrders = orders.filter(order => {
@@ -577,8 +767,8 @@ const Dashboard = () => {
         </div>
 
         {/* View Mode Tabs */}
-        <Tabs value={viewMode} onValueChange={(value) => setViewMode(value as 'memberships' | 'orders' | 'profiles' | 'products')}>
-          <TabsList className="grid w-full max-w-2xl grid-cols-4">
+        <Tabs value={viewMode} onValueChange={(value) => setViewMode(value as 'memberships' | 'orders' | 'profiles' | 'products' | 'partners')}>
+          <TabsList className="grid w-full max-w-3xl grid-cols-5">
             <TabsTrigger value="memberships" className="flex items-center gap-2">
               <Users className="w-4 h-4" />
               Lidmaatschappen
@@ -595,6 +785,10 @@ const Dashboard = () => {
               <Package className="w-4 h-4" />
               Producten
             </TabsTrigger>
+            <TabsTrigger value="partners" className="flex items-center gap-2">
+              <Building2 className="w-4 h-4" />
+              Partners
+            </TabsTrigger>
           </TabsList>
         </Tabs>
 
@@ -603,7 +797,7 @@ const Dashboard = () => {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">
-                {viewMode === 'memberships' ? 'Totaal Leden' : viewMode === 'orders' ? 'Totaal Bestellingen' : viewMode === 'profiles' ? 'Totaal Bedrijven' : 'Totaal Producten'}
+                {viewMode === 'memberships' ? 'Totaal Leden' : viewMode === 'orders' ? 'Totaal Bestellingen' : viewMode === 'profiles' ? 'Totaal Bedrijven' : viewMode === 'products' ? 'Totaal Producten' : 'Totaal Partners'}
               </CardTitle>
               {viewMode === 'memberships' ? (
                 <Users className="w-4 h-4 text-muted-foreground" />
@@ -611,8 +805,10 @@ const Dashboard = () => {
                 <ShoppingBag className="w-4 h-4 text-muted-foreground" />
               ) : viewMode === 'profiles' ? (
                 <Building2 className="w-4 h-4 text-muted-foreground" />
-              ) : (
+              ) : viewMode === 'products' ? (
                 <Package className="w-4 h-4 text-muted-foreground" />
+              ) : (
+                <Building2 className="w-4 h-4 text-muted-foreground" />
               )}
             </CardHeader>
             <CardContent>
@@ -623,7 +819,7 @@ const Dashboard = () => {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">
-                {viewMode === 'profiles' ? 'Featured' : viewMode === 'products' ? 'Op voorraad' : 'Betaald'}
+                {viewMode === 'profiles' ? 'Featured' : viewMode === 'products' ? 'Op voorraad' : viewMode === 'partners' ? 'Actief' : 'Betaald'}
               </CardTitle>
               <CreditCard className="w-4 h-4 text-green-600" />
             </CardHeader>
@@ -635,7 +831,7 @@ const Dashboard = () => {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">
-                {viewMode === 'profiles' ? 'Regulier' : viewMode === 'products' ? 'Uitverkocht' : 'In Behandeling'}
+                {viewMode === 'profiles' ? 'Regulier' : viewMode === 'products' ? 'Uitverkocht' : viewMode === 'partners' ? 'In Behandeling' : 'In Behandeling'}
               </CardTitle>
               <CreditCard className="w-4 h-4 text-yellow-600" />
             </CardHeader>
@@ -1130,6 +1326,7 @@ const Dashboard = () => {
                     <TableHead className="min-w-[100px]">Status</TableHead>
                     <TableHead className="hidden lg:table-cell min-w-[100px]">Totaal</TableHead>
                     <TableHead className="hidden md:table-cell min-w-[140px]">Datum</TableHead>
+                    <TableHead className="min-w-[100px]">Acties</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -1150,6 +1347,17 @@ const Dashboard = () => {
                       <TableCell>{getStatusBadge(order.payment_status)}</TableCell>
                       <TableCell className="hidden lg:table-cell">{formatPrice(order.total)}</TableCell>
                       <TableCell className="hidden md:table-cell">{new Date(order.created_at).toLocaleDateString()}</TableCell>
+                      <TableCell>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => printOrderDetails(order)}
+                          className="flex items-center gap-2"
+                        >
+                          <Printer className="w-4 h-4" />
+                          Print
+                        </Button>
+                      </TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
@@ -1290,6 +1498,109 @@ const Dashboard = () => {
             products={products} 
             onProductsChange={fetchProducts}
           />
+        )}
+
+        {/* Partners Section */}
+        {viewMode === 'partners' && (
+          <Card>
+            <CardHeader>
+              <CardTitle>Partner Accounts</CardTitle>
+              <CardDescription>
+                Beheer alle partner accounts en hun bedrijfsprofielen
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {partners.length === 0 ? (
+                <div className="text-center py-8">
+                  <Building2 className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
+                  <p className="text-muted-foreground">Nog geen partners gevonden</p>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {partners.map((partner) => (
+                    <div key={partner.id} className="border rounded-lg p-4">
+                      <div className="flex items-start justify-between">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-3 mb-2">
+                            <h3 className="font-semibold text-lg">{partner.company_name}</h3>
+                            <Badge 
+                              className={partner.payment_status === 'paid' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}
+                            >
+                              {partner.payment_status === 'paid' ? 'Actief' : 'In Behandeling'}
+                            </Badge>
+                            {partner.user_id && (
+                              <Badge variant="outline">Account Aangemaakt</Badge>
+                            )}
+                          </div>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-muted-foreground">
+                            <div>
+                              <p><strong>Contact:</strong> {partner.first_name} {partner.last_name}</p>
+                              <p><strong>Email:</strong> {partner.email}</p>
+                              <p><strong>Telefoon:</strong> {partner.phone}</p>
+                            </div>
+                            <div>
+                              <p><strong>Branche:</strong> {partner.industry || 'Niet opgegeven'}</p>
+                              <p><strong>Website:</strong> {partner.website ? (
+                                <a href={partner.website} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                                  {partner.website}
+                                </a>
+                              ) : 'Niet opgegeven'}</p>
+                              <p><strong>Bedrag:</strong> €{(partner.amount / 100).toFixed(2)}</p>
+                            </div>
+                          </div>
+                          {partner.company_profile && (
+                            <div className="mt-3 p-3 bg-muted rounded-lg">
+                              <h4 className="font-medium mb-2">Bedrijfsprofiel Status:</h4>
+                              <div className="flex items-center gap-2">
+                                <Badge variant="outline">
+                                  {partner.company_profile.is_featured ? 'Uitgelicht' : 'Standaard'}
+                                </Badge>
+                                <span className="text-sm text-muted-foreground">
+                                  Aangemaakt: {new Date(partner.company_profile.created_at).toLocaleDateString('nl-NL')}
+                                </span>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                        <div className="flex flex-col gap-2">
+                          <Button 
+                            size="sm" 
+                            variant="outline"
+                            onClick={() => {
+                              // TODO: Implement partner editing
+                              toast({
+                                title: "Functie in ontwikkeling",
+                                description: "Partner bewerken komt binnenkort beschikbaar"
+                              });
+                            }}
+                          >
+                            <Edit className="w-4 h-4 mr-2" />
+                            Bewerken
+                          </Button>
+                          {!partner.user_id && (
+                            <Button 
+                              size="sm" 
+                              variant="outline"
+                              onClick={async () => {
+                                // TODO: Implement manual account creation
+                                toast({
+                                  title: "Functie in ontwikkeling",
+                                  description: "Handmatig account aanmaken komt binnenkort beschikbaar"
+                                });
+                              }}
+                            >
+                              <Users className="w-4 h-4 mr-2" />
+                              Account Aanmaken
+                            </Button>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
         )}
 
         <CompanyProfileForm
