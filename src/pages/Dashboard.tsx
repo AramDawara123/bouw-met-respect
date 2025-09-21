@@ -2048,7 +2048,7 @@ Het Bouw met Respect team
                     Koppel de User ID van het aangemaakte account aan <strong>{selectedPartner.company_name}</strong>
                   </p>
                   <p className="text-xs text-muted-foreground mb-4">
-                    Ga naar Supabase Dashboard > Authentication > Users om de User ID te vinden
+                    Ga naar Supabase Dashboard &gt; Authentication &gt; Users om de User ID te vinden
                   </p>
                 </div>
                 
