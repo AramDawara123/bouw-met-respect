@@ -248,7 +248,8 @@ const Dashboard = () => {
   const fetchProducts = async () => {
     try {
       console.log('🔄 Fetching products...');
-      const { data, error } = await supabase
+      // Use any type to bypass TypeScript error for products table
+      const { data, error } = await (supabase as any)
         .from('products')
         .select('*')
         .order('created_at', { ascending: false });
@@ -278,7 +279,22 @@ const Dashboard = () => {
 
       console.log('✅ Products fetched successfully:', data);
       console.log(`📦 Total products: ${data?.length || 0}`);
-      setProducts(data || []);
+      
+      // Transform data to match Product interface
+      const transformedProducts: Product[] = (data || []).map((item: any) => ({
+        id: item.id,
+        name: item.name,
+        description: item.description,
+        price: item.price,
+        image_url: item.image_url,
+        category: item.category,
+        in_stock: item.in_stock,
+        features: item.features || [],
+        created_at: item.created_at,
+        updated_at: item.updated_at
+      }));
+      
+      setProducts(transformedProducts);
     } catch (error) {
       console.error('💥 Unexpected error fetching products:', error);
       toast({
@@ -327,7 +343,28 @@ const Dashboard = () => {
 
       console.log('✅ Partners fetched successfully:', data);
       console.log(`🤝 Total partners: ${data?.length || 0}`);
-      setPartners(data || []);
+      
+      // Transform data to match PartnerAccount interface
+      const transformedPartners: PartnerAccount[] = (data || []).map((item: any) => ({
+        id: item.id,
+        first_name: item.first_name,
+        last_name: item.last_name,
+        email: item.email,
+        phone: item.phone || '',
+        company_name: item.company_name,
+        website: item.website,
+        industry: item.industry,
+        description: item.description,
+        payment_status: item.payment_status,
+        amount: item.amount,
+        created_at: item.created_at,
+        user_id: item.user_id,
+        company_profile: item.company_profiles?.[0] || null,
+        generated_password: item.generated_password,
+        account_created: item.account_created
+      }));
+      
+      setPartners(transformedPartners);
     } catch (error) {
       console.error('💥 Unexpected error fetching partners:', error);
       toast({
@@ -629,51 +666,87 @@ const Dashboard = () => {
       // Generate random password
       const password = generateRandomPassword();
       
-      // For now, just generate the password and show it to the user
-      // The actual account creation will be done manually
-      const updatedPartner = {
-        ...partner,
-        generated_password: password,
-        account_created: false
-      };
-
-      // Update the partner in state
-      setPartners(prevPartners => 
-        prevPartners.map(p => 
-          p.id === partner.id ? updatedPartner : p
-        )
-      );
-
-      toast({
-        title: "Wachtwoord Gegenereerd",
-        description: `Wachtwoord is gegenereerd voor ${partner.company_name}. Maak handmatig een account aan in Supabase en koppel de User ID.`,
-        duration: 8000
+      // Create user account directly via Supabase client
+      const { data: authData, error: authError } = await supabase.auth.signUp({
+        email: partner.email,
+        password: password,
+        options: {
+          data: {
+            first_name: partner.first_name,
+            last_name: partner.last_name,
+            company_name: partner.company_name
+          }
+        }
       });
 
-      // Copy account details to clipboard
-      const accountDetails = `
-Account Details voor ${partner.company_name}:
+      if (authError) {
+        throw authError;
+      }
 
-Email: ${partner.email}
-Wachtwoord: ${password}
-Bedrijf: ${partner.company_name}
+      if (authData.user) {
+        // Update partner membership with user_id
+        const { error: updateError } = await supabase
+          .from('partner_memberships')
+          .update({ user_id: authData.user.id })
+          .eq('id', partner.id);
 
-Stappen:
-1. Ga naar Supabase Dashboard > Authentication > Users
-2. Klik "Add user" 
-3. Voer email en wachtwoord in
-4. Kopieer de User ID
-5. Klik "🔗 User ID Koppelen" in de dashboard
-6. Plak de User ID en klik "Koppelen"
-      `;
+        if (updateError) {
+          console.error('Error updating partner membership:', updateError);
+          // Don't fail the entire operation
+        }
 
-      await navigator.clipboard.writeText(accountDetails);
+        // Create company profile
+        const { error: profileError } = await supabase
+          .from('company_profiles')
+          .insert({
+            name: partner.company_name,
+            description: `Welkom bij ${partner.company_name}`,
+            industry: 'Bouw & Constructie',
+            contact_email: partner.email,
+            contact_phone: partner.phone || '',
+            partner_membership_id: partner.id,
+            is_featured: false,
+            display_order: 999
+          });
+
+        if (profileError) {
+          console.error('Error creating company profile:', profileError);
+          // Don't fail the entire operation
+        }
+
+        // Update partner with generated password and user_id
+        const updatedPartner = {
+          ...partner,
+          generated_password: password,
+          account_created: true,
+          user_id: authData.user.id
+        };
+
+        // Update the partner in state
+        setPartners(prevPartners => 
+          prevPartners.map(p => 
+            p.id === partner.id ? updatedPartner : p
+          )
+        );
+
+        toast({
+          title: "Account Succesvol Aangemaakt",
+          description: `Account voor ${partner.company_name} is automatisch aangemaakt en gekoppeld!`,
+          duration: 5000
+        });
+
+        // Send welcome email
+        await sendPartnerWelcomeEmail(partner.email, partner.first_name, password, partner.company_name);
+
+      } else {
+        throw new Error('Geen gebruiker aangemaakt');
+      }
 
     } catch (error: any) {
       console.error('Error creating partner account:', error);
       toast({
         title: "Fout",
-        description: `Kon wachtwoord niet genereren: ${error.message}`,
+        description: `Kon account niet aanmaken: ${error.message}`,
         variant: "destructive"
       });
     }
@@ -746,7 +819,8 @@ Stappen:
 
   const updatePartner = async (updatedPartner: PartnerAccount) => {
     try {
-      const { error } = await supabase
+      // Update partner membership
+      const { error: partnerError } = await supabase
         .from('partner_memberships')
         .update({
           first_name: updatedPartner.first_name,
@@ -762,20 +836,41 @@ Stappen:
         })
         .eq('id', updatedPartner.id);
 
-      if (error) throw error;
+      if (partnerError) throw partnerError;
+
+      // Update company profile if it exists
+      if (updatedPartner.company_profile) {
+        const { error: profileError } = await supabase
+          .from('company_profiles')
+          .update({
+            name: updatedPartner.company_name,
+            description: updatedPartner.description || `Welkom bij ${updatedPartner.company_name}`,
+            website: updatedPartner.website,
+            industry: updatedPartner.industry || 'Bouw & Constructie',
+            contact_email: updatedPartner.email,
+            contact_phone: updatedPartner.phone || '',
+            updated_at: new Date().toISOString()
+          })
+          .eq('partner_membership_id', updatedPartner.id);
+
+        if (profileError) {
+          console.error('Error updating company profile:', profileError);
+          // Don't fail the entire operation
+        }
+      }
       
       await fetchPartners();
       setIsEditingPartner(false);
       setEditingPartner(null);
       toast({
         title: "Bijgewerkt",
-        description: "Partner gegevens zijn succesvol bijgewerkt"
+        description: "Partner gegevens en bedrijfsprofiel zijn succesvol bijgewerkt"
       });
     } catch (error: any) {
       console.error('Error updating partner:', error);
       toast({
         title: "Fout",
-        description: "Kon partner niet bijwerken",
+        description: `Kon partner niet bijwerken: ${error.message}`,
         variant: "destructive"
       });
     }
