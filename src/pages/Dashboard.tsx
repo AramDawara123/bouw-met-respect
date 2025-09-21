@@ -629,31 +629,56 @@ const Dashboard = () => {
       // Generate random password
       const password = generateRandomPassword();
       
-      // Update partner with generated password
-      const updatedPartner = {
-        ...partner,
-        generated_password: password,
-        account_created: false
-      };
-
-      // Update the partner in state to show the account details
-      setPartners(prevPartners => 
-        prevPartners.map(p => 
-          p.id === partner.id ? updatedPartner : p
-        )
-      );
-
-      toast({
-        title: "Account Gegevens Gegenereerd",
-        description: `Wachtwoord is gegenereerd voor ${partner.company_name}. Klik op de knoppen om te kopiëren.`,
-        duration: 5000
+      // Create account via Supabase Edge Function
+      const { data, error } = await supabase.functions.invoke('create-partner-account', {
+        body: {
+          email: partner.email,
+          password: password,
+          first_name: partner.first_name,
+          last_name: partner.last_name,
+          company_name: partner.company_name,
+          partner_id: partner.id
+        }
       });
+
+      if (error) {
+        throw error;
+      }
+
+      if (data?.success && data?.user_id) {
+        // Update partner with generated password and user_id
+        const updatedPartner = {
+          ...partner,
+          generated_password: password,
+          account_created: true,
+          user_id: data.user_id
+        };
+
+        // Update the partner in state
+        setPartners(prevPartners => 
+          prevPartners.map(p => 
+            p.id === partner.id ? updatedPartner : p
+          )
+        );
+
+        toast({
+          title: "Account Succesvol Aangemaakt",
+          description: `Account voor ${partner.company_name} is automatisch aangemaakt en gekoppeld!`,
+          duration: 5000
+        });
+
+        // Send welcome email
+        await sendPartnerWelcomeEmail(partner.email, partner.first_name, password, partner.company_name);
+
+      } else {
+        throw new Error(data?.error || 'Onbekende fout bij account aanmaken');
+      }
 
     } catch (error: any) {
       console.error('Error creating partner account:', error);
       toast({
         title: "Fout",
-        description: `Kon account gegevens niet genereren: ${error.message}`,
+        description: `Kon account niet aanmaken: ${error.message}`,
         variant: "destructive"
       });
     }
@@ -772,8 +797,20 @@ const Dashboard = () => {
 
   const sendPartnerWelcomeEmail = async (email: string, firstName: string, password: string, companyName: string) => {
     try {
-      // Create email content
-      const emailContent = `
+      // Send email via Supabase Edge Function
+      const { data, error } = await supabase.functions.invoke('send-partner-welcome-email', {
+        body: {
+          to: email,
+          first_name: firstName,
+          password: password,
+          company_name: companyName
+        }
+      });
+
+      if (error) {
+        console.error('Error sending welcome email:', error);
+        // Fallback: copy to clipboard
+        const emailContent = `
 Beste ${firstName},
 
 Welkom bij Bouw met Respect! Je partner account is succesvol aangemaakt.
@@ -790,14 +827,14 @@ Voor vragen kun je altijd contact met ons opnemen.
 
 Met vriendelijke groet,
 Het Bouw met Respect team
-      `;
-
-      // Copy email content to clipboard
-      await navigator.clipboard.writeText(emailContent);
-
-      console.log('Email content copied to clipboard');
+        `;
+        await navigator.clipboard.writeText(emailContent);
+        console.log('Email content copied to clipboard as fallback');
+      } else if (data?.success) {
+        console.log('Welcome email sent successfully');
+      }
     } catch (error) {
-      console.error('Error preparing email content:', error);
+      console.error('Error sending welcome email:', error);
     }
   };
 
