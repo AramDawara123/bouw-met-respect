@@ -138,6 +138,10 @@ const Dashboard = () => {
   const [showUserIdDialog, setShowUserIdDialog] = useState(false);
   const [selectedPartner, setSelectedPartner] = useState<PartnerAccount | null>(null);
   const [userIdInput, setUserIdInput] = useState('');
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [showCredentialsDialog, setShowCredentialsDialog] = useState(false);
+  const [newEmail, setNewEmail] = useState('');
+  const [newPassword, setNewPassword] = useState('');
   const { toast } = useToast();
 
   useEffect(() => {
@@ -883,6 +887,196 @@ const Dashboard = () => {
       password += chars.charAt(Math.floor(Math.random() * chars.length));
     }
     return password;
+  };
+
+  const deletePartnerAccount = async (partner: PartnerAccount) => {
+    try {
+      if (!partner.user_id) {
+        toast({
+          title: "Fout",
+          description: "Geen account gevonden om te verwijderen",
+          variant: "destructive"
+        });
+        return;
+      }
+
+      // Delete from Supabase Auth
+      const { error: authError } = await supabase.auth.admin.deleteUser(partner.user_id);
+      
+      if (authError) {
+        console.error('Error deleting user from auth:', authError);
+        // Continue with database cleanup even if auth deletion fails
+      }
+
+      // Delete company profile
+      if (partner.company_profile) {
+        const { error: profileError } = await supabase
+          .from('company_profiles')
+          .delete()
+          .eq('partner_membership_id', partner.id);
+
+        if (profileError) {
+          console.error('Error deleting company profile:', profileError);
+        }
+      }
+
+      // Update partner membership to remove user_id
+      const { error: updateError } = await supabase
+        .from('partner_memberships')
+        .update({ 
+          user_id: null,
+          generated_password: null,
+          account_created: false
+        })
+        .eq('id', partner.id);
+
+      if (updateError) {
+        throw updateError;
+      }
+
+      // Refresh partners list
+      await fetchPartners();
+
+      toast({
+        title: "Account Verwijderd",
+        description: `Account voor ${partner.company_name} is succesvol verwijderd`,
+        duration: 3000
+      });
+
+    } catch (error: any) {
+      console.error('Error deleting partner account:', error);
+      toast({
+        title: "Fout",
+        description: `Kon account niet verwijderen: ${error.message}`,
+        variant: "destructive"
+      });
+    }
+  };
+
+  const createNewPartnerAccount = async () => {
+    try {
+      const newPartner = {
+        first_name: '',
+        last_name: '',
+        email: '',
+        phone: '',
+        company_name: '',
+        website: '',
+        industry: '',
+        description: '',
+        payment_status: 'pending',
+        amount: 0,
+        company_size: 'klein'
+      };
+
+      // Create partner membership first
+      const { data: partnerData, error: partnerError } = await supabase
+        .from('partner_memberships')
+        .insert({
+          first_name: newPartner.first_name,
+          last_name: newPartner.last_name,
+          email: newPartner.email,
+          phone: newPartner.phone,
+          company_name: newPartner.company_name,
+          website: newPartner.website,
+          industry: newPartner.industry,
+          description: newPartner.description,
+          payment_status: newPartner.payment_status,
+          amount: newPartner.amount,
+          company_size: newPartner.company_size
+        })
+        .select()
+        .single();
+
+      if (partnerError) {
+        throw partnerError;
+      }
+
+      // Refresh partners list
+      await fetchPartners();
+
+      toast({
+        title: "Nieuwe Partner Toegevoegd",
+        description: "Je kunt nu de partner gegevens bewerken en een account aanmaken",
+        duration: 3000
+      });
+
+    } catch (error: any) {
+      console.error('Error creating new partner:', error);
+      toast({
+        title: "Fout",
+        description: `Kon nieuwe partner niet aanmaken: ${error.message}`,
+        variant: "destructive"
+      });
+    }
+  };
+
+  const updatePartnerCredentials = async (partner: PartnerAccount, newEmail: string, newPassword: string) => {
+    try {
+      if (!partner.user_id) {
+        toast({
+          title: "Fout",
+          description: "Geen account gevonden om bij te werken",
+          variant: "destructive"
+        });
+        return;
+      }
+
+      // Update email in partner_memberships
+      const { error: partnerError } = await supabase
+        .from('partner_memberships')
+        .update({ email: newEmail })
+        .eq('id', partner.id);
+
+      if (partnerError) {
+        throw partnerError;
+      }
+
+      // Update company profile email
+      if (partner.company_profile) {
+        const { error: profileError } = await supabase
+          .from('company_profiles')
+          .update({ contact_email: newEmail })
+          .eq('partner_membership_id', partner.id);
+
+        if (profileError) {
+          console.error('Error updating company profile email:', profileError);
+        }
+      }
+
+      // Update user in Supabase Auth
+      const { error: authError } = await supabase.auth.admin.updateUserById(partner.user_id, {
+        email: newEmail,
+        password: newPassword
+      });
+
+      if (authError) {
+        console.error('Error updating user credentials:', authError);
+        toast({
+          title: "Gedeeltelijk Bijgewerkt",
+          description: "Partner gegevens bijgewerkt, maar authenticatie update mislukt",
+          variant: "destructive"
+        });
+        return;
+      }
+
+      // Refresh partners list
+      await fetchPartners();
+
+      toast({
+        title: "Inloggegevens Bijgewerkt",
+        description: `Email en wachtwoord voor ${partner.company_name} zijn bijgewerkt`,
+        duration: 3000
+      });
+
+    } catch (error: any) {
+      console.error('Error updating partner credentials:', error);
+      toast({
+        title: "Fout",
+        description: `Kon inloggegevens niet bijwerken: ${error.message}`,
+        variant: "destructive"
+      });
+    }
   };
 
   const sendPartnerWelcomeEmail = async (email: string, firstName: string, password: string, companyName: string) => {
@@ -1802,10 +1996,21 @@ Het Bouw met Respect team
         {viewMode === 'partners' && (
           <Card>
             <CardHeader>
-              <CardTitle>Partner Accounts</CardTitle>
-              <CardDescription>
-                Beheer alle partner accounts en hun bedrijfsprofielen
-              </CardDescription>
+              <div className="flex justify-between items-center">
+                <div>
+                  <CardTitle>Partner Accounts</CardTitle>
+                  <CardDescription>
+                    Beheer alle partner accounts en hun bedrijfsprofielen
+                  </CardDescription>
+                </div>
+                <Button 
+                  onClick={createNewPartnerAccount}
+                  className="flex items-center gap-2"
+                >
+                  <Plus className="w-4 h-4" />
+                  Nieuwe Partner
+                </Button>
+              </div>
             </CardHeader>
             <CardContent>
               {partners.length === 0 ? (
@@ -1979,6 +2184,32 @@ Het Bouw met Respect team
                               </div>
                               <div className="text-xs text-muted-foreground">
                                 User ID: {partner.user_id.substring(0, 8)}...
+                              </div>
+                              <div className="flex gap-1 flex-wrap">
+                                <Button 
+                                  size="sm" 
+                                  variant="outline"
+                                  onClick={() => {
+                                    setSelectedPartner(partner);
+                                    setNewEmail(partner.email);
+                                    setNewPassword('');
+                                    setShowCredentialsDialog(true);
+                                  }}
+                                  className="text-xs px-2 py-1 h-7"
+                                >
+                                  ✏️ Bewerk Inloggegevens
+                                </Button>
+                                <Button 
+                                  size="sm" 
+                                  variant="destructive"
+                                  onClick={() => {
+                                    setSelectedPartner(partner);
+                                    setShowDeleteDialog(true);
+                                  }}
+                                  className="text-xs px-2 py-1 h-7"
+                                >
+                                  🗑️ Verwijder Account
+                                </Button>
                               </div>
                             </div>
                           )}
@@ -2193,6 +2424,127 @@ Het Bouw met Respect team
                   >
                     <Save className="w-4 h-4" />
                     Koppelen
+                  </Button>
+                </div>
+              </div>
+            )}
+          </DialogContent>
+        </Dialog>
+
+        {/* Delete Account Dialog */}
+        <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle>Account Verwijderen</DialogTitle>
+            </DialogHeader>
+            {selectedPartner && (
+              <div className="space-y-4">
+                <div>
+                  <p className="text-sm text-muted-foreground mb-2">
+                    Weet je zeker dat je het account voor <strong>{selectedPartner.company_name}</strong> wilt verwijderen?
+                  </p>
+                  <p className="text-xs text-red-600 mb-4">
+                    ⚠️ Deze actie kan niet ongedaan worden gemaakt. Het account wordt permanent verwijderd uit Supabase Authentication.
+                  </p>
+                </div>
+
+                <div className="flex justify-end gap-3 pt-4 border-t">
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      setShowDeleteDialog(false);
+                      setSelectedPartner(null);
+                    }}
+                  >
+                    Annuleren
+                  </Button>
+                  <Button
+                    variant="destructive"
+                    onClick={async () => {
+                      if (selectedPartner) {
+                        await deletePartnerAccount(selectedPartner);
+                        setShowDeleteDialog(false);
+                        setSelectedPartner(null);
+                      }
+                    }}
+                    className="flex items-center gap-2"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                    Verwijderen
+                  </Button>
+                </div>
+              </div>
+            )}
+          </DialogContent>
+        </Dialog>
+
+        {/* Edit Credentials Dialog */}
+        <Dialog open={showCredentialsDialog} onOpenChange={setShowCredentialsDialog}>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle>Inloggegevens Bewerken</DialogTitle>
+            </DialogHeader>
+            {selectedPartner && (
+              <div className="space-y-4">
+                <div>
+                  <p className="text-sm text-muted-foreground mb-4">
+                    Bewerk de inloggegevens voor <strong>{selectedPartner.company_name}</strong>
+                  </p>
+                </div>
+                
+                <div>
+                  <label className="text-sm font-medium text-muted-foreground">Nieuwe Email</label>
+                  <Input
+                    value={newEmail}
+                    onChange={(e) => setNewEmail(e.target.value)}
+                    placeholder="Voer nieuwe email in..."
+                    className="mt-1"
+                    type="email"
+                  />
+                </div>
+
+                <div>
+                  <label className="text-sm font-medium text-muted-foreground">Nieuw Wachtwoord</label>
+                  <Input
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    placeholder="Voer nieuw wachtwoord in..."
+                    className="mt-1"
+                    type="password"
+                  />
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Laat leeg om wachtwoord niet te wijzigen
+                  </p>
+                </div>
+
+                <div className="flex justify-end gap-3 pt-4 border-t">
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      setShowCredentialsDialog(false);
+                      setSelectedPartner(null);
+                      setNewEmail('');
+                      setNewPassword('');
+                    }}
+                  >
+                    Annuleren
+                  </Button>
+                  <Button
+                    onClick={async () => {
+                      if (selectedPartner && newEmail) {
+                        const password = newPassword || generateRandomPassword();
+                        await updatePartnerCredentials(selectedPartner, newEmail, password);
+                        setShowCredentialsDialog(false);
+                        setSelectedPartner(null);
+                        setNewEmail('');
+                        setNewPassword('');
+                      }
+                    }}
+                    className="flex items-center gap-2"
+                    disabled={!newEmail}
+                  >
+                    <Save className="w-4 h-4" />
+                    Bijwerken
                   </Button>
                 </div>
               </div>
