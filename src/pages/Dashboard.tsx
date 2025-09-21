@@ -107,6 +107,8 @@ interface PartnerAccount {
   created_at: string;
   user_id: string | null;
   company_profile: CompanyProfile | null;
+  generated_password?: string;
+  account_created?: boolean;
 }
 
 const Dashboard = () => {
@@ -624,57 +626,49 @@ const Dashboard = () => {
       // Generate random password
       const password = generateRandomPassword();
       
-      // For now, we'll create a manual account creation process
-      // The user will need to manually create the account in Supabase Auth
-      const accountInfo = {
-        email: partner.email,
-        password: password,
-        first_name: partner.first_name,
-        last_name: partner.last_name,
-        company_name: partner.company_name
+      // Update partner with generated password
+      const updatedPartner = {
+        ...partner,
+        generated_password: password,
+        account_created: false
       };
 
-      // Show account details to admin for manual creation
-      const accountDetails = `
-ACCOUNT AANMAKEN VOOR: ${partner.company_name}
-
-Email: ${accountInfo.email}
-Wachtwoord: ${accountInfo.password}
-Voornaam: ${accountInfo.first_name}
-Achternaam: ${accountInfo.last_name}
-Bedrijf: ${accountInfo.company_name}
-
-STAPPEN:
-1. Ga naar Supabase Dashboard > Authentication > Users
-2. Klik "Add user"
-3. Vul de bovenstaande gegevens in
-4. Klik "Create user"
-5. Kopieer de User ID
-6. Update partner_memberships tabel met user_id
-
-Of gebruik de Supabase SQL Editor:
-UPDATE partner_memberships 
-SET user_id = 'USER_ID_HIER' 
-WHERE id = '${partner.id}';
-      `;
-
-      // Copy to clipboard
-      await navigator.clipboard.writeText(accountDetails);
+      // Update the partner in state to show the account details
+      setPartners(prevPartners => 
+        prevPartners.map(p => 
+          p.id === partner.id ? updatedPartner : p
+        )
+      );
 
       toast({
-        title: "Account Gegevens Gekopieerd",
-        description: `Account gegevens zijn gekopieerd naar clipboard. Maak handmatig een account aan in Supabase Dashboard.`,
-        duration: 10000
+        title: "Account Gegevens Gegenereerd",
+        description: `Wachtwoord is gegenereerd voor ${partner.company_name}. Klik op de knoppen om te kopiëren.`,
+        duration: 5000
       });
-
-      // Show detailed instructions
-      alert(accountDetails);
 
     } catch (error: any) {
       console.error('Error creating partner account:', error);
       toast({
         title: "Fout",
         description: `Kon account gegevens niet genereren: ${error.message}`,
+        variant: "destructive"
+      });
+    }
+  };
+
+  const copyToClipboard = async (text: string, label: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      toast({
+        title: "Gekopieerd",
+        description: `${label} is gekopieerd naar clipboard`,
+        duration: 2000
+      });
+    } catch (error) {
+      console.error('Error copying to clipboard:', error);
+      toast({
+        title: "Fout",
+        description: `Kon ${label} niet kopiëren`,
         variant: "destructive"
       });
     }
@@ -1714,7 +1708,7 @@ Het Bouw met Respect team
                             <Edit className="w-4 h-4 mr-2" />
                             Bewerken
                           </Button>
-                          {!partner.user_id && (
+                          {!partner.user_id && !partner.generated_password && (
                             <Button 
                               size="sm" 
                               variant="outline"
@@ -1725,6 +1719,83 @@ Het Bouw met Respect team
                               <Users className="w-4 h-4 mr-2" />
                               Account Aanmaken
                             </Button>
+                          )}
+                          {partner.generated_password && !partner.account_created && (
+                            <div className="space-y-2">
+                              <div className="text-xs text-muted-foreground">
+                                Account gegevens:
+                              </div>
+                              <div className="flex gap-1 flex-wrap">
+                                <Button 
+                                  size="sm" 
+                                  variant="outline"
+                                  onClick={() => copyToClipboard(partner.email, "Email")}
+                                  className="text-xs px-2 py-1 h-7"
+                                >
+                                  📧 Email
+                                </Button>
+                                <Button 
+                                  size="sm" 
+                                  variant="outline"
+                                  onClick={() => copyToClipboard(partner.generated_password!, "Wachtwoord")}
+                                  className="text-xs px-2 py-1 h-7"
+                                >
+                                  🔑 Wachtwoord
+                                </Button>
+                                <Button 
+                                  size="sm" 
+                                  variant="outline"
+                                  onClick={() => copyToClipboard(`${partner.email}\n${partner.generated_password}`, "Email + Wachtwoord")}
+                                  className="text-xs px-2 py-1 h-7"
+                                >
+                                  📋 Beide
+                                </Button>
+                              </div>
+                              <div className="text-xs text-muted-foreground break-all">
+                                Wachtwoord: {partner.generated_password}
+                              </div>
+                              <div className="flex gap-1">
+                                <Button 
+                                  size="sm" 
+                                  variant="default"
+                                  onClick={() => {
+                                    setPartners(prevPartners => 
+                                      prevPartners.map(p => 
+                                        p.id === partner.id ? { ...p, account_created: true } : p
+                                      )
+                                    );
+                                    toast({
+                                      title: "Account Gemarkeerd",
+                                      description: "Account is gemarkeerd als aangemaakt",
+                                      duration: 2000
+                                    });
+                                  }}
+                                  className="text-xs px-2 py-1 h-7 bg-green-600 hover:bg-green-700"
+                                >
+                                  ✅ Account Aangemaakt
+                                </Button>
+                                <Button 
+                                  size="sm" 
+                                  variant="outline"
+                                  onClick={() => {
+                                    const newPassword = generateRandomPassword();
+                                    setPartners(prevPartners => 
+                                      prevPartners.map(p => 
+                                        p.id === partner.id ? { ...p, generated_password: newPassword } : p
+                                      )
+                                    );
+                                    toast({
+                                      title: "Nieuw Wachtwoord",
+                                      description: "Nieuw wachtwoord is gegenereerd",
+                                      duration: 2000
+                                    });
+                                  }}
+                                  className="text-xs px-2 py-1 h-7"
+                                >
+                                  🔄 Nieuw Wachtwoord
+                                </Button>
+                              </div>
+                            </div>
                           )}
                         </div>
                       </div>
