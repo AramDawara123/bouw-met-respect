@@ -144,10 +144,8 @@ const ActionItems = () => {
                   </div>
                 )}
                 
-                <div className={`w-16 h-16 mx-auto mb-6 rounded-2xl flex items-center justify-center ${
-                  tier.popular ? 'bg-primary/20' : 'bg-muted'
-                }`}>
-                  <tier.icon className={`w-8 h-8 ${tier.popular ? 'text-primary' : 'text-muted-foreground'}`} />
+                <div className="w-16 h-16 mx-auto mb-6 rounded-xl flex items-center justify-center bg-blue-500 hover:bg-blue-600 transition-colors shadow-lg">
+                  <tier.icon className="w-8 h-8 text-yellow-400" />
                 </div>
                 
                 <h4 className="text-xl font-semibold mb-2 text-foreground">{tier.size}</h4>
@@ -194,8 +192,8 @@ const ActionItems = () => {
               </div>
               
               <div className="relative flex items-start space-x-6">
-                <div className="w-16 h-16 bg-primary/20 rounded-3xl flex items-center justify-center flex-shrink-0 transition-all duration-300 group-hover:scale-110 group-hover:bg-primary/30">
-                  <value.icon className="w-8 h-8 text-primary" />
+                <div className="w-16 h-16 bg-blue-500 rounded-xl flex items-center justify-center flex-shrink-0 transition-all duration-300 group-hover:scale-110 group-hover:bg-blue-600 shadow-lg">
+                  <value.icon className="w-8 h-8 text-yellow-400" />
                 </div>
                 <div className="flex-1">
                   <h3 className="text-xl font-semibold mb-4 text-foreground group-hover:text-primary transition-colors duration-300">

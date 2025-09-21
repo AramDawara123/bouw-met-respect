@@ -192,8 +192,8 @@ const Contact = () => {
             <div className="space-y-6">
               <Card className="p-6 border-0 bg-muted/30">
                 <div className="flex items-center space-x-4">
-                  <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center">
-                    <Mail className="w-6 h-6 text-primary" />
+                  <div className="w-12 h-12 bg-blue-500 rounded-xl flex items-center justify-center hover:bg-blue-600 transition-colors shadow-lg">
+                    <Mail className="w-6 h-6 text-yellow-400" />
                   </div>
                   <div>
                     <h4 className="font-semibold text-foreground">Email</h4>
@@ -206,8 +206,8 @@ const Contact = () => {
 
               <Card className="p-6 border-0 bg-muted/30">
                 <div className="flex items-center space-x-4">
-                  <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center">
-                    <Phone className="w-6 h-6 text-primary" />
+                  <div className="w-12 h-12 bg-blue-500 rounded-xl flex items-center justify-center hover:bg-blue-600 transition-colors shadow-lg">
+                    <Phone className="w-6 h-6 text-yellow-400" />
                   </div>
                   <div>
                     <h4 className="font-semibold text-foreground">Telefoon</h4>
@@ -220,8 +220,8 @@ const Contact = () => {
 
               <Card className="p-6 border-0 bg-muted/30">
                 <div className="flex items-center space-x-4">
-                  <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center">
-                    <MapPin className="w-6 h-6 text-primary" />
+                  <div className="w-12 h-12 bg-blue-500 rounded-xl flex items-center justify-center hover:bg-blue-600 transition-colors shadow-lg">
+                    <MapPin className="w-6 h-6 text-yellow-400" />
                   </div>
                   <div>
                     <h4 className="font-semibold text-foreground">Locatie</h4>

@@ -44,9 +44,24 @@ const CompanyProfiles = () => {
         ascending: true
       });
       if (error) throw error;
-      console.log('Fetched profiles:', data);
-      data?.forEach(profile => {
-        console.log(`Profile: ${profile.name}, Logo URL: ${profile.logo_url}`);
+      console.log('✅ Fetched profiles:', data);
+      console.log(`📊 Total profiles found: ${data?.length || 0}`);
+      
+      data?.forEach((profile, index) => {
+        console.log(`👤 Profile ${index + 1}: ${profile.name}`);
+        console.log(`🖼️  Logo URL: ${profile.logo_url || 'No logo'}`);
+        console.log(`🏢  Industry: ${profile.industry || 'No industry'}`);
+        console.log(`⭐  Featured: ${profile.is_featured ? 'Yes' : 'No'}`);
+        
+        // Analyze the logo URL structure
+        if (profile.logo_url) {
+          console.log(`🔍  URL Analysis for ${profile.name}:`);
+          console.log(`   - Is absolute URL: ${profile.logo_url.startsWith('http')}`);
+          console.log(`   - Contains 'supabase': ${profile.logo_url.includes('supabase')}`);
+          console.log(`   - Is relative path: ${profile.logo_url.startsWith('/')}`);
+          console.log(`   - Full resolved URL: ${new URL(profile.logo_url, window.location.origin).href}`);
+        }
+        console.log('---');
       });
       setProfiles(data || []);
     } catch (error) {
@@ -151,7 +166,24 @@ const CompanyProfiles = () => {
                             decoding="async"
                             onLoad={() => console.log(`Logo loaded successfully: ${profile.name}`)}
                             onError={(e) => {
-                              console.error(`Logo failed to load for ${profile.name}:`, profile.logo_url);
+                              console.error(`❌ Logo failed to load for ${profile.name}:`, profile.logo_url);
+                              console.error('Full URL being requested:', e.currentTarget.src);
+                              console.error('Image naturalWidth:', e.currentTarget.naturalWidth);
+                              console.error('Image naturalHeight:', e.currentTarget.naturalHeight);
+                              
+                              // Test if URL is accessible
+                              if (profile.logo_url) {
+                                fetch(profile.logo_url)
+                                  .then(response => {
+                                    console.error(`Fetch test for ${profile.name} - Status:`, response.status);
+                                    console.error('Response OK:', response.ok);
+                                    console.error('Content-Type:', response.headers.get('content-type'));
+                                  })
+                                  .catch(fetchError => {
+                                    console.error(`Network error for ${profile.name}:`, fetchError.message);
+                                  });
+                              }
+                              
                               const target = e.currentTarget;
                               target.style.display = 'none';
                               const fallback = target.nextElementSibling as HTMLElement;
