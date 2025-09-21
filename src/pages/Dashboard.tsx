@@ -135,6 +135,9 @@ const Dashboard = () => {
   const [editingProfile, setEditingProfile] = useState<CompanyProfile | null>(null);
   const [editingPartner, setEditingPartner] = useState<PartnerAccount | null>(null);
   const [isEditingPartner, setIsEditingPartner] = useState(false);
+  const [showUserIdDialog, setShowUserIdDialog] = useState(false);
+  const [selectedPartner, setSelectedPartner] = useState<PartnerAccount | null>(null);
+  const [userIdInput, setUserIdInput] = useState('');
   const { toast } = useToast();
 
   useEffect(() => {
@@ -669,6 +672,53 @@ const Dashboard = () => {
       toast({
         title: "Fout",
         description: `Kon ${label} niet kopiëren`,
+        variant: "destructive"
+      });
+    }
+  };
+
+  const linkUserId = async () => {
+    if (!selectedPartner || !userIdInput.trim()) {
+      toast({
+        title: "Fout",
+        description: "Voer een geldige User ID in",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    try {
+      const { error } = await supabase
+        .from('partner_memberships')
+        .update({ user_id: userIdInput.trim() })
+        .eq('id', selectedPartner.id);
+
+      if (error) {
+        throw error;
+      }
+
+      // Update local state
+      setPartners(prevPartners => 
+        prevPartners.map(p => 
+          p.id === selectedPartner.id ? { ...p, user_id: userIdInput.trim() } : p
+        )
+      );
+
+      toast({
+        title: "User ID Gekoppeld",
+        description: `User ID is succesvol gekoppeld aan ${selectedPartner.company_name}`,
+        duration: 3000
+      });
+
+      setShowUserIdDialog(false);
+      setSelectedPartner(null);
+      setUserIdInput('');
+
+    } catch (error: any) {
+      console.error('Error linking user ID:', error);
+      toast({
+        title: "Fout",
+        description: `Kon User ID niet koppelen: ${error.message}`,
         variant: "destructive"
       });
     }
@@ -1720,7 +1770,7 @@ Het Bouw met Respect team
                               Account Aanmaken
                             </Button>
                           )}
-                          {partner.generated_password && !partner.account_created && (
+                          {!partner.user_id && partner.generated_password && !partner.account_created && (
                             <div className="space-y-2">
                               <div className="text-xs text-muted-foreground">
                                 Account gegevens:
@@ -1774,27 +1824,66 @@ Het Bouw met Respect team
                                 >
                                   ✅ Account Aangemaakt
                                 </Button>
-                                <Button 
-                                  size="sm" 
-                                  variant="outline"
-                                  onClick={() => {
-                                    const newPassword = generateRandomPassword();
-                                    setPartners(prevPartners => 
-                                      prevPartners.map(p => 
-                                        p.id === partner.id ? { ...p, generated_password: newPassword } : p
-                                      )
-                                    );
-                                    toast({
-                                      title: "Nieuw Wachtwoord",
-                                      description: "Nieuw wachtwoord is gegenereerd",
-                                      duration: 2000
-                                    });
-                                  }}
-                                  className="text-xs px-2 py-1 h-7"
-                                >
-                                  🔄 Nieuw Wachtwoord
-                                </Button>
+                              <Button 
+                                size="sm" 
+                                variant="outline"
+                                onClick={() => {
+                                  const newPassword = generateRandomPassword();
+                                  setPartners(prevPartners => 
+                                    prevPartners.map(p => 
+                                      p.id === partner.id ? { ...p, generated_password: newPassword } : p
+                                    )
+                                  );
+                                  toast({
+                                    title: "Nieuw Wachtwoord",
+                                    description: "Nieuw wachtwoord is gegenereerd",
+                                    duration: 2000
+                                  });
+                                }}
+                                className="text-xs px-2 py-1 h-7"
+                              >
+                                🔄 Nieuw Wachtwoord
+                              </Button>
+                              <Button 
+                                size="sm" 
+                                variant="outline"
+                                onClick={() => {
+                                  setSelectedPartner(partner);
+                                  setShowUserIdDialog(true);
+                                }}
+                                className="text-xs px-2 py-1 h-7"
+                              >
+                                🔗 User ID Koppelen
+                              </Button>
                               </div>
+                            </div>
+                          )}
+                          {partner.user_id && (
+                            <div className="space-y-2">
+                              <div className="text-xs text-green-600 font-medium">
+                                ✅ Account gekoppeld
+                              </div>
+                              <div className="text-xs text-muted-foreground">
+                                User ID: {partner.user_id.substring(0, 8)}...
+                              </div>
+                            </div>
+                          )}
+                          {!partner.user_id && !partner.generated_password && (
+                            <div className="space-y-2">
+                              <div className="text-xs text-muted-foreground">
+                                Geen account gegevens
+                              </div>
+                              <Button 
+                                size="sm" 
+                                variant="outline"
+                                onClick={() => {
+                                  setSelectedPartner(partner);
+                                  setShowUserIdDialog(true);
+                                }}
+                                className="text-xs px-2 py-1 h-7"
+                              >
+                                🔗 User ID Koppelen
+                              </Button>
                             </div>
                           )}
                         </div>
@@ -1939,6 +2028,57 @@ Het Bouw met Respect team
                   >
                     <Save className="w-4 h-4" />
                     Opslaan
+                  </Button>
+                </div>
+              </div>
+            )}
+          </DialogContent>
+        </Dialog>
+
+        {/* User ID Link Dialog */}
+        <Dialog open={showUserIdDialog} onOpenChange={setShowUserIdDialog}>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle>User ID Koppelen</DialogTitle>
+            </DialogHeader>
+            {selectedPartner && (
+              <div className="space-y-4">
+                <div>
+                  <p className="text-sm text-muted-foreground mb-2">
+                    Koppel de User ID van het aangemaakte account aan <strong>{selectedPartner.company_name}</strong>
+                  </p>
+                  <p className="text-xs text-muted-foreground mb-4">
+                    Ga naar Supabase Dashboard > Authentication > Users om de User ID te vinden
+                  </p>
+                </div>
+                
+                <div>
+                  <label className="text-sm font-medium text-muted-foreground">User ID</label>
+                  <Input
+                    value={userIdInput}
+                    onChange={(e) => setUserIdInput(e.target.value)}
+                    placeholder="Voer de User ID in..."
+                    className="mt-1"
+                  />
+                </div>
+
+                <div className="flex justify-end gap-3 pt-4 border-t">
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      setShowUserIdDialog(false);
+                      setSelectedPartner(null);
+                      setUserIdInput('');
+                    }}
+                  >
+                    Annuleren
+                  </Button>
+                  <Button
+                    onClick={linkUserId}
+                    className="flex items-center gap-2"
+                  >
+                    <Save className="w-4 h-4" />
+                    Koppelen
                   </Button>
                 </div>
               </div>
