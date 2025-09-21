@@ -48,12 +48,24 @@ const editAccountSchema = z.object({
   path: ["confirmPassword"],
 });
 
+const addPartnerSchema = z.object({
+  first_name: z.string().min(1, "Voornaam is verplicht"),
+  last_name: z.string().min(1, "Achternaam is verplicht"),
+  email: z.string().email("Ongeldig email adres"),
+  phone: z.string().min(1, "Telefoon is verplicht"),
+  company_name: z.string().min(1, "Bedrijfsnaam is verplicht"),
+  website: z.string().optional(),
+  industry: z.string().optional(),
+  description: z.string().optional(),
+});
+
 const PartnerAccountManagement = () => {
   const [partners, setPartners] = useState<PartnerMembership[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(true);
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [showEditDialog, setShowEditDialog] = useState(false);
+  const [showAddPartnerDialog, setShowAddPartnerDialog] = useState(false);
   const [selectedPartner, setSelectedPartner] = useState<PartnerMembership | null>(null);
   const { toast } = useToast();
 
@@ -72,6 +84,20 @@ const PartnerAccountManagement = () => {
       email: "",
       newPassword: "",
       confirmPassword: ""
+    }
+  });
+
+  const addPartnerForm = useForm<z.infer<typeof addPartnerSchema>>({
+    resolver: zodResolver(addPartnerSchema),
+    defaultValues: {
+      first_name: "",
+      last_name: "",
+      email: "",
+      phone: "",
+      company_name: "",
+      website: "",
+      industry: "",
+      description: ""
     }
   });
 
@@ -242,6 +268,72 @@ const PartnerAccountManagement = () => {
     }
   };
 
+  const handleAddPartner = async (values: z.infer<typeof addPartnerSchema>) => {
+    try {
+      const { error } = await supabase
+        .from('partner_memberships')
+        .insert({
+          first_name: values.first_name,
+          last_name: values.last_name,
+          email: values.email,
+          phone: values.phone,
+          company_name: values.company_name,
+          website: values.website || null,
+          industry: values.industry || null,
+          description: values.description || null,
+          payment_status: 'paid',
+          amount: 25000
+        });
+
+      if (error) throw error;
+
+      toast({
+        title: "Partner toegevoegd",
+        description: `${values.first_name} ${values.last_name} is succesvol toegevoegd als partner`
+      });
+
+      setShowAddPartnerDialog(false);
+      addPartnerForm.reset();
+      fetchPartners();
+    } catch (error: any) {
+      console.error('Error adding partner:', error);
+      toast({
+        title: "Fout",
+        description: error.message || "Kon partner niet toevoegen",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const handleDeletePartner = async (partner: PartnerMembership) => {
+    if (!confirm(`Weet je zeker dat je ${partner.first_name} ${partner.last_name} permanent wilt verwijderen als partner?`)) {
+      return;
+    }
+
+    try {
+      const { error } = await supabase
+        .from('partner_memberships')
+        .delete()
+        .eq('id', partner.id);
+
+      if (error) throw error;
+
+      toast({
+        title: "Partner verwijderd",
+        description: `${partner.first_name} ${partner.last_name} is verwijderd als partner`
+      });
+
+      fetchPartners();
+    } catch (error: any) {
+      console.error('Error deleting partner:', error);
+      toast({
+        title: "Fout",
+        description: error.message || "Kon partner niet verwijderen",
+        variant: "destructive"
+      });
+    }
+  };
+
   const openCreateDialog = (partner: PartnerMembership) => {
     setSelectedPartner(partner);
     createForm.setValue('email', partner.email);
@@ -292,6 +384,13 @@ const PartnerAccountManagement = () => {
             </div>
           )}
         </div>
+        <Button 
+          onClick={() => setShowAddPartnerDialog(true)} 
+          className="flex items-center gap-2"
+        >
+          <Plus className="w-4 h-4" />
+          Partner Toevoegen
+        </Button>
       </div>
 
       {/* Search */}
@@ -351,15 +450,26 @@ const PartnerAccountManagement = () => {
                     <TableCell className="text-right">
                       <div className="flex justify-end gap-2">
                         {!partner.user_id ? (
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => openCreateDialog(partner)}
-                            className="flex items-center gap-2"
-                          >
-                            <UserPlus className="w-4 h-4" />
-                            Account Aanmaken
-                          </Button>
+                          <>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => openCreateDialog(partner)}
+                              className="flex items-center gap-2"
+                            >
+                              <UserPlus className="w-4 h-4" />
+                              Account Aanmaken
+                            </Button>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => handleDeletePartner(partner)}
+                              className="flex items-center gap-2 text-destructive hover:bg-destructive/10"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                              Verwijderen
+                            </Button>
+                          </>
                         ) : (
                           <>
                             <Button
@@ -375,15 +485,24 @@ const PartnerAccountManagement = () => {
                               variant="outline"
                               size="sm"
                               onClick={() => handleDeleteAccount(partner)}
-                              className="flex items-center gap-2 text-destructive hover:bg-destructive/10"
+                              className="flex items-center gap-2 text-orange-600 hover:bg-orange-50"
                             >
                               <Trash2 className="w-4 h-4" />
                               Ontkoppelen
                             </Button>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => handleDeletePartner(partner)}
+                              className="flex items-center gap-2 text-destructive hover:bg-destructive/10"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                              Verwijderen
+                            </Button>
                           </>
                         )}
                       </div>
-                    </TableCell>
+                     </TableCell>
                   </TableRow>
                 ))}
                 {filteredPartners.length === 0 && (
@@ -578,6 +697,151 @@ const PartnerAccountManagement = () => {
               </form>
             </Form>
           )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Add Partner Dialog */}
+      <Dialog open={showAddPartnerDialog} onOpenChange={setShowAddPartnerDialog}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Plus className="w-5 h-5" />
+              Nieuwe Partner Toevoegen
+            </DialogTitle>
+          </DialogHeader>
+          <Form {...addPartnerForm}>
+            <form onSubmit={addPartnerForm.handleSubmit(handleAddPartner)} className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <FormField
+                  control={addPartnerForm.control}
+                  name="first_name"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Voornaam</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Jan" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={addPartnerForm.control}
+                  name="last_name"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Achternaam</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Jansen" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={addPartnerForm.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>E-mailadres</FormLabel>
+                      <FormControl>
+                        <Input type="email" placeholder="jan@bedrijf.nl" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={addPartnerForm.control}
+                  name="phone"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Telefoon</FormLabel>
+                      <FormControl>
+                        <Input placeholder="+31 6 12345678" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={addPartnerForm.control}
+                  name="company_name"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Bedrijfsnaam</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Bedrijf BV" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={addPartnerForm.control}
+                  name="industry"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Branche (optioneel)</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Bouw & Constructie" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              <FormField
+                control={addPartnerForm.control}
+                name="website"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Website (optioneel)</FormLabel>
+                    <FormControl>
+                      <Input placeholder="https://www.bedrijf.nl" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={addPartnerForm.control}
+                name="description"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Beschrijving (optioneel)</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Korte beschrijving van het bedrijf..." {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <div className="flex gap-2 pt-4">
+                <Button type="submit" className="flex-1">
+                  Partner Toevoegen
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => {
+                    setShowAddPartnerDialog(false);
+                    addPartnerForm.reset();
+                  }}
+                >
+                  Annuleren
+                </Button>
+              </div>
+            </form>
+          </Form>
         </DialogContent>
       </Dialog>
     </div>
