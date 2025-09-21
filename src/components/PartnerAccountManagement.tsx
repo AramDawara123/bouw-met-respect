@@ -11,6 +11,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Link } from "react-router-dom";
 import * as z from "zod";
 
 interface PartnerMembership {
@@ -273,6 +274,23 @@ const PartnerAccountManagement = () => {
         <div>
           <h2 className="text-2xl font-bold">Partner Account Beheer</h2>
           <p className="text-muted-foreground">Beheer accounts voor partners die hebben betaald</p>
+          {partners.length === 0 && (
+            <div className="mt-3 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+              <p className="text-sm text-yellow-800 mb-2">
+                <strong>💡 Nog geen partners?</strong>
+              </p>
+              <p className="text-xs text-yellow-700 mb-2">
+                Partners worden automatisch toegevoegd na succesvolle betaling via de bedrijvenpagina.
+              </p>
+              <Link 
+                to="/company-profiles" 
+                target="_blank" 
+                className="text-xs text-yellow-800 underline hover:no-underline"
+              >
+                → Bekijk bedrijvenpagina met "Word Partner" knop
+              </Link>
+            </div>
+          )}
         </div>
       </div>
 
@@ -371,7 +389,19 @@ const PartnerAccountManagement = () => {
                 {filteredPartners.length === 0 && (
                   <TableRow>
                     <TableCell colSpan={6} className="text-center py-8">
-                      <p className="text-muted-foreground">Geen partners gevonden</p>
+                      <div className="space-y-4">
+                        <p className="text-muted-foreground">Geen partners gevonden</p>
+                        {partners.length === 0 && (
+                          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 max-w-md mx-auto">
+                            <p className="text-sm text-blue-800 mb-2">
+                              <strong>Hoe partners toevoegen?</strong>
+                            </p>
+                            <p className="text-xs text-blue-700">
+                              Partners worden automatisch toegevoegd wanneer klanten zich aanmelden via de "Word Partner" knop op de bedrijvenpagina en succesvol betalen.
+                            </p>
+                          </div>
+                        )}
+                      </div>
                     </TableCell>
                   </TableRow>
                 )}
