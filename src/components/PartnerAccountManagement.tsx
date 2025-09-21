@@ -3,6 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { Switch } from "@/components/ui/switch";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
@@ -57,6 +58,19 @@ const addPartnerSchema = z.object({
   website: z.string().optional(),
   industry: z.string().optional(),
   description: z.string().optional(),
+  create_account: z.boolean().default(true),
+  password: z.string().optional(),
+  confirmPassword: z.string().optional()
+}).refine((data) => {
+  if (data.create_account) {
+    if (!data.password) return false;
+    if (data.password.length < 8) return false;
+    if (data.password !== data.confirmPassword) return false;
+  }
+  return true;
+}, {
+  message: "Wachtwoord vereisten niet voldaan",
+  path: ["password"],
 });
 
 const PartnerAccountManagement = () => {
@@ -97,7 +111,10 @@ const PartnerAccountManagement = () => {
       company_name: "",
       website: "",
       industry: "",
-      description: ""
+      description: "",
+      create_account: true,
+      password: "",
+      confirmPassword: ""
     }
   });
 
@@ -270,9 +287,32 @@ const PartnerAccountManagement = () => {
 
   const handleAddPartner = async (values: z.infer<typeof addPartnerSchema>) => {
     try {
+      let userId = null;
+
+      // Create user account if requested
+      if (values.create_account && values.password) {
+        const { data: authData, error: authError } = await supabase.auth.signUp({
+          email: values.email,
+          password: values.password,
+          options: {
+            emailRedirectTo: `${window.location.origin}/partner-dashboard`
+          }
+        });
+
+        if (authError) throw authError;
+
+        if (!authData.user) {
+          throw new Error('Account aanmaken mislukt');
+        }
+
+        userId = authData.user.id;
+      }
+
+      // Add partner to database
       const { error } = await supabase
         .from('partner_memberships')
         .insert({
+          user_id: userId,
           first_name: values.first_name,
           last_name: values.last_name,
           email: values.email,
@@ -287,9 +327,13 @@ const PartnerAccountManagement = () => {
 
       if (error) throw error;
 
+      const accountMessage = values.create_account 
+        ? " met account" 
+        : " (zonder account)";
+
       toast({
         title: "Partner toegevoegd",
-        description: `${values.first_name} ${values.last_name} is succesvol toegevoegd als partner`
+        description: `${values.first_name} ${values.last_name} is succesvol toegevoegd als partner${accountMessage}`
       });
 
       setShowAddPartnerDialog(false);
@@ -824,6 +868,75 @@ const PartnerAccountManagement = () => {
                   </FormItem>
                 )}
               />
+
+              <div className="border-t pt-4 mt-4">
+                <FormField
+                  control={addPartnerForm.control}
+                  name="create_account"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                      <div className="space-y-0.5">
+                        <FormLabel className="text-base">
+                          Account aanmaken
+                        </FormLabel>
+                        <div className="text-sm text-muted-foreground">
+                          Maak direct een gebruikersaccount aan voor deze partner
+                        </div>
+                      </div>
+                      <FormControl>
+                        <Switch
+                          checked={field.value}
+                          onCheckedChange={(checked) => {
+                            field.onChange(checked);
+                            if (checked) {
+                              // Generate password when switch is enabled
+                              const generatedPassword = generatePassword();
+                              addPartnerForm.setValue('password', generatedPassword);
+                              addPartnerForm.setValue('confirmPassword', generatedPassword);
+                            } else {
+                              addPartnerForm.setValue('password', '');
+                              addPartnerForm.setValue('confirmPassword', '');
+                            }
+                          }}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                {addPartnerForm.watch('create_account') && (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                    <FormField
+                      control={addPartnerForm.control}
+                      name="password"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Wachtwoord (automatisch gegenereerd)</FormLabel>
+                          <FormControl>
+                            <Input type="text" {...field} readOnly />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={addPartnerForm.control}
+                      name="confirmPassword"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Bevestig Wachtwoord</FormLabel>
+                          <FormControl>
+                            <Input type="password" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                )}
+              </div>
 
               <div className="flex gap-2 pt-4">
                 <Button type="submit" className="flex-1">
