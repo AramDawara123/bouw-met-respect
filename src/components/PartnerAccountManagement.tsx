@@ -888,12 +888,7 @@ const PartnerAccountManagement = () => {
                           checked={field.value}
                           onCheckedChange={(checked) => {
                             field.onChange(checked);
-                            if (checked) {
-                              // Generate password when switch is enabled
-                              const generatedPassword = generatePassword();
-                              addPartnerForm.setValue('password', generatedPassword);
-                              addPartnerForm.setValue('confirmPassword', generatedPassword);
-                            } else {
+                            if (!checked) {
                               addPartnerForm.setValue('password', '');
                               addPartnerForm.setValue('confirmPassword', '');
                             }
@@ -912,9 +907,9 @@ const PartnerAccountManagement = () => {
                       name="password"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Wachtwoord (automatisch gegenereerd)</FormLabel>
+                          <FormLabel>Wachtwoord</FormLabel>
                           <FormControl>
-                            <Input type="text" {...field} readOnly />
+                            <Input type="password" placeholder="Voer wachtwoord in" {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -928,7 +923,7 @@ const PartnerAccountManagement = () => {
                         <FormItem>
                           <FormLabel>Bevestig Wachtwoord</FormLabel>
                           <FormControl>
-                            <Input type="password" {...field} />
+                            <Input type="password" placeholder="Bevestig wachtwoord" {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
