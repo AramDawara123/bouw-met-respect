@@ -11,6 +11,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Search, Users, CreditCard, Edit, Trash2, Download, Filter, Eye, Save, Home, ShoppingBag, Building2, Plus, Globe, Mail, Phone, Package, Printer } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { supabaseAdmin } from "@/integrations/supabase/admin-client";
 import { useToast } from "@/hooks/use-toast";
 import { Link } from "react-router-dom";
 import CompanyProfileForm from "@/components/CompanyProfileForm";
@@ -131,6 +132,8 @@ const Dashboard = () => {
   const [viewMode, setViewMode] = useState<'memberships' | 'orders' | 'profiles' | 'products' | 'partners'>("memberships");
   const [showProfileForm, setShowProfileForm] = useState(false);
   const [editingProfile, setEditingProfile] = useState<CompanyProfile | null>(null);
+  const [editingPartner, setEditingPartner] = useState<PartnerAccount | null>(null);
+  const [isEditingPartner, setIsEditingPartner] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -615,6 +618,145 @@ const Dashboard = () => {
     `);
     
     printWindow.document.close();
+  };
+
+  const createPartnerAccount = async (partner: PartnerAccount) => {
+    try {
+      // Generate random password
+      const password = generateRandomPassword();
+      
+      // Create user account using admin client
+      const { data: authData, error: authError } = await supabaseAdmin.auth.admin.createUser({
+        email: partner.email,
+        password: password,
+        email_confirm: true,
+        user_metadata: {
+          first_name: partner.first_name,
+          last_name: partner.last_name,
+          company_name: partner.company_name
+        }
+      });
+
+      if (authError) {
+        throw authError;
+      }
+
+      if (authData.user) {
+        // Update partner membership with user_id
+        const { error: updateError } = await supabase
+          .from('partner_memberships')
+          .update({ user_id: authData.user.id })
+          .eq('id', partner.id);
+
+        if (updateError) {
+          throw updateError;
+        }
+
+        // Send welcome email
+        await sendPartnerWelcomeEmail(partner.email, partner.first_name, password, partner.company_name);
+
+        toast({
+          title: "Account Aangemaakt",
+          description: `Account voor ${partner.company_name} is succesvol aangemaakt. Inloggegevens zijn verzonden per email.`
+        });
+
+        // Refresh partners list
+        await fetchPartners();
+      }
+    } catch (error: any) {
+      console.error('Error creating partner account:', error);
+      toast({
+        title: "Fout",
+        description: `Kon account niet aanmaken: ${error.message}`,
+        variant: "destructive"
+      });
+    }
+  };
+
+  const updatePartner = async (updatedPartner: PartnerAccount) => {
+    try {
+      const { error } = await supabase
+        .from('partner_memberships')
+        .update({
+          first_name: updatedPartner.first_name,
+          last_name: updatedPartner.last_name,
+          email: updatedPartner.email,
+          phone: updatedPartner.phone,
+          company_name: updatedPartner.company_name,
+          website: updatedPartner.website,
+          industry: updatedPartner.industry,
+          description: updatedPartner.description,
+          payment_status: updatedPartner.payment_status,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', updatedPartner.id);
+
+      if (error) throw error;
+      
+      await fetchPartners();
+      setIsEditingPartner(false);
+      setEditingPartner(null);
+      toast({
+        title: "Bijgewerkt",
+        description: "Partner gegevens zijn succesvol bijgewerkt"
+      });
+    } catch (error: any) {
+      console.error('Error updating partner:', error);
+      toast({
+        title: "Fout",
+        description: "Kon partner niet bijwerken",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const generateRandomPassword = (): string => {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*';
+    let password = '';
+    for (let i = 0; i < 12; i++) {
+      password += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return password;
+  };
+
+  const sendPartnerWelcomeEmail = async (email: string, firstName: string, password: string, companyName: string) => {
+    try {
+      const response = await fetch('/api/send-email', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          to: email,
+          subject: 'Welkom bij Bouw met Respect - Je partner account is klaar!',
+          html: `
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+              <h2 style="color: #2563eb;">Welkom bij Bouw met Respect!</h2>
+              <p>Beste ${firstName},</p>
+              <p>Je partner account is succesvol aangemaakt en je kunt nu inloggen.</p>
+              
+              <div style="background-color: #f3f4f6; padding: 20px; border-radius: 8px; margin: 20px 0;">
+                <h3 style="color: #1f2937; margin-top: 0;">Je inloggegevens:</h3>
+                <p><strong>Email:</strong> ${email}</p>
+                <p><strong>Wachtwoord:</strong> ${password}</p>
+                <p><strong>Bedrijf:</strong> ${companyName}</p>
+              </div>
+              
+              <p>Je kunt nu inloggen op je <a href="https://bouwmetrespect.nl/partner-dashboard" style="color: #2563eb;">Partner Dashboard</a> om je bedrijfsprofiel te beheren.</p>
+              
+              <p>Met vriendelijke groet,<br>
+              Het Bouw met Respect team</p>
+            </div>
+          `
+        })
+      });
+
+      if (!response.ok) {
+        console.error('Failed to send welcome email');
+      }
+    } catch (error) {
+      console.error('Error sending welcome email:', error);
+    }
   };
 
   const exportToCsv = () => {
@@ -1567,11 +1709,8 @@ const Dashboard = () => {
                             size="sm" 
                             variant="outline"
                             onClick={() => {
-                              // TODO: Implement partner editing
-                              toast({
-                                title: "Functie in ontwikkeling",
-                                description: "Partner bewerken komt binnenkort beschikbaar"
-                              });
+                              setEditingPartner(partner);
+                              setIsEditingPartner(true);
                             }}
                           >
                             <Edit className="w-4 h-4 mr-2" />
@@ -1582,11 +1721,7 @@ const Dashboard = () => {
                               size="sm" 
                               variant="outline"
                               onClick={async () => {
-                                // TODO: Implement manual account creation
-                                toast({
-                                  title: "Functie in ontwikkeling",
-                                  description: "Handmatig account aanmaken komt binnenkort beschikbaar"
-                                });
+                                await createPartnerAccount(partner);
                               }}
                             >
                               <Users className="w-4 h-4 mr-2" />
@@ -1609,6 +1744,138 @@ const Dashboard = () => {
           onSuccess={handleProfileFormSuccess}
           editingProfile={editingProfile}
         />
+
+        {/* Partner Edit Dialog */}
+        <Dialog open={isEditingPartner} onOpenChange={setIsEditingPartner}>
+          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>Partner Bewerken</DialogTitle>
+            </DialogHeader>
+            {editingPartner && (
+              <div className="space-y-6">
+                {/* Personal Information */}
+                <div>
+                  <h3 className="text-lg font-semibold mb-3 text-primary">Persoonlijke Gegevens</h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <label className="text-sm font-medium text-muted-foreground">Voornaam</label>
+                      <Input
+                        value={editingPartner.first_name}
+                        onChange={(e) => setEditingPartner({...editingPartner, first_name: e.target.value})}
+                        className="mt-1"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium text-muted-foreground">Achternaam</label>
+                      <Input
+                        value={editingPartner.last_name}
+                        onChange={(e) => setEditingPartner({...editingPartner, last_name: e.target.value})}
+                        className="mt-1"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium text-muted-foreground">Email</label>
+                      <Input
+                        type="email"
+                        value={editingPartner.email}
+                        onChange={(e) => setEditingPartner({...editingPartner, email: e.target.value})}
+                        className="mt-1"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium text-muted-foreground">Telefoon</label>
+                      <Input
+                        value={editingPartner.phone}
+                        onChange={(e) => setEditingPartner({...editingPartner, phone: e.target.value})}
+                        className="mt-1"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Company Information */}
+                <div>
+                  <h3 className="text-lg font-semibold mb-3 text-primary">Bedrijfsgegevens</h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <label className="text-sm font-medium text-muted-foreground">Bedrijfsnaam</label>
+                      <Input
+                        value={editingPartner.company_name}
+                        onChange={(e) => setEditingPartner({...editingPartner, company_name: e.target.value})}
+                        className="mt-1"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium text-muted-foreground">Website</label>
+                      <Input
+                        value={editingPartner.website || ''}
+                        onChange={(e) => setEditingPartner({...editingPartner, website: e.target.value})}
+                        className="mt-1"
+                        placeholder="https://www.voorbeeld.nl"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium text-muted-foreground">Branche</label>
+                      <Input
+                        value={editingPartner.industry || ''}
+                        onChange={(e) => setEditingPartner({...editingPartner, industry: e.target.value})}
+                        className="mt-1"
+                        placeholder="Bouw & Constructie"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium text-muted-foreground">Status</label>
+                      <Select
+                        value={editingPartner.payment_status}
+                        onValueChange={(value) => setEditingPartner({...editingPartner, payment_status: value})}
+                      >
+                        <SelectTrigger className="mt-1">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="pending">In Behandeling</SelectItem>
+                          <SelectItem value="paid">Betaald</SelectItem>
+                          <SelectItem value="failed">Mislukt</SelectItem>
+                          <SelectItem value="expired">Verlopen</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                  <div className="mt-4">
+                    <label className="text-sm font-medium text-muted-foreground">Beschrijving</label>
+                    <Textarea
+                      value={editingPartner.description || ''}
+                      onChange={(e) => setEditingPartner({...editingPartner, description: e.target.value})}
+                      className="mt-1"
+                      rows={3}
+                      placeholder="Beschrijf het bedrijf..."
+                    />
+                  </div>
+                </div>
+
+                {/* Actions */}
+                <div className="flex justify-end gap-3 pt-4 border-t">
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      setIsEditingPartner(false);
+                      setEditingPartner(null);
+                    }}
+                  >
+                    Annuleren
+                  </Button>
+                  <Button
+                    onClick={() => updatePartner(editingPartner)}
+                    className="flex items-center gap-2"
+                  >
+                    <Save className="w-4 h-4" />
+                    Opslaan
+                  </Button>
+                </div>
+              </div>
+            )}
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );
