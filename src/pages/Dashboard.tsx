@@ -11,7 +11,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Search, Users, CreditCard, Edit, Trash2, Download, Filter, Eye, Save, Home, ShoppingBag, Building2, Plus, Globe, Mail, Phone, Package, Printer } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { supabaseAdmin } from "@/integrations/supabase/admin-client";
 import { useToast } from "@/hooks/use-toast";
 import { Link } from "react-router-dom";
 import CompanyProfileForm from "@/components/CompanyProfileForm";
@@ -625,49 +624,57 @@ const Dashboard = () => {
       // Generate random password
       const password = generateRandomPassword();
       
-      // Create user account using admin client
-      const { data: authData, error: authError } = await supabaseAdmin.auth.admin.createUser({
+      // For now, we'll create a manual account creation process
+      // The user will need to manually create the account in Supabase Auth
+      const accountInfo = {
         email: partner.email,
         password: password,
-        email_confirm: true,
-        user_metadata: {
-          first_name: partner.first_name,
-          last_name: partner.last_name,
-          company_name: partner.company_name
-        }
+        first_name: partner.first_name,
+        last_name: partner.last_name,
+        company_name: partner.company_name
+      };
+
+      // Show account details to admin for manual creation
+      const accountDetails = `
+ACCOUNT AANMAKEN VOOR: ${partner.company_name}
+
+Email: ${accountInfo.email}
+Wachtwoord: ${accountInfo.password}
+Voornaam: ${accountInfo.first_name}
+Achternaam: ${accountInfo.last_name}
+Bedrijf: ${accountInfo.company_name}
+
+STAPPEN:
+1. Ga naar Supabase Dashboard > Authentication > Users
+2. Klik "Add user"
+3. Vul de bovenstaande gegevens in
+4. Klik "Create user"
+5. Kopieer de User ID
+6. Update partner_memberships tabel met user_id
+
+Of gebruik de Supabase SQL Editor:
+UPDATE partner_memberships 
+SET user_id = 'USER_ID_HIER' 
+WHERE id = '${partner.id}';
+      `;
+
+      // Copy to clipboard
+      await navigator.clipboard.writeText(accountDetails);
+
+      toast({
+        title: "Account Gegevens Gekopieerd",
+        description: `Account gegevens zijn gekopieerd naar clipboard. Maak handmatig een account aan in Supabase Dashboard.`,
+        duration: 10000
       });
 
-      if (authError) {
-        throw authError;
-      }
+      // Show detailed instructions
+      alert(accountDetails);
 
-      if (authData.user) {
-        // Update partner membership with user_id
-        const { error: updateError } = await supabase
-          .from('partner_memberships')
-          .update({ user_id: authData.user.id })
-          .eq('id', partner.id);
-
-        if (updateError) {
-          throw updateError;
-        }
-
-        // Send welcome email
-        await sendPartnerWelcomeEmail(partner.email, partner.first_name, password, partner.company_name);
-
-        toast({
-          title: "Account Aangemaakt",
-          description: `Account voor ${partner.company_name} is succesvol aangemaakt. Inloggegevens zijn verzonden per email.`
-        });
-
-        // Refresh partners list
-        await fetchPartners();
-      }
     } catch (error: any) {
       console.error('Error creating partner account:', error);
       toast({
         title: "Fout",
-        description: `Kon account niet aanmaken: ${error.message}`,
+        description: `Kon account gegevens niet genereren: ${error.message}`,
         variant: "destructive"
       });
     }
@@ -721,41 +728,32 @@ const Dashboard = () => {
 
   const sendPartnerWelcomeEmail = async (email: string, firstName: string, password: string, companyName: string) => {
     try {
-      const response = await fetch('/api/send-email', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          to: email,
-          subject: 'Welkom bij Bouw met Respect - Je partner account is klaar!',
-          html: `
-            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-              <h2 style="color: #2563eb;">Welkom bij Bouw met Respect!</h2>
-              <p>Beste ${firstName},</p>
-              <p>Je partner account is succesvol aangemaakt en je kunt nu inloggen.</p>
-              
-              <div style="background-color: #f3f4f6; padding: 20px; border-radius: 8px; margin: 20px 0;">
-                <h3 style="color: #1f2937; margin-top: 0;">Je inloggegevens:</h3>
-                <p><strong>Email:</strong> ${email}</p>
-                <p><strong>Wachtwoord:</strong> ${password}</p>
-                <p><strong>Bedrijf:</strong> ${companyName}</p>
-              </div>
-              
-              <p>Je kunt nu inloggen op je <a href="https://bouwmetrespect.nl/partner-dashboard" style="color: #2563eb;">Partner Dashboard</a> om je bedrijfsprofiel te beheren.</p>
-              
-              <p>Met vriendelijke groet,<br>
-              Het Bouw met Respect team</p>
-            </div>
-          `
-        })
-      });
+      // Create email content
+      const emailContent = `
+Beste ${firstName},
 
-      if (!response.ok) {
-        console.error('Failed to send welcome email');
-      }
+Welkom bij Bouw met Respect! Je partner account is succesvol aangemaakt.
+
+Je inloggegevens:
+- Email: ${email}
+- Wachtwoord: ${password}
+- Bedrijf: ${companyName}
+
+Je kunt nu inloggen op je Partner Dashboard:
+https://bouwmetrespect.nl/partner-dashboard
+
+Voor vragen kun je altijd contact met ons opnemen.
+
+Met vriendelijke groet,
+Het Bouw met Respect team
+      `;
+
+      // Copy email content to clipboard
+      await navigator.clipboard.writeText(emailContent);
+
+      console.log('Email content copied to clipboard');
     } catch (error) {
-      console.error('Error sending welcome email:', error);
+      console.error('Error preparing email content:', error);
     }
   };
 
