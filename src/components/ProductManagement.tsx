@@ -139,12 +139,38 @@ const ProductManagement = ({ products, onProductsChange }: ProductManagementProp
 
   const handleAddProduct = async () => {
     try {
+      // Validation
+      if (!newProduct.name.trim()) {
+        toast({
+          title: "Fout",
+          description: "Product naam is verplicht",
+          variant: "destructive"
+        });
+        return;
+      }
+
+      if (!newProduct.price || parseFloat(newProduct.price) <= 0) {
+        toast({
+          title: "Fout", 
+          description: "Voer een geldige prijs in",
+          variant: "destructive"
+        });
+        return;
+      }
+
       const featuresArray = newProduct.features
         .split(',')
         .map(f => f.trim())
         .filter(f => f.length > 0);
 
-      const { error } = await supabase
+      console.log('🔄 Adding product:', {
+        name: newProduct.name,
+        price: Math.round(parseFloat(newProduct.price) * 100),
+        category: newProduct.category,
+        features: featuresArray
+      });
+
+      const { data, error } = await supabase
         .from('products')
         .insert([{
           name: newProduct.name,
@@ -154,9 +180,38 @@ const ProductManagement = ({ products, onProductsChange }: ProductManagementProp
           category: newProduct.category || null,
           in_stock: newProduct.in_stock,
           features: featuresArray
-        }]);
+        }])
+        .select();
 
-      if (error) throw error;
+      if (error) {
+        console.error('❌ Database error:', error);
+        console.error('Error code:', error.code);
+        console.error('Error message:', error.message);
+        console.error('Error details:', error.details);
+        
+        if (error.code === '42P01') {
+          toast({
+            title: "Database Fout",
+            description: "Products tabel bestaat nog niet. Voer eerst de database migration uit.",
+            variant: "destructive"
+          });
+        } else if (error.code === '42501') {
+          toast({
+            title: "Toegang Geweigerd",
+            description: "Je hebt geen admin rechten om producten toe te voegen.",
+            variant: "destructive"
+          });
+        } else {
+          toast({
+            title: "Database Fout",
+            description: `${error.message} (Code: ${error.code})`,
+            variant: "destructive"
+          });
+        }
+        return;
+      }
+
+      console.log('✅ Product added successfully:', data);
 
       toast({
         title: "Toegevoegd",
@@ -175,10 +230,10 @@ const ProductManagement = ({ products, onProductsChange }: ProductManagementProp
       setShowAddDialog(false);
       onProductsChange();
     } catch (error) {
-      console.error('Error adding product:', error);
+      console.error('💥 Unexpected error adding product:', error);
       toast({
-        title: "Fout",
-        description: "Kon product niet toevoegen",
+        title: "Onverwachte Fout",
+        description: `Er ging iets mis: ${error.message}`,
         variant: "destructive"
       });
     }
@@ -259,6 +314,24 @@ const ProductManagement = ({ products, onProductsChange }: ProductManagementProp
         <div>
           <h2 className="text-2xl font-bold">Product Management</h2>
           <p className="text-muted-foreground">Beheer webshop producten</p>
+          {products.length === 0 && (
+            <div className="mt-2 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+              <p className="text-sm text-yellow-800">
+                ⚠️ Geen producten gevonden. Controleer of de database migration is uitgevoerd.
+              </p>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="mt-2"
+                onClick={() => {
+                  console.log('🔄 Manual refresh...');
+                  onProductsChange();
+                }}
+              >
+                Probeer opnieuw
+              </Button>
+            </div>
+          )}
         </div>
         
         <Dialog open={showAddDialog} onOpenChange={setShowAddDialog}>

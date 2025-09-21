@@ -222,20 +222,46 @@ const Dashboard = () => {
 
   const fetchProducts = async () => {
     try {
+      console.log('🔄 Fetching products...');
       const { data, error } = await supabase
         .from('products')
         .select('*')
         .order('created_at', { ascending: false });
 
-      if (error) throw error;
+      if (error) {
+        console.error('❌ Products fetch error:', error);
+        console.error('Error code:', error.code);
+        console.error('Error message:', error.message);
+        
+        if (error.code === '42P01') {
+          console.error('💡 Products table does not exist - need to run migration');
+          toast({
+            title: "Database Setup Vereist",
+            description: "Products tabel bestaat nog niet. Voer eerst de database migration uit in Supabase SQL Editor.",
+            variant: "destructive"
+          });
+        } else {
+          toast({
+            title: "Database Fout",
+            description: `${error.message} (Code: ${error.code})`,
+            variant: "destructive"
+          });
+        }
+        setProducts([]);
+        return;
+      }
+
+      console.log('✅ Products fetched successfully:', data);
+      console.log(`📦 Total products: ${data?.length || 0}`);
       setProducts(data || []);
     } catch (error) {
-      console.error('Error fetching products:', error);
+      console.error('💥 Unexpected error fetching products:', error);
       toast({
-        title: "Fout",
-        description: "Kon producten niet laden",
+        title: "Onverwachte Fout",
+        description: "Er ging iets mis bij het laden van producten",
         variant: "destructive"
       });
+      setProducts([]);
     }
   };
 
