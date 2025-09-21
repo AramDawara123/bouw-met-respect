@@ -36,20 +36,17 @@ serve(async (req) => {
     // Default prices based on membership type
     let defaultAmount;
     switch(membershipType) {
-      case 'zzp':
-        defaultAmount = 25000; // €250.00
-        break;
       case 'klein':
-        defaultAmount = 45000; // €450.00
+        defaultAmount = 25000; // €250.00
         break;
       case 'middelgroot':
         defaultAmount = 75000; // €750.00
         break;
       case 'groot':
-        defaultAmount = 0; // Offerte op maat
+        defaultAmount = 125000; // €1250.00
         break;
       default:
-        defaultAmount = 25000; // €250.00 (ZZP)
+        defaultAmount = 25000; // €250.00
     }
 
     const membershipAmount = amount || defaultAmount;

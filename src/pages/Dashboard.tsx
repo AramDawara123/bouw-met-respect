@@ -30,7 +30,7 @@ interface Membership {
   respectful_practices?: string;
   respectful_workplace?: string;
   boundary_behavior?: string;
-  membership_type: 'zzp' | 'klein' | 'middelgroot' | 'groot' | 'offerte';
+  membership_type: 'klein' | 'middelgroot' | 'groot' | 'offerte';
   payment_status: string;
   amount: number;
   currency: string;
@@ -956,13 +956,12 @@ const Dashboard = () => {
                                             <label className="text-sm font-medium text-muted-foreground">Type lidmaatschap</label>
                                             <Select 
                                               value={editingMembership.membership_type} 
-                                              onValueChange={(value: 'zzp' | 'klein' | 'middelgroot' | 'groot' | 'offerte') => setEditingMembership({...editingMembership, membership_type: value})}
+                                              onValueChange={(value: 'klein' | 'middelgroot' | 'groot' | 'offerte') => setEditingMembership({...editingMembership, membership_type: value})}
                                             >
                                               <SelectTrigger className="mt-1">
                                                 <SelectValue />
                                               </SelectTrigger>
                                               <SelectContent>
-                                                <SelectItem value="zzp">ZZP</SelectItem>
                                                 <SelectItem value="klein">Klein</SelectItem>
                                                 <SelectItem value="middelgroot">Middelgroot</SelectItem>
                                                 <SelectItem value="groot">Groot</SelectItem>
