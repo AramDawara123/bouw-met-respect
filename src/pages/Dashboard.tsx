@@ -688,10 +688,14 @@ const Dashboard = () => {
       }
 
       if (authData.user) {
-        // Update partner membership with user_id
+        // Update partner membership with user_id and account status
         const { error: updateError } = await supabase
           .from('partner_memberships')
-          .update({ user_id: authData.user.id })
+          .update({ 
+            user_id: authData.user.id,
+            account_created: true,
+            generated_password: password
+          })
           .eq('id', partner.id);
 
         if (updateError) {
@@ -721,8 +725,6 @@ const Dashboard = () => {
         // Update partner with generated password and user_id
         const updatedPartner = {
           ...partner,
-          generated_password: password,
-          account_created: true,
           user_id: authData.user.id
         };
 
@@ -920,13 +922,13 @@ const Dashboard = () => {
         }
       }
 
-      // Update partner membership to remove user_id
+      // Update partner membership to remove user_id and reset account status
       const { error: updateError } = await supabase
         .from('partner_memberships')
         .update({ 
           user_id: null,
-          generated_password: null,
-          account_created: false
+          account_created: false,
+          generated_password: null
         })
         .eq('id', partner.id);
 
@@ -1025,7 +1027,10 @@ const Dashboard = () => {
       // Update email in partner_memberships
       const { error: partnerError } = await supabase
         .from('partner_memberships')
-        .update({ email: newEmail })
+        .update({ 
+          email: newEmail,
+          generated_password: newPassword || partner.generated_password
+        })
         .eq('id', partner.id);
 
       if (partnerError) {
