@@ -54,10 +54,20 @@ interface CompanyProfileFormProps {
     contact_phone: string | null;
     is_featured: boolean;
     display_order: number;
+    partner_membership_id?: string | null;
   } | null;
+  isPartnerDashboard?: boolean;
+  partnerMembershipId?: string;
 }
 
-const CompanyProfileForm = ({ open, onOpenChange, onSuccess, editingProfile }: CompanyProfileFormProps) => {
+const CompanyProfileForm = ({ 
+  open, 
+  onOpenChange, 
+  onSuccess, 
+  editingProfile, 
+  isPartnerDashboard = false, 
+  partnerMembershipId 
+}: CompanyProfileFormProps) => {
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [logoUrl, setLogoUrl] = useState<string | null>(null);
@@ -156,9 +166,10 @@ const CompanyProfileForm = ({ open, onOpenChange, onSuccess, editingProfile }: C
         industry: data.industry || null,
         contact_email: data.contact_email || null,
         contact_phone: data.contact_phone || null,
-        is_featured: data.is_featured,
+        is_featured: isPartnerDashboard ? false : data.is_featured,
         display_order: data.display_order,
         logo_url: logoUrl,
+        ...(isPartnerDashboard && partnerMembershipId && { partner_membership_id: partnerMembershipId })
       };
 
       if (editingProfile) {
@@ -387,6 +398,7 @@ const CompanyProfileForm = ({ open, onOpenChange, onSuccess, editingProfile }: C
               />
             </div>
 
+{!isPartnerDashboard && (
             <FormField
               control={form.control}
               name="is_featured"
@@ -407,6 +419,7 @@ const CompanyProfileForm = ({ open, onOpenChange, onSuccess, editingProfile }: C
                 </FormItem>
               )}
             />
+            )}
 
             <div className="flex justify-end gap-4">
               <Button

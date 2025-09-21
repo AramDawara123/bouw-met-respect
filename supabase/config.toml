@@ -39,5 +39,8 @@ verify_jwt = false
 [functions.create-shop-order]
 verify_jwt = false
 
+[functions.create-partner-payment]
+verify_jwt = false
+
 [functions.mollie-webhook]
 verify_jwt = false

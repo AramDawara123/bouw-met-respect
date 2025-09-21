@@ -45,6 +45,7 @@ serve(async (req) => {
 
     const payment = await detailsResp.json();
     const status = payment.status as string;
+    const metadata = payment.metadata || {};
 
     const supabaseService = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
@@ -59,13 +60,26 @@ serve(async (req) => {
     else if (status === 'expired') newStatus = 'expired';
     else newStatus = 'pending';
 
-    const { error } = await supabaseService
-      .from('orders')
-      .update({ payment_status: newStatus })
-      .eq('mollie_payment_id', paymentId);
+    // Check if this is a partner membership payment
+    if (metadata.type === 'partner_membership') {
+      const { error } = await supabaseService
+        .from('partner_memberships')
+        .update({ payment_status: newStatus })
+        .eq('mollie_payment_id', paymentId);
 
-    if (error) {
-      return new Response(`DB update error: ${error.message}`, { headers: corsHeaders, status: 500 });
+      if (error) {
+        return new Response(`Partner DB update error: ${error.message}`, { headers: corsHeaders, status: 500 });
+      }
+    } else {
+      // Regular order payment
+      const { error } = await supabaseService
+        .from('orders')
+        .update({ payment_status: newStatus })
+        .eq('mollie_payment_id', paymentId);
+
+      if (error) {
+        return new Response(`Order DB update error: ${error.message}`, { headers: corsHeaders, status: 500 });
+      }
     }
 
     return new Response('OK', { headers: corsHeaders, status: 200 });

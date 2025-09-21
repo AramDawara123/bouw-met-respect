@@ -26,6 +26,7 @@ export type Database = {
           is_featured: boolean | null
           logo_url: string | null
           name: string
+          partner_membership_id: string | null
           updated_at: string
           website: string | null
         }
@@ -40,6 +41,7 @@ export type Database = {
           is_featured?: boolean | null
           logo_url?: string | null
           name: string
+          partner_membership_id?: string | null
           updated_at?: string
           website?: string | null
         }
@@ -54,10 +56,19 @@ export type Database = {
           is_featured?: boolean | null
           logo_url?: string | null
           name?: string
+          partner_membership_id?: string | null
           updated_at?: string
           website?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "company_profiles_partner_membership_id_fkey"
+            columns: ["partner_membership_id"]
+            isOneToOne: false
+            referencedRelation: "partner_memberships"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       memberships: {
         Row: {
@@ -210,6 +221,66 @@ export type Database = {
           total?: number
           updated_at?: string
           user_id?: string | null
+        }
+        Relationships: []
+      }
+      partner_memberships: {
+        Row: {
+          amount: number | null
+          company_name: string
+          created_at: string
+          currency: string | null
+          description: string | null
+          email: string
+          first_name: string
+          id: string
+          industry: string | null
+          last_name: string
+          logo_url: string | null
+          mollie_payment_id: string | null
+          payment_status: string | null
+          phone: string
+          updated_at: string
+          user_id: string | null
+          website: string | null
+        }
+        Insert: {
+          amount?: number | null
+          company_name: string
+          created_at?: string
+          currency?: string | null
+          description?: string | null
+          email: string
+          first_name: string
+          id?: string
+          industry?: string | null
+          last_name: string
+          logo_url?: string | null
+          mollie_payment_id?: string | null
+          payment_status?: string | null
+          phone: string
+          updated_at?: string
+          user_id?: string | null
+          website?: string | null
+        }
+        Update: {
+          amount?: number | null
+          company_name?: string
+          created_at?: string
+          currency?: string | null
+          description?: string | null
+          email?: string
+          first_name?: string
+          id?: string
+          industry?: string | null
+          last_name?: string
+          logo_url?: string | null
+          mollie_payment_id?: string | null
+          payment_status?: string | null
+          phone?: string
+          updated_at?: string
+          user_id?: string | null
+          website?: string | null
         }
         Relationships: []
       }
