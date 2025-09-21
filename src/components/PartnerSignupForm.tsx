@@ -292,7 +292,7 @@ const PartnerSignupForm = ({ open, onOpenChange }: PartnerSignupFormProps) => {
                   </FormItem>
                 )}
               />
-            </div>
+              
               <FormField
                 control={form.control}
                 name="description"
