@@ -9,11 +9,12 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Search, Users, CreditCard, Edit, Trash2, Download, Filter, Eye, Save, Home, ShoppingBag, Building2, Plus, Globe, Mail, Phone } from "lucide-react";
+import { Search, Users, CreditCard, Edit, Trash2, Download, Filter, Eye, Save, Home, ShoppingBag, Building2, Plus, Globe, Mail, Phone, Package } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Link } from "react-router-dom";
 import CompanyProfileForm from "@/components/CompanyProfileForm";
+import ProductManagement from "@/components/ProductManagement";
 
 interface Membership {
   id: string;
@@ -63,6 +64,19 @@ interface Order {
   address_country?: string | null;
 }
 
+interface Product {
+  id: string;
+  name: string;
+  description?: string | null;
+  price: number; // Price in cents
+  image_url?: string | null;
+  category?: string | null;
+  in_stock: boolean;
+  features: string[];
+  created_at: string;
+  updated_at: string;
+}
+
 interface CompanyProfile {
   id: string;
   name: string;
@@ -82,17 +96,21 @@ const Dashboard = () => {
   const [memberships, setMemberships] = useState<Membership[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
   const [profiles, setProfiles] = useState<CompanyProfile[]>([]);
+  const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [typeFilter, setTypeFilter] = useState("all");
   const [orderStatusFilter, setOrderStatusFilter] = useState("all");
+  const [categoryFilter, setCategoryFilter] = useState("all");
   const [selectedMembership, setSelectedMembership] = useState<Membership | null>(null);
   const [editingMembership, setEditingMembership] = useState<Membership | null>(null);
+  const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [isEditing, setIsEditing] = useState(false);
+  const [isEditingProduct, setIsEditingProduct] = useState(false);
   const [user, setUser] = useState(null);
   const [isAdmin, setIsAdmin] = useState(false);
-  const [viewMode, setViewMode] = useState<'memberships' | 'orders' | 'profiles'>("memberships");
+  const [viewMode, setViewMode] = useState<'memberships' | 'orders' | 'profiles' | 'products'>("memberships");
   const [showProfileForm, setShowProfileForm] = useState(false);
   const [editingProfile, setEditingProfile] = useState<CompanyProfile | null>(null);
   const { toast } = useToast();
@@ -129,7 +147,7 @@ const Dashboard = () => {
       }
 
       setIsAdmin(true);
-      await Promise.all([fetchMemberships(), fetchOrders(), fetchProfiles()]);
+      await Promise.all([fetchMemberships(), fetchOrders(), fetchProfiles(), fetchProducts()]);
     } catch (error) {
       console.error('Auth check error:', error);
       toast({
@@ -197,6 +215,25 @@ const Dashboard = () => {
       toast({
         title: "Fout",
         description: "Kon bedrijfsprofielen niet laden",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const fetchProducts = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('products')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      setProducts(data || []);
+    } catch (error) {
+      console.error('Error fetching products:', error);
+      toast({
+        title: "Fout",
+        description: "Kon producten niet laden",
         variant: "destructive"
       });
     }
@@ -439,11 +476,18 @@ const Dashboard = () => {
           .filter(o => o.payment_status === 'paid')
           .reduce((sum, o) => sum + o.total, 0)
       }
-    : {
+    : viewMode === 'profiles'
+    ? {
         total: profiles.length,
         paid: profiles.filter(p => p.is_featured).length,
         pending: profiles.filter(p => !p.is_featured).length,
         revenue: 0
+      }
+    : {
+        total: products.length,
+        paid: products.filter(p => p.in_stock).length,
+        pending: products.filter(p => !p.in_stock).length,
+        revenue: products.reduce((sum, p) => sum + p.price, 0)
       };
 
   const filteredOrders = orders.filter(order => {
@@ -507,8 +551,8 @@ const Dashboard = () => {
         </div>
 
         {/* View Mode Tabs */}
-        <Tabs value={viewMode} onValueChange={(value) => setViewMode(value as 'memberships' | 'orders' | 'profiles')}>
-          <TabsList className="grid w-full max-w-lg grid-cols-3">
+        <Tabs value={viewMode} onValueChange={(value) => setViewMode(value as 'memberships' | 'orders' | 'profiles' | 'products')}>
+          <TabsList className="grid w-full max-w-2xl grid-cols-4">
             <TabsTrigger value="memberships" className="flex items-center gap-2">
               <Users className="w-4 h-4" />
               Lidmaatschappen
@@ -521,6 +565,10 @@ const Dashboard = () => {
               <Building2 className="w-4 h-4" />
               Bedrijven
             </TabsTrigger>
+            <TabsTrigger value="products" className="flex items-center gap-2">
+              <Package className="w-4 h-4" />
+              Producten
+            </TabsTrigger>
           </TabsList>
         </Tabs>
 
@@ -529,14 +577,16 @@ const Dashboard = () => {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">
-                {viewMode === 'memberships' ? 'Totaal Leden' : viewMode === 'orders' ? 'Totaal Bestellingen' : 'Totaal Bedrijven'}
+                {viewMode === 'memberships' ? 'Totaal Leden' : viewMode === 'orders' ? 'Totaal Bestellingen' : viewMode === 'profiles' ? 'Totaal Bedrijven' : 'Totaal Producten'}
               </CardTitle>
               {viewMode === 'memberships' ? (
                 <Users className="w-4 h-4 text-muted-foreground" />
               ) : viewMode === 'orders' ? (
                 <ShoppingBag className="w-4 h-4 text-muted-foreground" />
-              ) : (
+              ) : viewMode === 'profiles' ? (
                 <Building2 className="w-4 h-4 text-muted-foreground" />
+              ) : (
+                <Package className="w-4 h-4 text-muted-foreground" />
               )}
             </CardHeader>
             <CardContent>
@@ -547,7 +597,7 @@ const Dashboard = () => {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">
-                {viewMode === 'profiles' ? 'Featured' : 'Betaald'}
+                {viewMode === 'profiles' ? 'Featured' : viewMode === 'products' ? 'Op voorraad' : 'Betaald'}
               </CardTitle>
               <CreditCard className="w-4 h-4 text-green-600" />
             </CardHeader>
@@ -559,7 +609,7 @@ const Dashboard = () => {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">
-                {viewMode === 'profiles' ? 'Regulier' : 'In Behandeling'}
+                {viewMode === 'profiles' ? 'Regulier' : viewMode === 'products' ? 'Uitverkocht' : 'In Behandeling'}
               </CardTitle>
               <CreditCard className="w-4 h-4 text-yellow-600" />
             </CardHeader>
@@ -575,7 +625,7 @@ const Dashboard = () => {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-primary">
-                {viewMode === 'profiles' ? '-' : formatPrice(stats.revenue)}
+                {viewMode === 'profiles' ? '-' : viewMode === 'products' ? formatPrice(stats.revenue) : formatPrice(stats.revenue)}
               </div>
             </CardContent>
           </Card>
@@ -1206,6 +1256,14 @@ const Dashboard = () => {
               )}
             </CardContent>
           </Card>
+        )}
+
+        {/* Products Section */}
+        {viewMode === 'products' && (
+          <ProductManagement 
+            products={products} 
+            onProductsChange={fetchProducts}
+          />
         )}
 
         <CompanyProfileForm
