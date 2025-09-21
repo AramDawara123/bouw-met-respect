@@ -37,7 +37,7 @@ serve(async (req) => {
       return sum + priceCents * qty;
     }, 0);
 
-    const shippingCents = subtotalCents >= 2500 ? 0 : 495;
+    const shippingCents = subtotalCents >= 5000 ? 0 : 500;
     const totalCents = subtotalCents + shippingCents;
     const totalEuroValue = (totalCents / 100).toFixed(2);
 

@@ -413,15 +413,21 @@ const Webshop = () => {
                           <span>Subtotaal:</span>
                           <span>€{getCartTotal().toFixed(2)}</span>
                         </div>
-                        <div className="flex justify-between text-sm">
-                          <span>Verzendkosten:</span>
-                          <span className={getCartTotal() >= 25 ? 'text-green-600' : ''}>
-                            {getCartTotal() >= 25 ? 'Gratis' : '€4.95'}
-                          </span>
-                        </div>
+                        {getCartTotal() < 50 && (
+                          <div className="flex justify-between text-sm">
+                            <span>Verzendkosten:</span>
+                            <span>€5.00</span>
+                          </div>
+                        )}
+                        {getCartTotal() >= 50 && (
+                          <div className="flex justify-between text-sm text-green-600">
+                            <span>Verzending:</span>
+                            <span>Gratis</span>
+                          </div>
+                        )}
                         <div className="flex justify-between font-bold text-lg border-t pt-2">
                           <span>Totaal:</span>
-                          <span>€{(getCartTotal() + (getCartTotal() >= 25 ? 0 : 4.95)).toFixed(2)}</span>
+                          <span>€{(getCartTotal() + (getCartTotal() >= 50 ? 0 : 5.00)).toFixed(2)}</span>
                         </div>
                       </div>
                       <Button className="w-full mt-4" size="lg" onClick={checkout} disabled={isCheckingOut}>
@@ -433,7 +439,7 @@ const Webshop = () => {
               </Sheet>
               <div className="text-right">
                 <p className="text-2xl font-bold text-foreground">
-                  €{(getCartTotal() + (getCartTotal() >= 25 ? 0 : 4.95)).toFixed(2)}
+                  €{(getCartTotal() + (getCartTotal() >= 50 ? 0 : 5.00)).toFixed(2)}
                 </p>
                 <p className="text-sm text-muted-foreground">
                   {getCartItemCount() > 0 ? `${getCartItemCount()} items` : 'Winkelwagen leeg'}
@@ -470,7 +476,7 @@ const Webshop = () => {
             <div className="flex flex-wrap justify-center gap-4 text-sm text-muted-foreground">
               <div className="flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full border border-primary/20">
                 <div className="w-2 h-2 bg-primary rounded-full"></div>
-                Gratis verzending vanaf €25
+                Gratis verzending vanaf €50
               </div>
               <div className="flex items-center gap-2 px-4 py-2 bg-accent/10 rounded-full border border-accent/20">
                 <div className="w-2 h-2 bg-accent rounded-full"></div>
@@ -530,10 +536,9 @@ const Webshop = () => {
               products.length === 3 ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 max-w-4xl' :
               'grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 max-w-8xl'
             }`}>
-              {productsLoading ? (
-                // Loading skeleton
+              {productsLoading && (
                 Array.from({ length: 4 }).map((_, index) => (
-                  <Card key={index} className="group relative overflow-hidden bg-gradient-to-br from-card/95 to-card/80 backdrop-blur-sm border-2 border-border/30 flex flex-col h-full animate-pulse">
+                  <Card key={index} className="group relative overflow-hidden bg-gradient-to-br from-card/95 to-card/80 backdrop-blur-sm border-2 border-border/30 flex flex-col h-full animate-pulse w-full max-w-sm">
                     <CardHeader className="relative p-6">
                       <div className="aspect-square bg-muted rounded-3xl mb-6"></div>
                       <div className="h-4 bg-muted rounded mb-2"></div>
@@ -545,7 +550,9 @@ const Webshop = () => {
                     </CardContent>
                   </Card>
                 ))
-              ) : products.length === 0 ? (
+              )}
+              
+              {!productsLoading && products.length === 0 && (
                 <div className="col-span-full text-center py-20">
                   <div className="w-24 h-24 bg-muted rounded-full flex items-center justify-center mx-auto mb-6">
                     <ShoppingCart className="w-12 h-12 text-muted-foreground" />
@@ -555,9 +562,10 @@ const Webshop = () => {
                     Er zijn momenteel geen producten beschikbaar in de webshop.
                   </p>
                 </div>
-              ) : (
-                products.map((product, index) => (
-                  <Card key={product.id} className={`group relative overflow-hidden bg-gradient-to-br from-card/95 to-card/80 backdrop-blur-sm border-2 border-border/30 hover:border-primary/40 hover:shadow-2xl hover:shadow-primary/10 transition-all duration-700 hover:scale-[1.02] flex flex-col h-full w-full max-w-sm ${productsVisible ? 'opacity-100 transform translate-y-0' : 'opacity-0 transform translate-y-8'}`} style={{
+              )}
+              
+              {!productsLoading && products.length > 0 && products.map((product, index) => (
+                <Card key={product.id} className={`group relative overflow-hidden bg-gradient-to-br from-card/95 to-card/80 backdrop-blur-sm border-2 border-border/30 hover:border-primary/40 hover:shadow-2xl hover:shadow-primary/10 transition-all duration-700 hover:scale-[1.02] flex flex-col h-full w-full max-w-sm animate-in fade-in slide-in-from-bottom-4 ${productsVisible ? 'opacity-100 transform translate-y-0' : 'opacity-0 transform translate-y-8'}`} style={{
               transitionDelay: productsVisible ? `${index * 150}ms` : '0ms'
             }}>
                   {/* Animated gradient overlay */}
@@ -622,7 +630,7 @@ const Webshop = () => {
                         <span className="text-3xl font-bold text-primary block group-hover:scale-105 transition-transform duration-300 origin-left">
                           €{product.price.toFixed(2)}
                         </span>
-                        <p className="text-sm text-muted-foreground">Incl. BTW & verzending</p>
+                        <p className="text-sm text-muted-foreground">Incl. BTW</p>
                       </div>
                       {cart[product.id] > 0 && <div className="flex-shrink-0">
                           <div className="inline-flex items-center px-3 py-2 bg-gradient-to-r from-primary/15 to-secondary/15 rounded-full border border-primary/20">
@@ -636,18 +644,17 @@ const Webshop = () => {
                   </CardContent>
 
                   <CardFooter className="relative pt-0 p-6 mt-auto">
-                    <Button onClick={() => addToCart(product.id)} className="w-full h-14 text-base font-bold bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 text-blue-900 shadow-lg hover:shadow-xl hover:shadow-yellow-400/30 transition-all duration-300 group-hover:scale-[1.02] transform-gpu border-2 border-yellow-300 hover:border-yellow-400" disabled={!product.inStock} size="lg">
+                    <Button onClick={() => addToCart(product.id)} className="w-full h-14 text-base font-bold bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 text-blue-900 shadow-lg hover:shadow-xl hover:shadow-yellow-400/30 transition-all duration-300 hover:scale-105 transform-gpu border-2 border-yellow-300 hover:border-yellow-400 rounded-xl" disabled={!product.inStock} size="lg">
                       <ShoppingCart className="w-5 h-5 mr-2 flex-shrink-0 group-hover:rotate-12 transition-transform duration-300" />
-                      <span className="hidden sm:inline">Toevoegen aan winkelwagen</span>
-                      <span className="sm:hidden">In winkelwagen</span>
+                      <span className="hidden sm:inline">In Winkelwagen</span>
+                      <span className="sm:hidden">In Winkelwagen</span>
                     </Button>
                   </CardFooter>
                   
                   {/* Corner accent */}
                   <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-bl from-primary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                  </Card>
-                )
-              )}
+                </Card>
+              ))}
             </div>
             
             {/* Floating call-to-action */}
@@ -730,9 +737,9 @@ const Webshop = () => {
           <div className="mt-16 p-8 bg-gradient-to-r from-primary/10 to-accent/10 rounded-2xl border border-primary/20 max-w-4xl mx-auto">
             <div className="flex flex-col md:flex-row items-center justify-between gap-6">
               <div className="text-left">
-                <h4 className="text-2xl font-bold mb-2 text-foreground">Gratis verzending vanaf €25</h4>
+                <h4 className="text-2xl font-bold mb-2 text-foreground">Gratis verzending vanaf €50</h4>
                 <p className="text-muted-foreground">
-                  Bestel voor meer dan €25 en we verzenden gratis naar heel Nederland
+                  Bestel voor meer dan €50 en we verzenden gratis naar heel Nederland
                 </p>
               </div>
               <div className="flex items-center space-x-2 text-green-600">
@@ -778,7 +785,7 @@ const Webshop = () => {
                   <div className="pl-16">
                     <p className="text-gray-700 text-lg leading-relaxed">
                       We leveren binnen <span className="font-semibold text-blue-600">2-3 werkdagen</span> in heel Nederland. 
-                      Bij bestellingen boven <span className="font-semibold text-green-600">€25</span> is de verzending gratis!
+                      Bij bestellingen boven <span className="font-semibold text-green-600">€50</span> is de verzending gratis!
                     </p>
                   </div>
                 </AccordionContent>
