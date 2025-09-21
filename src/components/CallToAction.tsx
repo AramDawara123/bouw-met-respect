@@ -24,12 +24,12 @@ const CallToAction = () => {
             <div className="relative z-10 p-12 lg:p-20 text-center">
               <div className="flex justify-center mb-8">
                 <div className="flex items-center space-x-4">
-                  <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
-                    <Building2 className="w-6 h-6" />
+                  <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center">
+                    <Building2 className="w-6 h-6 text-primary" />
                   </div>
-                  <Heart className="w-8 h-8 text-white/80" />
-                  <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
-                    <Users className="w-6 h-6" />
+                  <Heart className="w-8 h-8 text-accent" />
+                  <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center">
+                    <Users className="w-6 h-6 text-primary" />
                   </div>
                 </div>
               </div>

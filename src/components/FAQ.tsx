@@ -59,9 +59,9 @@ const FAQ = () => {
                     {faq.question}
                   </span>
                   {openIndex === index ? (
-                    <Minus className="w-5 h-5 md:w-6 md:h-6 text-primary flex-shrink-0 self-start mt-0.5" />
+                    <Minus className="w-5 h-5 md:w-6 md:h-6 text-accent flex-shrink-0 self-start mt-0.5" />
                   ) : (
-                    <Plus className="w-5 h-5 md:w-6 md:h-6 text-primary flex-shrink-0 self-start mt-0.5" />
+                    <Plus className="w-5 h-5 md:w-6 md:h-6 text-accent flex-shrink-0 self-start mt-0.5" />
                   )}
                 </Button>
                 
