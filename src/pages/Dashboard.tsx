@@ -670,83 +670,53 @@ const Dashboard = () => {
       // Generate random password
       const password = generateRandomPassword();
       
-      // Create user account directly via Supabase client
-      const { data: authData, error: authError } = await supabase.auth.signUp({
-        email: partner.email,
-        password: password,
-        options: {
-          data: {
-            first_name: partner.first_name,
-            last_name: partner.last_name,
-            company_name: partner.company_name
-          }
-        }
+      // Note: Cannot create user account from frontend - requires admin privileges
+      // For now, just generate password and show instructions
+      console.log('Note: User account creation requires admin privileges. Please create manually from Supabase Dashboard.');
+      
+      // Generate password and show instructions
+      const updatedPartner = {
+        ...partner,
+        generated_password: password
+      };
+
+      // Update the partner in state
+      setPartners(prevPartners => 
+        prevPartners.map(p => 
+          p.id === partner.id ? updatedPartner : p
+        )
+      );
+
+      toast({
+        title: "Wachtwoord Gegenereerd",
+        description: `Wachtwoord is gegenereerd voor ${partner.company_name}. Maak handmatig een account aan in Supabase en koppel de User ID.`,
+        duration: 8000
       });
 
-      if (authError) {
-        throw authError;
-      }
+      // Copy account details to clipboard
+      const accountDetails = `
+Account Details voor ${partner.company_name}:
 
-      if (authData.user) {
-        // Update partner membership with user_id and account status
-        const { error: updateError } = await supabase
-          .from('partner_memberships')
-          .update({ 
-            user_id: authData.user.id,
-            account_created: true,
-            generated_password: password
-          })
-          .eq('id', partner.id);
+Email: ${partner.email}
+Wachtwoord: ${password}
+Bedrijf: ${partner.company_name}
 
-        if (updateError) {
-          console.error('Error updating partner membership:', updateError);
-          // Don't fail the entire operation
-        }
+Stappen:
+1. Ga naar Supabase Dashboard &gt; Authentication &gt; Users
+2. Klik "Add user" 
+3. Voer email en wachtwoord in
+4. Kopieer de User ID
+5. Klik "🔗 User ID Koppelen" in de dashboard
+6. Plak de User ID en klik "Koppelen"
+      `;
 
-        // Create company profile
-        const { error: profileError } = await supabase
-          .from('company_profiles')
-          .insert({
-            name: partner.company_name,
-            description: `Welkom bij ${partner.company_name}`,
-            industry: 'Bouw & Constructie',
-            contact_email: partner.email,
-            contact_phone: partner.phone || '',
-            partner_membership_id: partner.id,
-            is_featured: false,
-            display_order: 999
-          });
+      await navigator.clipboard.writeText(accountDetails);
 
-        if (profileError) {
-          console.error('Error creating company profile:', profileError);
-          // Don't fail the entire operation
-        }
+      // Send welcome email
+      await sendPartnerWelcomeEmail(partner.email, partner.first_name, password, partner.company_name);
 
-        // Update partner with generated password and user_id
-        const updatedPartner = {
-          ...partner,
-          user_id: authData.user.id
-        };
+      return; // Exit early since we can't create the account automatically
 
-        // Update the partner in state
-        setPartners(prevPartners => 
-          prevPartners.map(p => 
-            p.id === partner.id ? updatedPartner : p
-          )
-        );
-
-        toast({
-          title: "Account Succesvol Aangemaakt",
-          description: `Account voor ${partner.company_name} is automatisch aangemaakt en gekoppeld!`,
-          duration: 5000
-        });
-
-        // Send welcome email
-        await sendPartnerWelcomeEmail(partner.email, partner.first_name, password, partner.company_name);
-
-      } else {
-        throw new Error('Geen gebruiker aangemaakt');
-      }
 
     } catch (error: any) {
       console.error('Error creating partner account:', error);
@@ -893,24 +863,7 @@ const Dashboard = () => {
 
   const deletePartnerAccount = async (partner: PartnerAccount) => {
     try {
-      if (!partner.user_id) {
-        toast({
-          title: "Fout",
-          description: "Geen account gevonden om te verwijderen",
-          variant: "destructive"
-        });
-        return;
-      }
-
-      // Delete from Supabase Auth
-      const { error: authError } = await supabase.auth.admin.deleteUser(partner.user_id);
-      
-      if (authError) {
-        console.error('Error deleting user from auth:', authError);
-        // Continue with database cleanup even if auth deletion fails
-      }
-
-      // Delete company profile
+      // Delete company profile first
       if (partner.company_profile) {
         const { error: profileError } = await supabase
           .from('company_profiles')
@@ -922,34 +875,39 @@ const Dashboard = () => {
         }
       }
 
-      // Update partner membership to remove user_id and reset account status
-      const { error: updateError } = await supabase
+      // Delete partner membership
+      const { error: deleteError } = await supabase
         .from('partner_memberships')
-        .update({ 
-          user_id: null,
-          account_created: false,
-          generated_password: null
-        })
+        .delete()
         .eq('id', partner.id);
 
-      if (updateError) {
-        throw updateError;
+      if (deleteError) {
+        throw deleteError;
       }
 
       // Refresh partners list
       await fetchPartners();
 
       toast({
-        title: "Account Verwijderd",
-        description: `Account voor ${partner.company_name} is succesvol verwijderd`,
+        title: "Partner Verwijderd",
+        description: `${partner.company_name} is succesvol verwijderd uit de database`,
         duration: 3000
       });
+
+      // Note about manual user deletion
+      if (partner.user_id) {
+        toast({
+          title: "Let op",
+          description: "Vergeet niet om het gebruikersaccount handmatig te verwijderen uit Supabase Authentication",
+          duration: 5000
+        });
+      }
 
     } catch (error: any) {
       console.error('Error deleting partner account:', error);
       toast({
         title: "Fout",
-        description: `Kon account niet verwijderen: ${error.message}`,
+        description: `Kon partner niet verwijderen: ${error.message}`,
         variant: "destructive"
       });
     }
@@ -958,14 +916,14 @@ const Dashboard = () => {
   const createNewPartnerAccount = async () => {
     try {
       const newPartner = {
-        first_name: '',
-        last_name: '',
-        email: '',
+        first_name: 'Nieuwe',
+        last_name: 'Partner',
+        email: 'nieuwe@partner.nl',
         phone: '',
-        company_name: '',
+        company_name: 'Nieuwe Partner Bedrijf',
         website: '',
-        industry: '',
-        description: '',
+        industry: 'Bouw & Constructie',
+        description: 'Nieuwe partner - gegevens nog in te vullen',
         payment_status: 'pending',
         amount: 0,
         company_size: 'klein'
@@ -999,7 +957,7 @@ const Dashboard = () => {
 
       toast({
         title: "Nieuwe Partner Toegevoegd",
-        description: "Je kunt nu de partner gegevens bewerken en een account aanmaken",
+        description: "Je kunt nu de partner gegevens bewerken via de 'Bewerken' knop",
         duration: 3000
       });
 
@@ -1015,15 +973,6 @@ const Dashboard = () => {
 
   const updatePartnerCredentials = async (partner: PartnerAccount, newEmail: string, newPassword: string) => {
     try {
-      if (!partner.user_id) {
-        toast({
-          title: "Fout",
-          description: "Geen account gevonden om bij te werken",
-          variant: "destructive"
-        });
-        return;
-      }
-
       // Update email in partner_memberships
       const { error: partnerError } = await supabase
         .from('partner_memberships')
@@ -1049,36 +998,29 @@ const Dashboard = () => {
         }
       }
 
-      // Update user in Supabase Auth
-      const { error: authError } = await supabase.auth.admin.updateUserById(partner.user_id, {
-        email: newEmail,
-        password: newPassword
-      });
-
-      if (authError) {
-        console.error('Error updating user credentials:', authError);
-        toast({
-          title: "Gedeeltelijk Bijgewerkt",
-          description: "Partner gegevens bijgewerkt, maar authenticatie update mislukt",
-          variant: "destructive"
-        });
-        return;
-      }
-
       // Refresh partners list
       await fetchPartners();
 
       toast({
-        title: "Inloggegevens Bijgewerkt",
-        description: `Email en wachtwoord voor ${partner.company_name} zijn bijgewerkt`,
+        title: "Gegevens Bijgewerkt",
+        description: `Email en wachtwoord voor ${partner.company_name} zijn bijgewerkt in de database`,
         duration: 3000
       });
+
+      // Note about manual user update
+      if (partner.user_id) {
+        toast({
+          title: "Let op",
+          description: "Vergeet niet om de gebruikersgegevens handmatig bij te werken in Supabase Authentication",
+          duration: 5000
+        });
+      }
 
     } catch (error: any) {
       console.error('Error updating partner credentials:', error);
       toast({
         title: "Fout",
-        description: `Kon inloggegevens niet bijwerken: ${error.message}`,
+        description: `Kon gegevens niet bijwerken: ${error.message}`,
         variant: "destructive"
       });
     }
