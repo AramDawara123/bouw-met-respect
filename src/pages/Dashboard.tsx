@@ -629,56 +629,51 @@ const Dashboard = () => {
       // Generate random password
       const password = generateRandomPassword();
       
-      // Create account via Supabase Edge Function
-      const { data, error } = await supabase.functions.invoke('create-partner-account', {
-        body: {
-          email: partner.email,
-          password: password,
-          first_name: partner.first_name,
-          last_name: partner.last_name,
-          company_name: partner.company_name,
-          partner_id: partner.id
-        }
+      // For now, just generate the password and show it to the user
+      // The actual account creation will be done manually
+      const updatedPartner = {
+        ...partner,
+        generated_password: password,
+        account_created: false
+      };
+
+      // Update the partner in state
+      setPartners(prevPartners => 
+        prevPartners.map(p => 
+          p.id === partner.id ? updatedPartner : p
+        )
+      );
+
+      toast({
+        title: "Wachtwoord Gegenereerd",
+        description: `Wachtwoord is gegenereerd voor ${partner.company_name}. Maak handmatig een account aan in Supabase en koppel de User ID.`,
+        duration: 8000
       });
 
-      if (error) {
-        throw error;
-      }
+      // Copy account details to clipboard
+      const accountDetails = `
+Account Details voor ${partner.company_name}:
 
-      if (data?.success && data?.user_id) {
-        // Update partner with generated password and user_id
-        const updatedPartner = {
-          ...partner,
-          generated_password: password,
-          account_created: true,
-          user_id: data.user_id
-        };
+Email: ${partner.email}
+Wachtwoord: ${password}
+Bedrijf: ${partner.company_name}
 
-        // Update the partner in state
-        setPartners(prevPartners => 
-          prevPartners.map(p => 
-            p.id === partner.id ? updatedPartner : p
-          )
-        );
+Stappen:
+1. Ga naar Supabase Dashboard > Authentication > Users
+2. Klik "Add user" 
+3. Voer email en wachtwoord in
+4. Kopieer de User ID
+5. Klik "🔗 User ID Koppelen" in de dashboard
+6. Plak de User ID en klik "Koppelen"
+      `;
 
-        toast({
-          title: "Account Succesvol Aangemaakt",
-          description: `Account voor ${partner.company_name} is automatisch aangemaakt en gekoppeld!`,
-          duration: 5000
-        });
-
-        // Send welcome email
-        await sendPartnerWelcomeEmail(partner.email, partner.first_name, password, partner.company_name);
-
-      } else {
-        throw new Error(data?.error || 'Onbekende fout bij account aanmaken');
-      }
+      await navigator.clipboard.writeText(accountDetails);
 
     } catch (error: any) {
       console.error('Error creating partner account:', error);
       toast({
         title: "Fout",
-        description: `Kon account niet aanmaken: ${error.message}`,
+        description: `Kon wachtwoord niet genereren: ${error.message}`,
         variant: "destructive"
       });
     }
@@ -797,20 +792,8 @@ const Dashboard = () => {
 
   const sendPartnerWelcomeEmail = async (email: string, firstName: string, password: string, companyName: string) => {
     try {
-      // Send email via Supabase Edge Function
-      const { data, error } = await supabase.functions.invoke('send-partner-welcome-email', {
-        body: {
-          to: email,
-          first_name: firstName,
-          password: password,
-          company_name: companyName
-        }
-      });
-
-      if (error) {
-        console.error('Error sending welcome email:', error);
-        // Fallback: copy to clipboard
-        const emailContent = `
+      // Create email content and copy to clipboard
+      const emailContent = `
 Beste ${firstName},
 
 Welkom bij Bouw met Respect! Je partner account is succesvol aangemaakt.
@@ -827,14 +810,13 @@ Voor vragen kun je altijd contact met ons opnemen.
 
 Met vriendelijke groet,
 Het Bouw met Respect team
-        `;
-        await navigator.clipboard.writeText(emailContent);
-        console.log('Email content copied to clipboard as fallback');
-      } else if (data?.success) {
-        console.log('Welcome email sent successfully');
-      }
+      `;
+      
+      await navigator.clipboard.writeText(emailContent);
+      console.log('Email content copied to clipboard');
+      
     } catch (error) {
-      console.error('Error sending welcome email:', error);
+      console.error('Error preparing email content:', error);
     }
   };
 
