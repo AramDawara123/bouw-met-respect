@@ -1,10 +1,7 @@
-
 import { Card } from "@/components/ui/card";
 import { AlertTriangle, TrendingUp } from "lucide-react";
-
 const MissionStatement = () => {
-  return (
-    <section id="probleem" className="py-20 bg-muted/20">
+  return <section id="probleem" className="py-20 bg-muted/20">
       <div className="container mx-auto px-4">
         {/* Main Mission Statement */}
         <div className="grid lg:grid-cols-2 gap-16 items-center mb-20">
@@ -33,7 +30,7 @@ const MissionStatement = () => {
         </div>
 
         {/* Statistics Section */}
-        <Card className="p-12 bg-accent/30 border-0 relative overflow-hidden">
+        <Card className="p-12 border-0 relative overflow-hidden bg-[#e1cb66]">
           <div className="relative z-10 grid lg:grid-cols-2 gap-12 items-center">
             <div>
               <h3 className="text-3xl font-bold mb-6 text-accent-foreground">
@@ -61,8 +58,6 @@ const MissionStatement = () => {
           </div>
         </Card>
       </div>
-    </section>
-  );
+    </section>;
 };
-
 export default MissionStatement;
