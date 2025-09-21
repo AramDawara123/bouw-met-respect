@@ -17,34 +17,34 @@
     --popover: 0 0% 100%;
     --popover-foreground: 217 91% 17%;
 
-    /* Primary: Kader Blauw (Frame Blue) */
-    --primary: 217 91% 60%;
-    --primary-foreground: 0 0% 98%;
+    /* Primary: Helder Blauw (Bright Blue) - voor blauwe vierkanten */
+    --primary: 214 100% 50%;
+    --primary-foreground: 45 100% 65%;
 
     /* Secondary: Donker Blauw (Dark Blue) */
-    --secondary: 217 91% 17%;
-    --secondary-foreground: 0 0% 98%;
+    --secondary: 214 100% 25%;
+    --secondary-foreground: 45 100% 65%;
 
-    --muted: 217 32% 92%;
-    --muted-foreground: 217 91% 17%;
+    --muted: 214 25% 90%;
+    --muted-foreground: 214 100% 25%;
 
-    /* Accent: Zand Geel (Sand Yellow) */
-    --accent: 49 91% 52%;
-    --accent-foreground: 217 91% 17%;
+    /* Accent: Helder Geel (Bright Yellow) - voor gele symbolen */
+    --accent: 45 100% 65%;
+    --accent-foreground: 214 100% 25%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 210 40% 98%;
 
     /* Borders */
-    --border: 217 32% 82%;
-    --input: 217 32% 82%;
-    --ring: 217 91% 60%;
+    --border: 214 25% 80%;
+    --input: 214 25% 80%;
+    --ring: 214 100% 50%;
 
     --radius: 0.75rem;
 
     /* Custom gradient variables using blue and yellow palette */
-    --hero-gradient: linear-gradient(135deg, hsl(217 91% 60%) 0%, hsl(50 85% 76%) 100%);
-    --card-gradient: linear-gradient(145deg, hsl(0 0% 100%) 0%, hsl(217 32% 95%) 100%);
+    --hero-gradient: linear-gradient(135deg, hsl(214 100% 50%) 0%, hsl(45 100% 65%) 100%);
+    --card-gradient: linear-gradient(145deg, hsl(0 0% 100%) 0%, hsl(214 25% 95%) 100%);
     
     /* Dark theme variants */
     --nacht-blauw: 194 46% 15%;
