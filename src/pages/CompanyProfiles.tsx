@@ -35,7 +35,6 @@ const CompanyProfiles = () => {
   }, []);
   const fetchProfiles = async () => {
     try {
-      console.log('🔍 Fetching company profiles...');
       const {
         data,
         error
@@ -44,26 +43,14 @@ const CompanyProfiles = () => {
       }).order('name', {
         ascending: true
       });
-      
-      if (error) {
-        console.error('❌ Database error:', error);
-        throw error;
-      }
-      
-      console.log('✅ Fetched profiles:', data);
-      console.log(`📊 Total profiles found: ${data?.length || 0}`);
-      
-      data?.forEach((profile, index) => {
-        console.log(`👤 Profile ${index + 1}: ${profile.name}`);
-        console.log(`🖼️  Logo URL: ${profile.logo_url || 'No logo'}`);
-        console.log(`🏢  Industry: ${profile.industry || 'No industry'}`);
-        console.log(`⭐  Featured: ${profile.is_featured ? 'Yes' : 'No'}`);
-        console.log('---');
+      if (error) throw error;
+      console.log('Fetched profiles:', data);
+      data?.forEach(profile => {
+        console.log(`Profile: ${profile.name}, Logo URL: ${profile.logo_url}`);
       });
-      
       setProfiles(data || []);
     } catch (error) {
-      console.error('💥 Error fetching profiles:', error);
+      console.error('Error fetching profiles:', error);
       toast({
         title: "Fout",
         description: "Kon bedrijfsprofielen niet laden.",
@@ -135,30 +122,26 @@ const CompanyProfiles = () => {
                   <div className="flex items-center gap-4">
                     <div className="relative w-16 h-16">
                       {profile.logo_url ? (
-                        <div className="relative w-16 h-16">
+                        <>
                           <img 
                             src={profile.logo_url} 
                             alt={`${profile.name} logo`} 
                             className="w-16 h-16 object-contain rounded-lg border-2 border-blue-200 bg-white p-2 shadow-md hover:shadow-lg transition-shadow" 
                             loading="lazy"
                             decoding="async"
-                            onLoad={() => console.log(`✅ Logo loaded successfully: ${profile.name} - ${profile.logo_url}`)}
+                            onLoad={() => console.log(`Logo loaded successfully: ${profile.name}`)}
                             onError={(e) => {
-                              console.error(`❌ Logo failed to load for ${profile.name}:`, profile.logo_url);
-                              console.error('Error details:', e);
+                              console.error(`Logo failed to load for ${profile.name}:`, profile.logo_url);
                               const target = e.currentTarget;
                               target.style.display = 'none';
-                              const fallback = target.parentElement?.querySelector('.logo-fallback') as HTMLElement;
-                              if (fallback) {
-                                fallback.style.display = 'flex';
-                              }
+                              const fallback = target.nextElementSibling as HTMLElement;
+                              if (fallback) fallback.style.display = 'flex';
                             }}
                           />
-                          <div className="logo-fallback hidden w-16 h-16 bg-red-100 rounded-lg flex items-center justify-center border-2 border-red-200">
+                          <div className="hidden w-16 h-16 bg-red-100 rounded-lg flex items-center justify-center border-2 border-red-200">
                             <Building2 className="w-8 h-8 text-red-500" />
-                            <span className="sr-only">Logo kon niet worden geladen</span>
                           </div>
-                        </div>
+                        </>
                       ) : (
                         <div className="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center border-2 border-gray-200">
                           <Building2 className="w-8 h-8 text-gray-500" />
