@@ -364,8 +364,8 @@ const Dashboard = () => {
         created_at: item.created_at,
         user_id: item.user_id,
         company_profile: item.company_profiles?.[0] || null,
-        generated_password: item.generated_password,
-        account_created: item.account_created
+        generated_password: item.generated_password || null,
+        account_created: item.account_created || false
       }));
       
       setPartners(transformedPartners);
@@ -795,6 +795,9 @@ Stappen:
 
   const updatePartner = async (updatedPartner: PartnerAccount) => {
     try {
+      console.log('🔄 Updating partner:', updatedPartner.id);
+      console.log('📝 Updated data:', updatedPartner);
+      
       // Update partner membership
       const { error: partnerError } = await supabase
         .from('partner_memberships')
@@ -812,7 +815,12 @@ Stappen:
         })
         .eq('id', updatedPartner.id);
 
-      if (partnerError) throw partnerError;
+      if (partnerError) {
+        console.error('❌ Partner update error:', partnerError);
+        throw partnerError;
+      }
+
+      console.log('✅ Partner updated successfully');
 
       // Update company profile if it exists
       if (updatedPartner.company_profile) {
@@ -915,6 +923,8 @@ Stappen:
 
   const createNewPartnerAccount = async () => {
     try {
+      console.log('🔄 Creating new partner account...');
+      
       const newPartner = {
         first_name: 'Nieuwe',
         last_name: 'Partner',
@@ -928,6 +938,8 @@ Stappen:
         amount: 0,
         company_size: 'klein'
       };
+
+      console.log('📝 Partner data:', newPartner);
 
       // Create partner membership first
       const { data: partnerData, error: partnerError } = await supabase
@@ -949,8 +961,11 @@ Stappen:
         .single();
 
       if (partnerError) {
+        console.error('❌ Partner creation error:', partnerError);
         throw partnerError;
       }
+
+      console.log('✅ Partner created successfully:', partnerData);
 
       // Refresh partners list
       await fetchPartners();
@@ -962,7 +977,7 @@ Stappen:
       });
 
     } catch (error: any) {
-      console.error('Error creating new partner:', error);
+      console.error('💥 Error creating new partner:', error);
       toast({
         title: "Fout",
         description: `Kon nieuwe partner niet aanmaken: ${error.message}`,
