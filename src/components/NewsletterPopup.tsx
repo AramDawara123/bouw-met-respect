@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { X, Mail, CheckCircle } from "lucide-react";
@@ -6,20 +7,27 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
 const NewsletterPopup = () => {
+  const location = useLocation();
   const [isVisible, setIsVisible] = useState(false);
   const [email, setEmail] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const { toast } = useToast();
 
-  useEffect(() => {
-    // Show popup after 2 seconds
-    const timer = setTimeout(() => {
-      setIsVisible(true);
-    }, 2000);
+  // Don't show popup on login pages and dashboards
+  const excludedPaths = ['/login', '/dashboard', '/partner-dashboard'];
+  const shouldShowPopup = !excludedPaths.includes(location.pathname);
 
-    return () => clearTimeout(timer);
-  }, []);
+  useEffect(() => {
+    // Only show popup if not on excluded paths
+    if (shouldShowPopup) {
+      const timer = setTimeout(() => {
+        setIsVisible(true);
+      }, 2000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [shouldShowPopup]);
 
   const handleClose = () => {
     setIsVisible(false);
@@ -52,7 +60,7 @@ const NewsletterPopup = () => {
     }, 1000);
   };
 
-  if (!isVisible) return null;
+  if (!isVisible || !shouldShowPopup) return null;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
