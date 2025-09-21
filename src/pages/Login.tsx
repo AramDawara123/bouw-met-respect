@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
@@ -30,7 +30,28 @@ const Login = () => {
         title: "Ingelogd!",
         description: "Je bent succesvol ingelogd"
       });
-      navigate("/dashboard");
+      // Check if user is admin or partner and redirect accordingly
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        // Check if user has admin role or if it's the admin email
+        if (user.email === 'info@bouwmetrespect.nl') {
+          navigate("/dashboard");
+        } else {
+          // Check if user is a partner
+          const { data: partnerData } = await supabase
+            .from('partner_memberships')
+            .select('id')
+            .eq('user_id', user.id)
+            .eq('payment_status', 'paid')
+            .single();
+          
+          if (partnerData) {
+            navigate("/partner-dashboard");
+          } else {
+            navigate("/dashboard"); // Default to admin dashboard
+          }
+        }
+      }
     } catch (error: any) {
       toast({
         title: "Login mislukt",
@@ -120,7 +141,10 @@ const Login = () => {
         
         <Card>
           <CardHeader>
-            <CardTitle className="text-2xl text-center">Admin Login</CardTitle>
+            <CardTitle className="text-2xl text-center">Inloggen</CardTitle>
+            <CardDescription className="text-center">
+              Log in als admin of partner
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleLogin} className="space-y-4">
