@@ -21,7 +21,6 @@ const formSchema = z.object({
   industry: z.string({
     required_error: "Selecteer een branche"
   }),
-  description: z.string().min(50, "Beschrijving moet minimaal 50 karakters bevatten"),
 });
 
 interface PartnerSignupFormProps {
