@@ -8,7 +8,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Search, Edit, Trash2, Plus, Package, Euro } from "lucide-react";
+import { Search, Edit, Trash2, Plus, Package, Euro, Upload, X } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
@@ -37,6 +37,7 @@ const ProductManagement = ({ products, onProductsChange }: ProductManagementProp
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [showAddDialog, setShowAddDialog] = useState(false);
+  const [uploadingImage, setUploadingImage] = useState(false);
   const { toast } = useToast();
 
   const [newProduct, setNewProduct] = useState({
@@ -63,6 +64,78 @@ const ProductManagement = ({ products, onProductsChange }: ProductManagementProp
 
   // Get unique categories
   const categories = Array.from(new Set(products.map(p => p.category).filter(Boolean)));
+
+  const handleImageUpload = async (file: File, isEditing: boolean = false) => {
+    if (!file) return;
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      toast({
+        title: "Fout",
+        description: "Selecteer een geldig afbeeldingsbestand",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      toast({
+        title: "Fout", 
+        description: "Afbeelding mag maximaal 5MB zijn",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setUploadingImage(true);
+
+    try {
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
+      const filePath = `product-images/${fileName}`;
+
+      const { data, error } = await supabase.storage
+        .from('smb')
+        .upload(filePath, file, {
+          cacheControl: '3600',
+          upsert: false
+        });
+
+      if (error) throw error;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('smb')
+        .getPublicUrl(filePath);
+
+      if (isEditing && editingProduct) {
+        setEditingProduct({
+          ...editingProduct,
+          image_url: publicUrl
+        });
+      } else {
+        setNewProduct({
+          ...newProduct,
+          image_url: publicUrl
+        });
+      }
+
+      toast({
+        title: "Succesvol",
+        description: "Afbeelding is geüpload"
+      });
+
+    } catch (error) {
+      console.error('Upload error:', error);
+      toast({
+        title: "Fout",
+        description: "Kon afbeelding niet uploaden",
+        variant: "destructive"
+      });
+    } finally {
+      setUploadingImage(false);
+    }
+  };
 
   const handleAddProduct = async () => {
     try {
@@ -240,12 +313,56 @@ const ProductManagement = ({ products, onProductsChange }: ProductManagementProp
                   />
                 </div>
                 <div>
-                  <label className="text-sm font-medium">Afbeelding URL</label>
-                  <Input
-                    value={newProduct.image_url}
-                    onChange={(e) => setNewProduct({...newProduct, image_url: e.target.value})}
-                    placeholder="/lovable-uploads/..."
-                  />
+                  <label className="text-sm font-medium">Afbeelding</label>
+                  <div className="space-y-2">
+                    <div className="flex gap-2">
+                      <Input
+                        value={newProduct.image_url}
+                        onChange={(e) => setNewProduct({...newProduct, image_url: e.target.value})}
+                        placeholder="URL of upload afbeelding"
+                        className="flex-1"
+                      />
+                      <div className="relative">
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={(e) => {
+                            const file = e.target.files?.[0];
+                            if (file) handleImageUpload(file, false);
+                          }}
+                          className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                          disabled={uploadingImage}
+                        />
+                        <Button
+                          type="button"
+                          variant="outline"
+                          disabled={uploadingImage}
+                          className="flex items-center gap-2"
+                        >
+                          <Upload className="w-4 h-4" />
+                          {uploadingImage ? "Uploading..." : "Upload"}
+                        </Button>
+                      </div>
+                    </div>
+                    {newProduct.image_url && (
+                      <div className="relative w-20 h-20">
+                        <img 
+                          src={newProduct.image_url} 
+                          alt="Preview" 
+                          className="w-full h-full object-cover rounded border"
+                        />
+                        <Button
+                          type="button"
+                          variant="destructive"
+                          size="sm"
+                          className="absolute -top-2 -right-2 w-6 h-6 p-0"
+                          onClick={() => setNewProduct({...newProduct, image_url: ""})}
+                        >
+                          <X className="w-3 h-3" />
+                        </Button>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
               
@@ -451,11 +568,56 @@ const ProductManagement = ({ products, onProductsChange }: ProductManagementProp
                   />
                 </div>
                 <div>
-                  <label className="text-sm font-medium">Afbeelding URL</label>
-                  <Input
-                    value={editingProduct.image_url || ""}
-                    onChange={(e) => setEditingProduct({...editingProduct, image_url: e.target.value})}
-                  />
+                  <label className="text-sm font-medium">Afbeelding</label>
+                  <div className="space-y-2">
+                    <div className="flex gap-2">
+                      <Input
+                        value={editingProduct.image_url || ""}
+                        onChange={(e) => setEditingProduct({...editingProduct, image_url: e.target.value})}
+                        placeholder="URL of upload afbeelding"
+                        className="flex-1"
+                      />
+                      <div className="relative">
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={(e) => {
+                            const file = e.target.files?.[0];
+                            if (file) handleImageUpload(file, true);
+                          }}
+                          className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                          disabled={uploadingImage}
+                        />
+                        <Button
+                          type="button"
+                          variant="outline"
+                          disabled={uploadingImage}
+                          className="flex items-center gap-2"
+                        >
+                          <Upload className="w-4 h-4" />
+                          {uploadingImage ? "Uploading..." : "Upload"}
+                        </Button>
+                      </div>
+                    </div>
+                    {editingProduct.image_url && (
+                      <div className="relative w-20 h-20">
+                        <img 
+                          src={editingProduct.image_url} 
+                          alt="Preview" 
+                          className="w-full h-full object-cover rounded border"
+                        />
+                        <Button
+                          type="button"
+                          variant="destructive"
+                          size="sm"
+                          className="absolute -top-2 -right-2 w-6 h-6 p-0"
+                          onClick={() => setEditingProduct({...editingProduct, image_url: ""})}
+                        >
+                          <X className="w-3 h-3" />
+                        </Button>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
               
