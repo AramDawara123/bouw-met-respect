@@ -513,7 +513,23 @@ const Webshop = () => {
               </p>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 gap-8 max-w-8xl mx-auto px-4">
+            {/* Products count indicator */}
+            {!productsLoading && products.length > 0 && (
+              <div className="text-center mb-8">
+                <div className="inline-flex items-center px-4 py-2 bg-blue-500 text-white rounded-full font-semibold shadow-lg">
+                  <div className="w-2 h-2 bg-yellow-400 rounded-full mr-2 animate-pulse"></div>
+                  {products.length} {products.length === 1 ? 'product beschikbaar' : 'producten beschikbaar'}
+                </div>
+              </div>
+            )}
+
+            <div className={`grid gap-8 mx-auto px-4 justify-items-center transition-all duration-500 ${
+              productsLoading ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 max-w-8xl' :
+              products.length === 1 ? 'grid-cols-1 max-w-md' :
+              products.length === 2 ? 'grid-cols-1 sm:grid-cols-2 max-w-2xl' :
+              products.length === 3 ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 max-w-4xl' :
+              'grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 max-w-8xl'
+            }`}>
               {productsLoading ? (
                 // Loading skeleton
                 Array.from({ length: 4 }).map((_, index) => (
@@ -540,7 +556,8 @@ const Webshop = () => {
                   </p>
                 </div>
               ) : (
-                products.map((product, index) => <Card key={product.id} className={`group relative overflow-hidden bg-gradient-to-br from-card/95 to-card/80 backdrop-blur-sm border-2 border-border/30 hover:border-primary/40 hover:shadow-2xl hover:shadow-primary/10 transition-all duration-700 hover:scale-[1.02] flex flex-col h-full ${productsVisible ? 'opacity-100 transform translate-y-0' : 'opacity-0 transform translate-y-8'}`} style={{
+                products.map((product, index) => (
+                  <Card key={product.id} className={`group relative overflow-hidden bg-gradient-to-br from-card/95 to-card/80 backdrop-blur-sm border-2 border-border/30 hover:border-primary/40 hover:shadow-2xl hover:shadow-primary/10 transition-all duration-700 hover:scale-[1.02] flex flex-col h-full w-full max-w-sm ${productsVisible ? 'opacity-100 transform translate-y-0' : 'opacity-0 transform translate-y-8'}`} style={{
               transitionDelay: productsVisible ? `${index * 150}ms` : '0ms'
             }}>
                   {/* Animated gradient overlay */}
@@ -619,7 +636,7 @@ const Webshop = () => {
                   </CardContent>
 
                   <CardFooter className="relative pt-0 p-6 mt-auto">
-                    <Button onClick={() => addToCart(product.id)} className="w-full h-14 text-base font-semibold shadow-lg hover:shadow-xl hover:shadow-primary/20 transition-all duration-300 group-hover:scale-[1.02] transform-gpu" disabled={!product.inStock} size="lg">
+                    <Button onClick={() => addToCart(product.id)} className="w-full h-14 text-base font-bold bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 text-blue-900 shadow-lg hover:shadow-xl hover:shadow-yellow-400/30 transition-all duration-300 group-hover:scale-[1.02] transform-gpu border-2 border-yellow-300 hover:border-yellow-400" disabled={!product.inStock} size="lg">
                       <ShoppingCart className="w-5 h-5 mr-2 flex-shrink-0 group-hover:rotate-12 transition-transform duration-300" />
                       <span className="hidden sm:inline">Toevoegen aan winkelwagen</span>
                       <span className="sm:hidden">In winkelwagen</span>
@@ -628,7 +645,8 @@ const Webshop = () => {
                   
                   {/* Corner accent */}
                   <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-bl from-primary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                </Card>))
+                  </Card>
+                )
               )}
             </div>
             
