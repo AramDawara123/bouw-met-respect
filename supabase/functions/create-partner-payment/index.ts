@@ -34,21 +34,24 @@ serve(async (req) => {
       auth: { persistSession: false }
     });
 
-    const { partnerData } = await req.json();
-    const amount = 50000; // €500 for partner membership
+    const { partnerData, amount } = await req.json();
+    
+    // Default amount if not provided (fallback to ZZP price)
+    const partnerAmount = amount || 25000;
 
     console.log('Creating partner payment for:', partnerData);
 
     // Create payment with Mollie
     const molliePayload = {
-      amount: { currency: 'EUR', value: (amount / 100).toFixed(2) },
+      amount: { currency: 'EUR', value: (partnerAmount / 100).toFixed(2) },
       description: `Partner lidmaatschap - ${partnerData.company_name}`,
       redirectUrl: `${req.headers.get('origin')}/partnership-success`,
       webhookUrl: `${supabaseUrl}/functions/v1/mollie-webhook`,
       metadata: {
         type: 'partner_membership',
         company_name: partnerData.company_name,
-        email: partnerData.email
+        email: partnerData.email,
+        company_size: partnerData.company_size || 'zzp'
       }
     };
 
@@ -85,8 +88,9 @@ serve(async (req) => {
         website: partnerData.website,
         industry: partnerData.industry,
         description: partnerData.description,
+        company_size: partnerData.company_size,
         mollie_payment_id: mollieData.id,
-        amount: amount,
+        amount: partnerAmount,
         currency: 'EUR',
         payment_status: 'pending'
       })

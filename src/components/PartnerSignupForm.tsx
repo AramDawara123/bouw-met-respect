@@ -21,6 +21,10 @@ const formSchema = z.object({
   industry: z.string({
     required_error: "Selecteer een branche"
   }),
+  companySize: z.string({
+    required_error: "Selecteer bedrijfsgrootte"
+  }),
+  description: z.string().optional(),
 });
 
 interface PartnerSignupFormProps {
@@ -42,14 +46,51 @@ const PartnerSignupForm = ({ open, onOpenChange }: PartnerSignupFormProps) => {
       companyName: "",
       website: "",
       industry: "",
+      companySize: "",
       description: "",
     }
   });
+
+  // Pricing logic based on company size
+  const getAmountFromSize = (size: string) => {
+    switch(size) {
+      case 'zzp': return 25000; // €250
+      case 'klein': return 45000; // €450
+      case 'middelgroot': return 75000; // €750
+      case 'groot': return 0; // Offerte
+      default: return 25000;
+    }
+  };
+
+  const getPriceDisplay = (size: string) => {
+    switch(size) {
+      case 'zzp': return '€250';
+      case 'klein': return '€450';
+      case 'middelgroot': return '€750';
+      case 'groot': return 'Offerte op maat';
+      default: return '€250';
+    }
+  };
+
+  const selectedSize = form.watch('companySize');
+  const currentPrice = getPriceDisplay(selectedSize);
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     setIsSubmitting(true);
 
     try {
+      const amount = getAmountFromSize(values.companySize);
+      
+      // Handle "groot" (offerte) case
+      if (values.companySize === 'groot') {
+        toast({
+          title: "Offerte aanvragen",
+          description: "Voor grote bedrijven maken we graag een persoonlijke offerte. We nemen binnen 24 uur contact met je op.",
+        });
+        onOpenChange(false);
+        return;
+      }
+
       const { data, error } = await supabase.functions.invoke('create-partner-payment', {
         body: { 
           partnerData: {
@@ -60,8 +101,10 @@ const PartnerSignupForm = ({ open, onOpenChange }: PartnerSignupFormProps) => {
             company_name: values.companyName,
             website: values.website || null,
             industry: values.industry,
+            company_size: values.companySize,
             description: values.description
-          }
+          },
+          amount: amount
         }
       });
 
@@ -99,7 +142,7 @@ const PartnerSignupForm = ({ open, onOpenChange }: PartnerSignupFormProps) => {
         <DialogHeader>
           <DialogTitle>Word Partner van Bouw met Respect</DialogTitle>
           <DialogDescription>
-            Sluit je aan bij onze community van partners voor €500 per jaar. 
+            Sluit je aan bij onze community van partners. De prijs hangt af van je bedrijfsgrootte.
             Na betaling kun je je bedrijfsprofiel beheren via je persoonlijke dashboard.
           </DialogDescription>
         </DialogHeader>
@@ -224,6 +267,32 @@ const PartnerSignupForm = ({ open, onOpenChange }: PartnerSignupFormProps) => {
                   )}
                 />
               </div>
+              
+              {/* Bedrijfsgrootte */}
+              <FormField
+                control={form.control}
+                name="companySize"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Bedrijfsgrootte</FormLabel>
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Selecteer bedrijfsgrootte" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="zzp">ZZP - €250/jaar</SelectItem>
+                        <SelectItem value="klein">2-10 medewerkers - €450/jaar</SelectItem>
+                        <SelectItem value="middelgroot">11-20 medewerkers - €750/jaar</SelectItem>
+                        <SelectItem value="groot">Meer dan 20 medewerkers - Offerte</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
               <FormField
                 control={form.control}
                 name="description"
@@ -255,10 +324,15 @@ const PartnerSignupForm = ({ open, onOpenChange }: PartnerSignupFormProps) => {
               </Button>
               <Button 
                 type="submit" 
-                disabled={isSubmitting}
+                disabled={isSubmitting || !selectedSize}
                 className="sm:flex-1"
               >
-                {isSubmitting ? "Bezig met verwerken..." : "Partner worden voor €500/jaar"}
+                {isSubmitting 
+                  ? "Bezig met verwerken..." 
+                  : selectedSize 
+                    ? `Partner worden voor ${currentPrice}/jaar`
+                    : "Selecteer eerst bedrijfsgrootte"
+                }
               </Button>
             </div>
           </form>

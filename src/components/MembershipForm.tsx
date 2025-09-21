@@ -75,23 +75,15 @@ const MembershipForm = ({
       respectfulWorkplace: "",
       boundaryBehavior: "",
       
-      membershipType: (membershipPlan?.id as any) || "zzp",
+      membershipType: (membershipPlan?.id as any) || "klein",
       newsletter: true,
       terms: false
     }
   });
 
   const selectedType = form.watch('membershipType');
-  const getAmountFromType = (t: string) => {
-    switch(t) {
-      case 'zzp': return 25000; // €250
-      case 'klein': return 45000; // €450
-      case 'middelgroot': return 75000; // €750
-      case 'groot': return 0; // Offerte
-      default: return 25000; // Default to ZZP price
-    }
-  };
-  const displayPrice = (selectedType === 'zzp' ? '€250' : selectedType === 'klein' ? '€450' : selectedType === 'middelgroot' ? '€750' : selectedType === 'groot' ? 'Offerte op maat' : '€250');
+  const getAmountFromType = (t: string) => t === 'middelgroot' ? 75000 : t === 'groot' ? 125000 : t === 'offerte' ? 0 : 25000;
+  const displayPrice = (selectedType === 'middelgroot' ? '€750' : selectedType === 'groot' ? '€1250' : selectedType === 'offerte' ? 'Offerte op maat' : '€250');
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     setIsSubmitting(true);
@@ -228,28 +220,22 @@ const MembershipForm = ({
                   render={({ field }) => (
                     <FormItem>
                       <RadioGroup onValueChange={field.onChange} value={field.value} className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div className={`border rounded-lg p-4 ${form.watch('membershipType')==='zzp' ? 'border-primary' : 'border-border'}`}>
-                          <div className="flex items-center space-x-3">
-                            <RadioGroupItem value="zzp" id="zzp" />
-                            <Label htmlFor="zzp">ZZP — €250/jaar</Label>
-                          </div>
-                        </div>
                         <div className={`border rounded-lg p-4 ${form.watch('membershipType')==='klein' ? 'border-primary' : 'border-border'}`}>
                           <div className="flex items-center space-x-3">
                             <RadioGroupItem value="klein" id="klein" />
-                            <Label htmlFor="klein">Klein (2-10 medewerkers) — €450/jaar</Label>
+                            <Label htmlFor="klein">Klein — €250/jaar</Label>
                           </div>
                         </div>
                         <div className={`border rounded-lg p-4 ${form.watch('membershipType')==='middelgroot' ? 'border-primary' : 'border-border'}`}>
                           <div className="flex items-center space-x-3">
                             <RadioGroupItem value="middelgroot" id="middelgroot" />
-                            <Label htmlFor="middelgroot">Middelgroot (11-20 medewerkers) — €750/jaar</Label>
+                            <Label htmlFor="middelgroot">Middelgroot — €750/jaar</Label>
                           </div>
                         </div>
                         <div className={`border rounded-lg p-4 ${form.watch('membershipType')==='groot' ? 'border-primary' : 'border-border'}`}>
                           <div className="flex items-center space-x-3">
                             <RadioGroupItem value="groot" id="groot" />
-                            <Label htmlFor="groot">Groot (meer dan 20 medewerkers) — Offerte op maat</Label>
+                            <Label htmlFor="groot">Groot — €1250/jaar</Label>
                           </div>
                         </div>
                         <div className={`border rounded-lg p-4 ${form.watch('membershipType')==='offerte' ? 'border-primary' : 'border-border'}`}>

@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Check, Users, Building, Star } from "lucide-react";
 import MembershipForm from "./MembershipForm";
 
-type MembershipType = 'zzp' | 'klein' | 'middelgroot' | 'groot';
+type MembershipType = 'klein' | 'middelgroot' | 'groot';
 
 interface MembershipPlan {
   id: MembershipType;
@@ -21,12 +21,12 @@ interface MembershipPlan {
 
 const membershipPlans: MembershipPlan[] = [
   {
-    id: 'zzp',
-    name: 'ZZP',
-    description: 'Perfect voor zelfstandigen',
+    id: 'klein',
+    name: 'Klein',
+    description: 'Perfect voor kleine bedrijven',
     price: 25000, // €250 in cents
     yearlyPrice: '€250',
-    employees: 'ZZP',
+    employees: '1-10 medewerkers',
     features: [
       'Toegang tot community',
       'Basis kwaliteitsmerk',
@@ -37,54 +37,38 @@ const membershipPlans: MembershipPlan[] = [
     icon: Users
   },
   {
-    id: 'klein',
-    name: 'Klein',
-    description: 'Ideaal voor kleine bedrijven',
-    price: 45000, // €450 in cents
-    yearlyPrice: '€450',
-    employees: '2-10 medewerkers',
+    id: 'middelgroot',
+    name: 'Middelgroot',
+    description: 'Ideaal voor groeiende bedrijven',
+    price: 75000, // €750 in cents
+    yearlyPrice: '€750',
+    employees: '11-30 medewerkers',
     features: [
-      'Alle ZZP voordelen',
+      'Alle Klein voordelen',
       'Premium kwaliteitsmerk',
       'Toegang tot exclusieve events',
       'Prioriteit support',
-      'Training sessies'
+      'Training sessies',
+      'Netwerkbijeenkomsten'
     ],
     popular: true,
     icon: Building
   },
   {
-    id: 'middelgroot',
-    name: 'Middelgroot',
-    description: 'Voor groeiende ondernemingen',
-    price: 75000, // €750 in cents
-    yearlyPrice: '€750',
-    employees: '11-20 medewerkers',
+    id: 'groot',
+    name: 'Groot',
+    description: 'Voor gevestigde ondernemingen',
+    price: 125000, // €1250 in cents
+    yearlyPrice: '€1250',
+    employees: '31-50 medewerkers',
     features: [
-      'Alle Klein voordelen',
+      'Alle Middelgroot voordelen',
       'Enterprise kwaliteitsmerk',
       'Dedicated account manager',
       'Maatwerk trainingen',
-      'Netwerkbijeenkomsten',
-      'Co-branding mogelijkheden'
-    ],
-    icon: Star
-  },
-  {
-    id: 'groot',
-    name: 'Groot',
-    description: 'Voor grote ondernemingen',
-    price: 0, // Offerte op maat
-    yearlyPrice: 'Offerte',
-    employees: 'Meer dan 20 medewerkers',
-    features: [
-      'Alle Middelgroot voordelen',
-      'Premium Enterprise kwaliteitsmerk',
-      'Dedicated account manager',
-      'Volledig maatwerk trainingen',
+      'Co-branding mogelijkheden',
       'Jaarlijkse bedrijfsaudit',
-      'VIP event toegang',
-      'Persoonlijke begeleiding'
+      'VIP event toegang'
     ],
     icon: Star
   }
