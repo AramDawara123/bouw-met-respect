@@ -54,43 +54,87 @@ const Webshop = () => {
       window.history.replaceState({}, '', url.toString());
     }
   }, []);
-  const products = [{
-    id: "koffiebeker-keramiek",
-    name: "Bouw met Respect Koffiebeker",
-    description: "Hoogwaardige keramische koffiebeker met ons logo. Perfect voor op kantoor of de bouwkeet.",
-    price: 12.95,
-    image: "/lovable-uploads/132795ea-2daa-4305-a106-02650a9bf06c.png",
-    category: "Drinkbekers",
-    inStock: true,
-    features: ["Keramiek", "Vaatwasserbestendig", "350ml inhoud"]
-  }, {
-    id: "koffiebeker-rvs",
-    name: "RVS Thermosbeker",
-    description: "Robuuste roestvrijstalen thermosbeker die je koffie urenlang warm houdt. Ideaal voor bouwplaatsen.",
-    price: 18.95,
-    image: "/lovable-uploads/2a13d9d8-47a2-4787-9cba-80dfe398fd9e.png",
-    category: "Drinkbekers",
-    inStock: true,
-    features: ["Dubbelwandige isolatie", "Lekvrij", "500ml inhoud"]
-  }, {
-    id: "pen-set",
-    name: "Bouw met Respect Pen Set",
-    description: "Set van 3 hoogwaardige balpennen met ons logo. Ideaal voor het tekenen van contracten en plannen.",
-    price: 8.95,
-    image: "/lovable-uploads/370194bf-f017-421b-ab19-49ae1435a82e.png",
-    category: "Schrijfwaren",
-    inStock: true,
-    features: ["Set van 3 stuks", "Blauwe inkt", "Herbruikbaar"]
-  }, {
-    id: "pen-premium",
-    name: "Premium Metalen Pen",
-    description: "Elegante metalen pen met gegraveerd logo. Perfect voor belangrijke ondertekeningen.",
-    price: 15.95,
-    image: "/lovable-uploads/6a653db4-1d30-46c2-83c1-760e5459fb7d.png",
-    category: "Schrijfwaren",
-    inStock: true,
-    features: ["Metalen behuizing", "Gegraveerd logo", "Geschenkdoosje"]
-  }];
+  const [products, setProducts] = useState([]);
+  const [productsLoading, setProductsLoading] = useState(true);
+
+  // Fetch products from database
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        console.log('🔄 Fetching webshop products...');
+        const { data, error } = await supabase
+          .from('products')
+          .select('*')
+          .eq('in_stock', true) // Only show products that are in stock
+          .order('category', { ascending: true })
+          .order('name', { ascending: true });
+
+        if (error) {
+          console.error('❌ Error fetching products:', error);
+          // Fallback to hardcoded products if database fails
+          setProducts([{
+            id: "koffiebeker-keramiek",
+            name: "Bouw met Respect Koffiebeker",
+            description: "Hoogwaardige keramische koffiebeker met ons logo. Perfect voor op kantoor of de bouwkeet.",
+            price: 12.95,
+            image_url: "/lovable-uploads/132795ea-2daa-4305-a106-02650a9bf06c.png",
+            category: "Drinkbekers",
+            in_stock: true,
+            features: ["Keramiek", "Vaatwasserbestendig", "350ml inhoud"]
+          }, {
+            id: "koffiebeker-rvs",
+            name: "RVS Thermosbeker",
+            description: "Robuuste roestvrijstalen thermosbeker die je koffie urenlang warm houdt. Ideaal voor bouwplaatsen.",
+            price: 18.95,
+            image_url: "/lovable-uploads/2a13d9d8-47a2-4787-9cba-80dfe398fd9e.png",
+            category: "Drinkbekers",
+            in_stock: true,
+            features: ["Dubbelwandige isolatie", "Lekvrij", "500ml inhoud"]
+          }, {
+            id: "pen-set",
+            name: "Bouw met Respect Pen Set",
+            description: "Set van 3 hoogwaardige balpennen met ons logo. Ideaal voor het tekenen van contracten en plannen.",
+            price: 8.95,
+            image_url: "/lovable-uploads/370194bf-f017-421b-ab19-49ae1435a82e.png",
+            category: "Schrijfwaren",
+            in_stock: true,
+            features: ["Set van 3 stuks", "Blauwe inkt", "Herbruikbaar"]
+          }, {
+            id: "pen-premium",
+            name: "Premium Metalen Pen",
+            description: "Elegante metalen pen met gegraveerd logo. Perfect voor belangrijke ondertekeningen.",
+            price: 15.95,
+            image_url: "/lovable-uploads/6a653db4-1d30-46c2-83c1-760e5459fb7d.png",
+            category: "Schrijfwaren",
+            in_stock: true,
+            features: ["Metalen behuizing", "Gegraveerd logo", "Geschenkdoosje"]
+          }]);
+        } else {
+          console.log('✅ Products loaded from database:', data);
+          // Transform database products to match webshop format
+          const transformedProducts = data.map(product => ({
+            id: product.id,
+            name: product.name,
+            description: product.description || "",
+            price: product.price / 100, // Convert from cents to euros
+            image: product.image_url || "/placeholder.svg",
+            category: product.category || "Overig",
+            inStock: product.in_stock,
+            features: product.features || []
+          }));
+          setProducts(transformedProducts);
+        }
+      } catch (error) {
+        console.error('💥 Unexpected error:', error);
+        // Fallback to empty array
+        setProducts([]);
+      } finally {
+        setProductsLoading(false);
+      }
+    };
+
+    fetchProducts();
+  }, []);
   const addToCart = (productId: string) => {
     setCart(prev => ({
       ...prev,
@@ -470,7 +514,33 @@ const Webshop = () => {
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 gap-8 max-w-8xl mx-auto px-4">
-              {products.map((product, index) => <Card key={product.id} className={`group relative overflow-hidden bg-gradient-to-br from-card/95 to-card/80 backdrop-blur-sm border-2 border-border/30 hover:border-primary/40 hover:shadow-2xl hover:shadow-primary/10 transition-all duration-700 hover:scale-[1.02] flex flex-col h-full ${productsVisible ? 'opacity-100 transform translate-y-0' : 'opacity-0 transform translate-y-8'}`} style={{
+              {productsLoading ? (
+                // Loading skeleton
+                Array.from({ length: 4 }).map((_, index) => (
+                  <Card key={index} className="group relative overflow-hidden bg-gradient-to-br from-card/95 to-card/80 backdrop-blur-sm border-2 border-border/30 flex flex-col h-full animate-pulse">
+                    <CardHeader className="relative p-6">
+                      <div className="aspect-square bg-muted rounded-3xl mb-6"></div>
+                      <div className="h-4 bg-muted rounded mb-2"></div>
+                      <div className="h-6 bg-muted rounded"></div>
+                    </CardHeader>
+                    <CardContent className="relative space-y-6 p-6 pt-0 flex-1">
+                      <div className="h-4 bg-muted rounded"></div>
+                      <div className="h-4 bg-muted rounded w-3/4"></div>
+                    </CardContent>
+                  </Card>
+                ))
+              ) : products.length === 0 ? (
+                <div className="col-span-full text-center py-20">
+                  <div className="w-24 h-24 bg-muted rounded-full flex items-center justify-center mx-auto mb-6">
+                    <ShoppingCart className="w-12 h-12 text-muted-foreground" />
+                  </div>
+                  <h3 className="text-2xl font-bold text-foreground mb-4">Geen producten beschikbaar</h3>
+                  <p className="text-lg text-muted-foreground max-w-md mx-auto">
+                    Er zijn momenteel geen producten beschikbaar in de webshop.
+                  </p>
+                </div>
+              ) : (
+                products.map((product, index) => <Card key={product.id} className={`group relative overflow-hidden bg-gradient-to-br from-card/95 to-card/80 backdrop-blur-sm border-2 border-border/30 hover:border-primary/40 hover:shadow-2xl hover:shadow-primary/10 transition-all duration-700 hover:scale-[1.02] flex flex-col h-full ${productsVisible ? 'opacity-100 transform translate-y-0' : 'opacity-0 transform translate-y-8'}`} style={{
               transitionDelay: productsVisible ? `${index * 150}ms` : '0ms'
             }}>
                   {/* Animated gradient overlay */}
@@ -558,7 +628,8 @@ const Webshop = () => {
                   
                   {/* Corner accent */}
                   <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-bl from-primary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                </Card>)}
+                </Card>))
+              )}
             </div>
             
             {/* Floating call-to-action */}
