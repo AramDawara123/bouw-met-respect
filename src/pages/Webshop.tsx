@@ -62,16 +62,12 @@ const Webshop = () => {
     const fetchProducts = async () => {
       try {
         console.log('🔄 Fetching webshop products...');
-        // Temporarily use fallback products
-        const { data, error } = { data: null, error: { message: 'Using fallback products' } };
-        /*
         const { data, error } = await supabase
           .from('products')
           .select('*')
           .eq('in_stock', true) // Only show products that are in stock
           .order('category', { ascending: true })
           .order('name', { ascending: true });
-        */
 
         if (error) {
           console.error('❌ Error fetching products:', error);
