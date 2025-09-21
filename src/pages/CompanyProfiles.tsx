@@ -109,9 +109,29 @@ const CompanyProfiles = () => {
               <Building2 className="w-12 h-12 text-blue-500" />
             </div>
             <h3 className="text-2xl font-bold text-gray-900 mb-4">Nog geen partners gevonden</h3>
-            <p className="text-lg text-gray-600 max-w-md mx-auto">
+            <p className="text-lg text-gray-600 max-w-md mx-auto mb-4">
               We zijn hard bezig om geweldige partners toe te voegen. Kom binnenkort terug!
             </p>
+            <div className="mt-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg max-w-md mx-auto">
+              <h4 className="font-semibold text-yellow-800 mb-2">Debug Info:</h4>
+              <p className="text-sm text-yellow-700">
+                Als je dit ziet, betekent dit dat er geen company profiles in de database staan.
+                Controleer of de database migraties zijn uitgevoerd.
+              </p>
+              <p className="text-xs text-yellow-600 mt-2">
+                Kijk in de browser console voor meer debugging informatie.
+              </p>
+              <Button 
+                onClick={() => {
+                  console.log('🔄 Manually refreshing profiles...');
+                  fetchProfiles();
+                }}
+                className="mt-3 bg-yellow-600 hover:bg-yellow-700 text-white"
+                size="sm"
+              >
+                Probeer opnieuw
+              </Button>
+            </div>
           </div> : <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {profiles.map(profile => <Card key={profile.id} className="bg-white shadow-lg hover:shadow-xl transition-shadow duration-300">
                 {profile.is_featured && <div className="bg-yellow-500 text-white text-xs font-bold px-3 py-1 rounded-br-lg absolute top-0 left-0">
