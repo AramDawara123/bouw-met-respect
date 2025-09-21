@@ -169,7 +169,7 @@ const PartnerAccountManagement = () => {
         email: values.email,
         password: values.password,
         options: {
-          emailRedirectTo: `${window.location.origin}/partner-dashboard`
+          emailRedirectTo: `${window.location.origin}/login`
         }
       });
 
@@ -295,7 +295,7 @@ const PartnerAccountManagement = () => {
           email: values.email,
           password: values.password,
           options: {
-            emailRedirectTo: `${window.location.origin}/partner-dashboard`
+            emailRedirectTo: `${window.location.origin}/login`
           }
         });
 

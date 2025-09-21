@@ -51,7 +51,7 @@ const Login = () => {
         email,
         password,
         options: {
-          emailRedirectTo: `${window.location.origin}/dashboard`
+          emailRedirectTo: `${window.location.origin}/login`
         }
       });
       if (error) throw error;
@@ -79,7 +79,7 @@ const Login = () => {
         email: "info@bouwmetrespect.nl",
         password: "admin123",
         options: {
-          emailRedirectTo: `${window.location.origin}/dashboard`
+          emailRedirectTo: `${window.location.origin}/login`
         }
       });
       if (signUpError && !signUpError.message.includes("already registered")) {
