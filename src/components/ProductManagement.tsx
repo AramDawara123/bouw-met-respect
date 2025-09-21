@@ -170,6 +170,9 @@ const ProductManagement = ({ products, onProductsChange }: ProductManagementProp
         features: featuresArray
       });
 
+      // Temporarily disabled - table needs to be recreated
+      const { data, error } = { data: null, error: { code: '42P01', message: 'Table products not found' } };
+      /*
       const { data, error } = await supabase
         .from('products')
         .insert([{
@@ -182,12 +185,13 @@ const ProductManagement = ({ products, onProductsChange }: ProductManagementProp
           features: featuresArray
         }])
         .select();
+      */
 
       if (error) {
         console.error('❌ Database error:', error);
         console.error('Error code:', error.code);
         console.error('Error message:', error.message);
-        console.error('Error details:', error.details);
+        // console.error('Error details:', error.details);
         
         if (error.code === '42P01') {
           toast({
@@ -243,6 +247,9 @@ const ProductManagement = ({ products, onProductsChange }: ProductManagementProp
     if (!editingProduct) return;
 
     try {
+      // Temporarily disabled
+      const { error } = { error: { message: 'Products table disabled' } };
+      /*
       const { error } = await supabase
         .from('products')
         .update({
@@ -255,6 +262,7 @@ const ProductManagement = ({ products, onProductsChange }: ProductManagementProp
           features: editingProduct.features
         })
         .eq('id', editingProduct.id);
+      */
 
       if (error) throw error;
 
@@ -280,10 +288,14 @@ const ProductManagement = ({ products, onProductsChange }: ProductManagementProp
     if (!confirm('Weet je zeker dat je dit product wilt verwijderen?')) return;
 
     try {
+      // Temporarily disabled
+      const { error } = { error: { message: 'Products table disabled' } };
+      /*
       const { error } = await supabase
         .from('products')
         .delete()
         .eq('id', id);
+      */
 
       if (error) throw error;
 
