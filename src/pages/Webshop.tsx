@@ -14,6 +14,34 @@ import { supabase } from "@/integrations/supabase/client";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 const Webshop = () => {
+  const [faqOpenIndex, setFaqOpenIndex] = useState<number | null>(0);
+
+  const webshopFaqs = [
+    {
+      question: "Hoe lang duurt de levering?",
+      answer: "We leveren binnen 2-3 werkdagen in heel Nederland. Bij bestellingen boven €50 is de verzending gratis!"
+    },
+    {
+      question: "Kan ik mijn bestelling retourneren?",
+      answer: "Ja, je hebt 30 dagen retourrecht. Stuur ons een email en we regelen de retour voor je. Geen vragen gesteld!"
+    },
+    {
+      question: "Zijn de producten van goede kwaliteit?",
+      answer: "Absoluut! We werken alleen met hoogwaardige materialen die bestand zijn tegen dagelijks gebruik op de bouwplaats en in het kantoor."
+    },
+    {
+      question: "Waarvoor worden de opbrengsten gebruikt?",
+      answer: "Alle opbrengsten worden gebruikt om de Bouw met Respect beweging te versterken en meer bedrijven te bereiken voor een respectvolle bouwsector."
+    },
+    {
+      question: "Kan ik betalen met iDEAL?",
+      answer: "Ja, we accepteren alle gangbare betaalmethoden waaronder iDEAL, creditcard en bankoverschrijving via ons veilige Mollie payment platform."
+    },
+    {
+      question: "Krijg ik een factuur voor mijn bestelling?",
+      answer: "Ja, na je bestelling ontvang je automatisch een factuur per email die je kunt gebruiken voor je administratie en eventuele belastingaftrek."
+    }
+  ];
   const {
     ref: headerRef,
     isVisible: headerVisible
@@ -757,140 +785,52 @@ const Webshop = () => {
       </section>
 
       {/* FAQ Section */}
-      <section className="py-24 bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 relative overflow-hidden">
-        {/* Background decorations */}
-        <div className="absolute top-0 left-1/4 w-96 h-96 bg-gradient-to-r from-blue-200/30 to-indigo-200/30 rounded-full blur-3xl opacity-60"></div>
-        <div className="absolute bottom-0 right-1/4 w-80 h-80 bg-gradient-to-r from-purple-200/30 to-pink-200/30 rounded-full blur-3xl opacity-60"></div>
-        
-        <div className="container mx-auto px-4 relative">
-          <div className="text-center mb-20">
-            <div className="inline-flex items-center px-8 py-4 bg-white/80 backdrop-blur-md rounded-full text-blue-700 font-bold text-base mb-10 border border-blue-200 shadow-lg">
-              ❓ Veelgestelde Vragen
-            </div>
-            <h3 className="text-5xl md:text-6xl font-bold mb-8 text-gray-900 leading-tight">
-              Alles wat je wilt <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">weten</span>
-            </h3>
-            <p className="text-xl text-gray-700 max-w-3xl mx-auto leading-relaxed">
-              Vind snel antwoorden op de meest gestelde vragen over onze merchandise en het bestelproces
-            </p>
-          </div>
-
+      <section className="py-20 bg-background">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-4xl mx-auto">
-            <Accordion type="single" collapsible className="space-y-4">
-              <AccordionItem value="item-1" className="bg-white/80 backdrop-blur-sm rounded-2xl border-0 shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden">
-                <AccordionTrigger className="px-8 py-6 text-left hover:no-underline group">
-                  <div className="flex items-center gap-4">
-                    
-                    <span className="text-xl font-bold text-gray-900 group-hover:text-blue-700 transition-colors duration-300">
-                      Hoe lang duurt de levering?
-                    </span>
-                  </div>
-                </AccordionTrigger>
-                <AccordionContent className="px-8 pb-6">
-                  <div className="pl-16">
-                    <p className="text-gray-700 text-lg leading-relaxed">
-                      We leveren binnen <span className="font-semibold text-blue-600">2-3 werkdagen</span> in heel Nederland. 
-                      Bij bestellingen boven <span className="font-semibold text-green-600">€50</span> is de verzending gratis!
-                    </p>
-                  </div>
-                </AccordionContent>
-              </AccordionItem>
+            <div className="text-center mb-8 sm:mb-12 lg:mb-16">
+              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-4 sm:mb-6 text-foreground">
+                Veelgestelde vragen
+              </h2>
+              <p className="text-lg sm:text-xl text-muted-foreground px-4 sm:px-0">
+                Vind snel antwoorden op de meest gestelde vragen over onze merchandise en het bestelproces
+              </p>
+            </div>
 
-              <AccordionItem value="item-2" className="bg-white/80 backdrop-blur-sm rounded-2xl border-0 shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden">
-                <AccordionTrigger className="px-8 py-6 text-left hover:no-underline group">
-                  <div className="flex items-center gap-4">
-                    
-                    <span className="text-xl font-bold text-gray-900 group-hover:text-green-700 transition-colors duration-300">
-                      Kan ik mijn bestelling retourneren?
+            <div className="space-y-3 sm:space-y-4 md:space-y-5">
+              {webshopFaqs.map((faq, index) => (
+                <Card key={index} className="border-0 bg-card overflow-hidden">
+                  <Button
+                    variant="ghost"
+                    aria-expanded={faqOpenIndex === index}
+                    aria-controls={`faq-panel-${index}`}
+                    className="w-full p-4 sm:p-5 md:p-6 h-auto justify-between items-start text-left hover:bg-muted/50 whitespace-normal"
+                    onClick={() => setFaqOpenIndex(faqOpenIndex === index ? null : index)}
+                  >
+                    <span className="flex-1 min-w-0 text-base sm:text-lg md:text-xl font-semibold text-foreground pr-3 sm:pr-4 md:pr-5 leading-snug break-words">
+                      {faq.question}
                     </span>
-                  </div>
-                </AccordionTrigger>
-                <AccordionContent className="px-8 pb-6">
-                  <div className="pl-16">
-                    <p className="text-gray-700 text-lg leading-relaxed">
-                      Ja, je hebt <span className="font-semibold text-green-600">30 dagen retourrecht</span>. 
-                      Stuur ons een email en we regelen de retour voor je. Geen vragen gesteld!
-                    </p>
-                  </div>
-                </AccordionContent>
-              </AccordionItem>
-
-              <AccordionItem value="item-3" className="bg-white/80 backdrop-blur-sm rounded-2xl border-0 shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden">
-                <AccordionTrigger className="px-8 py-6 text-left hover:no-underline group">
-                  <div className="flex items-center gap-4">
-                    
-                    <span className="text-xl font-bold text-gray-900 group-hover:text-purple-700 transition-colors duration-300">
-                      Zijn de producten van goede kwaliteit?
-                    </span>
-                  </div>
-                </AccordionTrigger>
-                <AccordionContent className="px-8 pb-6">
-                  <div className="pl-16">
-                    <p className="text-gray-700 text-lg leading-relaxed">
-                      Absoluut! We werken alleen met <span className="font-semibold text-purple-600">hoogwaardige materialen</span> 
-                      die bestand zijn tegen dagelijks gebruik op de bouwplaats en in het kantoor.
-                    </p>
-                  </div>
-                </AccordionContent>
-              </AccordionItem>
-
-              <AccordionItem value="item-4" className="bg-white/80 backdrop-blur-sm rounded-2xl border-0 shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden">
-                <AccordionTrigger className="px-8 py-6 text-left hover:no-underline group">
-                  <div className="flex items-center gap-4">
-                    
-                    <span className="text-xl font-bold text-gray-900 group-hover:text-orange-700 transition-colors duration-300">
-                      Waarvoor worden de opbrengsten gebruikt?
-                    </span>
-                  </div>
-                </AccordionTrigger>
-                <AccordionContent className="px-8 pb-6">
-                  <div className="pl-16">
-                    <p className="text-gray-700 text-lg leading-relaxed">
-                      Alle opbrengsten worden gebruikt om de <span className="font-semibold text-orange-600">Bouw met Respect beweging</span> 
-                      te versterken en meer bedrijven te bereiken voor een respectvolle bouwsector.
-                    </p>
-                  </div>
-                </AccordionContent>
-              </AccordionItem>
-
-              <AccordionItem value="item-5" className="bg-white/80 backdrop-blur-sm rounded-2xl border-0 shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden">
-                <AccordionTrigger className="px-8 py-6 text-left hover:no-underline group">
-                  <div className="flex items-center gap-4">
-                    
-                    <span className="text-xl font-bold text-gray-900 group-hover:text-cyan-700 transition-colors duration-300">
-                      Kan ik betalen met iDEAL?
-                    </span>
-                  </div>
-                </AccordionTrigger>
-                <AccordionContent className="px-8 pb-6">
-                  <div className="pl-16">
-                    <p className="text-gray-700 text-lg leading-relaxed">
-                      Ja, we accepteren alle gangbare betaalmethoden waaronder <span className="font-semibold text-cyan-600">iDEAL, creditcard en bankoverschrijving</span> 
-                      via ons veilige Mollie payment platform.
-                    </p>
-                  </div>
-                </AccordionContent>
-              </AccordionItem>
-
-              <AccordionItem value="item-6" className="bg-white/80 backdrop-blur-sm rounded-2xl border-0 shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden">
-                <AccordionTrigger className="px-8 py-6 text-left hover:no-underline group">
-                  <div className="flex items-center gap-4">
-                    
-                    <span className="text-xl font-bold text-gray-900 group-hover:text-yellow-700 transition-colors duration-300">
-                      Krijg ik een factuur voor mijn bestelling?
-                    </span>
-                  </div>
-                </AccordionTrigger>
-                <AccordionContent className="px-8 pb-6">
-                  <div className="pl-16">
-                    <p className="text-gray-700 text-lg leading-relaxed">
-                      Ja, na je bestelling ontvang je automatisch een <span className="font-semibold text-yellow-600">factuur per email</span> 
-                      die je kunt gebruiken voor je administratie en eventuele belastingaftrek.
-                    </p>
-                  </div>
-                </AccordionContent>
-              </AccordionItem>
-            </Accordion>
+                    {faqOpenIndex === index ? (
+                      <Minus className="w-5 h-5 md:w-6 md:h-6 text-accent flex-shrink-0 self-start mt-0.5" />
+                    ) : (
+                      <Plus className="w-5 h-5 md:w-6 md:h-6 text-accent flex-shrink-0 self-start mt-0.5" />
+                    )}
+                  </Button>
+                  
+                  {faqOpenIndex === index && (
+                    <div
+                        id={`faq-panel-${index}`}
+                        role="region"
+                        className="px-4 sm:px-5 md:px-6 pb-4 sm:pb-5 md:pb-6 animate-slide-down"
+                      >
+                        <p className="text-sm sm:text-base md:text-lg text-muted-foreground leading-relaxed">
+                          {faq.answer}
+                        </p>
+                      </div>
+                  )}
+                </Card>
+              ))}
+            </div>
           </div>
         </div>
       </section>
