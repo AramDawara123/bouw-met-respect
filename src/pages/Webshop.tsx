@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo, useCallback, memo } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -135,7 +135,24 @@ const Webshop = () => {
 
     fetchProducts();
   }, []);
-  const addToCart = (productId: string) => {
+  // Memoized cart calculations for performance
+  const cartTotal = useMemo(() => {
+    return Object.entries(cart).reduce((total, [productId, quantity]) => {
+      const product = products.find(p => p.id === productId);
+      return total + (product?.price || 0) * quantity;
+    }, 0);
+  }, [cart, products]);
+
+  const cartItemCount = useMemo(() => {
+    return Object.values(cart).reduce((total, quantity) => total + quantity, 0);
+  }, [cart]);
+
+  const finalTotal = useMemo(() => {
+    return cartTotal + (cartTotal >= 50 ? 0 : 5.00);
+  }, [cartTotal]);
+
+  // Optimized cart functions with useCallback
+  const addToCart = useCallback((productId: string) => {
     setCart(prev => ({
       ...prev,
       [productId]: (prev[productId] || 0) + 1
@@ -145,18 +162,18 @@ const Webshop = () => {
       title: "Toegevoegd aan winkelwagen",
       description: `${product?.name} is toegevoegd aan je winkelwagen.`
     });
-  };
-  const increaseQuantity = (productId: string) => {
+  }, [products, toast]);
+
+  const increaseQuantity = useCallback((productId: string) => {
     setCart(prev => ({
       ...prev,
       [productId]: (prev[productId] || 0) + 1
     }));
-  };
-  const decreaseQuantity = (productId: string) => {
+  }, []);
+
+  const decreaseQuantity = useCallback((productId: string) => {
     setCart(prev => {
-      const newCart = {
-        ...prev
-      };
+      const newCart = { ...prev };
       if (newCart[productId] > 1) {
         newCart[productId] = newCart[productId] - 1;
       } else {
@@ -164,12 +181,11 @@ const Webshop = () => {
       }
       return newCart;
     });
-  };
-  const removeFromCart = (productId: string) => {
+  }, []);
+
+  const removeFromCart = useCallback((productId: string) => {
     setCart(prev => {
-      const newCart = {
-        ...prev
-      };
+      const newCart = { ...prev };
       delete newCart[productId];
       return newCart;
     });
@@ -178,16 +194,7 @@ const Webshop = () => {
       title: "Verwijderd uit winkelwagen",
       description: `${product?.name} is verwijderd uit je winkelwagen.`
     });
-  };
-  const getCartTotal = () => {
-    return Object.entries(cart).reduce((total, [productId, quantity]) => {
-      const product = products.find(p => p.id === productId);
-      return total + (product?.price || 0) * quantity;
-    }, 0);
-  };
-  const getCartItemCount = () => {
-    return Object.values(cart).reduce((total, quantity) => total + quantity, 0);
-  };
+  }, [products, toast]);
   const validateCustomer = () => {
     const missing: string[] = [];
     if (!customer.firstName) missing.push("voornaam");
@@ -200,7 +207,7 @@ const Webshop = () => {
     if (!customer.city) missing.push("plaats");
     return missing;
   };
-  const checkout = async () => {
+  const checkout = useCallback(async () => {
     try {
       console.log('[Webshop] Checkout clicked');
       setIsCheckingOut(true);
@@ -214,6 +221,7 @@ const Webshop = () => {
           quantity
         };
       }).filter(Boolean);
+      
       if (!items.length) {
         toast({
           title: "Winkelwagen leeg",
@@ -223,6 +231,7 @@ const Webshop = () => {
         console.warn('[Webshop] No items to checkout');
         return;
       }
+      
       const missing = validateCustomer();
       if (missing.length) {
         toast({
@@ -232,22 +241,17 @@ const Webshop = () => {
         });
         return;
       }
-      const {
-        data,
-        error
-      } = await supabase.functions.invoke('create-shop-order', {
-        body: {
-          items,
-          customer
-        }
+      
+      const { data, error } = await supabase.functions.invoke('create-shop-order', {
+        body: { items, customer }
       });
-      console.log('[Webshop] create-shop-order response', {
-        data,
-        error
-      });
+      
+      console.log('[Webshop] create-shop-order response', { data, error });
+      
       if (error || (data as any)?.error) {
         throw new Error(error?.message || (data as any)?.error || 'Afrekenen mislukt');
       }
+      
       const paymentUrl = (data as any)?.paymentUrl;
       if (!paymentUrl) {
         console.error('[Webshop] No paymentUrl in response');
@@ -258,6 +262,7 @@ const Webshop = () => {
         });
         return;
       }
+      
       window.location.href = paymentUrl;
     } catch (e: any) {
       toast({
@@ -269,26 +274,26 @@ const Webshop = () => {
     } finally {
       setIsCheckingOut(false);
     }
-  };
+  }, [cart, products, customer, toast]);
   return <div className="min-h-screen sticky w-full overflow-x-hidden">
-      {/* Header */}
-      <header className="bg-white/98 backdrop-blur-md border-b border-border/50 sticky top-0 z-50 transition-all duration-300 shadow-sm">
-        <div className="container mx-auto px-4 py-4">
+      {/* Optimized Sticky Header */}
+      <header className="bg-background/95 backdrop-blur-lg border-b border-border/50 sticky top-0 z-50 transition-all duration-200 shadow-sm will-change-transform">
+        <div className="container mx-auto px-4 py-3">
           <div className="flex items-center justify-between">
-            <Link to="/" className="flex items-center space-x-3 text-primary hover:text-primary/80 transition-all duration-300 group">
-              <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform duration-300" />
+            <Link to="/" className="flex items-center space-x-3 text-primary hover:text-primary/80 transition-colors duration-200 group">
+              <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform duration-200" />
               <span className="font-semibold text-lg">Terug naar website</span>
             </Link>
             <div className="flex items-center space-x-6">
               <Sheet open={isCartOpen} onOpenChange={setIsCartOpen}>
                 <SheetTrigger asChild>
-                  <Button variant="ghost" className="relative group p-3 rounded-2xl transition-all duration-300 hover:bg-primary/10">
-                    <div className={`transition-all duration-300 ${getCartItemCount() > 0 ? 'text-primary' : 'text-muted-foreground'}`}>
+                  <Button variant="ghost" className="relative group p-3 rounded-2xl transition-all duration-200 hover:bg-primary/10">
+                    <div className={`transition-colors duration-200 ${cartItemCount > 0 ? 'text-primary' : 'text-muted-foreground'}`}>
                       <ShoppingCart className="w-6 h-6" />
                     </div>
-                    {getCartItemCount() > 0 && <div className="absolute -top-1 -right-1 w-6 h-6 bg-gradient-to-r from-primary to-secondary rounded-full flex items-center justify-center">
+                    {cartItemCount > 0 && <div className="absolute -top-1 -right-1 w-6 h-6 bg-gradient-to-r from-primary to-secondary rounded-full flex items-center justify-center">
                         <span className="text-xs font-bold text-white">
-                          {getCartItemCount()}
+                          {cartItemCount}
                         </span>
                       </div>}
                   </Button>
@@ -297,7 +302,7 @@ const Webshop = () => {
                   <SheetHeader>
                     <SheetTitle className="flex items-center gap-2">
                       <ShoppingCart className="w-5 h-5" />
-                      Winkelwagen ({getCartItemCount()} items)
+                      Winkelwagen ({cartItemCount} items)
                     </SheetTitle>
                   </SheetHeader>
                   <div className="mt-6 space-y-4 max-h-[70vh] sm:max-h-[75vh] overflow-y-auto scroll-smooth pb-40" style={{
@@ -337,7 +342,7 @@ const Webshop = () => {
                           </div>;
                   })}
 
-                    {getCartItemCount() > 0 && <div className="mt-6 space-y-4 border-t pt-4">
+                    {cartItemCount > 0 && <div className="mt-6 space-y-4 border-t pt-4">
                         {/* Customer details form */}
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                           <div>
@@ -407,42 +412,42 @@ const Webshop = () => {
                       </div>}
                   </div>
 
-                  {getCartItemCount() > 0 && <div className="sticky bottom-0 left-0 right-0 -mx-6 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 border-t border-border p-4">
-                      <div className="space-y-2">
-                        <div className="flex justify-between text-sm">
-                          <span>Subtotaal:</span>
-                          <span>€{getCartTotal().toFixed(2)}</span>
-                        </div>
-                        {getCartTotal() < 50 && (
-                          <div className="flex justify-between text-sm">
-                            <span>Verzendkosten:</span>
-                            <span>€5.00</span>
-                          </div>
-                        )}
-                        {getCartTotal() >= 50 && (
-                          <div className="flex justify-between text-sm text-green-600">
-                            <span>Verzending:</span>
-                            <span>Gratis</span>
-                          </div>
-                        )}
-                        <div className="flex justify-between font-bold text-lg border-t pt-2">
-                          <span>Totaal:</span>
-                          <span>€{(getCartTotal() + (getCartTotal() >= 50 ? 0 : 5.00)).toFixed(2)}</span>
-                        </div>
-                      </div>
-                      <Button className="w-full mt-4" size="lg" onClick={checkout} disabled={isCheckingOut}>
-                        <ShoppingCart className="w-4 h-4 mr-2" />
-                        {isCheckingOut ? 'Bezig met afrekenen...' : 'Naar afrekenen'}
-                      </Button>
-                    </div>}
+                    {cartItemCount > 0 && <div className="sticky bottom-0 left-0 right-0 -mx-6 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 border-t border-border p-4">
+                       <div className="space-y-2">
+                         <div className="flex justify-between text-sm">
+                           <span>Subtotaal:</span>
+                           <span>€{cartTotal.toFixed(2)}</span>
+                         </div>
+                         {cartTotal < 50 && (
+                           <div className="flex justify-between text-sm">
+                             <span>Verzendkosten:</span>
+                             <span>€5.00</span>
+                           </div>
+                         )}
+                         {cartTotal >= 50 && (
+                           <div className="flex justify-between text-sm text-green-600">
+                             <span>Verzending:</span>
+                             <span>Gratis</span>
+                           </div>
+                         )}
+                         <div className="flex justify-between font-bold text-lg border-t pt-2">
+                           <span>Totaal:</span>
+                           <span>€{finalTotal.toFixed(2)}</span>
+                         </div>
+                       </div>
+                       <Button className="w-full mt-4" size="lg" onClick={checkout} disabled={isCheckingOut}>
+                         <ShoppingCart className="w-4 h-4 mr-2" />
+                         {isCheckingOut ? 'Bezig met afrekenen...' : 'Naar afrekenen'}
+                       </Button>
+                     </div>}
                 </SheetContent>
               </Sheet>
               <div className="text-right">
                 <p className="text-2xl font-bold text-foreground">
-                  €{(getCartTotal() + (getCartTotal() >= 50 ? 0 : 5.00)).toFixed(2)}
+                  €{finalTotal.toFixed(2)}
                 </p>
                 <p className="text-sm text-muted-foreground">
-                  {getCartItemCount() > 0 ? `${getCartItemCount()} items` : 'Winkelwagen leeg'}
+                  {cartItemCount > 0 ? `${cartItemCount} items` : 'Winkelwagen leeg'}
                 </p>
               </div>
             </div>
