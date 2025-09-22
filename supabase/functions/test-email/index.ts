@@ -103,7 +103,7 @@ const handler = async (req: Request): Promise<Response> => {
 
     return new Response(JSON.stringify({ 
       success: true, 
-      message: "Test email verzonden naar arram.dawara@gmail.com",
+      message: "Test email verzonden naar info@bouwmetrespect.nl",
       emailResponse 
     }), {
       status: 200,
