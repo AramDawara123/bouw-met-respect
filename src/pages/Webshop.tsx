@@ -275,7 +275,7 @@ const Webshop = () => {
       setIsCheckingOut(false);
     }
   }, [cart, products, customer, toast]);
-  return <div className="min-h-screen sticky w-full overflow-x-hidden">
+  return <div className="min-h-screen w-full overflow-x-hidden">
       {/* Optimized Sticky Header */}
       <header className="bg-background/95 backdrop-blur-lg border-b border-border/50 sticky top-0 z-50 transition-all duration-200 shadow-sm will-change-transform">
         <div className="container mx-auto px-4 py-3">
