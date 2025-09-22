@@ -13,6 +13,7 @@ import Footer from "@/components/Footer";
 import { supabase } from "@/integrations/supabase/client";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { MarqueeAnimation } from "@/components/ui/marquee-effect";
 const Webshop = () => {
   const [faqOpenIndex, setFaqOpenIndex] = useState<number | null>(null);
 
@@ -596,6 +597,17 @@ const Webshop = () => {
             </div>
           </div>
         </div>
+      </section>
+
+      {/* Marquee Section */}
+      <section className="py-8 bg-gradient-to-r from-primary to-accent overflow-hidden">
+        <MarqueeAnimation 
+          baseVelocity={15}
+          direction="left"
+          className="text-white/90"
+        >
+          RESPECTVOL BOUWEN • SAMEN STERK • KWALITEIT • VEILIGHEID • WAARDERING • 
+        </MarqueeAnimation>
       </section>
 
       <section className="py-24 relative overflow-hidden bg-gradient-to-br from-primary/3 via-background to-secondary/3">
