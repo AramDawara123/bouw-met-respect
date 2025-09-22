@@ -70,6 +70,36 @@ export type Database = {
           },
         ]
       }
+      membership_pricing: {
+        Row: {
+          created_at: string
+          employees_range: string
+          id: string
+          membership_type: string
+          price: number
+          updated_at: string
+          yearly_price_display: string
+        }
+        Insert: {
+          created_at?: string
+          employees_range: string
+          id?: string
+          membership_type: string
+          price: number
+          updated_at?: string
+          yearly_price_display: string
+        }
+        Update: {
+          created_at?: string
+          employees_range?: string
+          id?: string
+          membership_type?: string
+          price?: number
+          updated_at?: string
+          yearly_price_display?: string
+        }
+        Relationships: []
+      }
       memberships: {
         Row: {
           amount: number | null
@@ -289,6 +319,9 @@ export type Database = {
           category: string | null
           created_at: string
           description: string | null
+          discount_active: boolean | null
+          discount_fixed: number | null
+          discount_percentage: number | null
           features: string[] | null
           id: string
           image_url: string | null
@@ -301,6 +334,9 @@ export type Database = {
           category?: string | null
           created_at?: string
           description?: string | null
+          discount_active?: boolean | null
+          discount_fixed?: number | null
+          discount_percentage?: number | null
           features?: string[] | null
           id?: string
           image_url?: string | null
@@ -313,6 +349,9 @@ export type Database = {
           category?: string | null
           created_at?: string
           description?: string | null
+          discount_active?: boolean | null
+          discount_fixed?: number | null
+          discount_percentage?: number | null
           features?: string[] | null
           id?: string
           image_url?: string | null

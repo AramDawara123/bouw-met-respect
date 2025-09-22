@@ -9,13 +9,14 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Search, Users, CreditCard, Edit, Trash2, Download, Filter, Eye, Save, Home, ShoppingBag, Building2, Plus, Globe, Mail, Phone, Package, Printer, CheckCircle } from "lucide-react";
+import { Search, Users, CreditCard, Edit, Trash2, Download, Filter, Eye, Save, Home, ShoppingBag, Building2, Plus, Globe, Mail, Phone, Package, Printer, CheckCircle, Euro } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Link } from "react-router-dom";
 import CompanyProfileForm from "@/components/CompanyProfileForm";
 import ProductManagement from "@/components/ProductManagement";
 import PartnerAccountManagement from "@/components/PartnerAccountManagement";
+import MembershipPricingManager from "@/components/MembershipPricingManager";
 
 interface Membership {
   id: string;
@@ -133,7 +134,7 @@ const Dashboard = () => {
   const [isEditingProduct, setIsEditingProduct] = useState(false);
   const [user, setUser] = useState(null);
   const [isAdmin, setIsAdmin] = useState(false);
-  const [viewMode, setViewMode] = useState<'memberships' | 'orders' | 'profiles' | 'products' | 'partners'>("memberships");
+  const [viewMode, setViewMode] = useState<'memberships' | 'orders' | 'profiles' | 'products' | 'partners' | 'pricing'>("memberships");
   const [showProfileForm, setShowProfileForm] = useState(false);
   const [editingProfile, setEditingProfile] = useState<CompanyProfile | null>(null);
   const [editingPartner, setEditingPartner] = useState<PartnerAccount | null>(null);
@@ -1433,8 +1434,8 @@ Het Bouw met Respect team
         </div>
 
         {/* View Mode Tabs */}
-        <Tabs value={viewMode} onValueChange={(value) => setViewMode(value as 'memberships' | 'orders' | 'profiles' | 'products' | 'partners')}>
-          <TabsList className="grid w-full max-w-3xl grid-cols-5">
+        <Tabs value={viewMode} onValueChange={(value) => setViewMode(value as 'memberships' | 'orders' | 'profiles' | 'products' | 'partners' | 'pricing')}>
+          <TabsList className="grid w-full max-w-4xl grid-cols-6">
             <TabsTrigger value="memberships" className="flex items-center gap-2">
               <Users className="w-4 h-4" />
               Lidmaatschappen
@@ -1455,6 +1456,10 @@ Het Bouw met Respect team
               <Building2 className="w-4 h-4" />
               Partners
             </TabsTrigger>
+            <TabsTrigger value="pricing" className="flex items-center gap-2">
+              <Euro className="w-4 h-4" />
+              Prijzen
+            </TabsTrigger>
           </TabsList>
         </Tabs>
 
@@ -1463,7 +1468,12 @@ Het Bouw met Respect team
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">
-                {viewMode === 'memberships' ? 'Totaal Leden' : viewMode === 'orders' ? 'Totaal Bestellingen' : viewMode === 'profiles' ? 'Totaal Bedrijven' : viewMode === 'products' ? 'Totaal Producten' : 'Totaal Partners'}
+                {viewMode === 'memberships' ? 'Totaal Leden' : 
+                 viewMode === 'orders' ? 'Totaal Bestellingen' : 
+                 viewMode === 'profiles' ? 'Totaal Bedrijven' : 
+                 viewMode === 'products' ? 'Totaal Producten' : 
+                 viewMode === 'partners' ? 'Totaal Partners' :
+                 'Lidmaatschaps Prijzen'}
               </CardTitle>
               {viewMode === 'memberships' ? (
                 <Users className="w-4 h-4 text-muted-foreground" />
@@ -2217,6 +2227,11 @@ Het Bouw met Respect team
         {/* Partners Section */}
         {viewMode === 'partners' && (
           <PartnerAccountManagement />
+        )}
+
+        {/* Pricing Section */}
+        {viewMode === 'pricing' && (
+          <MembershipPricingManager />
         )}
 
         <CompanyProfileForm

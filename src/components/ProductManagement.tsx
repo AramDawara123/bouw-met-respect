@@ -8,7 +8,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Search, Edit, Trash2, Plus, Package, Euro, Upload, X } from "lucide-react";
+import { Search, Edit, Trash2, Plus, Package, Euro, Upload, X, Percent, Tag } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
@@ -21,6 +21,9 @@ interface Product {
   category?: string | null;
   in_stock: boolean;
   features: string[];
+  discount_percentage?: number; // Discount percentage (0-100)
+  discount_fixed?: number; // Fixed discount in cents
+  discount_active?: boolean; // Whether discount is active
   created_at: string;
   updated_at: string;
 }
@@ -47,7 +50,10 @@ const ProductManagement = ({ products, onProductsChange }: ProductManagementProp
     image_url: "",
     category: "",
     in_stock: true,
-    features: ""
+    features: "",
+    discount_percentage: "",
+    discount_fixed: "",
+    discount_active: false
   });
 
   // Filter products
@@ -170,9 +176,6 @@ const ProductManagement = ({ products, onProductsChange }: ProductManagementProp
         features: featuresArray
       });
 
-      // Temporarily disabled - table needs to be recreated
-      const { data, error } = { data: null, error: { code: '42P01', message: 'Table products not found' } };
-      /*
       const { data, error } = await supabase
         .from('products')
         .insert([{
@@ -182,10 +185,12 @@ const ProductManagement = ({ products, onProductsChange }: ProductManagementProp
           image_url: newProduct.image_url || null,
           category: newProduct.category || null,
           in_stock: newProduct.in_stock,
-          features: featuresArray
+          features: featuresArray,
+          discount_percentage: parseInt(newProduct.discount_percentage) || 0,
+          discount_fixed: Math.round(parseFloat(newProduct.discount_fixed || '0') * 100), // Convert to cents
+          discount_active: newProduct.discount_active
         }])
         .select();
-      */
 
       if (error) {
         console.error('❌ Database error:', error);
@@ -229,7 +234,10 @@ const ProductManagement = ({ products, onProductsChange }: ProductManagementProp
         image_url: "",
         category: "",
         in_stock: true,
-        features: ""
+        features: "",
+        discount_percentage: "",
+        discount_fixed: "",
+        discount_active: false
       });
       setShowAddDialog(false);
       onProductsChange();
@@ -247,9 +255,6 @@ const ProductManagement = ({ products, onProductsChange }: ProductManagementProp
     if (!editingProduct) return;
 
     try {
-      // Temporarily disabled
-      const { error } = { error: { message: 'Products table disabled' } };
-      /*
       const { error } = await supabase
         .from('products')
         .update({
@@ -259,10 +264,12 @@ const ProductManagement = ({ products, onProductsChange }: ProductManagementProp
           image_url: editingProduct.image_url,
           category: editingProduct.category,
           in_stock: editingProduct.in_stock,
-          features: editingProduct.features
+          features: editingProduct.features,
+          discount_percentage: editingProduct.discount_percentage || 0,
+          discount_fixed: editingProduct.discount_fixed || 0,
+          discount_active: editingProduct.discount_active || false
         })
         .eq('id', editingProduct.id);
-      */
 
       if (error) throw error;
 
@@ -288,14 +295,10 @@ const ProductManagement = ({ products, onProductsChange }: ProductManagementProp
     if (!confirm('Weet je zeker dat je dit product wilt verwijderen?')) return;
 
     try {
-      // Temporarily disabled
-      const { error } = { error: { message: 'Products table disabled' } };
-      /*
       const { error } = await supabase
         .from('products')
         .delete()
         .eq('id', id);
-      */
 
       if (error) throw error;
 
@@ -317,6 +320,24 @@ const ProductManagement = ({ products, onProductsChange }: ProductManagementProp
 
   const formatPrice = (priceInCents: number) => {
     return `€${(priceInCents / 100).toFixed(2)}`;
+  };
+
+  const calculateDiscountedPrice = (product: Product) => {
+    if (!product.discount_active) return product.price;
+    
+    let discountedPrice = product.price;
+    
+    // Apply percentage discount first
+    if (product.discount_percentage && product.discount_percentage > 0) {
+      discountedPrice = product.price - (product.price * (product.discount_percentage / 100));
+    }
+    
+    // Apply fixed discount
+    if (product.discount_fixed && product.discount_fixed > 0) {
+      discountedPrice = Math.max(0, discountedPrice - product.discount_fixed);
+    }
+    
+    return Math.round(discountedPrice);
   };
 
   return (
@@ -459,6 +480,52 @@ const ProductManagement = ({ products, onProductsChange }: ProductManagementProp
                   placeholder="Duurzaam, Waterproof, Verschillende maten"
                 />
               </div>
+
+              {/* Discount Section */}
+              <div className="border-t pt-4">
+                <h4 className="text-sm font-medium mb-3 flex items-center">
+                  <Tag className="w-4 h-4 mr-2" />
+                  Korting
+                </h4>
+                
+                <div className="space-y-3">
+                  <div className="flex items-center space-x-2">
+                    <Checkbox
+                      id="discount_active"
+                      checked={newProduct.discount_active}
+                      onCheckedChange={(checked) => setNewProduct({...newProduct, discount_active: checked as boolean})}
+                    />
+                    <label htmlFor="discount_active" className="text-sm font-medium">Korting actief</label>
+                  </div>
+                  
+                  {newProduct.discount_active && (
+                    <div className="grid grid-cols-2 gap-4 ml-6">
+                      <div>
+                        <label className="text-sm font-medium">Percentage korting (%)</label>
+                        <Input
+                          type="number"
+                          min="0"
+                          max="100"
+                          value={newProduct.discount_percentage}
+                          onChange={(e) => setNewProduct({...newProduct, discount_percentage: e.target.value})}
+                          placeholder="10"
+                        />
+                      </div>
+                      <div>
+                        <label className="text-sm font-medium">Vaste korting (€)</label>
+                        <Input
+                          type="number"
+                          step="0.01"
+                          min="0"
+                          value={newProduct.discount_fixed}
+                          onChange={(e) => setNewProduct({...newProduct, discount_fixed: e.target.value})}
+                          placeholder="5.00"
+                        />
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
               
               <div className="flex items-center space-x-2">
                 <Checkbox
@@ -567,7 +634,26 @@ const ProductManagement = ({ products, onProductsChange }: ProductManagementProp
                       )}
                     </TableCell>
                     <TableCell className="font-medium">
-                      {formatPrice(product.price)}
+                      <div className="flex flex-col">
+                        {product.discount_active ? (
+                          <>
+                            <div className="flex items-center gap-2">
+                              <span className="line-through text-muted-foreground text-sm">
+                                {formatPrice(product.price)}
+                              </span>
+                              <Badge variant="destructive" className="text-xs">
+                                <Percent className="w-3 h-3 mr-1" />
+                                Korting
+                              </Badge>
+                            </div>
+                            <span className="font-bold text-primary">
+                              {formatPrice(calculateDiscountedPrice(product))}
+                            </span>
+                          </>
+                        ) : (
+                          formatPrice(product.price)
+                        )}
+                      </div>
                     </TableCell>
                     <TableCell>
                       <Badge variant={product.in_stock ? "default" : "destructive"}>
