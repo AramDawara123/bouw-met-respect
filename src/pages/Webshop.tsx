@@ -8,7 +8,7 @@ import { ShoppingCart, Coffee, Edit3, ArrowLeft, Plus, Minus, X, ChevronDown } f
 import { Link } from "react-router-dom";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 import { useToast } from "@/hooks/use-toast";
-
+import { MarqueeAnimation } from "@/components/ui/marquee-effect";
 import Footer from "@/components/Footer";
 import { supabase } from "@/integrations/supabase/client";
 import { Input } from "@/components/ui/input";
@@ -77,60 +77,6 @@ const Webshop = () => {
         title: "Bedankt!",
         description: "Je betaling is ontvangen."
       });
-      
-      // Send order confirmation email
-      const pendingOrder = localStorage.getItem('pendingOrderConfirmation');
-      if (pendingOrder) {
-        try {
-          const orderData = JSON.parse(pendingOrder);
-          
-          // Only process if order was created in the last 30 minutes
-          if (Date.now() - orderData.timestamp < 30 * 60 * 1000) {
-            const sendOrderConfirmation = async () => {
-              try {
-                const subtotal = orderData.items.reduce((sum: number, item: any) => sum + (item.price * item.quantity * 100), 0);
-                const shipping = subtotal >= 5000 ? 0 : 500; // €5 shipping if under €50
-                const total = subtotal + shipping;
-
-                const { data, error } = await supabase.functions.invoke('send-order-confirmation', {
-                  body: {
-                    orderId: `ORDER_${Date.now()}`,
-                    customerEmail: orderData.email,
-                    customerName: `${orderData.firstName} ${orderData.lastName}`,
-                    orderItems: orderData.items.map((item: any) => ({
-                      name: item.name,
-                      quantity: item.quantity,
-                      price: Math.round(item.price * 100) // Convert to cents
-                    })),
-                    subtotal,
-                    shipping,
-                    total,
-                    shippingAddress: orderData.shippingAddress || {},
-                    orderDate: new Date().toLocaleDateString('nl-NL')
-                  }
-                });
-
-                if (error) {
-                  console.error('Order confirmation email failed:', error);
-                } else {
-                  console.log('✅ Order confirmation email sent:', data);
-                }
-              } catch (err) {
-                console.error('Error sending order confirmation email:', err);
-              }
-            };
-
-            sendOrderConfirmation();
-          }
-          
-          // Clean up localStorage
-          localStorage.removeItem('pendingOrderConfirmation');
-        } catch (err) {
-          console.error('Error processing pending order confirmation:', err);
-          localStorage.removeItem('pendingOrderConfirmation');
-        }
-      }
-      
       const url = new URL(window.location.href);
       url.searchParams.delete('status');
       window.history.replaceState({}, '', url.toString());
@@ -344,23 +290,6 @@ const Webshop = () => {
         });
         return;
       }
-
-      // Store order data in localStorage for email confirmation after successful payment
-      const orderData = {
-        email: customer.email,
-        firstName: customer.firstName,
-        lastName: customer.lastName,
-        items: items,
-        shippingAddress: {
-          street: customer.street,
-          houseNumber: customer.houseNumber,
-          postcode: customer.postcode,
-          city: customer.city,
-          country: customer.country
-        },
-        timestamp: Date.now()
-      };
-      localStorage.setItem('pendingOrderConfirmation', JSON.stringify(orderData));
       
       window.location.href = paymentUrl;
     } catch (e: any) {
@@ -599,12 +528,11 @@ const Webshop = () => {
       </section>
 
       {/* Marquee Section */}
-      <section className="py-4 bg-blue-600 overflow-hidden">
-        <div className="animate-marquee whitespace-nowrap text-white font-bold text-lg tracking-wide">
-          RESPECTVOLLE BOUWPLAATS • HOOGWAARDIGE MERCHANDISE • STEUN DE BEWEGING • KWALITEIT GEGARANDEERD • RESPECTVOLLE BOUWPLAATS • HOOGWAARDIGE MERCHANDISE • STEUN DE BEWEGING • KWALITEIT GEGARANDEERD • 
-        </div>
+      <section className="bg-primary overflow-hidden">
+        <MarqueeAnimation direction="left" baseVelocity={-1} className="bg-primary text-white py-6 text-4xl md:text-6xl">
+          Bouw met Respect • Respectvolle Bouwplaats • Hoogwaardige Merchandise • Steun de Beweging • Premium Kwaliteit • Samen Bouwen aan Respect • Bouw met Respect •
+        </MarqueeAnimation>
       </section>
-
       <section className="py-24 relative overflow-hidden bg-gradient-to-br from-primary/3 via-background to-secondary/3">
         {/* Background decoration */}
         <div className="absolute inset-0 bg-gradient-to-br from-primary/3 via-background to-accent/3"></div>
