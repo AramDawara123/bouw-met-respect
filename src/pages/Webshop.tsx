@@ -14,7 +14,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 const Webshop = () => {
-  const [faqOpenIndex, setFaqOpenIndex] = useState<number | null>(0);
+  const [faqOpenIndex, setFaqOpenIndex] = useState<number | null>(null);
 
   const webshopFaqs = [
     {
