@@ -70,6 +70,54 @@ export type Database = {
           },
         ]
       }
+      discount_codes: {
+        Row: {
+          active: boolean | null
+          code: string
+          created_at: string
+          description: string | null
+          discount_type: string
+          discount_value: number
+          expires_at: string | null
+          id: string
+          minimum_order_amount: number | null
+          starts_at: string | null
+          updated_at: string
+          usage_limit: number | null
+          used_count: number | null
+        }
+        Insert: {
+          active?: boolean | null
+          code: string
+          created_at?: string
+          description?: string | null
+          discount_type: string
+          discount_value: number
+          expires_at?: string | null
+          id?: string
+          minimum_order_amount?: number | null
+          starts_at?: string | null
+          updated_at?: string
+          usage_limit?: number | null
+          used_count?: number | null
+        }
+        Update: {
+          active?: boolean | null
+          code?: string
+          created_at?: string
+          description?: string | null
+          discount_type?: string
+          discount_value?: number
+          expires_at?: string | null
+          id?: string
+          minimum_order_amount?: number | null
+          starts_at?: string | null
+          updated_at?: string
+          usage_limit?: number | null
+          used_count?: number | null
+        }
+        Relationships: []
+      }
       membership_pricing: {
         Row: {
           created_at: string
@@ -195,6 +243,8 @@ export type Database = {
           customer_first_name: string | null
           customer_last_name: string | null
           customer_phone: string | null
+          discount_amount: number | null
+          discount_code: string | null
           email: string | null
           id: string
           items: Json
@@ -218,6 +268,8 @@ export type Database = {
           customer_first_name?: string | null
           customer_last_name?: string | null
           customer_phone?: string | null
+          discount_amount?: number | null
+          discount_code?: string | null
           email?: string | null
           id?: string
           items?: Json
@@ -241,6 +293,8 @@ export type Database = {
           customer_first_name?: string | null
           customer_last_name?: string | null
           customer_phone?: string | null
+          discount_amount?: number | null
+          discount_code?: string | null
           email?: string | null
           id?: string
           items?: Json
