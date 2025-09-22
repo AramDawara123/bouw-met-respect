@@ -77,6 +77,48 @@ const Webshop = () => {
         title: "Bedankt!",
         description: "Je betaling is ontvangen."
       });
+      
+      // Send order confirmation to Mailchimp
+      const pendingOrder = localStorage.getItem('pendingOrderConfirmation');
+      if (pendingOrder) {
+        try {
+          const orderData = JSON.parse(pendingOrder);
+          
+          // Only process if order was created in the last 30 minutes
+          if (Date.now() - orderData.timestamp < 30 * 60 * 1000) {
+            const confirmOrderInMailchimp = async () => {
+              try {
+                const { data, error } = await supabase.functions.invoke('order-confirmation', {
+                  body: {
+                    email: orderData.email,
+                    firstName: orderData.firstName,
+                    lastName: orderData.lastName,
+                    orderId: `ORDER_${Date.now()}`,
+                    items: orderData.items
+                  }
+                });
+
+                if (error) {
+                  console.error('Mailchimp confirmation failed:', error);
+                } else {
+                  console.log('✅ Order confirmed in Mailchimp:', data);
+                }
+              } catch (err) {
+                console.error('Error sending order confirmation to Mailchimp:', err);
+              }
+            };
+
+            confirmOrderInMailchimp();
+          }
+          
+          // Clean up localStorage
+          localStorage.removeItem('pendingOrderConfirmation');
+        } catch (err) {
+          console.error('Error processing pending order confirmation:', err);
+          localStorage.removeItem('pendingOrderConfirmation');
+        }
+      }
+      
       const url = new URL(window.location.href);
       url.searchParams.delete('status');
       window.history.replaceState({}, '', url.toString());
@@ -290,6 +332,16 @@ const Webshop = () => {
         });
         return;
       }
+
+      // Store order data in localStorage for Mailchimp confirmation after successful payment
+      const orderData = {
+        email: customer.email,
+        firstName: customer.firstName,
+        lastName: customer.lastName,
+        items: items,
+        timestamp: Date.now()
+      };
+      localStorage.setItem('pendingOrderConfirmation', JSON.stringify(orderData));
       
       window.location.href = paymentUrl;
     } catch (e: any) {
