@@ -8,7 +8,7 @@ import { ShoppingCart, Coffee, Edit3, ArrowLeft, Plus, Minus, X, ChevronDown } f
 import { Link } from "react-router-dom";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 import { useToast } from "@/hooks/use-toast";
-import { MarqueeAnimation } from "@/components/ui/marquee-effect";
+
 import Footer from "@/components/Footer";
 import { supabase } from "@/integrations/supabase/client";
 import { Input } from "@/components/ui/input";
@@ -527,12 +527,6 @@ const Webshop = () => {
         </div>
       </section>
 
-      {/* Marquee Section */}
-      <section className="bg-primary overflow-hidden">
-        <MarqueeAnimation direction="left" baseVelocity={-1} className="bg-primary text-white py-6 text-4xl md:text-6xl">
-          Bouw met Respect • Respectvolle Bouwplaats • Hoogwaardige Merchandise • Steun de Beweging • Premium Kwaliteit • Samen Bouwen aan Respect • Bouw met Respect •
-        </MarqueeAnimation>
-      </section>
       <section className="py-24 relative overflow-hidden bg-gradient-to-br from-primary/3 via-background to-secondary/3">
         {/* Background decoration */}
         <div className="absolute inset-0 bg-gradient-to-br from-primary/3 via-background to-accent/3"></div>
