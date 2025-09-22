@@ -143,6 +143,7 @@ const Dashboard = () => {
   const [showCredentialsDialog, setShowCredentialsDialog] = useState(false);
   const [newEmail, setNewEmail] = useState('');
   const [newPassword, setNewPassword] = useState('');
+  const [testingEmail, setTestingEmail] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -467,6 +468,32 @@ const Dashboard = () => {
         description: "Kon lidmaatschap niet verwijderen",
         variant: "destructive"
       });
+    }
+  };
+
+  const testEmail = async () => {
+    setTestingEmail(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('test-email', {
+        body: {}
+      });
+
+      if (error) throw error;
+
+      console.log('Test email response:', data);
+      toast({
+        title: "Test Email Verzonden",
+        description: "Test bestelbevestiging is verzonden naar arram.dawara@gmail.com",
+      });
+    } catch (error) {
+      console.error('Error sending test email:', error);
+      toast({
+        title: "Fout",
+        description: "Kon test email niet verzenden: " + (error as any)?.message,
+        variant: "destructive"
+      });
+    } finally {
+      setTestingEmail(false);
     }
   };
 
@@ -1228,6 +1255,15 @@ Het Bouw met Respect team
             <Button onClick={exportToCsv} className="flex items-center gap-2 w-full sm:w-auto">
               <Download className="w-4 h-4" />
               Export CSV
+            </Button>
+            <Button 
+              onClick={testEmail} 
+              disabled={testingEmail}
+              className="flex items-center gap-2 w-full sm:w-auto"
+              variant="outline"
+            >
+              <Mail className="w-4 h-4" />
+              {testingEmail ? "Verzenden..." : "Test Email"}
             </Button>
           </div>
         </div>
