@@ -147,7 +147,7 @@ const handler = async (req: Request): Promise<Response> => {
     `;
 
     const emailResponse = await resend.emails.send({
-      from: "Bouw met Respect <noreply@bouwmetrespect.nl>",
+      from: "Bouw met Respect <onboarding@resend.dev>",
       to: [orderData.customerEmail],
       subject: `Bestelbevestiging #${orderData.orderId.slice(-8)} - Bouw met Respect`,
       html: emailHtml,
