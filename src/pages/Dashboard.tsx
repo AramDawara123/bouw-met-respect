@@ -497,6 +497,39 @@ const Dashboard = () => {
     }
   };
 
+  const testMailchimp = async () => {
+    setTestingEmail(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('test-mailchimp', {
+        body: {
+          testEmail: "test@bouwmetrespect.nl"
+        }
+      });
+
+      if (error) throw error;
+
+      console.log('Mailchimp test response:', data);
+      
+      if (data.success) {
+        toast({
+          title: "✅ Mailchimp Test Succesvol",
+          description: data.message || "Mailchimp integratie werkt perfect!",
+        });
+      } else {
+        throw new Error(data.error || "Unknown error");
+      }
+    } catch (error) {
+      console.error('Error testing Mailchimp:', error);
+      toast({
+        title: "❌ Mailchimp Test Gefaald",
+        description: "Fout: " + (error as any)?.message,
+        variant: "destructive"
+      });
+    } finally {
+      setTestingEmail(false);
+    }
+  };
+
   const handleEditProfile = (profile: CompanyProfile) => {
     setEditingProfile(profile);
     setShowProfileForm(true);
@@ -1264,6 +1297,15 @@ Het Bouw met Respect team
             >
               <Mail className="w-4 h-4" />
               {testingEmail ? "Verzenden..." : "Test Email"}
+            </Button>
+            <Button 
+              onClick={testMailchimp} 
+              disabled={testingEmail}
+              className="flex items-center gap-2 w-full sm:w-auto"
+              variant="secondary"
+            >
+              <Mail className="w-4 h-4" />
+              {testingEmail ? "Testen..." : "Test Mailchimp"}
             </Button>
           </div>
         </div>
