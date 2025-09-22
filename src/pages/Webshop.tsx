@@ -78,7 +78,7 @@ const Webshop = () => {
         description: "Je betaling is ontvangen."
       });
       
-      // Send order confirmation to Mailchimp
+      // Send order confirmation email
       const pendingOrder = localStorage.getItem('pendingOrderConfirmation');
       if (pendingOrder) {
         try {
@@ -86,29 +86,41 @@ const Webshop = () => {
           
           // Only process if order was created in the last 30 minutes
           if (Date.now() - orderData.timestamp < 30 * 60 * 1000) {
-            const confirmOrderInMailchimp = async () => {
+            const sendOrderConfirmation = async () => {
               try {
-                const { data, error } = await supabase.functions.invoke('order-confirmation', {
+                const subtotal = orderData.items.reduce((sum: number, item: any) => sum + (item.price * item.quantity * 100), 0);
+                const shipping = subtotal >= 5000 ? 0 : 500; // €5 shipping if under €50
+                const total = subtotal + shipping;
+
+                const { data, error } = await supabase.functions.invoke('send-order-confirmation', {
                   body: {
-                    email: orderData.email,
-                    firstName: orderData.firstName,
-                    lastName: orderData.lastName,
                     orderId: `ORDER_${Date.now()}`,
-                    items: orderData.items
+                    customerEmail: orderData.email,
+                    customerName: `${orderData.firstName} ${orderData.lastName}`,
+                    orderItems: orderData.items.map((item: any) => ({
+                      name: item.name,
+                      quantity: item.quantity,
+                      price: Math.round(item.price * 100) // Convert to cents
+                    })),
+                    subtotal,
+                    shipping,
+                    total,
+                    shippingAddress: orderData.shippingAddress || {},
+                    orderDate: new Date().toLocaleDateString('nl-NL')
                   }
                 });
 
                 if (error) {
-                  console.error('Mailchimp confirmation failed:', error);
+                  console.error('Order confirmation email failed:', error);
                 } else {
-                  console.log('✅ Order confirmed in Mailchimp:', data);
+                  console.log('✅ Order confirmation email sent:', data);
                 }
               } catch (err) {
-                console.error('Error sending order confirmation to Mailchimp:', err);
+                console.error('Error sending order confirmation email:', err);
               }
             };
 
-            confirmOrderInMailchimp();
+            sendOrderConfirmation();
           }
           
           // Clean up localStorage
@@ -333,12 +345,19 @@ const Webshop = () => {
         return;
       }
 
-      // Store order data in localStorage for Mailchimp confirmation after successful payment
+      // Store order data in localStorage for email confirmation after successful payment
       const orderData = {
         email: customer.email,
         firstName: customer.firstName,
         lastName: customer.lastName,
         items: items,
+        shippingAddress: {
+          street: customer.street,
+          houseNumber: customer.houseNumber,
+          postcode: customer.postcode,
+          city: customer.city,
+          country: customer.country
+        },
         timestamp: Date.now()
       };
       localStorage.setItem('pendingOrderConfirmation', JSON.stringify(orderData));
