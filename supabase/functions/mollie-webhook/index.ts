@@ -101,6 +101,10 @@ serve(async (req) => {
     const payment = await detailsResp.json();
     const status = payment.status as string;
     const metadata = payment.metadata || {};
+    
+    console.log("Payment details:", payment);
+    console.log("Payment status:", status);
+    console.log("Payment metadata:", metadata);
 
     const supabaseService = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
@@ -241,7 +245,10 @@ serve(async (req) => {
             if (emailResponse.error) {
               console.error('Error sending order confirmation email:', emailResponse.error);
             } else {
-              console.log('Order confirmation email sent successfully');
+              console.log('Order confirmation email sent successfully:', emailResponse);
+              if (emailResponse.data) {
+                console.log('Email sent with ID:', emailResponse.data.emailId);
+              }
             }
           }
         } catch (error) {

@@ -281,6 +281,8 @@ const Webshop = () => {
       }
       
       const paymentUrl = (data as any)?.paymentUrl;
+      const orderId = (data as any)?.orderId;
+      
       if (!paymentUrl) {
         console.error('[Webshop] No paymentUrl in response');
         toast({
@@ -289,6 +291,39 @@ const Webshop = () => {
           variant: "destructive"
         });
         return;
+      }
+      
+      // Send immediate fallback confirmation email after successful order creation
+      try {
+        console.log('[Webshop] Sending fallback confirmation email...');
+        const shipping = cartTotal >= 50 ? 0 : 500; // 5.00 EUR in cents
+        const { error: emailError } = await supabase.functions.invoke('send-order-confirmation', {
+          body: {
+            orderId: orderId || 'ORDER-' + Date.now(),
+            customerEmail: customer.email,
+            customerName: `${customer.firstName} ${customer.lastName}`,
+            orderItems: items,
+            subtotal: cartTotal * 100, // Convert to cents
+            shipping: shipping,
+            total: finalTotal * 100, // Convert to cents
+            shippingAddress: {
+              street: customer.street,
+              houseNumber: customer.houseNumber,
+              postcode: customer.postcode,
+              city: customer.city,
+              country: 'Nederland'
+            },
+            orderDate: new Date().toLocaleDateString('nl-NL')
+          }
+        });
+        
+        if (emailError) {
+          console.error('[Webshop] Fallback email failed:', emailError);
+        } else {
+          console.log('[Webshop] Fallback confirmation email sent successfully');
+        }
+      } catch (emailError) {
+        console.error('[Webshop] Error sending fallback email:', emailError);
       }
       
       window.location.href = paymentUrl;
