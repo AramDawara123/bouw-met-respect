@@ -220,25 +220,37 @@ const MembershipForm = ({
                   render={({ field }) => (
                     <FormItem>
                       <RadioGroup onValueChange={field.onChange} value={field.value} className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div className={`border rounded-lg p-4 ${form.watch('membershipType')==='klein' ? 'border-primary' : 'border-border'}`}>
+                        <div 
+                          className={`border rounded-lg p-4 cursor-pointer transition-colors hover:bg-muted/50 ${form.watch('membershipType')==='klein' ? 'border-primary' : 'border-border'}`}
+                          onClick={() => form.setValue('membershipType', 'klein')}
+                        >
                           <div className="flex items-center space-x-3">
                             <RadioGroupItem value="klein" id="klein" />
                             <Label htmlFor="klein">Klein — €250/jaar</Label>
                           </div>
                         </div>
-                        <div className={`border rounded-lg p-4 ${form.watch('membershipType')==='middelgroot' ? 'border-primary' : 'border-border'}`}>
+                        <div 
+                          className={`border rounded-lg p-4 cursor-pointer transition-colors hover:bg-muted/50 ${form.watch('membershipType')==='middelgroot' ? 'border-primary' : 'border-border'}`}
+                          onClick={() => form.setValue('membershipType', 'middelgroot')}
+                        >
                           <div className="flex items-center space-x-3">
                             <RadioGroupItem value="middelgroot" id="middelgroot" />
                             <Label htmlFor="middelgroot">Middelgroot — €750/jaar</Label>
                           </div>
                         </div>
-                        <div className={`border rounded-lg p-4 ${form.watch('membershipType')==='groot' ? 'border-primary' : 'border-border'}`}>
+                        <div 
+                          className={`border rounded-lg p-4 cursor-pointer transition-colors hover:bg-muted/50 ${form.watch('membershipType')==='groot' ? 'border-primary' : 'border-border'}`}
+                          onClick={() => form.setValue('membershipType', 'groot')}
+                        >
                           <div className="flex items-center space-x-3">
                             <RadioGroupItem value="groot" id="groot" />
                             <Label htmlFor="groot">Groot — €1250/jaar</Label>
                           </div>
                         </div>
-                        <div className={`border rounded-lg p-4 ${form.watch('membershipType')==='offerte' ? 'border-primary' : 'border-border'}`}>
+                        <div 
+                          className={`border rounded-lg p-4 cursor-pointer transition-colors hover:bg-muted/50 ${form.watch('membershipType')==='offerte' ? 'border-primary' : 'border-border'}`}
+                          onClick={() => form.setValue('membershipType', 'offerte')}
+                        >
                           <div className="flex items-center space-x-3">
                             <RadioGroupItem value="offerte" id="offerte" />
                             <Label htmlFor="offerte">
