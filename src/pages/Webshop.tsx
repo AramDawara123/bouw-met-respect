@@ -13,7 +13,6 @@ import Footer from "@/components/Footer";
 import { supabase } from "@/integrations/supabase/client";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { MarqueeAnimation } from "@/components/ui/marquee-effect";
 const Webshop = () => {
   const [faqOpenIndex, setFaqOpenIndex] = useState<number | null>(null);
 
@@ -600,14 +599,10 @@ const Webshop = () => {
       </section>
 
       {/* Marquee Section */}
-      <section className="py-8 bg-gradient-to-r from-primary to-accent overflow-hidden">
-        <MarqueeAnimation 
-          baseVelocity={15}
-          direction="left"
-          className="text-white/90"
-        >
-          RESPECTVOL BOUWEN • SAMEN STERK • KWALITEIT • VEILIGHEID • WAARDERING • 
-        </MarqueeAnimation>
+      <section className="py-4 bg-blue-600 overflow-hidden">
+        <div className="animate-marquee whitespace-nowrap text-white font-bold text-lg tracking-wide">
+          RESPECTVOLLE BOUWPLAATS • HOOGWAARDIGE MERCHANDISE • STEUN DE BEWEGING • KWALITEIT GEGARANDEERD • RESPECTVOLLE BOUWPLAATS • HOOGWAARDIGE MERCHANDISE • STEUN DE BEWEGING • KWALITEIT GEGARANDEERD • 
+        </div>
       </section>
 
       <section className="py-24 relative overflow-hidden bg-gradient-to-br from-primary/3 via-background to-secondary/3">
