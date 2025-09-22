@@ -44,3 +44,6 @@ verify_jwt = false
 
 [functions.mollie-webhook]
 verify_jwt = false
+
+[functions.send-order-confirmation]
+verify_jwt = false

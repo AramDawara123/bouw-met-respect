@@ -200,6 +200,54 @@ serve(async (req) => {
       if (error) {
         return new Response(`Order DB update error: ${error.message}`, { headers: corsHeaders, status: 500 });
       }
+
+      // If order payment is successful, send confirmation email
+      if (newStatus === 'paid') {
+        try {
+          // Get order details
+          const { data: orderData, error: orderError } = await supabaseService
+            .from('orders')
+            .select('*')
+            .eq('mollie_payment_id', paymentId)
+            .single();
+
+          if (orderError || !orderData) {
+            console.error('Error fetching order data:', orderError);
+          } else {
+            // Send order confirmation email
+            const confirmationData = {
+              orderId: orderData.id,
+              customerEmail: orderData.customer_email || orderData.email,
+              customerName: `${orderData.customer_first_name || ''} ${orderData.customer_last_name || ''}`.trim() || 'Klant',
+              orderItems: Array.isArray(orderData.items) ? orderData.items : [],
+              subtotal: orderData.subtotal || 0,
+              shipping: orderData.shipping || 0,
+              total: orderData.total || 0,
+              shippingAddress: {
+                street: orderData.address_street,
+                houseNumber: orderData.address_house_number,
+                postcode: orderData.address_postcode,
+                city: orderData.address_city,
+                country: orderData.address_country || 'Nederland'
+              },
+              orderDate: new Date(orderData.created_at).toLocaleDateString('nl-NL')
+            };
+
+            // Call the order confirmation email function
+            const emailResponse = await supabaseService.functions.invoke('send-order-confirmation', {
+              body: confirmationData
+            });
+
+            if (emailResponse.error) {
+              console.error('Error sending order confirmation email:', emailResponse.error);
+            } else {
+              console.log('Order confirmation email sent successfully');
+            }
+          }
+        } catch (error) {
+          console.error('Error in order confirmation email process:', error);
+        }
+      }
     }
 
     return new Response('OK', { headers: corsHeaders, status: 200 });
