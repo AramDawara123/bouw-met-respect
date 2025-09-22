@@ -530,6 +530,59 @@ const Dashboard = () => {
     }
   };
 
+  const testOrderConfirmation = async () => {
+    setTestingEmail(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('send-order-confirmation', {
+        body: {
+          orderId: `TEST_ORDER_${Date.now()}`,
+          customerEmail: "info@bouwmetrespect.nl",
+          customerName: "Test Klant",
+          orderItems: [
+            {
+              name: "Bouw met Respect Koffiebeker",
+              quantity: 2,
+              price: 1295
+            },
+            {
+              name: "Premium Metalen Pen",
+              quantity: 1, 
+              price: 1595
+            }
+          ],
+          subtotal: 4185,
+          shipping: 0,
+          total: 4185,
+          shippingAddress: {
+            street: "Teststraat",
+            houseNumber: "123",
+            postcode: "1234 AB",
+            city: "Amsterdam",
+            country: "Nederland"
+          },
+          orderDate: new Date().toLocaleDateString('nl-NL')
+        }
+      });
+
+      if (error) throw error;
+
+      console.log('✅ Order confirmation test successful:', data);
+      toast({
+        title: "✅ Order Email Test Succesvol",
+        description: "Test order confirmation email verzonden naar info@bouwmetrespect.nl",
+      });
+    } catch (error: any) {
+      console.error('Error testing order confirmation:', error);
+      toast({
+        title: "❌ Order Email Test Gefaald",
+        description: "Fout: " + error?.message,
+        variant: "destructive"
+      });
+    } finally {
+      setTestingEmail(false);
+    }
+  };
+
   const handleEditProfile = (profile: CompanyProfile) => {
     setEditingProfile(profile);
     setShowProfileForm(true);
@@ -1306,6 +1359,15 @@ Het Bouw met Respect team
             >
               <Mail className="w-4 h-4" />
               {testingEmail ? "Testen..." : "Test Mailchimp"}
+            </Button>
+            <Button 
+              onClick={testOrderConfirmation} 
+              disabled={testingEmail}
+              className="flex items-center gap-2 w-full sm:w-auto"
+              variant="default"
+            >
+              <Mail className="w-4 h-4" />
+              {testingEmail ? "Testen..." : "Test Order Email"}
             </Button>
           </div>
         </div>
