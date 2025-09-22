@@ -9,7 +9,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Search, Users, CreditCard, Edit, Trash2, Download, Filter, Eye, Save, Home, ShoppingBag, Building2, Plus, Globe, Mail, Phone, Package, Printer } from "lucide-react";
+import { Search, Users, CreditCard, Edit, Trash2, Download, Filter, Eye, Save, Home, ShoppingBag, Building2, Plus, Globe, Mail, Phone, Package, Printer, CheckCircle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Link } from "react-router-dom";
@@ -730,6 +730,83 @@ const Dashboard = () => {
     `);
     
     printWindow.document.close();
+  };
+
+  const updateOrderStatus = async (orderId: string, newStatus: string) => {
+    try {
+      const { error } = await supabase
+        .from('orders')
+        .update({ payment_status: newStatus })
+        .eq('id', orderId);
+
+      if (error) throw error;
+
+      toast({
+        title: "Status bijgewerkt",
+        description: "Bestelling status is succesvol gewijzigd",
+      });
+
+      fetchOrders();
+    } catch (error) {
+      console.error('Error updating order status:', error);
+      toast({
+        title: "Fout",
+        description: "Kon de bestelling status niet bijwerken",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const deleteOrder = async (orderId: string) => {
+    if (confirm('Weet je zeker dat je deze bestelling wilt verwijderen? Deze actie kan niet ongedaan worden gemaakt.')) {
+      try {
+        const { error } = await supabase
+          .from('orders')
+          .delete()
+          .eq('id', orderId);
+
+        if (error) throw error;
+
+        toast({
+          title: "Bestelling verwijderd",
+          description: "De bestelling is succesvol verwijderd",
+        });
+
+        fetchOrders();
+      } catch (error) {
+        console.error('Error deleting order:', error);
+        toast({
+          title: "Fout",
+          description: "Kon de bestelling niet verwijderen",
+          variant: "destructive",
+        });
+      }
+    }
+  };
+
+  const processOrder = async (orderId: string) => {
+    try {
+      const { error } = await supabase
+        .from('orders')
+        .update({ payment_status: 'processed' })
+        .eq('id', orderId);
+
+      if (error) throw error;
+
+      toast({
+        title: "Bestelling verwerkt",
+        description: "De bestelling is gemarkeerd als verwerkt",
+      });
+
+      fetchOrders();
+    } catch (error) {
+      console.error('Error processing order:', error);
+      toast({
+        title: "Fout",
+        description: "Kon de bestelling niet verwerken",
+        variant: "destructive",
+      });
+    }
   };
 
   const createPartnerAccount = async (partner: PartnerAccount) => {
@@ -1887,15 +1964,54 @@ Het Bouw met Respect team
                       <TableCell className="hidden lg:table-cell">{formatPrice(order.total)}</TableCell>
                       <TableCell className="hidden md:table-cell">{new Date(order.created_at).toLocaleDateString()}</TableCell>
                       <TableCell>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => printOrderDetails(order)}
-                          className="flex items-center gap-2"
-                        >
-                          <Printer className="w-4 h-4" />
-                          Print
-                        </Button>
+                        <div className="flex gap-2">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => printOrderDetails(order)}
+                            className="flex items-center gap-1"
+                          >
+                            <Printer className="w-4 h-4" />
+                            Print
+                          </Button>
+                          {order.payment_status === 'paid' && (
+                            <Button
+                              size="sm"
+                              variant="default"
+                              onClick={() => processOrder(order.id)}
+                              className="flex items-center gap-1"
+                            >
+                              <CheckCircle className="w-4 h-4" />
+                              Verwerk
+                            </Button>
+                          )}
+                          <Select
+                            value={order.payment_status}
+                            onValueChange={(value) => updateOrderStatus(order.id, value)}
+                          >
+                            <SelectTrigger className="w-24 h-8 text-xs">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="pending">Pending</SelectItem>
+                              <SelectItem value="paid">Betaald</SelectItem>
+                              <SelectItem value="processed">Verwerkt</SelectItem>
+                              <SelectItem value="shipped">Verzonden</SelectItem>
+                              <SelectItem value="delivered">Geleverd</SelectItem>
+                              <SelectItem value="cancelled">Geannuleerd</SelectItem>
+                              <SelectItem value="refunded">Terugbetaald</SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <Button
+                            size="sm"
+                            variant="destructive"
+                            onClick={() => deleteOrder(order.id)}
+                            className="flex items-center gap-1"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                            Verwijder
+                          </Button>
+                        </div>
                       </TableCell>
                     </TableRow>
                   ))}
