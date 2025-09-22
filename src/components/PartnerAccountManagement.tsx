@@ -14,7 +14,6 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Link } from "react-router-dom";
 import * as z from "zod";
-
 interface PartnerMembership {
   id: string;
   first_name: string;
@@ -25,30 +24,27 @@ interface PartnerMembership {
   user_id: string | null;
   created_at: string;
 }
-
 const createAccountSchema = z.object({
   email: z.string().email("Voer een geldig e-mailadres in"),
   password: z.string().min(8, "Wachtwoord moet minimaal 8 karakters bevatten"),
   confirmPassword: z.string()
-}).refine((data) => data.password === data.confirmPassword, {
+}).refine(data => data.password === data.confirmPassword, {
   message: "Wachtwoorden komen niet overeen",
-  path: ["confirmPassword"],
+  path: ["confirmPassword"]
 });
-
 const editAccountSchema = z.object({
   email: z.string().email("Voer een geldig e-mailadres in"),
   newPassword: z.string().optional(),
   confirmPassword: z.string().optional()
-}).refine((data) => {
+}).refine(data => {
   if (data.newPassword && !data.confirmPassword) return false;
   if (!data.newPassword && data.confirmPassword) return false;
   if (data.newPassword && data.confirmPassword && data.newPassword !== data.confirmPassword) return false;
   return true;
 }, {
   message: "Wachtwoorden komen niet overeen",
-  path: ["confirmPassword"],
+  path: ["confirmPassword"]
 });
-
 const addPartnerSchema = z.object({
   first_name: z.string().min(1, "Voornaam is verplicht"),
   last_name: z.string().min(1, "Achternaam is verplicht"),
@@ -61,7 +57,7 @@ const addPartnerSchema = z.object({
   create_account: z.boolean().default(true),
   password: z.string().optional(),
   confirmPassword: z.string().optional()
-}).refine((data) => {
+}).refine(data => {
   if (data.create_account) {
     if (!data.password) return false;
     if (data.password.length < 8) return false;
@@ -70,9 +66,8 @@ const addPartnerSchema = z.object({
   return true;
 }, {
   message: "Wachtwoord vereisten niet voldaan",
-  path: ["password"],
+  path: ["password"]
 });
-
 const PartnerAccountManagement = () => {
   const [partners, setPartners] = useState<PartnerMembership[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -81,8 +76,9 @@ const PartnerAccountManagement = () => {
   const [showEditDialog, setShowEditDialog] = useState(false);
   const [showAddPartnerDialog, setShowAddPartnerDialog] = useState(false);
   const [selectedPartner, setSelectedPartner] = useState<PartnerMembership | null>(null);
-  const { toast } = useToast();
-
+  const {
+    toast
+  } = useToast();
   const createForm = useForm<z.infer<typeof createAccountSchema>>({
     resolver: zodResolver(createAccountSchema),
     defaultValues: {
@@ -91,7 +87,6 @@ const PartnerAccountManagement = () => {
       confirmPassword: ""
     }
   });
-
   const editForm = useForm<z.infer<typeof editAccountSchema>>({
     resolver: zodResolver(editAccountSchema),
     defaultValues: {
@@ -100,7 +95,6 @@ const PartnerAccountManagement = () => {
       confirmPassword: ""
     }
   });
-
   const addPartnerForm = useForm<z.infer<typeof addPartnerSchema>>({
     resolver: zodResolver(addPartnerSchema),
     defaultValues: {
@@ -117,19 +111,17 @@ const PartnerAccountManagement = () => {
       confirmPassword: ""
     }
   });
-
   useEffect(() => {
     fetchPartners();
   }, []);
-
   const fetchPartners = async () => {
     try {
-      const { data, error } = await supabase
-        .from('partner_memberships')
-        .select('*')
-        .eq('payment_status', 'paid')
-        .order('created_at', { ascending: false });
-
+      const {
+        data,
+        error
+      } = await supabase.from('partner_memberships').select('*').eq('payment_status', 'paid').order('created_at', {
+        ascending: false
+      });
       if (error) throw error;
       setPartners(data || []);
     } catch (error) {
@@ -143,14 +135,7 @@ const PartnerAccountManagement = () => {
       setLoading(false);
     }
   };
-
-  const filteredPartners = partners.filter(partner =>
-    partner.first_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    partner.last_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    partner.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    partner.company_name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
+  const filteredPartners = partners.filter(partner => partner.first_name.toLowerCase().includes(searchTerm.toLowerCase()) || partner.last_name.toLowerCase().includes(searchTerm.toLowerCase()) || partner.email.toLowerCase().includes(searchTerm.toLowerCase()) || partner.company_name.toLowerCase().includes(searchTerm.toLowerCase()));
   const generatePassword = () => {
     const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*';
     let password = '';
@@ -159,39 +144,36 @@ const PartnerAccountManagement = () => {
     }
     return password;
   };
-
   const handleCreateAccount = async (values: z.infer<typeof createAccountSchema>) => {
     if (!selectedPartner) return;
-
     try {
       // Create user account in Supabase Auth
-      const { data: authData, error: authError } = await supabase.auth.signUp({
+      const {
+        data: authData,
+        error: authError
+      } = await supabase.auth.signUp({
         email: values.email,
         password: values.password,
         options: {
           emailRedirectTo: `${window.location.origin}/login`
         }
       });
-
       if (authError) throw authError;
-
       if (!authData.user) {
         throw new Error('Account aanmaken mislukt');
       }
 
       // Update partner membership with user_id
-      const { error: updateError } = await supabase
-        .from('partner_memberships')
-        .update({ user_id: authData.user.id })
-        .eq('id', selectedPartner.id);
-
+      const {
+        error: updateError
+      } = await supabase.from('partner_memberships').update({
+        user_id: authData.user.id
+      }).eq('id', selectedPartner.id);
       if (updateError) throw updateError;
-
       toast({
         title: "Account aangemaakt",
         description: `Account voor ${selectedPartner.first_name} ${selectedPartner.last_name} is aangemaakt`
       });
-
       setShowCreateDialog(false);
       setSelectedPartner(null);
       createForm.reset();
@@ -205,40 +187,40 @@ const PartnerAccountManagement = () => {
       });
     }
   };
-
   const handleEditAccount = async (values: z.infer<typeof editAccountSchema>) => {
     if (!selectedPartner || !selectedPartner.user_id) return;
-
     try {
       // Update email if changed
       if (values.email !== selectedPartner.email) {
-        const { error: emailError } = await supabase.auth.updateUser({
+        const {
+          error: emailError
+        } = await supabase.auth.updateUser({
           email: values.email
         });
         if (emailError) throw emailError;
 
         // Update partner membership email
-        const { error: updateError } = await supabase
-          .from('partner_memberships')
-          .update({ email: values.email })
-          .eq('id', selectedPartner.id);
-
+        const {
+          error: updateError
+        } = await supabase.from('partner_memberships').update({
+          email: values.email
+        }).eq('id', selectedPartner.id);
         if (updateError) throw updateError;
       }
 
       // Update password if provided
       if (values.newPassword) {
-        const { error: passwordError } = await supabase.auth.updateUser({
+        const {
+          error: passwordError
+        } = await supabase.auth.updateUser({
           password: values.newPassword
         });
         if (passwordError) throw passwordError;
       }
-
       toast({
         title: "Account bijgewerkt",
         description: `Account van ${selectedPartner.first_name} ${selectedPartner.last_name} is bijgewerkt`
       });
-
       setShowEditDialog(false);
       setSelectedPartner(null);
       editForm.reset();
@@ -252,28 +234,23 @@ const PartnerAccountManagement = () => {
       });
     }
   };
-
   const handleDeleteAccount = async (partner: PartnerMembership) => {
     if (!partner.user_id) return;
-    
     if (!confirm(`Weet je zeker dat je het account van ${partner.first_name} ${partner.last_name} wilt verwijderen?`)) {
       return;
     }
-
     try {
       // Note: We can't delete the auth user from client side, but we can remove the link
-      const { error } = await supabase
-        .from('partner_memberships')
-        .update({ user_id: null })
-        .eq('id', partner.id);
-
+      const {
+        error
+      } = await supabase.from('partner_memberships').update({
+        user_id: null
+      }).eq('id', partner.id);
       if (error) throw error;
-
       toast({
         title: "Account ontkoppeld",
         description: `Account van ${partner.first_name} ${partner.last_name} is ontkoppeld van het partnerschap`
       });
-
       fetchPartners();
     } catch (error: any) {
       console.error('Error unlinking account:', error);
@@ -284,58 +261,51 @@ const PartnerAccountManagement = () => {
       });
     }
   };
-
   const handleAddPartner = async (values: z.infer<typeof addPartnerSchema>) => {
     try {
       let userId = null;
 
       // Create user account if requested
       if (values.create_account && values.password) {
-        const { data: authData, error: authError } = await supabase.auth.signUp({
+        const {
+          data: authData,
+          error: authError
+        } = await supabase.auth.signUp({
           email: values.email,
           password: values.password,
           options: {
             emailRedirectTo: `${window.location.origin}/login`
           }
         });
-
         if (authError) throw authError;
-
         if (!authData.user) {
           throw new Error('Account aanmaken mislukt');
         }
-
         userId = authData.user.id;
       }
 
       // Add partner to database
-      const { error } = await supabase
-        .from('partner_memberships')
-        .insert({
-          user_id: userId,
-          first_name: values.first_name,
-          last_name: values.last_name,
-          email: values.email,
-          phone: values.phone,
-          company_name: values.company_name,
-          website: values.website || null,
-          industry: values.industry || null,
-          description: values.description || null,
-          payment_status: 'paid',
-          amount: 25000
-        });
-
+      const {
+        error
+      } = await supabase.from('partner_memberships').insert({
+        user_id: userId,
+        first_name: values.first_name,
+        last_name: values.last_name,
+        email: values.email,
+        phone: values.phone,
+        company_name: values.company_name,
+        website: values.website || null,
+        industry: values.industry || null,
+        description: values.description || null,
+        payment_status: 'paid',
+        amount: 25000
+      });
       if (error) throw error;
-
-      const accountMessage = values.create_account 
-        ? " met account" 
-        : " (zonder account)";
-
+      const accountMessage = values.create_account ? " met account" : " (zonder account)";
       toast({
         title: "Partner toegevoegd",
         description: `${values.first_name} ${values.last_name} is succesvol toegevoegd als partner${accountMessage}`
       });
-
       setShowAddPartnerDialog(false);
       addPartnerForm.reset();
       fetchPartners();
@@ -348,25 +318,19 @@ const PartnerAccountManagement = () => {
       });
     }
   };
-
   const handleDeletePartner = async (partner: PartnerMembership) => {
     if (!confirm(`Weet je zeker dat je ${partner.first_name} ${partner.last_name} permanent wilt verwijderen als partner?`)) {
       return;
     }
-
     try {
-      const { error } = await supabase
-        .from('partner_memberships')
-        .delete()
-        .eq('id', partner.id);
-
+      const {
+        error
+      } = await supabase.from('partner_memberships').delete().eq('id', partner.id);
       if (error) throw error;
-
       toast({
         title: "Partner verwijderd",
         description: `${partner.first_name} ${partner.last_name} is verwijderd als partner`
       });
-
       fetchPartners();
     } catch (error: any) {
       console.error('Error deleting partner:', error);
@@ -377,7 +341,6 @@ const PartnerAccountManagement = () => {
       });
     }
   };
-
   const openCreateDialog = (partner: PartnerMembership) => {
     setSelectedPartner(partner);
     createForm.setValue('email', partner.email);
@@ -386,7 +349,6 @@ const PartnerAccountManagement = () => {
     createForm.setValue('confirmPassword', generatedPassword);
     setShowCreateDialog(true);
   };
-
   const openEditDialog = (partner: PartnerMembership) => {
     setSelectedPartner(partner);
     editForm.setValue('email', partner.email);
@@ -394,44 +356,20 @@ const PartnerAccountManagement = () => {
     editForm.setValue('confirmPassword', '');
     setShowEditDialog(true);
   };
-
   if (loading) {
-    return (
-      <div className="flex items-center justify-center p-8">
+    return <div className="flex items-center justify-center p-8">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-      </div>
-    );
+      </div>;
   }
-
-  return (
-    <div className="space-y-6">
+  return <div className="space-y-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h2 className="text-2xl font-bold">Partner Account Beheer</h2>
           <p className="text-muted-foreground">Beheer accounts voor partners die hebben betaald</p>
-          {partners.length === 0 && (
-            <div className="mt-3 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
-              <p className="text-sm text-yellow-800 mb-2">
-                <strong>💡 Nog geen partners?</strong>
-              </p>
-              <p className="text-xs text-yellow-700 mb-2">
-                Partners worden automatisch toegevoegd na succesvolle betaling via de bedrijvenpagina.
-              </p>
-              <Link 
-                to="/company-profiles" 
-                target="_blank" 
-                className="text-xs text-yellow-800 underline hover:no-underline"
-              >
-                → Bekijk bedrijvenpagina met "Word Partner" knop
-              </Link>
-            </div>
-          )}
+          {partners.length === 0}
         </div>
-        <Button 
-          onClick={() => setShowAddPartnerDialog(true)} 
-          className="flex items-center gap-2"
-        >
+        <Button onClick={() => setShowAddPartnerDialog(true)} className="flex items-center gap-2">
           <Plus className="w-4 h-4" />
           Partner Toevoegen
         </Button>
@@ -440,12 +378,7 @@ const PartnerAccountManagement = () => {
       {/* Search */}
       <div className="relative max-w-md">
         <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-        <Input
-          placeholder="Zoek partners..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="pl-9"
-        />
+        <Input placeholder="Zoek partners..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} className="pl-9" />
       </div>
 
       {/* Partners Table */}
@@ -470,104 +403,65 @@ const PartnerAccountManagement = () => {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filteredPartners.map((partner) => (
-                  <TableRow key={partner.id}>
+                {filteredPartners.map(partner => <TableRow key={partner.id}>
                     <TableCell className="font-medium">
                       {partner.first_name} {partner.last_name}
                     </TableCell>
                     <TableCell>{partner.email}</TableCell>
                     <TableCell>{partner.company_name}</TableCell>
                     <TableCell>
-                      {partner.user_id ? (
-                        <Badge className="bg-green-100 text-green-800">
+                      {partner.user_id ? <Badge className="bg-green-100 text-green-800">
                           Account Actief
-                        </Badge>
-                      ) : (
-                        <Badge variant="outline">
+                        </Badge> : <Badge variant="outline">
                           Geen Account
-                        </Badge>
-                      )}
+                        </Badge>}
                     </TableCell>
                     <TableCell>
                       {new Date(partner.created_at).toLocaleDateString('nl-NL')}
                     </TableCell>
                     <TableCell className="text-right">
                       <div className="flex justify-end gap-2">
-                        {!partner.user_id ? (
-                          <>
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => openCreateDialog(partner)}
-                              className="flex items-center gap-2"
-                            >
+                        {!partner.user_id ? <>
+                            <Button variant="outline" size="sm" onClick={() => openCreateDialog(partner)} className="flex items-center gap-2">
                               <UserPlus className="w-4 h-4" />
                               Account Aanmaken
                             </Button>
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => handleDeletePartner(partner)}
-                              className="flex items-center gap-2 text-destructive hover:bg-destructive/10"
-                            >
+                            <Button variant="outline" size="sm" onClick={() => handleDeletePartner(partner)} className="flex items-center gap-2 text-destructive hover:bg-destructive/10">
                               <Trash2 className="w-4 h-4" />
                               Verwijderen
                             </Button>
-                          </>
-                        ) : (
-                          <>
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => openEditDialog(partner)}
-                              className="flex items-center gap-2"
-                            >
+                          </> : <>
+                            <Button variant="outline" size="sm" onClick={() => openEditDialog(partner)} className="flex items-center gap-2">
                               <Edit className="w-4 h-4" />
                               Bewerken
                             </Button>
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => handleDeleteAccount(partner)}
-                              className="flex items-center gap-2 text-orange-600 hover:bg-orange-50"
-                            >
+                            <Button variant="outline" size="sm" onClick={() => handleDeleteAccount(partner)} className="flex items-center gap-2 text-orange-600 hover:bg-orange-50">
                               <Trash2 className="w-4 h-4" />
                               Ontkoppelen
                             </Button>
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => handleDeletePartner(partner)}
-                              className="flex items-center gap-2 text-destructive hover:bg-destructive/10"
-                            >
+                            <Button variant="outline" size="sm" onClick={() => handleDeletePartner(partner)} className="flex items-center gap-2 text-destructive hover:bg-destructive/10">
                               <Trash2 className="w-4 h-4" />
                               Verwijderen
                             </Button>
-                          </>
-                        )}
+                          </>}
                       </div>
                      </TableCell>
-                  </TableRow>
-                ))}
-                {filteredPartners.length === 0 && (
-                  <TableRow>
+                  </TableRow>)}
+                {filteredPartners.length === 0 && <TableRow>
                     <TableCell colSpan={6} className="text-center py-8">
                       <div className="space-y-4">
                         <p className="text-muted-foreground">Geen partners gevonden</p>
-                        {partners.length === 0 && (
-                          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 max-w-md mx-auto">
+                        {partners.length === 0 && <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 max-w-md mx-auto">
                             <p className="text-sm text-blue-800 mb-2">
                               <strong>Hoe partners toevoegen?</strong>
                             </p>
                             <p className="text-xs text-blue-700">
                               Partners worden automatisch toegevoegd wanneer klanten zich aanmelden via de "Word Partner" knop op de bedrijvenpagina en succesvol betalen.
                             </p>
-                          </div>
-                        )}
+                          </div>}
                       </div>
                     </TableCell>
-                  </TableRow>
-                )}
+                  </TableRow>}
               </TableBody>
             </Table>
           </div>
@@ -583,8 +477,7 @@ const PartnerAccountManagement = () => {
               Account Aanmaken
             </DialogTitle>
           </DialogHeader>
-          {selectedPartner && (
-            <Form {...createForm}>
+          {selectedPartner && <Form {...createForm}>
               <form onSubmit={createForm.handleSubmit(handleCreateAccount)} className="space-y-4">
                 <div className="space-y-2">
                   <p className="text-sm text-muted-foreground">
@@ -595,67 +488,50 @@ const PartnerAccountManagement = () => {
                   </p>
                 </div>
 
-                <FormField
-                  control={createForm.control}
-                  name="email"
-                  render={({ field }) => (
-                    <FormItem>
+                <FormField control={createForm.control} name="email" render={({
+              field
+            }) => <FormItem>
                       <FormLabel>E-mailadres</FormLabel>
                       <FormControl>
                         <Input placeholder="partner@bedrijf.nl" {...field} />
                       </FormControl>
                       <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                    </FormItem>} />
 
-                <FormField
-                  control={createForm.control}
-                  name="password"
-                  render={({ field }) => (
-                    <FormItem>
+                <FormField control={createForm.control} name="password" render={({
+              field
+            }) => <FormItem>
                       <FormLabel>Wachtwoord (automatisch gegenereerd)</FormLabel>
                       <FormControl>
                         <Input type="text" {...field} readOnly />
                       </FormControl>
                       <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                    </FormItem>} />
 
-                <FormField
-                  control={createForm.control}
-                  name="confirmPassword"
-                  render={({ field }) => (
-                    <FormItem>
+                <FormField control={createForm.control} name="confirmPassword" render={({
+              field
+            }) => <FormItem>
                       <FormLabel>Bevestig Wachtwoord</FormLabel>
                       <FormControl>
                         <Input type="password" {...field} />
                       </FormControl>
                       <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                    </FormItem>} />
 
                 <div className="flex gap-2 pt-4">
                   <Button type="submit" className="flex-1">
                     Account Aanmaken
                   </Button>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => {
-                      setShowCreateDialog(false);
-                      setSelectedPartner(null);
-                      createForm.reset();
-                    }}
-                  >
+                  <Button type="button" variant="outline" onClick={() => {
+                setShowCreateDialog(false);
+                setSelectedPartner(null);
+                createForm.reset();
+              }}>
                     Annuleren
                   </Button>
                 </div>
               </form>
-            </Form>
-          )}
+            </Form>}
         </DialogContent>
       </Dialog>
 
@@ -668,8 +544,7 @@ const PartnerAccountManagement = () => {
               Account Bewerken
             </DialogTitle>
           </DialogHeader>
-          {selectedPartner && (
-            <Form {...editForm}>
+          {selectedPartner && <Form {...editForm}>
               <form onSubmit={editForm.handleSubmit(handleEditAccount)} className="space-y-4">
                 <div className="space-y-2">
                   <p className="text-sm text-muted-foreground">
@@ -680,67 +555,50 @@ const PartnerAccountManagement = () => {
                   </p>
                 </div>
 
-                <FormField
-                  control={editForm.control}
-                  name="email"
-                  render={({ field }) => (
-                    <FormItem>
+                <FormField control={editForm.control} name="email" render={({
+              field
+            }) => <FormItem>
                       <FormLabel>E-mailadres</FormLabel>
                       <FormControl>
                         <Input placeholder="partner@bedrijf.nl" {...field} />
                       </FormControl>
                       <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                    </FormItem>} />
 
-                <FormField
-                  control={editForm.control}
-                  name="newPassword"
-                  render={({ field }) => (
-                    <FormItem>
+                <FormField control={editForm.control} name="newPassword" render={({
+              field
+            }) => <FormItem>
                       <FormLabel>Nieuw Wachtwoord (optioneel)</FormLabel>
                       <FormControl>
                         <Input type="password" placeholder="Laat leeg om niet te wijzigen" {...field} />
                       </FormControl>
                       <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                    </FormItem>} />
 
-                <FormField
-                  control={editForm.control}
-                  name="confirmPassword"
-                  render={({ field }) => (
-                    <FormItem>
+                <FormField control={editForm.control} name="confirmPassword" render={({
+              field
+            }) => <FormItem>
                       <FormLabel>Bevestig Nieuw Wachtwoord</FormLabel>
                       <FormControl>
                         <Input type="password" placeholder="Alleen nodig bij nieuw wachtwoord" {...field} />
                       </FormControl>
                       <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                    </FormItem>} />
 
                 <div className="flex gap-2 pt-4">
                   <Button type="submit" className="flex-1">
                     Account Bijwerken
                   </Button>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => {
-                      setShowEditDialog(false);
-                      setSelectedPartner(null);
-                      editForm.reset();
-                    }}
-                  >
+                  <Button type="button" variant="outline" onClick={() => {
+                setShowEditDialog(false);
+                setSelectedPartner(null);
+                editForm.reset();
+              }}>
                     Annuleren
                   </Button>
                 </div>
               </form>
-            </Form>
-          )}
+            </Form>}
         </DialogContent>
       </Dialog>
 
@@ -756,125 +614,91 @@ const PartnerAccountManagement = () => {
           <Form {...addPartnerForm}>
             <form onSubmit={addPartnerForm.handleSubmit(handleAddPartner)} className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <FormField
-                  control={addPartnerForm.control}
-                  name="first_name"
-                  render={({ field }) => (
-                    <FormItem>
+                <FormField control={addPartnerForm.control} name="first_name" render={({
+                field
+              }) => <FormItem>
                       <FormLabel>Voornaam</FormLabel>
                       <FormControl>
                         <Input placeholder="Jan" {...field} />
                       </FormControl>
                       <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                    </FormItem>} />
 
-                <FormField
-                  control={addPartnerForm.control}
-                  name="last_name"
-                  render={({ field }) => (
-                    <FormItem>
+                <FormField control={addPartnerForm.control} name="last_name" render={({
+                field
+              }) => <FormItem>
                       <FormLabel>Achternaam</FormLabel>
                       <FormControl>
                         <Input placeholder="Jansen" {...field} />
                       </FormControl>
                       <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                    </FormItem>} />
 
-                <FormField
-                  control={addPartnerForm.control}
-                  name="email"
-                  render={({ field }) => (
-                    <FormItem>
+                <FormField control={addPartnerForm.control} name="email" render={({
+                field
+              }) => <FormItem>
                       <FormLabel>E-mailadres</FormLabel>
                       <FormControl>
                         <Input type="email" placeholder="jan@bedrijf.nl" {...field} />
                       </FormControl>
                       <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                    </FormItem>} />
 
-                <FormField
-                  control={addPartnerForm.control}
-                  name="phone"
-                  render={({ field }) => (
-                    <FormItem>
+                <FormField control={addPartnerForm.control} name="phone" render={({
+                field
+              }) => <FormItem>
                       <FormLabel>Telefoon</FormLabel>
                       <FormControl>
                         <Input placeholder="+31 6 12345678" {...field} />
                       </FormControl>
                       <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                    </FormItem>} />
 
-                <FormField
-                  control={addPartnerForm.control}
-                  name="company_name"
-                  render={({ field }) => (
-                    <FormItem>
+                <FormField control={addPartnerForm.control} name="company_name" render={({
+                field
+              }) => <FormItem>
                       <FormLabel>Bedrijfsnaam</FormLabel>
                       <FormControl>
                         <Input placeholder="Bedrijf BV" {...field} />
                       </FormControl>
                       <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                    </FormItem>} />
 
-                <FormField
-                  control={addPartnerForm.control}
-                  name="industry"
-                  render={({ field }) => (
-                    <FormItem>
+                <FormField control={addPartnerForm.control} name="industry" render={({
+                field
+              }) => <FormItem>
                       <FormLabel>Branche (optioneel)</FormLabel>
                       <FormControl>
                         <Input placeholder="Bouw & Constructie" {...field} />
                       </FormControl>
                       <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                    </FormItem>} />
               </div>
 
-              <FormField
-                control={addPartnerForm.control}
-                name="website"
-                render={({ field }) => (
-                  <FormItem>
+              <FormField control={addPartnerForm.control} name="website" render={({
+              field
+            }) => <FormItem>
                     <FormLabel>Website (optioneel)</FormLabel>
                     <FormControl>
                       <Input placeholder="https://www.bedrijf.nl" {...field} />
                     </FormControl>
                     <FormMessage />
-                  </FormItem>
-                )}
-              />
+                  </FormItem>} />
 
-              <FormField
-                control={addPartnerForm.control}
-                name="description"
-                render={({ field }) => (
-                  <FormItem>
+              <FormField control={addPartnerForm.control} name="description" render={({
+              field
+            }) => <FormItem>
                     <FormLabel>Beschrijving (optioneel)</FormLabel>
                     <FormControl>
                       <Input placeholder="Korte beschrijving van het bedrijf..." {...field} />
                     </FormControl>
                     <FormMessage />
-                  </FormItem>
-                )}
-              />
+                  </FormItem>} />
 
               <div className="border-t pt-4 mt-4">
-                <FormField
-                  control={addPartnerForm.control}
-                  name="create_account"
-                  render={({ field }) => (
-                    <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                <FormField control={addPartnerForm.control} name="create_account" render={({
+                field
+              }) => <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
                       <div className="space-y-0.5">
                         <FormLabel className="text-base">
                           Account aanmaken
@@ -884,67 +708,48 @@ const PartnerAccountManagement = () => {
                         </div>
                       </div>
                       <FormControl>
-                        <Switch
-                          checked={field.value}
-                          onCheckedChange={(checked) => {
-                            field.onChange(checked);
-                            if (!checked) {
-                              addPartnerForm.setValue('password', '');
-                              addPartnerForm.setValue('confirmPassword', '');
-                            }
-                          }}
-                        />
+                        <Switch checked={field.value} onCheckedChange={checked => {
+                    field.onChange(checked);
+                    if (!checked) {
+                      addPartnerForm.setValue('password', '');
+                      addPartnerForm.setValue('confirmPassword', '');
+                    }
+                  }} />
                       </FormControl>
                       <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                    </FormItem>} />
 
-                {addPartnerForm.watch('create_account') && (
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-                    <FormField
-                      control={addPartnerForm.control}
-                      name="password"
-                      render={({ field }) => (
-                        <FormItem>
+                {addPartnerForm.watch('create_account') && <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                    <FormField control={addPartnerForm.control} name="password" render={({
+                  field
+                }) => <FormItem>
                           <FormLabel>Wachtwoord</FormLabel>
                           <FormControl>
                             <Input type="password" placeholder="Voer wachtwoord in" {...field} />
                           </FormControl>
                           <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+                        </FormItem>} />
 
-                    <FormField
-                      control={addPartnerForm.control}
-                      name="confirmPassword"
-                      render={({ field }) => (
-                        <FormItem>
+                    <FormField control={addPartnerForm.control} name="confirmPassword" render={({
+                  field
+                }) => <FormItem>
                           <FormLabel>Bevestig Wachtwoord</FormLabel>
                           <FormControl>
                             <Input type="password" placeholder="Bevestig wachtwoord" {...field} />
                           </FormControl>
                           <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-                )}
+                        </FormItem>} />
+                  </div>}
               </div>
 
               <div className="flex gap-2 pt-4">
                 <Button type="submit" className="flex-1">
                   Partner Toevoegen
                 </Button>
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => {
-                    setShowAddPartnerDialog(false);
-                    addPartnerForm.reset();
-                  }}
-                >
+                <Button type="button" variant="outline" onClick={() => {
+                setShowAddPartnerDialog(false);
+                addPartnerForm.reset();
+              }}>
                   Annuleren
                 </Button>
               </div>
@@ -952,8 +757,6 @@ const PartnerAccountManagement = () => {
           </Form>
         </DialogContent>
       </Dialog>
-    </div>
-  );
+    </div>;
 };
-
 export default PartnerAccountManagement;
