@@ -528,7 +528,7 @@ const Webshop = () => {
       {/* Marquee Section */}
       <section className="bg-primary overflow-hidden">
         <MarqueeAnimation direction="left" baseVelocity={-1} className="bg-primary text-white py-6 text-4xl md:text-6xl">
-          Bouw met Respect • Respectvolle Bouwplaats • Hoogwaardige Merchandise • Steun de Beweging • Premium Kwaliteit • Samen Bouwen aan Respect
+          Bouw met Respect • Respectvolle Bouwplaats • Hoogwaardige Merchandise • Steun de Beweging • Premium Kwaliteit • Samen Bouwen aan Respect • Bouw met Respect
         </MarqueeAnimation>
       </section>
       <section className="py-24 relative overflow-hidden bg-gradient-to-br from-primary/3 via-background to-secondary/3">
