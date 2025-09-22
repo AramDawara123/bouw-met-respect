@@ -1434,59 +1434,82 @@ Het Bouw met Respect team
           </div>
         </div>
 
-        {/* View Mode Tabs */}
-        <Tabs value={viewMode} onValueChange={(value) => setViewMode(value as 'memberships' | 'orders' | 'profiles' | 'products' | 'partners' | 'pricing' | 'discounts')}>
-          <TabsList className="grid w-full grid-cols-2 lg:grid-cols-4 gap-2 h-auto p-2">
-            {/* Gebruikers & Data */}
-            <div className="space-y-2">
-              <div className="text-xs font-medium text-muted-foreground px-2">Gebruikers & Data</div>
-              <div className="grid grid-cols-1 gap-1">
-                <TabsTrigger value="memberships" className="flex items-center gap-2 h-10">
-                  <Users className="w-4 h-4" />
-                  <span className="hidden sm:inline">Lidmaatschappen</span>
-                </TabsTrigger>
-                <TabsTrigger value="profiles" className="flex items-center gap-2 h-10">
-                  <Building2 className="w-4 h-4" />
-                  <span className="hidden sm:inline">Bedrijven</span>
-                </TabsTrigger>
-                <TabsTrigger value="partners" className="flex items-center gap-2 h-10">
-                  <Building2 className="w-4 h-4" />
-                  <span className="hidden sm:inline">Partners</span>
-                </TabsTrigger>
+        {/* Navigation Tabs */}
+        <div className="space-y-6">
+          <Tabs value={viewMode} onValueChange={(value) => setViewMode(value as 'memberships' | 'orders' | 'profiles' | 'products' | 'partners' | 'pricing' | 'discounts')}>
+            <div className="space-y-4">
+              {/* Gebruikers & Data Section */}
+              <div className="space-y-3">
+                <h3 className="text-sm font-semibold text-foreground/80 uppercase tracking-wider">Gebruikers & Data</h3>
+                <TabsList className="inline-flex h-auto p-1 space-x-1 bg-muted/50 backdrop-blur-sm border border-border/50 rounded-lg">
+                  <TabsTrigger 
+                    value="memberships" 
+                    className="flex items-center gap-2 px-4 py-2.5 rounded-md transition-all duration-200 hover:bg-background/80 data-[state=active]:bg-background data-[state=active]:shadow-sm data-[state=active]:text-primary font-medium"
+                  >
+                    <Users className="w-4 h-4" />
+                    <span>Lidmaatschappen</span>
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="profiles" 
+                    className="flex items-center gap-2 px-4 py-2.5 rounded-md transition-all duration-200 hover:bg-background/80 data-[state=active]:bg-background data-[state=active]:shadow-sm data-[state=active]:text-primary font-medium"
+                  >
+                    <Building2 className="w-4 h-4" />
+                    <span>Bedrijven</span>
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="partners" 
+                    className="flex items-center gap-2 px-4 py-2.5 rounded-md transition-all duration-200 hover:bg-background/80 data-[state=active]:bg-background data-[state=active]:shadow-sm data-[state=active]:text-primary font-medium"
+                  >
+                    <Building2 className="w-4 h-4" />
+                    <span>Partners</span>
+                  </TabsTrigger>
+                </TabsList>
               </div>
-            </div>
 
-            {/* Webshop */}
-            <div className="space-y-2">
-              <div className="text-xs font-medium text-muted-foreground px-2">Webshop</div>
-              <div className="grid grid-cols-1 gap-1">
-                <TabsTrigger value="orders" className="flex items-center gap-2 h-10">
-                  <ShoppingBag className="w-4 h-4" />
-                  <span className="hidden sm:inline">Bestellingen</span>
-                </TabsTrigger>
-                <TabsTrigger value="products" className="flex items-center gap-2 h-10">
-                  <Package className="w-4 h-4" />
-                  <span className="hidden sm:inline">Producten</span>
-                </TabsTrigger>
-                <TabsTrigger value="discounts" className="flex items-center gap-2 h-10">
-                  <Tag className="w-4 h-4" />
-                  <span className="hidden sm:inline">Kortingen</span>
-                </TabsTrigger>
+              {/* Webshop Section */}
+              <div className="space-y-3">
+                <h3 className="text-sm font-semibold text-foreground/80 uppercase tracking-wider">Webshop</h3>
+                <TabsList className="inline-flex h-auto p-1 space-x-1 bg-muted/50 backdrop-blur-sm border border-border/50 rounded-lg">
+                  <TabsTrigger 
+                    value="orders" 
+                    className="flex items-center gap-2 px-4 py-2.5 rounded-md transition-all duration-200 hover:bg-background/80 data-[state=active]:bg-background data-[state=active]:shadow-sm data-[state=active]:text-primary font-medium"
+                  >
+                    <ShoppingBag className="w-4 h-4" />
+                    <span>Bestellingen</span>
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="products" 
+                    className="flex items-center gap-2 px-4 py-2.5 rounded-md transition-all duration-200 hover:bg-background/80 data-[state=active]:bg-background data-[state=active]:shadow-sm data-[state=active]:text-primary font-medium"
+                  >
+                    <Package className="w-4 h-4" />
+                    <span>Producten</span>
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="discounts" 
+                    className="flex items-center gap-2 px-4 py-2.5 rounded-md transition-all duration-200 hover:bg-background/80 data-[state=active]:bg-background data-[state=active]:shadow-sm data-[state=active]:text-primary font-medium"
+                  >
+                    <Tag className="w-4 h-4" />
+                    <span>Kortingen</span>
+                  </TabsTrigger>
+                </TabsList>
               </div>
-            </div>
 
-            {/* Configuratie */}
-            <div className="space-y-2">
-              <div className="text-xs font-medium text-muted-foreground px-2">Configuratie</div>
-              <div className="grid grid-cols-1 gap-1">
-                <TabsTrigger value="pricing" className="flex items-center gap-2 h-10">
-                  <Euro className="w-4 h-4" />
-                  <span className="hidden sm:inline">Prijzen</span>
-                </TabsTrigger>
+              {/* Configuratie Section */}
+              <div className="space-y-3">
+                <h3 className="text-sm font-semibold text-foreground/80 uppercase tracking-wider">Configuratie</h3>
+                <TabsList className="inline-flex h-auto p-1 space-x-1 bg-muted/50 backdrop-blur-sm border border-border/50 rounded-lg">
+                  <TabsTrigger 
+                    value="pricing" 
+                    className="flex items-center gap-2 px-4 py-2.5 rounded-md transition-all duration-200 hover:bg-background/80 data-[state=active]:bg-background data-[state=active]:shadow-sm data-[state=active]:text-primary font-medium"
+                  >
+                    <Euro className="w-4 h-4" />
+                    <span>Prijzen</span>
+                  </TabsTrigger>
+                </TabsList>
               </div>
             </div>
-          </TabsList>
-        </Tabs>
+          </Tabs>
+        </div>
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 xl:gap-8">
