@@ -512,10 +512,12 @@ const Webshop = () => {
                 <div className="w-2 h-2 bg-primary rounded-full"></div>
                 Gratis verzending vanaf €50
               </div>
+              <div className="text-muted-foreground">•</div>
               <div className="flex items-center gap-2 px-4 py-2 bg-accent/10 rounded-full border border-accent/20">
                 <div className="w-2 h-2 bg-accent rounded-full"></div>
                 Hoogwaardige kwaliteit
               </div>
+              <div className="text-muted-foreground">•</div>
               <div className="flex items-center gap-2 px-4 py-2 bg-secondary/10 rounded-full border border-secondary/20">
                 <div className="w-2 h-2 bg-secondary rounded-full"></div>
                 Steun de beweging
