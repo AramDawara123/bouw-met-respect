@@ -126,8 +126,10 @@ const Dashboard = () => {
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [selectedMembership, setSelectedMembership] = useState<Membership | null>(null);
   const [editingMembership, setEditingMembership] = useState<Membership | null>(null);
+  const [editingOrder, setEditingOrder] = useState<Order | null>(null);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [isEditing, setIsEditing] = useState(false);
+  const [isEditingOrder, setIsEditingOrder] = useState(false);
   const [isEditingProduct, setIsEditingProduct] = useState(false);
   const [user, setUser] = useState(null);
   const [isAdmin, setIsAdmin] = useState(false);
@@ -804,6 +806,54 @@ const Dashboard = () => {
       toast({
         title: "Fout",
         description: "Kon de bestelling niet verwerken",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const editOrder = (order: Order) => {
+    setEditingOrder(order);
+    setIsEditingOrder(true);
+  };
+
+  const updateOrder = async () => {
+    if (!editingOrder) return;
+
+    try {
+      const { error } = await supabase
+        .from('orders')
+        .update({
+          customer_first_name: editingOrder.customer_first_name,
+          customer_last_name: editingOrder.customer_last_name,
+          customer_email: editingOrder.customer_email,
+          customer_phone: editingOrder.customer_phone,
+          address_street: editingOrder.address_street,
+          address_house_number: editingOrder.address_house_number,
+          address_postcode: editingOrder.address_postcode,
+          address_city: editingOrder.address_city,
+          address_country: editingOrder.address_country,
+          payment_status: editingOrder.payment_status,
+          subtotal: editingOrder.subtotal,
+          shipping: editingOrder.shipping,
+          total: editingOrder.total
+        })
+        .eq('id', editingOrder.id);
+
+      if (error) throw error;
+
+      toast({
+        title: "Bestelling bijgewerkt",
+        description: "De bestelling is succesvol bijgewerkt",
+      });
+
+      setIsEditingOrder(false);
+      setEditingOrder(null);
+      fetchOrders();
+    } catch (error) {
+      console.error('Error updating order:', error);
+      toast({
+        title: "Fout",
+        description: "Kon de bestelling niet bijwerken",
         variant: "destructive",
       });
     }
@@ -1974,6 +2024,15 @@ Het Bouw met Respect team
                             <Printer className="w-4 h-4" />
                             Print
                           </Button>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => editOrder(order)}
+                            className="flex items-center gap-1"
+                          >
+                            <Edit className="w-4 h-4" />
+                            Bewerk
+                          </Button>
                           {order.payment_status === 'paid' && (
                             <Button
                               size="sm"
@@ -2166,6 +2225,171 @@ Het Bouw met Respect team
           onSuccess={handleProfileFormSuccess}
           editingProfile={editingProfile}
         />
+
+        {/* Order Edit Dialog */}
+        <Dialog open={isEditingOrder} onOpenChange={setIsEditingOrder}>
+          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>Bestelling Bewerken</DialogTitle>
+            </DialogHeader>
+            {editingOrder && (
+              <div className="space-y-6">
+                {/* Customer Information */}
+                <div>
+                  <h3 className="text-lg font-semibold mb-3 text-primary">Klantgegevens</h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <label className="text-sm font-medium text-muted-foreground">Voornaam</label>
+                      <Input
+                        value={editingOrder.customer_first_name || ''}
+                        onChange={(e) => setEditingOrder({...editingOrder, customer_first_name: e.target.value})}
+                        className="mt-1"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium text-muted-foreground">Achternaam</label>
+                      <Input
+                        value={editingOrder.customer_last_name || ''}
+                        onChange={(e) => setEditingOrder({...editingOrder, customer_last_name: e.target.value})}
+                        className="mt-1"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium text-muted-foreground">Email</label>
+                      <Input
+                        type="email"
+                        value={editingOrder.customer_email || ''}
+                        onChange={(e) => setEditingOrder({...editingOrder, customer_email: e.target.value})}
+                        className="mt-1"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium text-muted-foreground">Telefoon</label>
+                      <Input
+                        value={editingOrder.customer_phone || ''}
+                        onChange={(e) => setEditingOrder({...editingOrder, customer_phone: e.target.value})}
+                        className="mt-1"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Address Information */}
+                <div>
+                  <h3 className="text-lg font-semibold mb-3 text-primary">Adresgegevens</h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <label className="text-sm font-medium text-muted-foreground">Straat</label>
+                      <Input
+                        value={editingOrder.address_street || ''}
+                        onChange={(e) => setEditingOrder({...editingOrder, address_street: e.target.value})}
+                        className="mt-1"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium text-muted-foreground">Huisnummer</label>
+                      <Input
+                        value={editingOrder.address_house_number || ''}
+                        onChange={(e) => setEditingOrder({...editingOrder, address_house_number: e.target.value})}
+                        className="mt-1"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium text-muted-foreground">Postcode</label>
+                      <Input
+                        value={editingOrder.address_postcode || ''}
+                        onChange={(e) => setEditingOrder({...editingOrder, address_postcode: e.target.value})}
+                        className="mt-1"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium text-muted-foreground">Plaats</label>
+                      <Input
+                        value={editingOrder.address_city || ''}
+                        onChange={(e) => setEditingOrder({...editingOrder, address_city: e.target.value})}
+                        className="mt-1"
+                      />
+                    </div>
+                    <div className="sm:col-span-2">
+                      <label className="text-sm font-medium text-muted-foreground">Land</label>
+                      <Input
+                        value={editingOrder.address_country || 'Nederland'}
+                        onChange={(e) => setEditingOrder({...editingOrder, address_country: e.target.value})}
+                        className="mt-1"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Order Information */}
+                <div>
+                  <h3 className="text-lg font-semibold mb-3 text-primary">Bestelgegevens</h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div>
+                      <label className="text-sm font-medium text-muted-foreground">Subtotaal (cent)</label>
+                      <Input
+                        type="number"
+                        value={editingOrder.subtotal}
+                        onChange={(e) => setEditingOrder({...editingOrder, subtotal: parseInt(e.target.value) || 0})}
+                        className="mt-1"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium text-muted-foreground">Verzendkosten (cent)</label>
+                      <Input
+                        type="number"
+                        value={editingOrder.shipping}
+                        onChange={(e) => setEditingOrder({...editingOrder, shipping: parseInt(e.target.value) || 0})}
+                        className="mt-1"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium text-muted-foreground">Totaal (cent)</label>
+                      <Input
+                        type="number"
+                        value={editingOrder.total}
+                        onChange={(e) => setEditingOrder({...editingOrder, total: parseInt(e.target.value) || 0})}
+                        className="mt-1"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Payment Status */}
+                <div>
+                  <h3 className="text-lg font-semibold mb-3 text-primary">Betaalstatus</h3>
+                  <Select 
+                    value={editingOrder.payment_status} 
+                    onValueChange={(value) => setEditingOrder({...editingOrder, payment_status: value})}
+                  >
+                    <SelectTrigger className="w-48">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="pending">Pending</SelectItem>
+                      <SelectItem value="paid">Betaald</SelectItem>
+                      <SelectItem value="processed">Verwerkt</SelectItem>
+                      <SelectItem value="shipped">Verzonden</SelectItem>
+                      <SelectItem value="delivered">Geleverd</SelectItem>
+                      <SelectItem value="cancelled">Geannuleerd</SelectItem>
+                      <SelectItem value="refunded">Terugbetaald</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="flex justify-end gap-3 pt-4">
+                  <Button variant="outline" onClick={() => setIsEditingOrder(false)}>
+                    Annuleren
+                  </Button>
+                  <Button onClick={updateOrder}>
+                    <Save className="w-4 h-4 mr-2" />
+                    Opslaan
+                  </Button>
+                </div>
+              </div>
+            )}
+          </DialogContent>
+        </Dialog>
 
         {/* Partner Edit Dialog */}
         <Dialog open={isEditingPartner} onOpenChange={setIsEditingPartner}>
