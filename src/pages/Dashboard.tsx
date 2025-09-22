@@ -558,6 +558,17 @@ const Dashboard = () => {
     const orderDate = new Date(order.created_at).toLocaleDateString('nl-NL');
     const orderTime = new Date(order.created_at).toLocaleTimeString('nl-NL');
     
+    // Handle items correctly - they might already be parsed from JSONB
+    let items = [];
+    try {
+      items = Array.isArray(order.items) ? order.items : 
+              typeof order.items === 'string' ? JSON.parse(order.items) : 
+              order.items ? [order.items] : [];
+    } catch (e) {
+      console.error('Error parsing order items:', e);
+      items = [];
+    }
+    
     printWindow.document.write(`
       <!DOCTYPE html>
       <html>
@@ -637,12 +648,12 @@ const Dashboard = () => {
 
         <div class="section products">
           <h3>Bestelde Producten</h3>
-          ${order.items ? JSON.parse(order.items).map((item: any) => `
+          ${items.length > 0 ? items.map((item: any) => `
             <div class="product-item">
-              <div><strong>${item.name}</strong></div>
-              <div>Prijs: €${(item.price / 100).toFixed(2)}</div>
-              <div>Aantal: ${item.quantity}</div>
-              <div>Subtotaal: €${((item.price * item.quantity) / 100).toFixed(2)}</div>
+              <div><strong>${item.name || 'Onbekend product'}</strong></div>
+              <div>Prijs: €${((item.price || 0) / 100).toFixed(2)}</div>
+              <div>Aantal: ${item.quantity || 1}</div>
+              <div>Subtotaal: €${(((item.price || 0) * (item.quantity || 1)) / 100).toFixed(2)}</div>
             </div>
           `).join('') : '<p>Geen producten gevonden</p>'}
         </div>
