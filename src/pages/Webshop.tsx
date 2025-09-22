@@ -303,9 +303,10 @@ const Webshop = () => {
       setIsCheckingOut(false);
     }
   }, [cart, products, customer, toast]);
-  return <div className="min-h-screen w-full">
+  return (
+    <div className="min-h-screen w-full">
       {/* Sticky Header */}
-      <header className="sticky top-0 z-50 bg-background/95 backdrop-blur-lg border-b border-border/50 transition-all duration-200 shadow-sm">
+      <header className="sticky top-0 z-50 bg-background/95 backdrop-blur-lg border-b border-border/50 shadow-sm">
         <div className="container mx-auto px-4 py-3">
           <div className="flex items-center justify-between">
             <Link to="/" className="flex items-center space-x-3 text-primary hover:text-primary/80 transition-colors duration-200 group">
@@ -842,6 +843,8 @@ const Webshop = () => {
       
       
       <Footer />
-    </div>;
+    </div>
+  );
 };
+
 export default Webshop;
