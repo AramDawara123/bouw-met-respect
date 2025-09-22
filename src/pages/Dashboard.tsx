@@ -18,6 +18,7 @@ import ProductManagement from "@/components/ProductManagement";
 import PartnerAccountManagement from "@/components/PartnerAccountManagement";
 import MembershipPricingManager from "@/components/MembershipPricingManager";
 import DiscountCodeManager from "@/components/DiscountCodeManager";
+import PartnerPricingManager from "@/components/PartnerPricingManager";
 
 interface Membership {
   id: string;
@@ -135,7 +136,7 @@ const Dashboard = () => {
   const [isEditingProduct, setIsEditingProduct] = useState(false);
   const [user, setUser] = useState(null);
   const [isAdmin, setIsAdmin] = useState(false);
-  const [viewMode, setViewMode] = useState<'memberships' | 'orders' | 'profiles' | 'products' | 'partners' | 'pricing' | 'discounts'>("memberships");
+  const [viewMode, setViewMode] = useState<'memberships' | 'orders' | 'profiles' | 'products' | 'partners' | 'pricing' | 'partner-pricing' | 'discounts'>("memberships");
   const [showProfileForm, setShowProfileForm] = useState(false);
   const [editingProfile, setEditingProfile] = useState<CompanyProfile | null>(null);
   const [editingPartner, setEditingPartner] = useState<PartnerAccount | null>(null);
@@ -1436,7 +1437,7 @@ Het Bouw met Respect team
 
         {/* Navigation Tabs */}
         <div className="space-y-6">
-          <Tabs value={viewMode} onValueChange={(value) => setViewMode(value as 'memberships' | 'orders' | 'profiles' | 'products' | 'partners' | 'pricing' | 'discounts')}>
+          <Tabs value={viewMode} onValueChange={(value) => setViewMode(value as 'memberships' | 'orders' | 'profiles' | 'products' | 'partners' | 'pricing' | 'partner-pricing' | 'discounts')}>
             <div className="space-y-4">
               {/* Gebruikers & Data Section */}
               <div className="space-y-3">
@@ -1503,7 +1504,14 @@ Het Bouw met Respect team
                     className="flex items-center gap-2 px-4 py-2.5 rounded-md transition-all duration-200 hover:bg-background/80 data-[state=active]:bg-background data-[state=active]:shadow-sm data-[state=active]:text-primary font-medium"
                   >
                     <Euro className="w-4 h-4" />
-                    <span>Prijzen</span>
+                    <span>Lidmaatschap Prijzen</span>
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="partner-pricing" 
+                    className="flex items-center gap-2 px-4 py-2.5 rounded-md transition-all duration-200 hover:bg-background/80 data-[state=active]:bg-background data-[state=active]:shadow-sm data-[state=active]:text-primary font-medium"
+                  >
+                    <Building2 className="w-4 h-4" />
+                    <span>Partner Prijzen</span>
                   </TabsTrigger>
                 </TabsList>
               </div>
@@ -2286,6 +2294,11 @@ Het Bouw met Respect team
         {/* Discounts Section */}
         {viewMode === 'discounts' && (
           <DiscountCodeManager />
+        )}
+
+        {/* Partner Pricing Section */}
+        {viewMode === 'partner-pricing' && (
+          <PartnerPricingManager />
         )}
 
         <CompanyProfileForm

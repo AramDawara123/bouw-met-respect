@@ -73,6 +73,7 @@ export type Database = {
       discount_codes: {
         Row: {
           active: boolean | null
+          applies_to: string
           code: string
           created_at: string
           description: string | null
@@ -88,6 +89,7 @@ export type Database = {
         }
         Insert: {
           active?: boolean | null
+          applies_to?: string
           code: string
           created_at?: string
           description?: string | null
@@ -103,6 +105,7 @@ export type Database = {
         }
         Update: {
           active?: boolean | null
+          applies_to?: string
           code?: string
           created_at?: string
           description?: string | null

@@ -22,6 +22,7 @@ interface DiscountCode {
   usage_limit?: number | null;
   used_count: number;
   active: boolean;
+  applies_to: 'products' | 'memberships' | 'partners';
   starts_at: string;
   expires_at?: string | null;
   created_at: string;
@@ -43,6 +44,7 @@ const DiscountCodeManager = () => {
     discount_value: "",
     minimum_order_amount: "",
     usage_limit: "",
+    applies_to: "products" as 'products' | 'memberships' | 'partners',
     active: true,
     expires_at: ""
   });
@@ -61,7 +63,8 @@ const DiscountCodeManager = () => {
       if (error) throw error;
       setCodes((data || []).map(code => ({
         ...code,
-        discount_type: code.discount_type as 'percentage' | 'fixed_amount'
+        discount_type: code.discount_type as 'percentage' | 'fixed_amount',
+        applies_to: code.applies_to as 'products' | 'memberships' | 'partners'
       })));
     } catch (error) {
       console.error('Error fetching discount codes:', error);
@@ -118,6 +121,7 @@ const DiscountCodeManager = () => {
             : Math.round(parseFloat(newCode.discount_value) * 100), // Convert to cents for fixed amount
           minimum_order_amount: Math.round(parseFloat(newCode.minimum_order_amount || '0') * 100), // Convert to cents
           usage_limit: newCode.usage_limit ? parseInt(newCode.usage_limit) : null,
+          applies_to: newCode.applies_to,
           active: newCode.active,
           expires_at: newCode.expires_at || null
         }]);
@@ -136,6 +140,7 @@ const DiscountCodeManager = () => {
         discount_value: "",
         minimum_order_amount: "",
         usage_limit: "",
+        applies_to: "products",
         active: true,
         expires_at: ""
       });
@@ -172,6 +177,7 @@ const DiscountCodeManager = () => {
           discount_value: editingCode.discount_value,
           minimum_order_amount: editingCode.minimum_order_amount,
           usage_limit: editingCode.usage_limit,
+          applies_to: editingCode.applies_to,
           active: editingCode.active,
           expires_at: editingCode.expires_at
         })
@@ -318,6 +324,20 @@ const DiscountCodeManager = () => {
                   placeholder="Beschrijving van de kortingscode"
                 />
               </div>
+
+              <div>
+                <label className="text-sm font-medium">Geldt voor</label>
+                <Select value={newCode.applies_to} onValueChange={(value) => setNewCode({...newCode, applies_to: value as 'products' | 'memberships' | 'partners'})}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="products">Webshop Producten</SelectItem>
+                    <SelectItem value="memberships">Lidmaatschappen</SelectItem>
+                    <SelectItem value="partners">Partner Abonnementen</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
               
               <div className="grid grid-cols-2 gap-4">
                 <div>
@@ -411,6 +431,7 @@ const DiscountCodeManager = () => {
                 <TableRow>
                   <TableHead>Code</TableHead>
                   <TableHead>Beschrijving</TableHead>
+                  <TableHead>Geldt voor</TableHead>
                   <TableHead>Korting</TableHead>
                   <TableHead>Gebruikt</TableHead>
                   <TableHead>Status</TableHead>
@@ -438,6 +459,13 @@ const DiscountCodeManager = () => {
                       <div className="max-w-xs truncate">
                         {code.description || '-'}
                       </div>
+                    </TableCell>
+                    <TableCell>
+                      <Badge variant="outline">
+                        {code.applies_to === 'products' ? 'Webshop' : 
+                         code.applies_to === 'memberships' ? 'Lidmaatschappen' : 
+                         'Partners'}
+                      </Badge>
                     </TableCell>
                     <TableCell>
                       <div className="flex flex-col">
