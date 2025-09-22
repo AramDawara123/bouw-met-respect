@@ -106,7 +106,7 @@ const Hero = () => {
                   transitionDelay: featuresVisible ? `${index * 100}ms` : '0ms'
                 }}
               >
-                <div className="w-12 h-12 md:w-16 md:h-16 mx-auto mb-4 md:mb-6 bg-primary rounded-2xl flex items-center justify-center transition-transform duration-300 hover:bg-primary/90">
+                <div className="w-12 h-12 md:w-16 md:h-16 mx-auto mb-4 md:mb-6 bg-primary rounded-2xl flex items-center justify-center">
                   <feature.icon className="w-6 h-6 md:w-8 md:h-8 text-accent" />
                 </div>
                 <h3 className="text-lg md:text-xl font-semibold mb-2 md:mb-3 text-foreground">

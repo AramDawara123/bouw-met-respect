@@ -79,7 +79,7 @@ const Mission = () => {
                 transitionDelay: cardsVisible ? `${index * 150}ms` : '0ms'
               }}
             >
-              <div className="w-16 h-16 mb-6 bg-blue-500 rounded-xl flex items-center justify-center transition-all duration-300 hover:bg-blue-600 shadow-lg">
+              <div className="w-16 h-16 mb-6 bg-blue-500 rounded-xl flex items-center justify-center shadow-lg">
                 <method.icon className="w-8 h-8 text-yellow-400" />
               </div>
               <h3 className="text-xl font-semibold mb-4 text-foreground">{method.title}</h3>

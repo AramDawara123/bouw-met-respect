@@ -85,7 +85,7 @@ const Statistics = () => {
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
           {stats.map((stat, index) => (
             <Card key={index} className="p-8 text-center hover:shadow-xl transition-all duration-300 border-0 bg-card group hover:scale-105">
-              <div className="w-16 h-16 mx-auto mb-6 bg-blue-500 rounded-xl flex items-center justify-center group-hover:bg-blue-600 transition-colors shadow-lg">
+              <div className="w-16 h-16 mx-auto mb-6 bg-blue-500 rounded-xl flex items-center justify-center shadow-lg">
                 <stat.icon className="w-8 h-8 text-yellow-400" />
               </div>
               <div className="text-4xl font-bold text-primary mb-2">

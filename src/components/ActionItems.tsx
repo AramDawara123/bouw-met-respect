@@ -144,7 +144,7 @@ const ActionItems = () => {
                   </div>
                 )}
                 
-                <div className="w-16 h-16 mx-auto mb-6 rounded-xl flex items-center justify-center bg-blue-500 hover:bg-blue-600 transition-colors shadow-lg">
+                <div className="w-16 h-16 mx-auto mb-6 rounded-xl flex items-center justify-center bg-blue-500 shadow-lg">
                   <tier.icon className="w-8 h-8 text-yellow-400" />
                 </div>
                 
@@ -192,7 +192,7 @@ const ActionItems = () => {
               </div>
               
               <div className="relative flex items-start space-x-6">
-                <div className="w-16 h-16 bg-blue-500 rounded-xl flex items-center justify-center flex-shrink-0 transition-all duration-300 group-hover:scale-110 group-hover:bg-blue-600 shadow-lg">
+                <div className="w-16 h-16 bg-blue-500 rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg">
                   <value.icon className="w-8 h-8 text-yellow-400" />
                 </div>
                 <div className="flex-1">
