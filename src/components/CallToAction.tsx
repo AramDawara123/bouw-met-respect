@@ -13,13 +13,6 @@ const CallToAction = () => {
       <section className="py-20 bg-gradient-to-r from-primary/10 via-secondary/10 to-primary/10">
         <div className="container mx-auto px-4">
           <Card className="relative overflow-hidden border-0 bg-gradient-to-br from-primary to-secondary text-primary-foreground">
-            {/* Background Pattern */}
-            <div className="absolute inset-0 opacity-10">
-              <div className="absolute top-10 left-10 w-20 h-20 border-2 border-white/30 rounded-full"></div>
-              <div className="absolute top-32 right-20 w-16 h-16 border-2 border-white/30 rounded-full"></div>
-              <div className="absolute bottom-10 left-1/3 w-12 h-12 border-2 border-white/30 rounded-full"></div>
-              <div className="absolute bottom-32 right-10 w-24 h-24 border-2 border-white/30 rounded-full"></div>
-            </div>
 
             <div className="relative z-10 p-12 lg:p-20 text-center">
               <div className="flex justify-center mb-8">
