@@ -144,6 +144,7 @@ const Dashboard = () => {
   const [newEmail, setNewEmail] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [testingEmail, setTestingEmail] = useState(false);
+  const [creatingTestOrder, setCreatingTestOrder] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -483,7 +484,7 @@ const Dashboard = () => {
       console.log('Test email response:', data);
       toast({
         title: "Test Email Verzonden",
-        description: "Test bestelbevestiging is verzonden naar arram.dawara@gmail.com",
+        description: "Test bestelbevestiging is verzonden naar info@bouwmetrespect.nl",
       });
     } catch (error) {
       console.error('Error sending test email:', error);
@@ -494,6 +495,33 @@ const Dashboard = () => {
       });
     } finally {
       setTestingEmail(false);
+    }
+  };
+
+  const createTestOrder = async () => {
+    setCreatingTestOrder(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('create-test-order');
+
+      if (error) throw error;
+
+      console.log('Test order response:', data);
+      toast({
+        title: "Test Bestelling Aangemaakt",
+        description: "Test bestelling is aangemaakt en bevestigingsemail is verzonden naar info@bouwmetrespect.nl",
+      });
+      
+      // Refresh orders to show the new test order
+      await fetchOrders();
+    } catch (error) {
+      console.error('Error creating test order:', error);
+      toast({
+        title: "Fout",
+        description: "Kon test bestelling niet aanmaken: " + (error as any)?.message,
+        variant: "destructive"
+      });
+    } finally {
+      setCreatingTestOrder(false);
     }
   };
 
@@ -1264,6 +1292,15 @@ Het Bouw met Respect team
             >
               <Mail className="w-4 h-4" />
               {testingEmail ? "Verzenden..." : "Test Email"}
+            </Button>
+            <Button 
+              onClick={createTestOrder} 
+              disabled={creatingTestOrder}
+              className="flex items-center gap-2 w-full sm:w-auto"
+              variant="secondary"
+            >
+              <ShoppingBag className="w-4 h-4" />
+              {creatingTestOrder ? "Aanmaken..." : "Test Bestelling"}
             </Button>
           </div>
         </div>
