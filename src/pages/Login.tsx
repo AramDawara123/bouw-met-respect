@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -13,8 +13,14 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [creatingAdmin, setCreatingAdmin] = useState(false);
+  const [testingLogin, setTestingLogin] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
+
+  // Auto-fill password when component loads
+  React.useEffect(() => {
+    setPassword('admin123456');
+  }, []);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -96,14 +102,27 @@ const Login = () => {
         throw error;
       }
 
-      toast({
-        title: "Admin Account Aangemaakt",
-        description: "Admin account is aangemaakt. Email: info@bouwmetrespect.nl, Wachtwoord: admin123456",
-        duration: 10000
+      // Try to sign in immediately after creating the account
+      const { error: signInError } = await supabase.auth.signInWithPassword({
+        email: "info@bouwmetrespect.nl",
+        password: "admin123456"
       });
 
-      // Auto-fill the form
-      setPassword('admin123456');
+      if (signInError) {
+        toast({
+          title: "Admin Account Aangemaakt",
+          description: "Account aangemaakt maar kon niet automatisch inloggen. Probeer handmatig in te loggen.",
+          duration: 10000
+        });
+        setPassword('admin123456');
+      } else {
+        toast({
+          title: "Admin Account Aangemaakt",
+          description: "Account aangemaakt en je bent ingelogd!",
+          duration: 5000
+        });
+        navigate("/dashboard");
+      }
       
     } catch (error: any) {
       console.error('Error creating admin account:', error);
@@ -114,6 +133,39 @@ const Login = () => {
       });
     } finally {
       setCreatingAdmin(false);
+    }
+  };
+
+  const testAdminLogin = async () => {
+    setTestingLogin(true);
+    try {
+      const { error } = await supabase.auth.signInWithPassword({
+        email: "info@bouwmetrespect.nl",
+        password: "admin123456"
+      });
+
+      if (error) {
+        toast({
+          title: "Test Login Mislukt",
+          description: `Account bestaat niet of wachtwoord klopt niet: ${error.message}`,
+          variant: "destructive"
+        });
+      } else {
+        toast({
+          title: "Test Login Succesvol",
+          description: "Admin account werkt! Je wordt doorgestuurd naar dashboard.",
+          duration: 3000
+        });
+        navigate("/dashboard");
+      }
+    } catch (error: any) {
+      toast({
+        title: "Test Login Fout",
+        description: `Onverwachte fout: ${error.message}`,
+        variant: "destructive"
+      });
+    } finally {
+      setTestingLogin(false);
     }
   };
 
@@ -135,6 +187,8 @@ const Login = () => {
             </CardDescription>
             <div className="text-sm text-muted-foreground text-center mt-2 p-3 bg-muted/50 rounded-lg">
               <strong>Admin toegang:</strong> Email is al ingevuld. Klik "Admin Account Aanmaken" als je nog niet kunt inloggen.
+              <br />
+              <strong>Wachtwoord:</strong> admin123456
             </div>
           </CardHeader>
           <CardContent>
@@ -173,6 +227,16 @@ const Login = () => {
                   disabled={creatingAdmin}
                 >
                   {creatingAdmin ? "Aanmaken..." : "Admin Account Aanmaken"}
+                </Button>
+
+                <Button 
+                  type="button" 
+                  variant="secondary" 
+                  className="w-full" 
+                  onClick={testAdminLogin}
+                  disabled={testingLogin}
+                >
+                  {testingLogin ? "Testen..." : "Test Admin Login"}
                 </Button>
               </div>
             </form>
