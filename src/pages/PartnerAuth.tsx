@@ -135,6 +135,16 @@ const PartnerAuth = () => {
         return;
       }
 
+      // Send our own confirmation email via Resend
+      const emailResponse = await supabase.functions.invoke('send-confirmation-email', {
+        body: { email: signUpForm.email }
+      });
+
+      if (emailResponse.error) {
+        console.error('Error sending confirmation email:', emailResponse.error);
+        // Still show success message as user was created
+      }
+
       toast({
         title: "Registratie succesvol",
         description: "Controleer je email voor de bevestigingslink"
