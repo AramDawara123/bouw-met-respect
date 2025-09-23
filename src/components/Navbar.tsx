@@ -41,6 +41,9 @@ const Navbar = () => {
                 <ShoppingCart className="w-4 h-4" />
                 Webshop
               </Link>
+              <Link to="/partner-auth" className="text-muted-foreground hover:text-foreground transition-colors">
+                Partner Login
+              </Link>
               <Button className="ml-4" onClick={handleMembershipClick}>
                 Sluit je aan bij de beweging
               </Button>
@@ -73,6 +76,9 @@ const Navbar = () => {
                 <Link to="/webshop" className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors py-2" onClick={() => setIsMenuOpen(false)}>
                   <ShoppingCart className="w-4 h-4" />
                   Webshop
+                </Link>
+                <Link to="/partner-auth" className="text-muted-foreground hover:text-foreground transition-colors py-2" onClick={() => setIsMenuOpen(false)}>
+                  Partner Login
                 </Link>
                 <Button className="w-full mt-4" onClick={handleMembershipClick}>
                   Sluit je aan bij de beweging

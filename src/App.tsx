@@ -15,6 +15,7 @@ import Dashboard from "./pages/Dashboard";
 import Login from "./pages/Login";
 import CompanyProfiles from "./pages/CompanyProfiles";
 import PartnerDashboard from "./pages/PartnerDashboard";
+import PartnerAuth from "./pages/PartnerAuth";
 import PartnershipSuccess from "./pages/PartnershipSuccess";
 
 import NotFound from "./pages/NotFound";
@@ -23,7 +24,7 @@ const queryClient = new QueryClient();
 
 const AppContent = () => {
   const location = useLocation();
-  const showNavbar = location.pathname !== '/webshop' && location.pathname !== '/login' && location.pathname !== '/partner-dashboard';
+  const showNavbar = location.pathname !== '/webshop' && location.pathname !== '/login' && location.pathname !== '/partner-dashboard' && location.pathname !== '/partner-auth';
   
   return (
     <div className="overflow-x-hidden min-h-screen">
@@ -36,6 +37,7 @@ const AppContent = () => {
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/login" element={<Login />} />
         <Route path="/onze-partners" element={<CompanyProfiles />} />
+        <Route path="/partner-auth" element={<PartnerAuth />} />
         <Route path="/partner-dashboard" element={<PartnerDashboard />} />
         <Route path="/partnership-success" element={<PartnershipSuccess />} />
         

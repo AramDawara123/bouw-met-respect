@@ -7,6 +7,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Link, useNavigate } from "react-router-dom";
 import { ArrowLeft, Building2, Edit, Plus, LogOut } from "lucide-react";
 import CompanyProfileForm from "@/components/CompanyProfileForm";
+import { User, Session } from '@supabase/supabase-js';
 
 interface PartnerMembership {
   id: string;
@@ -38,63 +39,64 @@ interface CompanyProfile {
 }
 
 const PartnerDashboard = () => {
+  const [user, setUser] = useState<User | null>(null);
+  const [session, setSession] = useState<Session | null>(null);
   const [partnerMembership, setPartnerMembership] = useState<PartnerMembership | null>(null);
   const [companyProfile, setCompanyProfile] = useState<CompanyProfile | null>(null);
   const [loading, setLoading] = useState(true);
-  const [user, setUser] = useState(null);
   const [showProfileForm, setShowProfileForm] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
 
   useEffect(() => {
-    checkAuthAndFetch();
-  }, []);
-
-  const checkAuthAndFetch = async () => {
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      
-      // Demo mode - allow access without authentication for testing
-      if (!user) {
-        console.log('No user found, enabling demo mode');
-        setUser({ id: 'demo-user', email: 'demo@example.com' });
-        setPartnerMembership({
-          id: 'demo-partnership',
-          first_name: 'Demo',
-          last_name: 'Gebruiker',
-          email: 'demo@example.com',
-          phone: '+31 6 12345678',
-          company_name: 'Demo Bedrijf BV',
-          website: 'https://demo-bedrijf.nl',
-          industry: 'Bouw & Constructie',
-          description: 'Een demo bedrijf voor testdoeleinden',
-          payment_status: 'paid',
-          amount: 25000,
-          created_at: new Date().toISOString()
-        });
+    // Set up auth state listener FIRST
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        setSession(session);
+        setUser(session?.user ?? null);
         
-        // Demo company profile
-        setCompanyProfile({
-          id: 'demo-profile',
-          name: 'Demo Bedrijf BV',
-          description: 'Een vooraanstaand bouwbedrijf gespecialiseerd in duurzame constructies en renovaties. Wij leveren hoogwaardige diensten met respect voor het milieu.',
-          website: 'https://demo-bedrijf.nl',
-          logo_url: '/placeholder.svg',
-          industry: 'Bouw & Constructie',
-          contact_email: 'info@demo-bedrijf.nl',
-          contact_phone: '+31 6 12345678',
-          is_featured: true,
-          display_order: 1,
-          partner_membership_id: 'demo-partnership'
-        });
+        // If user logs out or is not authenticated, redirect to partner auth
+        if (!session?.user) {
+          navigate('/partner-auth');
+          return;
+        }
+        
+        // Fetch data when user is authenticated
+        if (session?.user && !partnerMembership) {
+          setTimeout(() => {
+            fetchPartnerData(session.user);
+          }, 0);
+        }
+        
+        setLoading(false);
+      }
+    );
+
+    // THEN check for existing session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      setUser(session?.user ?? null);
+      
+      if (!session?.user) {
+        navigate('/partner-auth');
         setLoading(false);
         return;
       }
+      
+      fetchPartnerData(session.user);
+    });
 
-      setUser(user);
-      await Promise.all([fetchPartnerMembership(), fetchCompanyProfile()]);
+    return () => subscription.unsubscribe();
+  }, [navigate, partnerMembership]);
+
+  const fetchPartnerData = async (user: User) => {
+    try {
+      await Promise.all([
+        fetchPartnerMembership(user.id),
+        fetchCompanyProfile(user.id)
+      ]);
     } catch (error) {
-      console.error('Auth check error:', error);
+      console.error('Error fetching partner data:', error);
       toast({
         title: "Fout",
         description: "Er ging iets mis bij het laden van je gegevens",
@@ -105,17 +107,18 @@ const PartnerDashboard = () => {
     }
   };
 
-  const fetchPartnerMembership = async () => {
+  const fetchPartnerMembership = async (userId: string) => {
     try {
       const { data, error } = await supabase
         .from('partner_memberships')
         .select('*')
-        .eq('user_id', (await supabase.auth.getUser()).data.user?.id)
+        .eq('user_id', userId)
         .eq('payment_status', 'paid')
         .single();
 
       if (error && error.code !== 'PGRST116') {
-        throw error;
+        console.error('Error fetching partner membership:', error);
+        return;
       }
 
       setPartnerMembership(data);
@@ -124,12 +127,12 @@ const PartnerDashboard = () => {
     }
   };
 
-  const fetchCompanyProfile = async () => {
+  const fetchCompanyProfile = async (userId: string) => {
     try {
       const { data: partnerData } = await supabase
         .from('partner_memberships')
         .select('id')
-        .eq('user_id', (await supabase.auth.getUser()).data.user?.id)
+        .eq('user_id', userId)
         .eq('payment_status', 'paid')
         .single();
 
@@ -142,7 +145,8 @@ const PartnerDashboard = () => {
         .maybeSingle();
 
       if (error && error.code !== 'PGRST116') {
-        throw error;
+        console.error('Error fetching company profile:', error);
+        return;
       }
 
       setCompanyProfile(data);
@@ -152,61 +156,60 @@ const PartnerDashboard = () => {
   };
 
   const handleLogout = async () => {
-    await supabase.auth.signOut();
-    navigate('/');
+    try {
+      await supabase.auth.signOut();
+      navigate('/partner-auth');
+    } catch (error) {
+      console.error('Error logging out:', error);
+      toast({
+        title: "Fout",
+        description: "Er ging iets mis bij het uitloggen",
+        variant: "destructive"
+      });
+    }
   };
 
   const handleProfileFormSuccess = () => {
-    fetchCompanyProfile();
+    if (user) {
+      fetchCompanyProfile(user.id);
+    }
     setShowProfileForm(false);
   };
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background to-muted">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
+          <p className="mt-4 text-muted-foreground">Laden...</p>
+        </div>
       </div>
     );
   }
 
-  if (!user) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Card className="w-full max-w-md">
-          <CardContent className="pt-6">
-            <div className="text-center">
-              <h2 className="text-2xl font-bold mb-4">Login Vereist</h2>
-              <p className="text-muted-foreground mb-4">
-                Je moet ingelogd zijn om je partnerdashboard te bekijken.
-              </p>
-              <Link to="/login">
-                <Button>Inloggen</Button>
-              </Link>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-    );
+  if (!user || !session) {
+    return null; // Auth redirect is handled in useEffect
   }
 
   if (!partnerMembership) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background to-muted p-4">
         <Card className="w-full max-w-md">
           <CardContent className="pt-6">
             <div className="text-center">
               <Building2 className="w-16 h-16 mx-auto mb-4 text-muted-foreground" />
               <h2 className="text-2xl font-bold mb-4">Geen Actief Partnerschap</h2>
-              <p className="text-muted-foreground mb-4">
+              <p className="text-muted-foreground mb-6">
                 Je hebt geen actief partnerschap of je betaling is nog niet verwerkt.
+                Neem contact op met ons om je partnerschap te activeren.
               </p>
               <div className="flex flex-col gap-3">
-                <Link to="/company-profiles">
-                  <Button className="w-full">Word Partner</Button>
-                </Link>
                 <Link to="/">
-                  <Button variant="outline" className="w-full">Terug naar Home</Button>
+                  <Button className="w-full">Terug naar Home</Button>
                 </Link>
+                <Button variant="outline" onClick={handleLogout} className="w-full">
+                  Uitloggen
+                </Button>
               </div>
             </div>
           </CardContent>
@@ -218,17 +221,6 @@ const PartnerDashboard = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-primary/5 to-secondary/5 p-4 lg:p-8 mt-16">
       <div className="max-w-4xl mx-auto space-y-6">
-        {/* Demo Mode Banner */}
-        {user?.id === 'demo-user' && (
-          <div className="bg-yellow-100 border border-yellow-300 rounded-lg p-4 mb-6">
-            <div className="flex items-center gap-2">
-              <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
-              <p className="text-yellow-800 font-medium">
-                Demo Modus - Dit is een voorbeeld van het Partner Dashboard
-              </p>
-            </div>
-          </div>
-        )}
         {/* Header */}
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
           <div className="flex items-center gap-4">
@@ -240,7 +232,7 @@ const PartnerDashboard = () => {
             </Link>
             <div>
               <h1 className="text-3xl md:text-4xl font-bold text-foreground">Partner Dashboard</h1>
-              <p className="text-muted-foreground">Beheer je bedrijfsprofiel</p>
+              <p className="text-muted-foreground">Welkom, {partnerMembership.first_name}!</p>
             </div>
           </div>
           <Button variant="outline" onClick={handleLogout} className="flex items-center gap-2">
