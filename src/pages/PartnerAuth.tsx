@@ -118,27 +118,22 @@ const PartnerAuth = () => {
     try {
       const redirectUrl = `${window.location.origin}/partner-dashboard`;
       
-      // Check if user already exists
-      const { data: existingUser } = await supabase.auth.getUser();
-      
-      if (!existingUser.user) {
-        // Try to sign up the user first
-        const { error: signUpError } = await supabase.auth.signUp({
-          email: signUpForm.email,
-          password: signUpForm.password,
-          options: {
-            emailRedirectTo: redirectUrl
-          }
-        });
-
-        // Ignore "User already registered" error as we'll handle it below
-        if (signUpError && !signUpError.message.includes("User already registered")) {
-          setError(signUpError.message);
-          return;
+      // Try to sign up the user
+      const { error: signUpError } = await supabase.auth.signUp({
+        email: signUpForm.email,
+        password: signUpForm.password,
+        options: {
+          emailRedirectTo: redirectUrl
         }
+      });
+
+      // Handle signup errors (except user already exists)
+      if (signUpError && !signUpError.message.includes("User already registered")) {
+        setError(signUpError.message);
+        return;
       }
 
-      // Always send our custom confirmation email
+      // Send our custom confirmation email (works for both new and existing users)
       const emailResponse = await supabase.functions.invoke('send-confirmation-email', {
         body: { email: signUpForm.email }
       });

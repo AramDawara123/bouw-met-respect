@@ -38,18 +38,18 @@ serve(async (req: Request) => {
     let confirmationUrl = '';
     
     if (existingUser && !existingUser.email_confirmed_at) {
-      // User exists but not confirmed - generate recovery link to confirm
-      console.log('User exists but not confirmed, generating recovery link');
+      // User exists but not confirmed - generate confirmation link
+      console.log('User exists but not confirmed, generating confirmation link');
       const { data, error } = await supabase.auth.admin.generateLink({
-        type: 'recovery',
+        type: 'signup',
         email: email,
         options: {
-          redirectTo: 'https://bouwmetrespect.nl/partner-dashboard'
+          redirectTo: `${Deno.env.get('SUPABASE_URL')?.replace('.supabase.co', '.lovableproject.com') || 'https://bouwmetrespect.nl'}/partner-dashboard`
         }
       });
 
       if (error) {
-        console.error('Error generating recovery link:', error);
+        console.error('Error generating confirmation link:', error);
         throw error;
       }
 

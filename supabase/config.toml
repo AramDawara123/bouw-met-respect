@@ -51,11 +51,11 @@ verify_jwt = false
 [functions.test-email]
 verify_jwt = false
 
-[functions.partner-confirmation-email]
-verify_jwt = false
-
 [functions.send-auth-email]
 verify_jwt = false
 
 [functions.send-confirmation-email]
+verify_jwt = false
+
+[functions.handle-auth-webhook]
 verify_jwt = false
