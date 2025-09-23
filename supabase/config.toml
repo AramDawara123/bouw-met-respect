@@ -50,3 +50,6 @@ verify_jwt = false
 
 [functions.test-email]
 verify_jwt = false
+
+[functions.partner-confirmation-email]
+verify_jwt = false
