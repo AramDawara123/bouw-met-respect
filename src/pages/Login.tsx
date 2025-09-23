@@ -8,13 +8,16 @@ import { supabase } from "@/integrations/supabase/client";
 import { Link, useNavigate } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 const Login = () => {
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState("info@bouwmetrespect.nl");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [creatingAdmin, setCreatingAdmin] = useState(false);
   const {
     toast
   } = useToast();
   const navigate = useNavigate();
+
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -25,7 +28,18 @@ const Login = () => {
         email,
         password
       });
-      if (error) throw error;
+      if (error) {
+        // If login fails, try to create admin account if it's the admin email
+        if (email === 'info@bouwmetrespect.nl') {
+          toast({
+            title: "Account niet gevonden",
+            description: "Admin account bestaat niet. Klik op 'Admin Account Aanmaken' om er een te maken.",
+            variant: "destructive"
+          });
+          return;
+        }
+        throw error;
+      }
       toast({
         title: "Ingelogd!",
         description: "Je bent succesvol ingelogd"
@@ -91,43 +105,43 @@ const Login = () => {
     }
   };
   const createAdminAccount = async () => {
-    setLoading(true);
+    setCreatingAdmin(true);
     try {
       // First try to sign up the admin account
-      const {
-        error: signUpError
-      } = await supabase.auth.signUp({
+      const { data, error } = await supabase.auth.signUp({
         email: "info@bouwmetrespect.nl",
-        password: "admin123",
+        password: "admin123456",
         options: {
-          emailRedirectTo: `${window.location.origin}/login`
+          data: {
+            first_name: 'Admin',
+            last_name: 'User',
+            role: 'admin'
+          }
         }
       });
-      if (signUpError && !signUpError.message.includes("already registered")) {
-        throw signUpError;
+
+      if (error && !error.message.includes("already registered")) {
+        throw error;
       }
 
-      // Then try to sign in immediately
-      const {
-        error: signInError
-      } = await supabase.auth.signInWithPassword({
-        email: "info@bouwmetrespect.nl",
-        password: "admin123"
-      });
-      if (signInError) throw signInError;
       toast({
-        title: "Admin account gereed!",
-        description: "Je bent ingelogd als admin"
+        title: "Admin Account Aangemaakt",
+        description: "Admin account is aangemaakt. Email: info@bouwmetrespect.nl, Wachtwoord: admin123456",
+        duration: 10000
       });
-      navigate("/dashboard");
+
+      // Auto-fill the form
+      setPassword('admin123456');
+      
     } catch (error: any) {
-      console.log("Admin account setup:", error.message);
+      console.error('Error creating admin account:', error);
       toast({
-        title: "Account setup",
-        description: "Admin account bestaat al - probeer in te loggen"
+        title: "Fout",
+        description: `Kon admin account niet aanmaken: ${error.message}`,
+        variant: "destructive"
       });
     } finally {
-      setLoading(false);
+      setCreatingAdmin(false);
     }
   };
   return <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-primary/5 to-secondary/5 p-4">
@@ -161,7 +175,15 @@ const Login = () => {
                   {loading ? "Bezig..." : "Inloggen"}
                 </Button>
                 
-                
+                <Button 
+                  type="button" 
+                  variant="outline" 
+                  className="w-full" 
+                  onClick={createAdminAccount}
+                  disabled={creatingAdmin}
+                >
+                  {creatingAdmin ? "Aanmaken..." : "Admin Account Aanmaken"}
+                </Button>
               </div>
             </form>
             
