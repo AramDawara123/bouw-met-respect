@@ -171,9 +171,8 @@ const Dashboard = () => {
 
       setUser(user);
 
-      // Check if user is admin
-      const { data: adminCheck } = await supabase.rpc('verify_admin_access');
-      if (!adminCheck) {
+      // Check if user is admin (simple email check)
+      if (user.email !== 'info@bouwmetrespect.nl') {
         toast({
           title: "Geen toegang",
           description: "Je hebt geen admin rechten",
