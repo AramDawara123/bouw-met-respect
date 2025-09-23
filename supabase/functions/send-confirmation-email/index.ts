@@ -25,21 +25,42 @@ serve(async (req: Request) => {
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-    // Generate magic link for email confirmation
-    const { data, error } = await supabase.auth.admin.generateLink({
-      type: 'signup',
-      email: email,
-      options: {
-        redirectTo: 'https://bouwmetrespect.nl/partner-dashboard'
-      }
-    });
-
-    if (error) {
-      console.error('Error generating magic link:', error);
-      throw error;
+    // First check if user exists and get their confirmation status
+    const { data: users, error: getUserError } = await supabase.auth.admin.listUsers();
+    
+    if (getUserError) {
+      console.error('Error fetching users:', getUserError);
+      throw getUserError;
     }
 
-    const confirmationUrl = data.properties?.action_link;
+    const existingUser = users.users.find(user => user.email === email);
+    
+    let confirmationUrl = '';
+    
+    if (existingUser && !existingUser.email_confirmed_at) {
+      // User exists but not confirmed - generate recovery link to confirm
+      console.log('User exists but not confirmed, generating recovery link');
+      const { data, error } = await supabase.auth.admin.generateLink({
+        type: 'recovery',
+        email: email,
+        options: {
+          redirectTo: 'https://bouwmetrespect.nl/partner-dashboard'
+        }
+      });
+
+      if (error) {
+        console.error('Error generating recovery link:', error);
+        throw error;
+      }
+
+      confirmationUrl = data.properties?.action_link || '';
+    } else if (!existingUser) {
+      // User doesn't exist - this should not happen at this point
+      throw new Error('User does not exist. Please register first.');
+    } else {
+      // User already confirmed
+      throw new Error('User is already confirmed');
+    }
     
     if (!confirmationUrl) {
       throw new Error('Failed to generate confirmation link');

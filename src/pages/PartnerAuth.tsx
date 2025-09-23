@@ -118,31 +118,35 @@ const PartnerAuth = () => {
     try {
       const redirectUrl = `${window.location.origin}/partner-dashboard`;
       
-      const { error } = await supabase.auth.signUp({
-        email: signUpForm.email,
-        password: signUpForm.password,
-        options: {
-          emailRedirectTo: redirectUrl
-        }
-      });
+      // Check if user already exists
+      const { data: existingUser } = await supabase.auth.getUser();
+      
+      if (!existingUser.user) {
+        // Try to sign up the user first
+        const { error: signUpError } = await supabase.auth.signUp({
+          email: signUpForm.email,
+          password: signUpForm.password,
+          options: {
+            emailRedirectTo: redirectUrl
+          }
+        });
 
-      if (error) {
-        if (error.message.includes("User already registered")) {
-          setError("Dit email adres is al geregistreerd. Probeer in te loggen.");
-        } else {
-          setError(error.message);
+        // Ignore "User already registered" error as we'll handle it below
+        if (signUpError && !signUpError.message.includes("User already registered")) {
+          setError(signUpError.message);
+          return;
         }
-        return;
       }
 
-      // Send our own confirmation email via Resend
+      // Always send our custom confirmation email
       const emailResponse = await supabase.functions.invoke('send-confirmation-email', {
         body: { email: signUpForm.email }
       });
 
       if (emailResponse.error) {
         console.error('Error sending confirmation email:', emailResponse.error);
-        // Still show success message as user was created
+        setError("Kon bevestigingsmail niet verzenden. Probeer het opnieuw.");
+        return;
       }
 
       toast({
