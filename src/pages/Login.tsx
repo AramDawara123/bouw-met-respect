@@ -7,27 +7,24 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { Link, useNavigate } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
+
 const Login = () => {
   const [email, setEmail] = useState("info@bouwmetrespect.nl");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [creatingAdmin, setCreatingAdmin] = useState(false);
-  const {
-    toast
-  } = useToast();
+  const { toast } = useToast();
   const navigate = useNavigate();
-
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     try {
-      const {
-        error
-      } = await supabase.auth.signInWithPassword({
+      const { error } = await supabase.auth.signInWithPassword({
         email,
         password
       });
+      
       if (error) {
         // If login fails, try to create admin account if it's the admin email
         if (email === 'info@bouwmetrespect.nl') {
@@ -40,10 +37,12 @@ const Login = () => {
         }
         throw error;
       }
+
       toast({
         title: "Ingelogd!",
         description: "Je bent succesvol ingelogd"
       });
+
       // Check if user is admin or partner and redirect accordingly
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
@@ -76,34 +75,7 @@ const Login = () => {
       setLoading(false);
     }
   };
-  const handleSignUp = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    try {
-      const {
-        error
-      } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          emailRedirectTo: `${window.location.origin}/login`
-        }
-      });
-      if (error) throw error;
-      toast({
-        title: "Account aangemaakt!",
-        description: "Check je email voor verificatie"
-      });
-    } catch (error: any) {
-      toast({
-        title: "Registratie mislukt",
-        description: error.message,
-        variant: "destructive"
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
+
   const createAdminAccount = async () => {
     setCreatingAdmin(true);
     try {
@@ -144,7 +116,9 @@ const Login = () => {
       setCreatingAdmin(false);
     }
   };
-  return <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-primary/5 to-secondary/5 p-4">
+
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-primary/5 to-secondary/5 p-4">
       <div className="w-full max-w-md">
         <div className="mb-6">
           <Link to="/" className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground">
@@ -159,16 +133,32 @@ const Login = () => {
             <CardDescription className="text-center">
               Log in als admin of partner
             </CardDescription>
+            <div className="text-sm text-muted-foreground text-center mt-2 p-3 bg-muted/50 rounded-lg">
+              <strong>Admin toegang:</strong> Email is al ingevuld. Klik "Admin Account Aanmaken" als je nog niet kunt inloggen.
+            </div>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleLogin} className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="email">Email</Label>
-                <Input id="email" type="email" placeholder="info@bouwmetrespect.nl" value={email} onChange={e => setEmail(e.target.value)} required />
+                <Input 
+                  id="email" 
+                  type="email" 
+                  placeholder="info@bouwmetrespect.nl" 
+                  value={email} 
+                  onChange={e => setEmail(e.target.value)} 
+                  required 
+                />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="password">Wachtwoord</Label>
-                <Input id="password" type="password" value={password} onChange={e => setPassword(e.target.value)} required />
+                <Input 
+                  id="password" 
+                  type="password" 
+                  value={password} 
+                  onChange={e => setPassword(e.target.value)} 
+                  required 
+                />
               </div>
               <div className="space-y-2">
                 <Button type="submit" className="w-full" disabled={loading}>
@@ -186,11 +176,11 @@ const Login = () => {
                 </Button>
               </div>
             </form>
-            
-            
           </CardContent>
         </Card>
       </div>
-    </div>;
+    </div>
+  );
 };
+
 export default Login;
