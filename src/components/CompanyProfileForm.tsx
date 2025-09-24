@@ -172,23 +172,41 @@ const CompanyProfileForm = ({
         ...(isPartnerDashboard && partnerMembershipId && { partner_membership_id: partnerMembershipId })
       };
 
-      // Check if user is admin and use appropriate client
-      const { data: { user } } = await supabase.auth.getUser();
-      let client = supabase;
-      
-      if (user?.email === 'info@bouwmetrespect.nl' && !isPartnerDashboard) {
-        // Use admin client for admin operations
-        const { supabaseAdmin } = await import('@/integrations/supabase/admin-client');
-        client = supabaseAdmin;
-      }
+      console.log('💾 Saving profile data:', profileData);
 
+      let updateResult;
       if (editingProfile) {
-        const { error } = await client
-          .from('company_profiles')
-          .update(profileData)
-          .eq('id', editingProfile.id);
+        // Check if current user is admin
+        const { data: { user } } = await supabase.auth.getUser();
+        const isAdmin = user?.email === 'info@bouwmetrespect.nl';
+        
+        console.log('👤 User email:', user?.email);
+        console.log('🔑 Is admin:', isAdmin);
+        console.log('🏢 Is partner dashboard:', isPartnerDashboard);
 
-        if (error) throw error;
+        if (isAdmin && !isPartnerDashboard) {
+          console.log('🔧 Using admin client for update');
+          const { supabaseAdmin } = await import('@/integrations/supabase/admin-client');
+          updateResult = await supabaseAdmin
+            .from('company_profiles')
+            .update(profileData)
+            .eq('id', editingProfile.id)
+            .select();
+        } else {
+          console.log('👥 Using regular client for update');
+          updateResult = await supabase
+            .from('company_profiles')
+            .update(profileData)
+            .eq('id', editingProfile.id)
+            .select();
+        }
+
+        console.log('📝 Update result:', updateResult);
+
+        if (updateResult.error) {
+          console.error('❌ Update error:', updateResult.error);
+          throw updateResult.error;
+        }
 
         toast({
           title: "Succes",
@@ -198,7 +216,8 @@ const CompanyProfileForm = ({
         // Dispatch event to refresh other pages
         window.dispatchEvent(new CustomEvent('company-profile-updated'));
       } else {
-        const { error } = await client
+        console.log('➕ Creating new profile');
+        const { error } = await supabase
           .from('company_profiles')
           .insert(profileData);
 
@@ -215,10 +234,10 @@ const CompanyProfileForm = ({
 
       onSuccess();
     } catch (error) {
-      console.error('Error saving profile:', error);
+      console.error('💥 Error saving profile:', error);
       toast({
         title: "Fout",
-        description: `Kon bedrijfsprofiel niet ${editingProfile ? 'bijwerken' : 'aanmaken'}`,
+        description: `Kon bedrijfsprofiel niet ${editingProfile ? 'bijwerken' : 'aanmaken'}: ${error.message}`,
         variant: "destructive",
       });
     } finally {
