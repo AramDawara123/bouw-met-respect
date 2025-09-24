@@ -1454,7 +1454,7 @@ Het Bouw met Respect team
             </div>
           </div>
 
-          <div className="p-6">
+          <div className="p-6 mt-6">
             <Tabs value={viewMode} onValueChange={(value) => setViewMode(value as 'memberships' | 'orders' | 'profiles' | 'products' | 'partners' | 'pricing' | 'partner-pricing' | 'discounts')}>
               <TabsContent value="memberships" className="space-y-6">
                 {/* Summary Cards */}
