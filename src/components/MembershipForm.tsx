@@ -14,6 +14,9 @@ import { useToast } from "@/hooks/use-toast";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
+import { Tag, Check } from "lucide-react";
+import { validateDiscountCode, calculateDiscount, formatDiscountDisplay } from "@/lib/discountUtils";
 const formSchema = z.object({
   firstName: z.string().min(2, "Voornaam moet minimaal 2 karakters bevatten"),
   lastName: z.string().min(2, "Achternaam moet minimaal 2 karakters bevatten"),
@@ -32,6 +35,7 @@ const formSchema = z.object({
   respectfulPractices: z.string().optional(),
   respectfulWorkplace: z.string().optional(),
   boundaryBehavior: z.string().optional(),
+  discountCode: z.string().optional(),
   
   membershipType: z.enum(["klein","middelgroot","groot","offerte"], { required_error: "Kies je lidmaatschap" }),
   newsletter: z.boolean().default(true),
@@ -55,6 +59,9 @@ const MembershipForm = ({
   membershipPlan
 }: MembershipFormProps) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [appliedDiscount, setAppliedDiscount] = useState<any>(null);
+  const [discountError, setDiscountError] = useState<string>("");
+  const [checkingDiscount, setCheckingDiscount] = useState(false);
   const {
     toast
   } = useToast();
@@ -74,6 +81,7 @@ const MembershipForm = ({
       respectfulPractices: "",
       respectfulWorkplace: "",
       boundaryBehavior: "",
+      discountCode: "",
       
       membershipType: (membershipPlan?.id as any) || "klein",
       newsletter: true,
@@ -83,7 +91,36 @@ const MembershipForm = ({
 
   const selectedType = form.watch('membershipType');
   const getAmountFromType = (t: string) => t === 'middelgroot' ? 75000 : t === 'groot' ? 125000 : t === 'offerte' ? 0 : 25000;
-  const displayPrice = (selectedType === 'middelgroot' ? '€750' : selectedType === 'groot' ? '€1250' : selectedType === 'offerte' ? 'Offerte op maat' : '€250');
+  const baseAmount = getAmountFromType(selectedType);
+  const discountAmount = appliedDiscount ? calculateDiscount(appliedDiscount, baseAmount) : 0;
+  const finalAmount = baseAmount - discountAmount;
+  const displayPrice = selectedType === 'offerte' ? 'Offerte op maat' : `€${(finalAmount / 100).toFixed(2)}`;
+
+  const checkDiscountCode = async (code: string) => {
+    if (!code.trim()) {
+      setAppliedDiscount(null);
+      setDiscountError("");
+      return;
+    }
+    
+    setCheckingDiscount(true);
+    setDiscountError("");
+    
+    const result = await validateDiscountCode(code, 'memberships', baseAmount);
+    
+    if (result.valid && result.discount) {
+      setAppliedDiscount(result.discount);
+      toast({
+        title: "Kortingscode toegepast!",
+        description: formatDiscountDisplay(result.discount)
+      });
+    } else {
+      setAppliedDiscount(null);
+      setDiscountError(result.error || "Ongeldige kortingscode");
+    }
+    
+    setCheckingDiscount(false);
+  };
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     setIsSubmitting(true);
@@ -158,7 +195,9 @@ const MembershipForm = ({
         body: { 
           membershipData: values,
           membershipType: (values as any).membershipType,
-          amount: getAmountFromType((values as any).membershipType)
+          amount: finalAmount, // Use finalAmount with discount applied
+          discountCode: values.discountCode,
+          discountAmount: discountAmount
         }
       });
 
@@ -253,10 +292,78 @@ const MembershipForm = ({
                       <FormMessage />
                     </FormItem>
                   )}
-                />
-              </div>
+                 />
+               </div>
 
-              {/* Persoonlijke gegevens */}
+               {/* Kortingscode sectie */}
+               {selectedType !== 'offerte' && (
+                 <div className="space-y-4">
+                   <h3 className="text-lg font-semibold flex items-center gap-2">
+                     <Tag className="w-5 h-5" />
+                     Kortingscode (optioneel)
+                   </h3>
+                   <FormField
+                     control={form.control}
+                     name="discountCode"
+                     render={({ field }) => (
+                       <FormItem>
+                         <FormLabel>Kortingscode</FormLabel>
+                         <div className="flex gap-2">
+                           <FormControl>
+                             <Input 
+                               placeholder="KORTINGSCODE" 
+                               {...field} 
+                               className="uppercase"
+                               onChange={(e) => {
+                                 field.onChange(e);
+                                 checkDiscountCode(e.target.value);
+                               }}
+                             />
+                           </FormControl>
+                           {checkingDiscount && (
+                             <Button type="button" disabled size="sm">
+                               Controleren...
+                             </Button>
+                           )}
+                         </div>
+                         {discountError && (
+                           <p className="text-sm text-destructive">{discountError}</p>
+                         )}
+                         {appliedDiscount && (
+                           <div className="flex items-center gap-2">
+                             <Check className="w-4 h-4 text-green-600" />
+                             <Badge variant="default" className="bg-green-100 text-green-800">
+                               {formatDiscountDisplay(appliedDiscount)} toegepast
+                             </Badge>
+                           </div>
+                         )}
+                         <FormMessage />
+                       </FormItem>
+                     )}
+                   />
+                   
+                   {/* Prijs overzicht */}
+                   <div className="bg-muted/50 rounded-lg p-4 space-y-2">
+                     <div className="flex justify-between text-sm">
+                       <span>Basisprijs:</span>
+                       <span>€{(baseAmount / 100).toFixed(2)}</span>
+                     </div>
+                     {appliedDiscount && (
+                       <div className="flex justify-between text-sm text-green-600">
+                         <span>Korting:</span>
+                         <span>-€{(discountAmount / 100).toFixed(2)}</span>
+                       </div>
+                     )}
+                     <hr className="border-muted-foreground/20" />
+                     <div className="flex justify-between font-semibold">
+                       <span>Totaal:</span>
+                       <span className={appliedDiscount ? "text-green-600" : ""}>{displayPrice}</span>
+                     </div>
+                   </div>
+                 </div>
+               )}
+
+               {/* Persoonlijke gegevens */}
             <div className="space-y-4">
               <h3 className="text-lg font-semibold">Persoonlijke gegevens</h3>
               <div className="grid grid-cols-2 gap-4">

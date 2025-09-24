@@ -4,7 +4,7 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/componen
 import { Badge } from "@/components/ui/badge";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { ShoppingCart, Coffee, Edit3, ArrowLeft, Plus, Minus, X, ChevronDown } from "lucide-react";
+import { ShoppingCart, Coffee, Edit3, ArrowLeft, Plus, Minus, X, ChevronDown, Tag, Check } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 import { useToast } from "@/hooks/use-toast";
@@ -13,6 +13,7 @@ import Footer from "@/components/Footer";
 import { supabase } from "@/integrations/supabase/client";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { validateDiscountCode, calculateDiscount, formatDiscountDisplay } from "@/lib/discountUtils";
 const Webshop = () => {
   const [faqOpenIndex, setFaqOpenIndex] = useState<number | null>(null);
 
@@ -66,6 +67,10 @@ const Webshop = () => {
     city: "",
     country: "Nederland"
   });
+  const [discountCode, setDiscountCode] = useState("");
+  const [appliedDiscount, setAppliedDiscount] = useState<any>(null);
+  const [discountError, setDiscountError] = useState<string>("");
+  const [checkingDiscount, setCheckingDiscount] = useState(false);
   const {
     toast
   } = useToast();
@@ -175,9 +180,41 @@ const Webshop = () => {
     return Object.values(cart).reduce((total, quantity) => total + quantity, 0);
   }, [cart]);
 
+  const discountAmount = useMemo(() => {
+    if (!appliedDiscount) return 0;
+    return calculateDiscount(appliedDiscount, cartTotal * 100) / 100; // Convert back to euros
+  }, [appliedDiscount, cartTotal]);
+
   const finalTotal = useMemo(() => {
-    return cartTotal + (cartTotal >= 50 ? 0 : 5.00);
-  }, [cartTotal]);
+    const subtotal = cartTotal - discountAmount;
+    return subtotal + (subtotal >= 50 ? 0 : 5.00);
+  }, [cartTotal, discountAmount]);
+
+  const checkDiscountCode = async (code: string) => {
+    if (!code.trim()) {
+      setAppliedDiscount(null);
+      setDiscountError("");
+      return;
+    }
+    
+    setCheckingDiscount(true);
+    setDiscountError("");
+    
+    const result = await validateDiscountCode(code, 'products', cartTotal * 100);
+    
+    if (result.valid && result.discount) {
+      setAppliedDiscount(result.discount);
+      toast({
+        title: "Kortingscode toegepast!",
+        description: formatDiscountDisplay(result.discount)
+      });
+    } else {
+      setAppliedDiscount(null);
+      setDiscountError(result.error || "Ongeldige kortingscode");
+    }
+    
+    setCheckingDiscount(false);
+  };
 
   // Optimized cart functions with useCallback
   const addToCart = useCallback((productId: string) => {
@@ -271,7 +308,12 @@ const Webshop = () => {
       }
       
       const { data, error } = await supabase.functions.invoke('create-shop-order', {
-        body: { items, customer }
+        body: { 
+          items, 
+          customer,
+          discountCode: appliedDiscount?.code,
+          discountAmount: discountAmount * 100 // Convert to cents
+        }
       });
       
       console.log('[Webshop] create-shop-order response', { data, error });
@@ -472,9 +514,40 @@ const Webshop = () => {
                           country: e.target.value
                         })} placeholder="Nederland" />
                           </div>
-                        </div>
-                      </div>}
-                  </div>
+                         </div>
+                       </div>
+
+                       {/* Kortingscode sectie */}
+                       <div className="space-y-3 pt-4 border-t">
+                         <Label htmlFor="discountCode" className="flex items-center gap-2">
+                           <Tag className="w-4 h-4" />
+                           Kortingscode (optioneel)
+                         </Label>
+                         <div className="flex gap-2">
+                           <Input
+                             id="discountCode"
+                             value={discountCode}
+                             onChange={(e) => {
+                               setDiscountCode(e.target.value.toUpperCase());
+                               checkDiscountCode(e.target.value);
+                             }}
+                             placeholder="KORTINGSCODE"
+                             className="uppercase"
+                           />
+                         </div>
+                         {discountError && (
+                           <p className="text-sm text-destructive">{discountError}</p>
+                         )}
+                         {appliedDiscount && (
+                           <div className="flex items-center gap-2">
+                             <Check className="w-4 h-4 text-green-600" />
+                             <Badge variant="default" className="bg-green-100 text-green-800">
+                               {formatDiscountDisplay(appliedDiscount)} toegepast
+                             </Badge>
+                           </div>
+                         )}
+                       </div>}
+                   </div>
 
                     {cartItemCount > 0 && <div className="sticky bottom-0 left-0 right-0 -mx-6 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 border-t border-border p-4">
                        <div className="space-y-2">
