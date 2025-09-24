@@ -80,6 +80,7 @@ serve(async (req) => {
     const { data: partnerMembership, error } = await supabaseService
       .from('partner_memberships')
       .insert({
+        user_id: null, // Explicitly set to null for anonymous signups
         first_name: partnerData.first_name,
         last_name: partnerData.last_name,
         email: partnerData.email,
@@ -88,7 +89,6 @@ serve(async (req) => {
         website: partnerData.website,
         industry: partnerData.industry,
         description: partnerData.description,
-        company_size: partnerData.company_size,
         mollie_payment_id: mollieData.id,
         amount: partnerAmount,
         currency: 'EUR',
