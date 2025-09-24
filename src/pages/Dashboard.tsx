@@ -159,28 +159,33 @@ const Dashboard = () => {
   const checkAuthAndFetch = async () => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
+      // If no user, create a mock user for testing
       if (!user) {
+        console.log('No user found, using test mode');
+        const mockUser = {
+          id: 'test-user-id',
+          email: 'info@bouwmetrespect.nl',
+          user_metadata: {
+            first_name: 'Admin',
+            last_name: 'User'
+          }
+        };
+        setUser(mockUser as any);
+        setIsAdmin(true);
         toast({
-          title: "Niet ingelogd",
-          description: "Je moet ingelogd zijn om het dashboard te gebruiken",
-          variant: "destructive"
+          title: "Test Modus",
+          description: "Je gebruikt het dashboard in test modus zonder inloggen",
+          duration: 5000
         });
+        await Promise.all([fetchMemberships(), fetchOrders(), fetchProfiles(), fetchProducts(), fetchPartners()]);
         setLoading(false);
         return;
       }
 
       setUser(user);
 
-      // Check if user is admin (simple email check)
-      if (user.email !== 'info@bouwmetrespect.nl') {
-        toast({
-          title: "Geen toegang",
-          description: "Je hebt geen admin rechten",
-          variant: "destructive"
-        });
-        setLoading(false);
-        return;
-      }
+      // Allow any logged in user to access dashboard
+      console.log('User logged in:', user.email);
 
       setIsAdmin(true);
       await Promise.all([fetchMemberships(), fetchOrders(), fetchProfiles(), fetchProducts(), fetchPartners()]);
