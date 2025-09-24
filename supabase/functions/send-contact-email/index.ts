@@ -79,7 +79,7 @@ serve(async (req) => {
     const { data, error } = await resend.emails.send({
       from: 'onboarding@resend.dev',
       to: RESEND_TO_EMAIL,
-      replyTo: contactData.email, // Dit zorgt ervoor dat je kunt reageren op de email van de klant
+      reply_to: contactData.email, // Dit zorgt ervoor dat je kunt reageren op de email van de klant
       subject: `Contact Formulier: ${contactData.subject}`,
       html: emailHtml,
     });
@@ -113,11 +113,11 @@ serve(async (req) => {
     return new Response(
       JSON.stringify({ 
         error: 'Internal server error', 
-        details: error.message 
+        details: (error as Error).message 
       }),
       { 
         status: 500, 
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
       }
     );
   }

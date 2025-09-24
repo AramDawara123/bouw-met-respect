@@ -41,7 +41,7 @@ serve(async (req: Request) => {
       // User exists but not confirmed - generate confirmation link
       console.log('User exists but not confirmed, generating confirmation link');
       const { data, error } = await supabase.auth.admin.generateLink({
-        type: 'signup',
+        type: 'magiclink',
         email: email,
         options: {
           redirectTo: `${Deno.env.get('SUPABASE_URL')?.replace('.supabase.co', '.lovableproject.com') || 'https://bouwmetrespect.nl'}/partner-dashboard`
