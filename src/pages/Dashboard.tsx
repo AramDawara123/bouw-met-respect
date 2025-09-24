@@ -19,6 +19,7 @@ import PartnerAccountManagement from "@/components/PartnerAccountManagement";
 import MembershipPricingManager from "@/components/MembershipPricingManager";
 import DiscountCodeManager from "@/components/DiscountCodeManager";
 import PartnerPricingManager from "@/components/PartnerPricingManager";
+import { QRCodeGenerator } from "@/components/QRCodeGenerator";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
 
@@ -138,7 +139,7 @@ const Dashboard = () => {
   const [isEditingProduct, setIsEditingProduct] = useState(false);
   const [user, setUser] = useState(null);
   const [isAdmin, setIsAdmin] = useState(false);
-  const [viewMode, setViewMode] = useState<'memberships' | 'orders' | 'profiles' | 'products' | 'partners' | 'pricing' | 'partner-pricing' | 'discounts'>("memberships");
+  const [viewMode, setViewMode] = useState<'memberships' | 'orders' | 'profiles' | 'products' | 'partners' | 'pricing' | 'partner-pricing' | 'discounts' | 'qrcode'>("memberships");
   const [showProfileForm, setShowProfileForm] = useState(false);
   const [editingProfile, setEditingProfile] = useState<CompanyProfile | null>(null);
   const [editingPartner, setEditingPartner] = useState<PartnerAccount | null>(null);
@@ -1859,6 +1860,12 @@ Het Bouw met Respect team
               <TabsContent value="discounts">
                 <div className="space-y-6">
                   <DiscountCodeManager />
+                </div>
+              </TabsContent>
+
+              <TabsContent value="qrcode">
+                <div className="space-y-6">
+                  <QRCodeGenerator />
                 </div>
               </TabsContent>
             </Tabs>

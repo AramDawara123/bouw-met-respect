@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Users, Building2, ShoppingBag, Package, Tag, Euro, Settings, Home } from "lucide-react";
+import { Users, Building2, ShoppingBag, Package, Tag, Euro, Settings, Home, QrCode } from "lucide-react";
 import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarHeader, useSidebar } from "@/components/ui/sidebar";
 interface AppSidebarProps {
   viewMode: string;
@@ -48,6 +48,12 @@ const navigationItems = {
     title: "Partner Prijzen",
     icon: Settings,
     description: "Stel partnerprijzen in"
+  }],
+  "Tools": [{
+    key: "qrcode",
+    title: "QR Code Generator",
+    icon: QrCode,
+    description: "Genereer QR codes"
   }]
 };
 export function AppSidebar({
