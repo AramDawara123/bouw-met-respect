@@ -1527,19 +1527,276 @@ Het Bouw met Respect team
 
               <TabsContent value="orders">
                 <div className="space-y-6">
-                  <div className="text-center py-8">
-                    <h3 className="text-lg font-semibold">Bestellingen</h3>
-                    <p className="text-muted-foreground">Bestellingsbeheer komt hier</p>
+                  {/* Summary Cards */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+                    <Card className="bg-gradient-to-br from-blue-500/5 to-blue-500/10 border-blue-200/30">
+                      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                        <CardTitle className="text-sm font-medium text-muted-foreground">
+                          Totaal Bestellingen
+                        </CardTitle>
+                        <ShoppingBag className="h-4 w-4 text-blue-500" />
+                      </CardHeader>
+                      <CardContent>
+                        <div className="text-2xl font-bold text-foreground">{orders.length}</div>
+                        <p className="text-xs text-muted-foreground">
+                          {orders.filter(o => o.payment_status === 'paid').length} betaald
+                        </p>
+                      </CardContent>
+                    </Card>
+
+                    <Card className="bg-gradient-to-br from-green-500/5 to-green-500/10 border-green-200/30">
+                      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                        <CardTitle className="text-sm font-medium text-muted-foreground">
+                          Omzet
+                        </CardTitle>
+                        <Euro className="h-4 w-4 text-green-500" />
+                      </CardHeader>
+                      <CardContent>
+                        <div className="text-2xl font-bold text-foreground">
+                          €{(orders.filter(o => o.payment_status === 'paid').reduce((sum, o) => sum + o.total, 0) / 100).toFixed(2)}
+                        </div>
+                        <p className="text-xs text-muted-foreground">betaalde bestellingen</p>
+                      </CardContent>
+                    </Card>
+
+                    <Card className="bg-gradient-to-br from-yellow-500/5 to-yellow-500/10 border-yellow-200/30">
+                      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                        <CardTitle className="text-sm font-medium text-muted-foreground">
+                          Openstaand
+                        </CardTitle>
+                        <CreditCard className="h-4 w-4 text-yellow-500" />
+                      </CardHeader>
+                      <CardContent>
+                        <div className="text-2xl font-bold text-foreground">
+                          {orders.filter(o => o.payment_status === 'pending').length}
+                        </div>
+                        <p className="text-xs text-muted-foreground">nog te betalen</p>
+                      </CardContent>
+                    </Card>
+
+                    <Card className="bg-gradient-to-br from-purple-500/5 to-purple-500/10 border-purple-200/30">
+                      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                        <CardTitle className="text-sm font-medium text-muted-foreground">
+                          Gemiddelde Bestelling
+                        </CardTitle>
+                        <Package className="h-4 w-4 text-purple-500" />
+                      </CardHeader>
+                      <CardContent>
+                        <div className="text-2xl font-bold text-foreground">
+                          €{orders.length > 0 ? (orders.reduce((sum, o) => sum + o.total, 0) / orders.length / 100).toFixed(2) : '0.00'}
+                        </div>
+                        <p className="text-xs text-muted-foreground">per bestelling</p>
+                      </CardContent>
+                    </Card>
                   </div>
+
+                  {/* Orders Table */}
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2">
+                        <ShoppingBag className="w-5 h-5" />
+                        Bestellingen
+                      </CardTitle>
+                      <CardDescription>Beheer alle webshop bestellingen</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="rounded-md border">
+                        <Table>
+                          <TableHeader>
+                            <TableRow>
+                              <TableHead>Klant</TableHead>
+                              <TableHead>Email</TableHead>
+                              <TableHead>Items</TableHead>
+                              <TableHead>Totaal</TableHead>
+                              <TableHead>Status</TableHead>
+                              <TableHead>Datum</TableHead>
+                              <TableHead className="text-right">Acties</TableHead>
+                            </TableRow>
+                          </TableHeader>
+                          <TableBody>
+                            {orders.map((order) => (
+                              <TableRow key={order.id}>
+                                <TableCell className="font-medium">
+                                  {order.customer_first_name} {order.customer_last_name}
+                                </TableCell>
+                                <TableCell>{order.customer_email || order.email}</TableCell>
+                                <TableCell>
+                                  {Array.isArray(order.items) ? order.items.length : 'N/A'} items
+                                </TableCell>
+                                <TableCell>€{(order.total / 100).toFixed(2)}</TableCell>
+                                <TableCell>
+                                  <Badge variant={order.payment_status === 'paid' ? 'default' : 'secondary'}>
+                                    {order.payment_status}
+                                  </Badge>
+                                </TableCell>
+                                <TableCell>{new Date(order.created_at).toLocaleDateString()}</TableCell>
+                                <TableCell className="text-right">
+                                  <Button variant="ghost" size="sm">
+                                    <Eye className="w-4 h-4" />
+                                  </Button>
+                                </TableCell>
+                              </TableRow>
+                            ))}
+                          </TableBody>
+                        </Table>
+                      </div>
+                    </CardContent>
+                  </Card>
                 </div>
               </TabsContent>
 
               <TabsContent value="profiles">
                 <div className="space-y-6">
-                  <div className="text-center py-8">
-                    <h3 className="text-lg font-semibold">Bedrijfsprofielen</h3>
-                    <p className="text-muted-foreground">Bedrijfsprofielbeheer komt hier</p>
+                  {/* Summary Cards */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+                    <Card className="bg-gradient-to-br from-blue-500/5 to-blue-500/10 border-blue-200/30">
+                      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                        <CardTitle className="text-sm font-medium text-muted-foreground">
+                          Totaal Bedrijven
+                        </CardTitle>
+                        <Building2 className="h-4 w-4 text-blue-500" />
+                      </CardHeader>
+                      <CardContent>
+                        <div className="text-2xl font-bold text-foreground">{profiles.length}</div>
+                        <p className="text-xs text-muted-foreground">
+                          {profiles.filter(p => p.is_featured).length} uitgelicht
+                        </p>
+                      </CardContent>
+                    </Card>
+
+                    <Card className="bg-gradient-to-br from-green-500/5 to-green-500/10 border-green-200/30">
+                      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                        <CardTitle className="text-sm font-medium text-muted-foreground">
+                          Met Website
+                        </CardTitle>
+                        <Globe className="h-4 w-4 text-green-500" />
+                      </CardHeader>
+                      <CardContent>
+                        <div className="text-2xl font-bold text-foreground">
+                          {profiles.filter(p => p.website).length}
+                        </div>
+                        <p className="text-xs text-muted-foreground">actieve links</p>
+                      </CardContent>
+                    </Card>
+
+                    <Card className="bg-gradient-to-br from-purple-500/5 to-purple-500/10 border-purple-200/30">
+                      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                        <CardTitle className="text-sm font-medium text-muted-foreground">
+                          Met Logo
+                        </CardTitle>
+                        <Building2 className="h-4 w-4 text-purple-500" />
+                      </CardHeader>
+                      <CardContent>
+                        <div className="text-2xl font-bold text-foreground">
+                          {profiles.filter(p => p.logo_url).length}
+                        </div>
+                        <p className="text-xs text-muted-foreground">visuele identiteit</p>
+                      </CardContent>
+                    </Card>
+
+                    <Card className="bg-gradient-to-br from-orange-500/5 to-orange-500/10 border-orange-200/30">
+                      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                        <CardTitle className="text-sm font-medium text-muted-foreground">
+                          Contactinfo
+                        </CardTitle>
+                        <Mail className="h-4 w-4 text-orange-500" />
+                      </CardHeader>
+                      <CardContent>
+                        <div className="text-2xl font-bold text-foreground">
+                          {profiles.filter(p => p.contact_email || p.contact_phone).length}
+                        </div>
+                        <p className="text-xs text-muted-foreground">bereikbaar</p>
+                      </CardContent>
+                    </Card>
                   </div>
+
+                  {/* Company Profiles Table */}
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2">
+                        <Building2 className="w-5 h-5" />
+                        Bedrijfsprofielen
+                      </CardTitle>
+                      <CardDescription>Beheer alle bedrijfsprofielen in de partnersgalerij</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="rounded-md border">
+                        <Table>
+                          <TableHeader>
+                            <TableRow>
+                              <TableHead>Bedrijf</TableHead>
+                              <TableHead>Industrie</TableHead>
+                              <TableHead>Website</TableHead>
+                              <TableHead>Contact</TableHead>
+                              <TableHead>Status</TableHead>
+                              <TableHead>Volgorde</TableHead>
+                              <TableHead className="text-right">Acties</TableHead>
+                            </TableRow>
+                          </TableHeader>
+                          <TableBody>
+                            {profiles.map((profile) => (
+                              <TableRow key={profile.id}>
+                                <TableCell className="font-medium">
+                                  <div className="flex items-center gap-2">
+                                    {profile.logo_url && (
+                                      <img 
+                                        src={profile.logo_url} 
+                                        alt={profile.name}
+                                        className="w-8 h-8 rounded object-cover"
+                                      />
+                                    )}
+                                    {profile.name}
+                                  </div>
+                                </TableCell>
+                                <TableCell>{profile.industry || 'Niet gespecificeerd'}</TableCell>
+                                <TableCell>
+                                  {profile.website ? (
+                                    <a href={profile.website} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                                      {profile.website.replace('https://', '').replace('http://', '')}
+                                    </a>
+                                  ) : (
+                                    'Geen website'
+                                  )}
+                                </TableCell>
+                                <TableCell>
+                                  <div className="text-sm">
+                                    {profile.contact_email && (
+                                      <div className="flex items-center gap-1">
+                                        <Mail className="w-3 h-3" />
+                                        {profile.contact_email}
+                                      </div>
+                                    )}
+                                    {profile.contact_phone && (
+                                      <div className="flex items-center gap-1">
+                                        <Phone className="w-3 h-3" />
+                                        {profile.contact_phone}
+                                      </div>
+                                    )}
+                                  </div>
+                                </TableCell>
+                                <TableCell>
+                                  <Badge variant={profile.is_featured ? 'default' : 'secondary'}>
+                                    {profile.is_featured ? 'Uitgelicht' : 'Normaal'}
+                                  </Badge>
+                                </TableCell>
+                                <TableCell>{profile.display_order}</TableCell>
+                                <TableCell className="text-right">
+                                  <div className="flex items-center gap-2 justify-end">
+                                    <Button variant="ghost" size="sm">
+                                      <Edit className="w-4 h-4" />
+                                    </Button>
+                                    <Button variant="ghost" size="sm">
+                                      <Eye className="w-4 h-4" />
+                                    </Button>
+                                  </div>
+                                </TableCell>
+                              </TableRow>
+                            ))}
+                          </TableBody>
+                        </Table>
+                      </div>
+                    </CardContent>
+                  </Card>
                 </div>
               </TabsContent>
 
