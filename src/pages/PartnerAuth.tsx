@@ -118,8 +118,8 @@ const PartnerAuth = () => {
     try {
       const redirectUrl = `${window.location.origin}/partner-dashboard`;
       
-      // Try to sign up the user
-      const { error: signUpError } = await supabase.auth.signUp({
+      // Use standard Supabase signup with email confirmation
+      const { data, error: signUpError } = await supabase.auth.signUp({
         email: signUpForm.email,
         password: signUpForm.password,
         options: {
@@ -127,26 +127,20 @@ const PartnerAuth = () => {
         }
       });
 
-      // Handle signup errors (except user already exists)
-      if (signUpError && !signUpError.message.includes("User already registered")) {
-        setError(signUpError.message);
-        return;
-      }
-
-      // Send our custom confirmation email (works for both new and existing users)
-      const emailResponse = await supabase.functions.invoke('send-confirmation-email', {
-        body: { email: signUpForm.email }
-      });
-
-      if (emailResponse.error) {
-        console.error('Error sending confirmation email:', emailResponse.error);
-        setError("Kon bevestigingsmail niet verzenden. Probeer het opnieuw.");
+      if (signUpError) {
+        if (signUpError.message.includes("User already registered")) {
+          setError("Email adres is al geregistreerd. Probeer in te loggen of gebruik het wachtwoord reset formulier.");
+        } else {
+          setError(signUpError.message);
+        }
         return;
       }
 
       toast({
         title: "Registratie succesvol",
-        description: "Controleer je email voor de bevestigingslink"
+        description: data.user?.email_confirmed_at 
+          ? "Account aangemaakt en bevestigd! Je wordt doorgestuurd naar het dashboard."
+          : "Controleer je email voor de bevestigingslink om je account te activeren."
       });
 
       // Clear form
@@ -155,6 +149,8 @@ const PartnerAuth = () => {
         password: "",
         confirmPassword: ""
       });
+
+      // If user is immediately confirmed, they'll be redirected by the auth state change
 
     } catch (error: any) {
       setError("Er ging iets mis bij het registreren");
