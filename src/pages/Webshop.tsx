@@ -552,29 +552,35 @@ const Webshop = () => {
                      )}
                    </div>
 
-                   {cartItemCount > 0 && <div className="sticky bottom-0 left-0 right-0 -mx-6 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 border-t border-border p-4">
-                       <div className="space-y-2">
-                         <div className="flex justify-between text-sm">
-                           <span>Subtotaal:</span>
-                           <span>€{cartTotal.toFixed(2)}</span>
-                         </div>
-                         {cartTotal < 50 && (
-                           <div className="flex justify-between text-sm">
-                             <span>Verzendkosten:</span>
-                             <span>€5.00</span>
-                           </div>
-                         )}
-                         {cartTotal >= 50 && (
-                           <div className="flex justify-between text-sm text-green-600">
-                             <span>Verzending:</span>
-                             <span>Gratis</span>
-                           </div>
-                         )}
-                         <div className="flex justify-between font-bold text-lg border-t pt-2">
-                           <span>Totaal:</span>
-                           <span>€{finalTotal.toFixed(2)}</span>
-                         </div>
-                       </div>
+                    {cartItemCount > 0 && <div className="sticky bottom-0 left-0 right-0 -mx-6 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 border-t border-border p-4">
+                        <div className="space-y-2">
+                          <div className="flex justify-between text-sm">
+                            <span>Subtotaal:</span>
+                            <span>€{cartTotal.toFixed(2)}</span>
+                          </div>
+                          {appliedDiscount && discountAmount > 0 && (
+                            <div className="flex justify-between text-sm text-green-600">
+                              <span>Korting ({formatDiscountDisplay(appliedDiscount)}):</span>
+                              <span>-€{discountAmount.toFixed(2)}</span>
+                            </div>
+                          )}
+                          {cartTotal - discountAmount < 50 && (
+                            <div className="flex justify-between text-sm">
+                              <span>Verzendkosten:</span>
+                              <span>€5.00</span>
+                            </div>
+                          )}
+                          {cartTotal - discountAmount >= 50 && (
+                            <div className="flex justify-between text-sm text-green-600">
+                              <span>Verzending:</span>
+                              <span>Gratis</span>
+                            </div>
+                          )}
+                          <div className="flex justify-between font-bold text-lg border-t pt-2">
+                            <span>Totaal:</span>
+                            <span>€{finalTotal.toFixed(2)}</span>
+                          </div>
+                        </div>
                        <Button className="w-full mt-4" size="lg" onClick={checkout} disabled={isCheckingOut}>
                          <ShoppingCart className="w-4 h-4 mr-2" />
                          {isCheckingOut ? 'Bezig met afrekenen...' : 'Naar afrekenen'}
