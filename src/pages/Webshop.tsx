@@ -448,9 +448,10 @@ const Webshop = () => {
                           </div>;
                   })}
 
-                    {cartItemCount > 0 && <div className="mt-6 space-y-4 border-t pt-4">
-                        {/* Customer details form */}
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                     {cartItemCount > 0 && (
+                       <div className="mt-6 space-y-4 border-t pt-4">
+                         {/* Customer details form */}
+                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                           <div>
                             <Label htmlFor="firstName">Voornaam</Label>
                             <Input id="firstName" value={customer.firstName} onChange={e => setCustomer({
@@ -512,44 +513,44 @@ const Webshop = () => {
                             <Input id="country" value={customer.country} onChange={e => setCustomer({
                           ...customer,
                           country: e.target.value
-                        })} placeholder="Nederland" />
+                         })} placeholder="Nederland" />
+                           </div>
                           </div>
+                        </div>
+
+                        <div className="space-y-3 pt-4 border-t">
+                          <Label htmlFor="discountCode" className="flex items-center gap-2">
+                            <Tag className="w-4 h-4" />
+                            Kortingscode (optioneel)
+                          </Label>
+                          <div className="flex gap-2">
+                            <Input
+                              id="discountCode"
+                              value={discountCode}
+                              onChange={(e) => {
+                                setDiscountCode(e.target.value.toUpperCase());
+                                checkDiscountCode(e.target.value);
+                              }}
+                              placeholder="KORTINGSCODE"
+                              className="uppercase"
+                            />
+                          </div>
+                          {discountError && (
+                            <p className="text-sm text-destructive">{discountError}</p>
+                          )}
+                          {appliedDiscount && (
+                            <div className="flex items-center gap-2">
+                              <Check className="w-4 h-4 text-green-600" />
+                              <Badge variant="default" className="bg-green-100 text-green-800">
+                                {formatDiscountDisplay(appliedDiscount)} toegepast
+                              </Badge>
+                            </div>
+                          )}
                          </div>
                        </div>
+                     )}
 
-                       {/* Kortingscode sectie */}
-                       <div className="space-y-3 pt-4 border-t">
-                         <Label htmlFor="discountCode" className="flex items-center gap-2">
-                           <Tag className="w-4 h-4" />
-                           Kortingscode (optioneel)
-                         </Label>
-                         <div className="flex gap-2">
-                           <Input
-                             id="discountCode"
-                             value={discountCode}
-                             onChange={(e) => {
-                               setDiscountCode(e.target.value.toUpperCase());
-                               checkDiscountCode(e.target.value);
-                             }}
-                             placeholder="KORTINGSCODE"
-                             className="uppercase"
-                           />
-                         </div>
-                         {discountError && (
-                           <p className="text-sm text-destructive">{discountError}</p>
-                         )}
-                         {appliedDiscount && (
-                           <div className="flex items-center gap-2">
-                             <Check className="w-4 h-4 text-green-600" />
-                             <Badge variant="default" className="bg-green-100 text-green-800">
-                               {formatDiscountDisplay(appliedDiscount)} toegepast
-                             </Badge>
-                           </div>
-                         )}
-                       </div>}
-                   </div>
-
-                    {cartItemCount > 0 && <div className="sticky bottom-0 left-0 right-0 -mx-6 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 border-t border-border p-4">
+                     {cartItemCount > 0 && <div className="sticky bottom-0 left-0 right-0 -mx-6 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 border-t border-border p-4">
                        <div className="space-y-2">
                          <div className="flex justify-between text-sm">
                            <span>Subtotaal:</span>
