@@ -32,15 +32,13 @@ const CompanyProfiles = () => {
   } = useToast();
   useEffect(() => {
     fetchProfiles();
-    
+
     // Add event listener for profile updates
     const handleProfileUpdate = () => {
       console.log('🔄 Profile update detected, refreshing...');
       fetchProfiles();
     };
-    
     window.addEventListener('company-profile-updated', handleProfileUpdate);
-    
     return () => {
       window.removeEventListener('company-profile-updated', handleProfileUpdate);
     };
@@ -58,13 +56,12 @@ const CompanyProfiles = () => {
       if (error) throw error;
       console.log('✅ Fetched profiles:', data);
       console.log(`📊 Total profiles found: ${data?.length || 0}`);
-      
       data?.forEach((profile, index) => {
         console.log(`👤 Profile ${index + 1}: ${profile.name}`);
         console.log(`🖼️  Logo URL: ${profile.logo_url || 'No logo'}`);
         console.log(`🏢  Industry: ${profile.industry || 'No industry'}`);
         console.log(`⭐  Featured: ${profile.is_featured ? 'Yes' : 'No'}`);
-        
+
         // Analyze the logo URL structure
         if (profile.logo_url) {
           console.log(`🔍  URL Analysis for ${profile.name}:`);
@@ -119,19 +116,10 @@ const CompanyProfiles = () => {
                   {profiles.length} Partners gevonden
                 </p>
               </div>
-              <Button 
-                onClick={() => setShowPartnerForm(true)}
-                className="bg-primary hover:bg-primary/90 text-white font-medium px-6"
-              >
+              <Button onClick={() => setShowPartnerForm(true)} className="bg-primary hover:bg-primary/90 text-white font-medium px-6">
                 Word Partner
               </Button>
-              <Button 
-                onClick={fetchProfiles}
-                variant="outline"
-                className="font-medium px-4"
-              >
-                🔄 Vernieuwen
-              </Button>
+              
             </div>
           </div>
           
@@ -155,14 +143,10 @@ const CompanyProfiles = () => {
               <p className="text-xs text-yellow-600 mt-2">
                 Kijk in de browser console voor meer debugging informatie.
               </p>
-              <Button 
-                onClick={() => {
-                  console.log('🔄 Manually refreshing profiles...');
-                  fetchProfiles();
-                }}
-                className="mt-3 bg-yellow-600 hover:bg-yellow-700 text-white"
-                size="sm"
-              >
+              <Button onClick={() => {
+            console.log('🔄 Manually refreshing profiles...');
+            fetchProfiles();
+          }} className="mt-3 bg-yellow-600 hover:bg-yellow-700 text-white" size="sm">
                 Probeer opnieuw
               </Button>
             </div>
@@ -175,50 +159,35 @@ const CompanyProfiles = () => {
                 <CardHeader className="pb-4 pt-6">
                   <div className="flex items-center gap-4">
                     <div className="relative w-16 h-16">
-                      {profile.logo_url ? (
-                        <>
-                          <img 
-                            src={profile.logo_url} 
-                            alt={`${profile.name} logo`} 
-                            className="w-16 h-16 object-contain rounded-lg border-2 border-blue-200 bg-white p-2 shadow-md hover:shadow-lg transition-shadow" 
-                            loading="lazy"
-                            decoding="async"
-                            onLoad={() => console.log(`Logo loaded successfully: ${profile.name}`)}
-                            onError={(e) => {
-                              console.error(`❌ Logo failed to load for ${profile.name}:`, profile.logo_url);
-                              console.error('Full URL being requested:', e.currentTarget.src);
-                              console.error('Image naturalWidth:', e.currentTarget.naturalWidth);
-                              console.error('Image naturalHeight:', e.currentTarget.naturalHeight);
-                              
-                              // Test if URL is accessible
-                              if (profile.logo_url) {
-                                fetch(profile.logo_url)
-                                  .then(response => {
-                                    console.error(`Fetch test for ${profile.name} - Status:`, response.status);
-                                    console.error('Response OK:', response.ok);
-                                    console.error('Content-Type:', response.headers.get('content-type'));
-                                  })
-                                  .catch(fetchError => {
-                                    console.error(`Network error for ${profile.name}:`, fetchError.message);
-                                  });
-                              }
-                              
-                              const target = e.currentTarget;
-                              target.style.display = 'none';
-                              const fallback = target.nextElementSibling as HTMLElement;
-                              if (fallback) fallback.style.display = 'flex';
-                            }}
-                          />
+                      {profile.logo_url ? <>
+                          <img src={profile.logo_url} alt={`${profile.name} logo`} className="w-16 h-16 object-contain rounded-lg border-2 border-blue-200 bg-white p-2 shadow-md hover:shadow-lg transition-shadow" loading="lazy" decoding="async" onLoad={() => console.log(`Logo loaded successfully: ${profile.name}`)} onError={e => {
+                    console.error(`❌ Logo failed to load for ${profile.name}:`, profile.logo_url);
+                    console.error('Full URL being requested:', e.currentTarget.src);
+                    console.error('Image naturalWidth:', e.currentTarget.naturalWidth);
+                    console.error('Image naturalHeight:', e.currentTarget.naturalHeight);
+
+                    // Test if URL is accessible
+                    if (profile.logo_url) {
+                      fetch(profile.logo_url).then(response => {
+                        console.error(`Fetch test for ${profile.name} - Status:`, response.status);
+                        console.error('Response OK:', response.ok);
+                        console.error('Content-Type:', response.headers.get('content-type'));
+                      }).catch(fetchError => {
+                        console.error(`Network error for ${profile.name}:`, fetchError.message);
+                      });
+                    }
+                    const target = e.currentTarget;
+                    target.style.display = 'none';
+                    const fallback = target.nextElementSibling as HTMLElement;
+                    if (fallback) fallback.style.display = 'flex';
+                  }} />
                           <div className="hidden w-16 h-16 bg-red-100 rounded-lg flex items-center justify-center border-2 border-red-200">
                             <Building2 className="w-8 h-8 text-red-500" />
                           </div>
-                        </>
-                      ) : (
-                        <div className="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center border-2 border-gray-200">
+                        </> : <div className="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center border-2 border-gray-200">
                           <Building2 className="w-8 h-8 text-gray-500" />
                           <span className="sr-only">Geen logo beschikbaar</span>
-                        </div>
-                      )}
+                        </div>}
                     </div>
                     
                     <div>
@@ -275,10 +244,7 @@ const CompanyProfiles = () => {
           </div>}
       </div>
 
-      <PartnerSignupForm 
-        open={showPartnerForm} 
-        onOpenChange={setShowPartnerForm} 
-      />
+      <PartnerSignupForm open={showPartnerForm} onOpenChange={setShowPartnerForm} />
     </div>;
 };
 export default CompanyProfiles;
