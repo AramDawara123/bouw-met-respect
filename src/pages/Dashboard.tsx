@@ -19,6 +19,8 @@ import PartnerAccountManagement from "@/components/PartnerAccountManagement";
 import MembershipPricingManager from "@/components/MembershipPricingManager";
 import DiscountCodeManager from "@/components/DiscountCodeManager";
 import PartnerPricingManager from "@/components/PartnerPricingManager";
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { AppSidebar } from "@/components/AppSidebar";
 
 interface Membership {
   id: string;
@@ -1394,129 +1396,163 @@ Het Bouw met Respect team
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-primary/5 to-secondary/5 p-2 sm:p-4 lg:p-6 xl:p-8 mt-16">
-      <div className="max-w-4xl lg:max-w-6xl xl:max-w-7xl mx-auto space-y-4 sm:space-y-6 lg:space-y-8">
-        {/* Header */}
-        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 md:gap-6">
-          <div className="flex-1">
-            <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-foreground">Admin Dashboard</h1>
-            <p className="text-muted-foreground mt-2">Beheer lidmaatschappen en bestellingen</p>
-          </div>
-          <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto md:flex-shrink-0">
-            <Link to="/" className="w-full sm:w-auto">
-              <Button variant="outline" className="flex items-center gap-2 w-full sm:w-auto">
-                <Home className="w-4 h-4" />
-                Home
-              </Button>
-            </Link>
-            <Button onClick={exportToCsv} className="flex items-center gap-2 w-full sm:w-auto">
-              <Download className="w-4 h-4" />
-              Export CSV
-            </Button>
-            <Button 
-              onClick={testEmail} 
-              disabled={testingEmail}
-              className="flex items-center gap-2 w-full sm:w-auto"
-              variant="outline"
-            >
-              <Mail className="w-4 h-4" />
-              {testingEmail ? "Verzenden..." : "Test Email"}
-            </Button>
-            <Button 
-              onClick={createTestOrder} 
-              disabled={creatingTestOrder}
-              className="flex items-center gap-2 w-full sm:w-auto"
-              variant="secondary"
-            >
-              <ShoppingBag className="w-4 h-4" />
-              {creatingTestOrder ? "Aanmaken..." : "Test Bestelling"}
-            </Button>
-          </div>
-        </div>
-
-        {/* Navigation Tabs */}
-        <div className="space-y-6">
-          <Tabs value={viewMode} onValueChange={(value) => setViewMode(value as 'memberships' | 'orders' | 'profiles' | 'products' | 'partners' | 'pricing' | 'partner-pricing' | 'discounts')}>
-            <div className="space-y-4">
-              {/* Gebruikers & Data Section */}
-              <div className="space-y-3">
-                <h3 className="text-sm font-semibold text-foreground/80 uppercase tracking-wider">Gebruikers & Data</h3>
-                <TabsList className="inline-flex h-auto p-1 space-x-1 bg-muted/50 backdrop-blur-sm border border-border/50 rounded-lg">
-                  <TabsTrigger 
-                    value="memberships" 
-                    className="flex items-center gap-2 px-4 py-2.5 rounded-md transition-all duration-200 hover:bg-background/80 data-[state=active]:bg-background data-[state=active]:shadow-sm data-[state=active]:text-primary font-medium"
+    <SidebarProvider collapsedWidth={80}>
+      <div className="min-h-screen bg-gradient-to-br from-background via-primary/5 to-secondary/5 flex w-full">
+        <AppSidebar 
+          viewMode={viewMode} 
+          onViewModeChange={(mode) => setViewMode(mode as 'memberships' | 'orders' | 'profiles' | 'products' | 'partners' | 'pricing' | 'partner-pricing' | 'discounts')} 
+        />
+        
+        <main className="flex-1 overflow-auto">
+          {/* Header */}
+          <div className="border-b border-border/50 bg-card/50 backdrop-blur-sm">
+            <div className="flex items-center gap-4 p-6">
+              <SidebarTrigger className="shrink-0" />
+              <div className="flex-1 flex items-center justify-between">
+                <div>
+                  <h1 className="text-3xl font-bold tracking-tight text-foreground">Admin Dashboard</h1>
+                  <p className="text-sm text-muted-foreground">
+                    Beheer lidmaatschappen, bestellingen en bedrijfsprofielen
+                  </p>
+                </div>
+                <div className="flex gap-3">
+                  <Link to="/">
+                    <Button variant="outline" className="flex items-center gap-2">
+                      <Home className="w-4 h-4" />
+                      Home
+                    </Button>
+                  </Link>
+                  <Button onClick={exportToCsv} className="flex items-center gap-2">
+                    <Download className="w-4 h-4" />
+                    Export CSV
+                  </Button>
+                  <Button 
+                    onClick={testEmail} 
+                    disabled={testingEmail}
+                    className="flex items-center gap-2"
+                    variant="outline"
                   >
-                    <Users className="w-4 h-4" />
-                    <span>Lidmaatschappen</span>
-                  </TabsTrigger>
-                  <TabsTrigger 
-                    value="profiles" 
-                    className="flex items-center gap-2 px-4 py-2.5 rounded-md transition-all duration-200 hover:bg-background/80 data-[state=active]:bg-background data-[state=active]:shadow-sm data-[state=active]:text-primary font-medium"
-                  >
-                    <Building2 className="w-4 h-4" />
-                    <span>Bedrijven</span>
-                  </TabsTrigger>
-                  <TabsTrigger 
-                    value="partners" 
-                    className="flex items-center gap-2 px-4 py-2.5 rounded-md transition-all duration-200 hover:bg-background/80 data-[state=active]:bg-background data-[state=active]:shadow-sm data-[state=active]:text-primary font-medium"
-                  >
-                    <Building2 className="w-4 h-4" />
-                    <span>Partners</span>
-                  </TabsTrigger>
-                </TabsList>
-              </div>
-
-              {/* Webshop Section */}
-              <div className="space-y-3">
-                <h3 className="text-sm font-semibold text-foreground/80 uppercase tracking-wider">Webshop</h3>
-                <TabsList className="inline-flex h-auto p-1 space-x-1 bg-muted/50 backdrop-blur-sm border border-border/50 rounded-lg">
-                  <TabsTrigger 
-                    value="orders" 
-                    className="flex items-center gap-2 px-4 py-2.5 rounded-md transition-all duration-200 hover:bg-background/80 data-[state=active]:bg-background data-[state=active]:shadow-sm data-[state=active]:text-primary font-medium"
+                    <Mail className="w-4 h-4" />
+                    {testingEmail ? "Verzenden..." : "Test Email"}
+                  </Button>
+                  <Button 
+                    onClick={createTestOrder} 
+                    disabled={creatingTestOrder}
+                    className="flex items-center gap-2"
+                    variant="secondary"
                   >
                     <ShoppingBag className="w-4 h-4" />
-                    <span>Bestellingen</span>
-                  </TabsTrigger>
-                  <TabsTrigger 
-                    value="products" 
-                    className="flex items-center gap-2 px-4 py-2.5 rounded-md transition-all duration-200 hover:bg-background/80 data-[state=active]:bg-background data-[state=active]:shadow-sm data-[state=active]:text-primary font-medium"
-                  >
-                    <Package className="w-4 h-4" />
-                    <span>Producten</span>
-                  </TabsTrigger>
-                  <TabsTrigger 
-                    value="discounts" 
-                    className="flex items-center gap-2 px-4 py-2.5 rounded-md transition-all duration-200 hover:bg-background/80 data-[state=active]:bg-background data-[state=active]:shadow-sm data-[state=active]:text-primary font-medium"
-                  >
-                    <Tag className="w-4 h-4" />
-                    <span>Kortingen</span>
-                  </TabsTrigger>
-                </TabsList>
-              </div>
-
-              {/* Configuratie Section */}
-              <div className="space-y-3">
-                <h3 className="text-sm font-semibold text-foreground/80 uppercase tracking-wider">Configuratie</h3>
-                <TabsList className="inline-flex h-auto p-1 space-x-1 bg-muted/50 backdrop-blur-sm border border-border/50 rounded-lg">
-                  <TabsTrigger 
-                    value="pricing" 
-                    className="flex items-center gap-2 px-4 py-2.5 rounded-md transition-all duration-200 hover:bg-background/80 data-[state=active]:bg-background data-[state=active]:shadow-sm data-[state=active]:text-primary font-medium"
-                  >
-                    <Euro className="w-4 h-4" />
-                    <span>Lidmaatschap Prijzen</span>
-                  </TabsTrigger>
-                  <TabsTrigger 
-                    value="partner-pricing" 
-                    className="flex items-center gap-2 px-4 py-2.5 rounded-md transition-all duration-200 hover:bg-background/80 data-[state=active]:bg-background data-[state=active]:shadow-sm data-[state=active]:text-primary font-medium"
-                  >
-                    <Building2 className="w-4 h-4" />
-                    <span>Partner Prijzen</span>
-                  </TabsTrigger>
-                </TabsList>
+                    {creatingTestOrder ? "Aanmaken..." : "Test Bestelling"}
+                  </Button>
+                </div>
               </div>
             </div>
-          </Tabs>
-        </div>
+          </div>
+
+          <div className="p-6">
+            <Tabs value={viewMode} onValueChange={(value) => setViewMode(value as 'memberships' | 'orders' | 'profiles' | 'products' | 'partners' | 'pricing' | 'partner-pricing' | 'discounts')}>
+              <TabsContent value="memberships" className="space-y-6">
+                {/* Summary Cards */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+                  <Card className="bg-gradient-to-br from-blue-500/5 to-blue-500/10 border-blue-200/30">
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                      <CardTitle className="text-sm font-medium text-muted-foreground">
+                        Totaal Lidmaatschappen
+                      </CardTitle>
+                      <Users className="h-4 w-4 text-blue-500" />
+                    </CardHeader>
+                    <CardContent>
+                      <div className="text-2xl font-bold text-foreground">{memberships.length}</div>
+                      <p className="text-xs text-muted-foreground">
+                        {memberships.filter(m => m.payment_status === 'paid').length} betaald
+                      </p>
+                    </CardContent>
+                  </Card>
+
+                  <Card className="bg-gradient-to-br from-green-500/5 to-green-500/10 border-green-200/30">
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                      <CardTitle className="text-sm font-medium text-muted-foreground">
+                        Nieuwe Deze Maand
+                      </CardTitle>
+                      <Users className="h-4 w-4 text-green-500" />
+                    </CardHeader>
+                    <CardContent>
+                      <div className="text-2xl font-bold text-foreground">
+                        {memberships.filter(m => {
+                          const created = new Date(m.created_at);
+                          const now = new Date();
+                          return created.getMonth() === now.getMonth() && created.getFullYear() === now.getFullYear();
+                        }).length}
+                      </div>
+                      <p className="text-xs text-muted-foreground">dit kalenderjaar</p>
+                    </CardContent>
+                  </Card>
+
+                  <Card className="bg-gradient-to-br from-yellow-500/5 to-yellow-500/10 border-yellow-200/30">
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                      <CardTitle className="text-sm font-medium text-muted-foreground">
+                        Openstaand
+                      </CardTitle>
+                      <CreditCard className="h-4 w-4 text-yellow-500" />
+                    </CardHeader>
+                    <CardContent>
+                      <div className="text-2xl font-bold text-foreground">
+                        {memberships.filter(m => m.payment_status === 'pending').length}
+                      </div>
+                      <p className="text-xs text-muted-foreground">nog te betalen</p>
+                    </CardContent>
+                  </Card>
+
+                  <Card className="bg-gradient-to-br from-red-500/5 to-red-500/10 border-red-200/30">
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                      <CardTitle className="text-sm font-medium text-muted-foreground">
+                        Geannuleerd
+                      </CardTitle>
+                      <CreditCard className="h-4 w-4 text-red-500" />
+                    </CardHeader>
+                    <CardContent>
+                      <div className="text-2xl font-bold text-foreground">
+                        {memberships.filter(m => m.payment_status === 'cancelled').length}
+                      </div>
+                      <p className="text-xs text-muted-foreground">niet voltooid</p>
+                    </CardContent>
+                  </Card>
+                </div>
+              </TabsContent>
+
+              <TabsContent value="orders">
+                {/* ... keep existing code (orders content) */}
+              </TabsContent>
+
+              <TabsContent value="profiles">
+                {/* ... keep existing code (profiles content) */}
+              </TabsContent>
+
+              <TabsContent value="products">
+                {/* ... keep existing code (products content) */}
+              </TabsContent>
+
+              <TabsContent value="partners">
+                {/* ... keep existing code (partners content) */}
+              </TabsContent>
+
+              <TabsContent value="pricing">
+                {/* ... keep existing code (pricing content) */}
+              </TabsContent>
+
+              <TabsContent value="partner-pricing">
+                {/* ... keep existing code (partner-pricing content) */}
+              </TabsContent>
+
+              <TabsContent value="discounts">
+                {/* ... keep existing code (discounts content) */}
+              </TabsContent>
+            </Tabs>
+          </div>
+        </main>
+      </div>
+    </SidebarProvider>
+  );
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 xl:gap-8">
@@ -2766,17 +2802,20 @@ Het Bouw met Respect team
                     }}
                     className="flex items-center gap-2"
                     disabled={!newEmail}
-                  >
-                    <Save className="w-4 h-4" />
-                    Bijwerken
-                  </Button>
-                </div>
-              </div>
-            )}
-          </DialogContent>
-        </Dialog>
+                   >
+                     <Save className="w-4 h-4" />
+                     Bijwerken
+                   </Button>
+                 </div>
+               </div>
+             )}
+           </DialogContent>
+          </Dialog>
+            </Tabs>
+          </div>
+        </main>
       </div>
-    </div>
+    </SidebarProvider>
   );
 };
 
