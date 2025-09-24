@@ -172,8 +172,18 @@ const CompanyProfileForm = ({
         ...(isPartnerDashboard && partnerMembershipId && { partner_membership_id: partnerMembershipId })
       };
 
+      // Check if user is admin and use appropriate client
+      const { data: { user } } = await supabase.auth.getUser();
+      let client = supabase;
+      
+      if (user?.email === 'info@bouwmetrespect.nl' && !isPartnerDashboard) {
+        // Use admin client for admin operations
+        const { supabaseAdmin } = await import('@/integrations/supabase/admin-client');
+        client = supabaseAdmin;
+      }
+
       if (editingProfile) {
-        const { error } = await supabase
+        const { error } = await client
           .from('company_profiles')
           .update(profileData)
           .eq('id', editingProfile.id);
@@ -185,7 +195,7 @@ const CompanyProfileForm = ({
           description: "Bedrijfsprofiel succesvol bijgewerkt",
         });
       } else {
-        const { error } = await supabase
+        const { error } = await client
           .from('company_profiles')
           .insert(profileData);
 
