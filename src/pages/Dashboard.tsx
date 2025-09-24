@@ -1401,7 +1401,7 @@ Het Bouw met Respect team
   }
 
   return (
-    <SidebarProvider collapsedWidth={80}>
+    <SidebarProvider>
       <div className="min-h-screen bg-gradient-to-br from-background via-primary/5 to-secondary/5 flex w-full">
         <AppSidebar 
           viewMode={viewMode} 
@@ -1526,31 +1526,54 @@ Het Bouw met Respect team
               </TabsContent>
 
               <TabsContent value="orders">
-                {/* ... keep existing code (orders content) */}
+                <div className="space-y-6">
+                  <div className="text-center py-8">
+                    <h3 className="text-lg font-semibold">Bestellingen</h3>
+                    <p className="text-muted-foreground">Bestellingsbeheer komt hier</p>
+                  </div>
+                </div>
               </TabsContent>
 
               <TabsContent value="profiles">
-                {/* ... keep existing code (profiles content) */}
+                <div className="space-y-6">
+                  <div className="text-center py-8">
+                    <h3 className="text-lg font-semibold">Bedrijfsprofielen</h3>
+                    <p className="text-muted-foreground">Bedrijfsprofielbeheer komt hier</p>
+                  </div>
+                </div>
               </TabsContent>
 
               <TabsContent value="products">
-                {/* ... keep existing code (products content) */}
+                <div className="space-y-6">
+                  <ProductManagement 
+                    products={products}
+                    onProductsChange={fetchProducts}
+                  />
+                </div>
               </TabsContent>
 
               <TabsContent value="partners">
-                {/* ... keep existing code (partners content) */}
+                <div className="space-y-6">
+                  <PartnerAccountManagement />
+                </div>
               </TabsContent>
 
               <TabsContent value="pricing">
-                {/* ... keep existing code (pricing content) */}
+                <div className="space-y-6">
+                  <MembershipPricingManager />
+                </div>
               </TabsContent>
 
               <TabsContent value="partner-pricing">
-                {/* ... keep existing code (partner-pricing content) */}
+                <div className="space-y-6">
+                  <PartnerPricingManager />
+                </div>
               </TabsContent>
 
               <TabsContent value="discounts">
-                {/* ... keep existing code (discounts content) */}
+                <div className="space-y-6">
+                  <DiscountCodeManager />
+                </div>
               </TabsContent>
             </Tabs>
           </div>
