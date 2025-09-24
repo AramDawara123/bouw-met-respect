@@ -20,6 +20,7 @@ import MembershipPricingManager from "@/components/MembershipPricingManager";
 import DiscountCodeManager from "@/components/DiscountCodeManager";
 import PartnerPricingManager from "@/components/PartnerPricingManager";
 import { QRCodeGenerator } from "@/components/QRCodeGenerator";
+import QRCodeManager from "@/components/QRCodeManager";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
 
@@ -1866,6 +1867,7 @@ Het Bouw met Respect team
               <TabsContent value="qrcode">
                 <div className="space-y-6">
                   <QRCodeGenerator />
+                  <QRCodeManager />
                 </div>
               </TabsContent>
             </Tabs>

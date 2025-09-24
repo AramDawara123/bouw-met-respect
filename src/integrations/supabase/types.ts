@@ -494,6 +494,39 @@ export type Database = {
         }
         Relationships: []
       }
+      qr_codes: {
+        Row: {
+          content: string
+          created_at: string
+          error_correction: string
+          id: string
+          qr_size: number
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          error_correction?: string
+          id?: string
+          qr_size?: number
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          error_correction?: string
+          id?: string
+          qr_size?: number
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       website_content: {
         Row: {
           contact_email: string
