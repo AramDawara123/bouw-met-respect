@@ -85,50 +85,43 @@ const Login = () => {
   const createAdminAccount = async () => {
     setCreatingAdmin(true);
     try {
-      // First try to sign up the admin account
-      const { data, error } = await supabase.auth.signUp({
-        email: "info@bouwmetrespect.nl",
-        password: "admin123456",
-        options: {
-          data: {
-            first_name: 'Admin',
-            last_name: 'User',
-            role: 'admin'
-          }
-        }
-      });
-
-      if (error && !error.message.includes("already registered")) {
-        throw error;
+      // Call our edge function to properly create/update admin account
+      const { data, error } = await supabase.functions.invoke('reset-admin-password');
+      
+      if (error) {
+        throw new Error(error.message);
       }
 
-      // Try to sign in immediately after creating the account
-      const { error: signInError } = await supabase.auth.signInWithPassword({
-        email: "info@bouwmetrespect.nl",
-        password: "admin123456"
-      });
-
-      if (signInError) {
+      if (data.success) {
         toast({
-          title: "Admin Account Aangemaakt",
-          description: "Account aangemaakt maar kon niet automatisch inloggen. Probeer handmatig in te loggen.",
-          duration: 10000
-        });
-        setPassword('admin123456');
-      } else {
-        toast({
-          title: "Admin Account Aangemaakt",
-          description: "Account aangemaakt en je bent ingelogd!",
+          title: "Admin Account Klaar",
+          description: data.message + " Probeer nu in te loggen.",
           duration: 5000
         });
-        navigate("/dashboard");
+        
+        // Try to sign in automatically after setting up the account
+        setTimeout(async () => {
+          const { error: signInError } = await supabase.auth.signInWithPassword({
+            email: "info@bouwmetrespect.nl",
+            password: "admin123456"
+          });
+
+          if (!signInError) {
+            toast({
+              title: "Automatisch Ingelogd",
+              description: "Je wordt doorgestuurd naar het dashboard.",
+              duration: 3000
+            });
+            navigate("/dashboard");
+          }
+        }, 1000);
       }
       
     } catch (error: any) {
-      console.error('Error creating admin account:', error);
+      console.error('Error setting up admin account:', error);
       toast({
         title: "Fout",
-        description: `Kon admin account niet aanmaken: ${error.message}`,
+        description: `Kon admin account niet instellen: ${error.message}`,
         variant: "destructive"
       });
     } finally {
@@ -226,7 +219,7 @@ const Login = () => {
                   onClick={createAdminAccount}
                   disabled={creatingAdmin}
                 >
-                  {creatingAdmin ? "Aanmaken..." : "Admin Account Aanmaken"}
+                  {creatingAdmin ? "Instellen..." : "Fix Admin Account"}
                 </Button>
 
                 <Button 
