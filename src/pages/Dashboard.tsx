@@ -1713,11 +1713,25 @@ Het Bouw met Respect team
                   {/* Company Profiles Table */}
                   <Card>
                     <CardHeader>
-                      <CardTitle className="flex items-center gap-2">
-                        <Building2 className="w-5 h-5" />
-                        Bedrijfsprofielen
-                      </CardTitle>
-                      <CardDescription>Beheer alle bedrijfsprofielen in de partnersgalerij</CardDescription>
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <CardTitle className="flex items-center gap-2">
+                            <Building2 className="w-5 h-5" />
+                            Bedrijfsprofielen
+                          </CardTitle>
+                          <CardDescription>Beheer alle bedrijfsprofielen in de partnersgalerij</CardDescription>
+                        </div>
+                        <Button 
+                          onClick={() => {
+                            setEditingProfile(null);
+                            setShowProfileForm(true);
+                          }}
+                          className="flex items-center gap-2"
+                        >
+                          <Plus className="w-4 h-4" />
+                          Nieuw Profiel
+                        </Button>
+                      </div>
                     </CardHeader>
                     <CardContent>
                       <div className="rounded-md border">
@@ -1782,7 +1796,14 @@ Het Bouw met Respect team
                                 <TableCell>{profile.display_order}</TableCell>
                                 <TableCell className="text-right">
                                   <div className="flex items-center gap-2 justify-end">
-                                    <Button variant="ghost" size="sm">
+                                    <Button 
+                                      variant="ghost" 
+                                      size="sm"
+                                      onClick={() => {
+                                        setEditingProfile(profile);
+                                        setShowProfileForm(true);
+                                      }}
+                                    >
                                       <Edit className="w-4 h-4" />
                                     </Button>
                                     <Button variant="ghost" size="sm">
@@ -1836,6 +1857,19 @@ Het Bouw met Respect team
           </div>
         </main>
       </div>
+      
+      {/* Company Profile Form Dialog */}
+      <CompanyProfileForm
+        open={showProfileForm}
+        onOpenChange={setShowProfileForm}
+        onSuccess={() => {
+          fetchProfiles();
+          setShowProfileForm(false);
+          setEditingProfile(null);
+        }}
+        editingProfile={editingProfile}
+        isPartnerDashboard={false}
+      />
     </SidebarProvider>
   );
 };
