@@ -41,12 +41,8 @@ const Navbar = () => {
                 <ShoppingCart className="w-4 h-4" />
                 Webshop
               </Link>
-              <Link to="/partner-auth" className="text-muted-foreground hover:text-foreground transition-colors">
-                Partner Login
-              </Link>
-              <Link to="/login" className="text-muted-foreground hover:text-foreground transition-colors">
-                Admin Login
-              </Link>
+              
+              
               <Button className="ml-4" onClick={handleMembershipClick}>
                 Sluit je aan bij de beweging
               </Button>
