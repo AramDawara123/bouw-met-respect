@@ -32,6 +32,11 @@ export const QRCodeGenerator = () => {
   };
 
   const generateQRCode = async () => {
+    console.log('🔄 Starting QR code generation...');
+    console.log('📝 Text input:', text);
+    console.log('📏 Size:', size, sizeMap[size]);
+    console.log('⚙️ Error level:', errorLevel);
+    
     try {
       const validation = qrSchema.safeParse({
         text: text,
@@ -40,6 +45,7 @@ export const QRCodeGenerator = () => {
       });
 
       if (!validation.success) {
+        console.error('❌ Validation failed:', validation.error.errors);
         toast({
           title: "Invoer fout",
           description: validation.error.errors[0].message,
@@ -48,10 +54,27 @@ export const QRCodeGenerator = () => {
         return;
       }
 
+      console.log('✅ Validation passed');
       setIsGenerating(true);
       
       const canvas = canvasRef.current;
-      if (!canvas) return;
+      console.log('🖼️ Canvas element:', canvas);
+      
+      if (!canvas) {
+        console.error('❌ No canvas element found');
+        toast({
+          title: "Canvas Fout",
+          description: "Canvas element niet gevonden",
+          variant: "destructive"
+        });
+        return;
+      }
+
+      console.log('📐 Generating QR code with options:', {
+        width: sizeMap[size],
+        margin: 2,
+        errorCorrectionLevel: errorLevel
+      });
 
       await QRCode.toCanvas(canvas, text, {
         width: sizeMap[size],
@@ -63,8 +86,11 @@ export const QRCodeGenerator = () => {
         errorCorrectionLevel: errorLevel
       });
 
+      console.log('✅ QR code generated on canvas');
+
       // Convert canvas to data URL for download
       const dataUrl = canvas.toDataURL('image/png');
+      console.log('🖼️ Data URL generated:', dataUrl.substring(0, 50) + '...');
       setQrCodeUrl(dataUrl);
       
       toast({
@@ -72,10 +98,10 @@ export const QRCodeGenerator = () => {
         description: "Je QR code is succesvol aangemaakt!"
       });
     } catch (error) {
-      console.error('Error generating QR code:', error);
+      console.error('💥 Error generating QR code:', error);
       toast({
         title: "Fout",
-        description: "Er ging iets mis bij het genereren van de QR code",
+        description: `Er ging iets mis: ${error.message}`,
         variant: "destructive"
       });
     } finally {
@@ -205,6 +231,12 @@ export const QRCodeGenerator = () => {
               Wissen
             </Button>
           </div>
+
+          {/* Hidden canvas for QR generation */}
+          <canvas 
+            ref={canvasRef}
+            style={{ display: 'none' }}
+          />
         </CardContent>
       </Card>
 
@@ -218,11 +250,13 @@ export const QRCodeGenerator = () => {
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex justify-center">
-              <canvas 
-                ref={canvasRef}
-                className="border rounded-lg shadow-sm"
-                style={{ maxWidth: '100%', height: 'auto' }}
-              />
+              <div className="border rounded-lg shadow-sm p-4">
+                <img 
+                  src={qrCodeUrl}
+                  alt="Generated QR Code"
+                  className="max-w-full h-auto"
+                />
+              </div>
             </div>
             
             <div className="flex gap-2 justify-center">
