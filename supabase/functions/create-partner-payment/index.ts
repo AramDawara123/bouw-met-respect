@@ -31,7 +31,12 @@ serve(async (req) => {
     }
 
     const supabaseService = createClient(supabaseUrl, supabaseServiceKey, {
-      auth: { persistSession: false }
+      auth: { 
+        persistSession: false,
+        autoRefreshToken: false
+      },
+      db: { schema: 'public' },
+      global: { headers: { Authorization: `Bearer ${supabaseServiceKey}` } }
     });
 
     const { partnerData, amount } = await req.json();
@@ -77,6 +82,22 @@ serve(async (req) => {
     console.log('Mollie payment created:', mollieData.id);
 
     // Store partner membership data in database
+    console.log('Attempting to insert partner membership with data:', {
+      user_id: null,
+      first_name: partnerData.first_name,
+      last_name: partnerData.last_name,
+      email: partnerData.email,
+      phone: partnerData.phone,
+      company_name: partnerData.company_name,
+      website: partnerData.website,
+      industry: partnerData.industry,
+      description: partnerData.description,
+      mollie_payment_id: mollieData.id,
+      amount: partnerAmount,
+      currency: 'EUR',
+      payment_status: 'pending'
+    });
+
     const { data: partnerMembership, error } = await supabaseService
       .from('partner_memberships')
       .insert({
@@ -98,9 +119,12 @@ serve(async (req) => {
       .single();
 
     if (error) {
-      console.error('Database error:', error);
+      console.error('Database error details:', error);
+      console.error('Error message:', error.message);
+      console.error('Error code:', error.code);
+      console.error('Error details:', error.details);
       return new Response(
-        JSON.stringify({ error: 'Failed to store partner data' }),
+        JSON.stringify({ error: `Failed to store partner data: ${error.message}` }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 500 }
       );
     }
