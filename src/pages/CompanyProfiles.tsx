@@ -32,6 +32,18 @@ const CompanyProfiles = () => {
   } = useToast();
   useEffect(() => {
     fetchProfiles();
+    
+    // Add event listener for profile updates
+    const handleProfileUpdate = () => {
+      console.log('🔄 Profile update detected, refreshing...');
+      fetchProfiles();
+    };
+    
+    window.addEventListener('company-profile-updated', handleProfileUpdate);
+    
+    return () => {
+      window.removeEventListener('company-profile-updated', handleProfileUpdate);
+    };
   }, []);
   const fetchProfiles = async () => {
     try {
@@ -100,11 +112,11 @@ const CompanyProfiles = () => {
             <p className="text-lg text-gray-600 max-w-2xl mx-auto mb-6">
               Ontdek de bedrijven die samen met ons bouwen aan een respectvolle en veilige bouwsector
             </p>
-            <div className="flex flex-col sm:flex-row gap-3 items-center">
+            <div className="flex flex-col sm:flex-row gap-3 items-center justify-center">
               <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-100 rounded-full">
                 <div className="w-2 h-2 bg-green-500 rounded-full"></div>
                 <p className="text-sm text-blue-700 font-medium">
-                  Partners gallerij
+                  {profiles.length} Partners gevonden
                 </p>
               </div>
               <Button 
@@ -112,6 +124,13 @@ const CompanyProfiles = () => {
                 className="bg-primary hover:bg-primary/90 text-white font-medium px-6"
               >
                 Word Partner
+              </Button>
+              <Button 
+                onClick={fetchProfiles}
+                variant="outline"
+                className="font-medium px-4"
+              >
+                🔄 Vernieuwen
               </Button>
             </div>
           </div>

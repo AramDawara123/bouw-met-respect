@@ -194,6 +194,9 @@ const CompanyProfileForm = ({
           title: "Succes",
           description: "Bedrijfsprofiel succesvol bijgewerkt",
         });
+        
+        // Dispatch event to refresh other pages
+        window.dispatchEvent(new CustomEvent('company-profile-updated'));
       } else {
         const { error } = await client
           .from('company_profiles')
@@ -205,6 +208,9 @@ const CompanyProfileForm = ({
           title: "Succes",
           description: "Bedrijfsprofiel succesvol aangemaakt",
         });
+        
+        // Dispatch event to refresh other pages
+        window.dispatchEvent(new CustomEvent('company-profile-updated'));
       }
 
       onSuccess();
