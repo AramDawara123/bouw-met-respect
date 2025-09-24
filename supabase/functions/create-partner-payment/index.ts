@@ -7,13 +7,21 @@ const corsHeaders = {
 };
 
 serve(async (req) => {
+  console.log('🚀 create-partner-payment function called');
+  console.log('Request method:', req.method);
+  console.log('Request URL:', req.url);
+  
   if (req.method === 'OPTIONS') {
+    console.log('✅ Handling CORS preflight request');
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
+    console.log('📋 Starting partner payment creation process');
+    
     const mollieApiKey = Deno.env.get('MOLLIE_API_KEY');
     if (!mollieApiKey) {
+      console.error('❌ Missing Mollie API key');
       return new Response(
         JSON.stringify({ error: 'Missing Mollie API key' }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 500 }
@@ -23,20 +31,25 @@ serve(async (req) => {
     const supabaseUrl = Deno.env.get('SUPABASE_URL');
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
 
+    console.log('🔍 Checking Supabase configuration');
+    console.log('Supabase URL:', supabaseUrl ? 'Present' : 'Missing');
+    console.log('Service Key:', supabaseServiceKey ? 'Present' : 'Missing');
+
     if (!supabaseUrl || !supabaseServiceKey) {
+      console.error('❌ Missing Supabase configuration');
       return new Response(
         JSON.stringify({ error: 'Missing Supabase configuration' }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 500 }
       );
     }
 
+    console.log('🔧 Creating Supabase service client');
     const supabaseService = createClient(supabaseUrl, supabaseServiceKey, {
       auth: { 
         persistSession: false,
         autoRefreshToken: false
       },
-      db: { schema: 'public' },
-      global: { headers: { Authorization: `Bearer ${supabaseServiceKey}` } }
+      db: { schema: 'public' }
     });
 
     const { partnerData, amount } = await req.json();
