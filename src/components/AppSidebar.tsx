@@ -91,7 +91,7 @@ export function AppSidebar({ viewMode, onViewModeChange }: AppSidebarProps) {
 
   return (
     <Sidebar className="border-r border-border/50 bg-card/50 backdrop-blur-sm">
-      <SidebarHeader className="border-b border-border/50 p-6 mt-6">
+      <SidebarHeader className="border-b border-border/50 p-6 mt-16 pt-8">
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
             <Home className="w-4 h-4 text-primary-foreground" />
