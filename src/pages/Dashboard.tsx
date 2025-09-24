@@ -1410,7 +1410,7 @@ Het Bouw met Respect team
         
         <main className="flex-1 overflow-auto">
           {/* Header */}
-          <div className="border-b border-border/50 bg-card/50 backdrop-blur-sm">
+          <div className="sticky top-0 z-40 border-b border-border/50 bg-card/95 backdrop-blur-sm">
             <div className="flex items-center gap-4 p-6 mt-8">
               <SidebarTrigger className="shrink-0" />
               <div className="flex-1 flex items-center justify-between">
