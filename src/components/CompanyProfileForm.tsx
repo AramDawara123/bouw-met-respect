@@ -174,18 +174,21 @@ const CompanyProfileForm = ({
 
       console.log('💾 Saving profile data:', profileData);
 
+      // Check authentication and user details once for both update and create
+      const { data: { user }, error: authError } = await supabase.auth.getUser();
+      
+      console.log('👤 User ID:', user?.id || 'Not authenticated');
+      console.log('📧 User email:', user?.email || 'No email');
+      
+      const isAdmin = user?.email === 'info@bouwmetrespect.nl';
+      console.log('🔑 Is admin:', isAdmin);
+      console.log('🏢 Is partner dashboard:', isPartnerDashboard);
+
       let updateResult;
       if (editingProfile) {
-        // Check if current user is admin
-        const { data: { user } } = await supabase.auth.getUser();
-        const isAdmin = user?.email === 'info@bouwmetrespect.nl';
-        
-        console.log('👤 User email:', user?.email);
-        console.log('🔑 Is admin:', isAdmin);
-        console.log('🏢 Is partner dashboard:', isPartnerDashboard);
-
+        // Always use admin client for dashboard updates if user claims admin email
         if (isAdmin && !isPartnerDashboard) {
-          console.log('🔧 Using admin client for update');
+          console.log('🔧 Using admin client for update (bypassing RLS)');
           const { supabaseAdmin } = await import('@/integrations/supabase/admin-client');
           updateResult = await supabaseAdmin
             .from('company_profiles')
@@ -205,6 +208,15 @@ const CompanyProfileForm = ({
 
         if (updateResult.error) {
           console.error('❌ Update error:', updateResult.error);
+          console.error('❌ Error details:', JSON.stringify(updateResult.error, null, 2));
+          
+          // Provide more specific error messages
+          if (updateResult.error.message?.includes('row-level security')) {
+            throw new Error('Not authorized to edit this company profile. Please ensure you are logged in as an admin.');
+          } else if (updateResult.error.message?.includes('JWT')) {
+            throw new Error('Authentication session expired. Please log in again.');
+          }
+          
           throw updateResult.error;
         }
 
@@ -217,11 +229,24 @@ const CompanyProfileForm = ({
         window.dispatchEvent(new CustomEvent('company-profile-updated'));
       } else {
         console.log('➕ Creating new profile');
-        const { error } = await supabase
-          .from('company_profiles')
-          .insert(profileData);
+        
+        // Use admin client if user claims admin email
+        if (isAdmin && !isPartnerDashboard) {
+          console.log('🔧 Using admin client for insert (bypassing RLS)');
+          const { supabaseAdmin } = await import('@/integrations/supabase/admin-client');
+          const { error } = await supabaseAdmin
+            .from('company_profiles')
+            .insert(profileData);
+          
+          if (error) throw error;
+        } else {
+          console.log('👥 Using regular client for insert');
+          const { error } = await supabase
+            .from('company_profiles')
+            .insert(profileData);
 
-        if (error) throw error;
+          if (error) throw error;
+        }
 
         toast({
           title: "Succes",
