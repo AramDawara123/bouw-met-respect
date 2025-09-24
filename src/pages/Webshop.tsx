@@ -16,33 +16,25 @@ import { Label } from "@/components/ui/label";
 import { validateDiscountCode, calculateDiscount, formatDiscountDisplay } from "@/lib/discountUtils";
 const Webshop = () => {
   const [faqOpenIndex, setFaqOpenIndex] = useState<number | null>(null);
-
-  const webshopFaqs = [
-    {
-      question: "Hoe lang duurt de levering?",
-      answer: "We leveren binnen 2-3 werkdagen in heel Nederland. Bij bestellingen boven €50 is de verzending gratis!"
-    },
-    {
-      question: "Kan ik mijn bestelling retourneren?",
-      answer: "Ja, je hebt 30 dagen retourrecht. Stuur ons een email en we regelen de retour voor je. Geen vragen gesteld!"
-    },
-    {
-      question: "Zijn de producten van goede kwaliteit?",
-      answer: "Absoluut! We werken alleen met hoogwaardige materialen die bestand zijn tegen dagelijks gebruik op de bouwplaats en in het kantoor."
-    },
-    {
-      question: "Waarvoor worden de opbrengsten gebruikt?",
-      answer: "Alle opbrengsten worden gebruikt om de Bouw met Respect beweging te versterken en meer bedrijven te bereiken voor een respectvolle bouwsector."
-    },
-    {
-      question: "Kan ik betalen met iDEAL?",
-      answer: "Ja, we accepteren alle gangbare betaalmethoden waaronder iDEAL, creditcard en bankoverschrijving via ons veilige Mollie payment platform."
-    },
-    {
-      question: "Krijg ik een factuur voor mijn bestelling?",
-      answer: "Ja, na je bestelling ontvang je automatisch een factuur per email die je kunt gebruiken voor je administratie en eventuele belastingaftrek."
-    }
-  ];
+  const webshopFaqs = [{
+    question: "Hoe lang duurt de levering?",
+    answer: "We leveren binnen 2-3 werkdagen in heel Nederland. Bij bestellingen boven €50 is de verzending gratis!"
+  }, {
+    question: "Kan ik mijn bestelling retourneren?",
+    answer: "Ja, je hebt 30 dagen retourrecht. Stuur ons een email en we regelen de retour voor je. Geen vragen gesteld!"
+  }, {
+    question: "Zijn de producten van goede kwaliteit?",
+    answer: "Absoluut! We werken alleen met hoogwaardige materialen die bestand zijn tegen dagelijks gebruik op de bouwplaats en in het kantoor."
+  }, {
+    question: "Waarvoor worden de opbrengsten gebruikt?",
+    answer: "Alle opbrengsten worden gebruikt om de Bouw met Respect beweging te versterken en meer bedrijven te bereiken voor een respectvolle bouwsector."
+  }, {
+    question: "Kan ik betalen met iDEAL?",
+    answer: "Ja, we accepteren alle gangbare betaalmethoden waaronder iDEAL, creditcard en bankoverschrijving via ons veilige Mollie payment platform."
+  }, {
+    question: "Krijg ik een factuur voor mijn bestelling?",
+    answer: "Ja, na je bestelling ontvang je automatisch een factuur per email die je kunt gebruiken voor je administratie en eventuele belastingaftrek."
+  }];
   const {
     ref: headerRef,
     isVisible: headerVisible
@@ -95,13 +87,15 @@ const Webshop = () => {
     const fetchProducts = async () => {
       try {
         console.log('🔄 Fetching webshop products...');
-        const { data, error } = await supabase
-          .from('products')
-          .select('*')
-          .eq('in_stock', true) // Only show products that are in stock
-          .order('category', { ascending: true })
-          .order('name', { ascending: true });
-
+        const {
+          data,
+          error
+        } = await supabase.from('products').select('*').eq('in_stock', true) // Only show products that are in stock
+        .order('category', {
+          ascending: true
+        }).order('name', {
+          ascending: true
+        });
         if (error) {
           console.error('❌ Error fetching products:', error);
           // Fallback to hardcoded products if database fails
@@ -149,7 +143,8 @@ const Webshop = () => {
             id: product.id,
             name: product.name,
             description: product.description || "",
-            price: product.price / 100, // Convert from cents to euros
+            price: product.price / 100,
+            // Convert from cents to euros
             image: product.image_url || "/placeholder.svg",
             category: product.category || "Overig",
             inStock: product.in_stock,
@@ -165,7 +160,6 @@ const Webshop = () => {
         setProductsLoading(false);
       }
     };
-
     fetchProducts();
   }, []);
   // Memoized cart calculations for performance
@@ -175,33 +169,26 @@ const Webshop = () => {
       return total + (product?.price || 0) * quantity;
     }, 0);
   }, [cart, products]);
-
   const cartItemCount = useMemo(() => {
     return Object.values(cart).reduce((total, quantity) => total + quantity, 0);
   }, [cart]);
-
   const discountAmount = useMemo(() => {
     if (!appliedDiscount) return 0;
     return calculateDiscount(appliedDiscount, cartTotal * 100) / 100; // Convert back to euros
   }, [appliedDiscount, cartTotal]);
-
   const finalTotal = useMemo(() => {
     const subtotal = cartTotal - discountAmount;
     return subtotal + (subtotal >= 50 ? 0 : 5.00);
   }, [cartTotal, discountAmount]);
-
   const checkDiscountCode = async (code: string) => {
     if (!code.trim()) {
       setAppliedDiscount(null);
       setDiscountError("");
       return;
     }
-    
     setCheckingDiscount(true);
     setDiscountError("");
-    
     const result = await validateDiscountCode(code, 'products', cartTotal * 100);
-    
     if (result.valid && result.discount) {
       setAppliedDiscount(result.discount);
       toast({
@@ -212,7 +199,6 @@ const Webshop = () => {
       setAppliedDiscount(null);
       setDiscountError(result.error || "Ongeldige kortingscode");
     }
-    
     setCheckingDiscount(false);
   };
 
@@ -228,17 +214,17 @@ const Webshop = () => {
       description: `${product?.name} is toegevoegd aan je winkelwagen.`
     });
   }, [products, toast]);
-
   const increaseQuantity = useCallback((productId: string) => {
     setCart(prev => ({
       ...prev,
       [productId]: (prev[productId] || 0) + 1
     }));
   }, []);
-
   const decreaseQuantity = useCallback((productId: string) => {
     setCart(prev => {
-      const newCart = { ...prev };
+      const newCart = {
+        ...prev
+      };
       if (newCart[productId] > 1) {
         newCart[productId] = newCart[productId] - 1;
       } else {
@@ -247,10 +233,11 @@ const Webshop = () => {
       return newCart;
     });
   }, []);
-
   const removeFromCart = useCallback((productId: string) => {
     setCart(prev => {
-      const newCart = { ...prev };
+      const newCart = {
+        ...prev
+      };
       delete newCart[productId];
       return newCart;
     });
@@ -286,7 +273,6 @@ const Webshop = () => {
           quantity
         };
       }).filter(Boolean);
-      
       if (!items.length) {
         toast({
           title: "Winkelwagen leeg",
@@ -296,7 +282,6 @@ const Webshop = () => {
         console.warn('[Webshop] No items to checkout');
         return;
       }
-      
       const missing = validateCustomer();
       if (missing.length) {
         toast({
@@ -306,25 +291,26 @@ const Webshop = () => {
         });
         return;
       }
-      
-      const { data, error } = await supabase.functions.invoke('create-shop-order', {
-        body: { 
-          items, 
+      const {
+        data,
+        error
+      } = await supabase.functions.invoke('create-shop-order', {
+        body: {
+          items,
           customer,
           discountCode: appliedDiscount?.code,
           discountAmount: discountAmount * 100 // Convert to cents
         }
       });
-      
-      console.log('[Webshop] create-shop-order response', { data, error });
-      
+      console.log('[Webshop] create-shop-order response', {
+        data,
+        error
+      });
       if (error || (data as any)?.error) {
         throw new Error(error?.message || (data as any)?.error || 'Afrekenen mislukt');
       }
-      
       const paymentUrl = (data as any)?.paymentUrl;
       const orderId = (data as any)?.orderId;
-      
       if (!paymentUrl) {
         console.error('[Webshop] No paymentUrl in response');
         toast({
@@ -334,20 +320,24 @@ const Webshop = () => {
         });
         return;
       }
-      
+
       // Send immediate fallback confirmation email after successful order creation
       try {
         console.log('[Webshop] Sending fallback confirmation email...');
         const shipping = cartTotal >= 50 ? 0 : 500; // 5.00 EUR in cents
-        const { error: emailError } = await supabase.functions.invoke('send-order-confirmation', {
+        const {
+          error: emailError
+        } = await supabase.functions.invoke('send-order-confirmation', {
           body: {
             orderId: orderId || 'ORDER-' + Date.now(),
             customerEmail: customer.email,
             customerName: `${customer.firstName} ${customer.lastName}`,
             orderItems: items,
-            subtotal: cartTotal * 100, // Convert to cents
+            subtotal: cartTotal * 100,
+            // Convert to cents
             shipping: shipping,
-            total: finalTotal * 100, // Convert to cents
+            total: finalTotal * 100,
+            // Convert to cents
             shippingAddress: {
               street: customer.street,
               houseNumber: customer.houseNumber,
@@ -358,7 +348,6 @@ const Webshop = () => {
             orderDate: new Date().toLocaleDateString('nl-NL')
           }
         });
-        
         if (emailError) {
           console.error('[Webshop] Fallback email failed:', emailError);
         } else {
@@ -367,7 +356,6 @@ const Webshop = () => {
       } catch (emailError) {
         console.error('[Webshop] Error sending fallback email:', emailError);
       }
-      
       window.location.href = paymentUrl;
     } catch (e: any) {
       toast({
@@ -380,8 +368,7 @@ const Webshop = () => {
       setIsCheckingOut(false);
     }
   }, [cart, products, customer, toast]);
-  return (
-    <div className="min-h-screen w-full">
+  return <div className="min-h-screen w-full">
       {/* Sticky Header */}
       <header className="sticky top-0 z-50 bg-background/95 backdrop-blur-lg border-b border-border/50 shadow-sm">
         <div className="container mx-auto px-4 py-3">
@@ -422,13 +409,7 @@ const Webshop = () => {
                     const product = products.find(p => p.id === productId);
                     if (!product) return null;
                     return <div key={productId} className="flex items-center space-x-4 p-4 border rounded-lg">
-                            <img 
-                              src={product.image} 
-                              alt={product.name} 
-                              className="w-16 h-16 object-cover rounded-lg" 
-                              loading="lazy"
-                              decoding="async"
-                            />
+                            <img src={product.image} alt={product.name} className="w-16 h-16 object-cover rounded-lg" loading="lazy" decoding="async" />
                             <div className="flex-1">
                               <h4 className="font-semibold text-sm">{product.name}</h4>
                               <p className="text-sm text-muted-foreground">€{product.price.toFixed(2)}</p>
@@ -448,73 +429,72 @@ const Webshop = () => {
                           </div>;
                   })}
 
-                     {cartItemCount > 0 && (
-                       <>
+                     {cartItemCount > 0 && <>
                          <div className="mt-6 space-y-4 border-t pt-4">
                            {/* Customer details form */}
                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                              <div>
                                <Label htmlFor="firstName">Voornaam</Label>
                                <Input id="firstName" value={customer.firstName} onChange={e => setCustomer({
-                             ...customer,
-                             firstName: e.target.value
-                           })} placeholder="Jan" />
+                            ...customer,
+                            firstName: e.target.value
+                          })} placeholder="Jan" />
                              </div>
                              <div>
                                <Label htmlFor="lastName">Achternaam</Label>
                                <Input id="lastName" value={customer.lastName} onChange={e => setCustomer({
-                             ...customer,
-                             lastName: e.target.value
-                           })} placeholder="Jansen" />
+                            ...customer,
+                            lastName: e.target.value
+                          })} placeholder="Jansen" />
                              </div>
                              <div className="sm:col-span-2">
                                <Label htmlFor="email">E-mail</Label>
                                <Input id="email" type="email" value={customer.email} onChange={e => setCustomer({
-                             ...customer,
-                             email: e.target.value
-                           })} placeholder="jan@voorbeeld.nl" />
+                            ...customer,
+                            email: e.target.value
+                          })} placeholder="jan@voorbeeld.nl" />
                              </div>
                              <div className="sm:col-span-2">
                                <Label htmlFor="phone">Telefoon</Label>
                                <Input id="phone" value={customer.phone} onChange={e => setCustomer({
-                             ...customer,
-                             phone: e.target.value
-                           })} placeholder="0612345678" />
+                            ...customer,
+                            phone: e.target.value
+                          })} placeholder="0612345678" />
                              </div>
                              <div className="sm:col-span-2">
                                <Label htmlFor="street">Straat</Label>
                                <Input id="street" value={customer.street} onChange={e => setCustomer({
-                             ...customer,
-                             street: e.target.value
-                           })} placeholder="Hoofdstraat" />
+                            ...customer,
+                            street: e.target.value
+                          })} placeholder="Hoofdstraat" />
                              </div>
                              <div>
                                <Label htmlFor="houseNumber">Huisnummer</Label>
                                <Input id="houseNumber" value={customer.houseNumber} onChange={e => setCustomer({
-                             ...customer,
-                             houseNumber: e.target.value
-                           })} placeholder="12A" />
+                            ...customer,
+                            houseNumber: e.target.value
+                          })} placeholder="12A" />
                              </div>
                              <div>
                                <Label htmlFor="postcode">Postcode</Label>
                                <Input id="postcode" value={customer.postcode} onChange={e => setCustomer({
-                             ...customer,
-                             postcode: e.target.value
-                           })} placeholder="1234 AB" />
+                            ...customer,
+                            postcode: e.target.value
+                          })} placeholder="1234 AB" />
                              </div>
                              <div className="sm:col-span-2">
                                <Label htmlFor="city">Plaats</Label>
                                <Input id="city" value={customer.city} onChange={e => setCustomer({
-                             ...customer,
-                             city: e.target.value
-                           })} placeholder="Amsterdam" />
+                            ...customer,
+                            city: e.target.value
+                          })} placeholder="Amsterdam" />
                              </div>
                              <div className="sm:col-span-2">
                                <Label htmlFor="country">Land</Label>
                                <Input id="country" value={customer.country} onChange={e => setCustomer({
-                             ...customer,
-                             country: e.target.value
-                            })} placeholder="Nederland" />
+                            ...customer,
+                            country: e.target.value
+                          })} placeholder="Nederland" />
                               </div>
                              </div>
                            </div>
@@ -525,31 +505,20 @@ const Webshop = () => {
                                Kortingscode (optioneel)
                              </Label>
                              <div className="flex gap-2">
-                               <Input
-                                 id="discountCode"
-                                 value={discountCode}
-                                 onChange={(e) => {
-                                   setDiscountCode(e.target.value.toUpperCase());
-                                   checkDiscountCode(e.target.value);
-                                 }}
-                                 placeholder="KORTINGSCODE"
-                                 className="uppercase"
-                               />
+                               <Input id="discountCode" value={discountCode} onChange={e => {
+                          setDiscountCode(e.target.value.toUpperCase());
+                          checkDiscountCode(e.target.value);
+                        }} placeholder="KORTINGSCODE" className="uppercase" />
                              </div>
-                             {discountError && (
-                               <p className="text-sm text-destructive">{discountError}</p>
-                             )}
-                             {appliedDiscount && (
-                               <div className="flex items-center gap-2">
+                             {discountError && <p className="text-sm text-destructive">{discountError}</p>}
+                             {appliedDiscount && <div className="flex items-center gap-2">
                                  <Check className="w-4 h-4 text-green-600" />
                                  <Badge variant="default" className="bg-green-100 text-green-800">
                                    {formatDiscountDisplay(appliedDiscount)} toegepast
                                  </Badge>
-                               </div>
-                             )}
+                               </div>}
                             </div>
-                       </>
-                     )}
+                       </>}
                    </div>
 
                     {cartItemCount > 0 && <div className="sticky bottom-0 left-0 right-0 -mx-6 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 border-t border-border p-4">
@@ -558,24 +527,18 @@ const Webshop = () => {
                             <span>Subtotaal:</span>
                             <span>€{cartTotal.toFixed(2)}</span>
                           </div>
-                          {appliedDiscount && discountAmount > 0 && (
-                            <div className="flex justify-between text-sm text-green-600">
+                          {appliedDiscount && discountAmount > 0 && <div className="flex justify-between text-sm text-green-600">
                               <span>Korting ({formatDiscountDisplay(appliedDiscount)}):</span>
                               <span>-€{discountAmount.toFixed(2)}</span>
-                            </div>
-                          )}
-                          {cartTotal - discountAmount < 50 && (
-                            <div className="flex justify-between text-sm">
+                            </div>}
+                          {cartTotal - discountAmount < 50 && <div className="flex justify-between text-sm">
                               <span>Verzendkosten:</span>
                               <span>€5.00</span>
-                            </div>
-                          )}
-                          {cartTotal - discountAmount >= 50 && (
-                            <div className="flex justify-between text-sm text-green-600">
+                            </div>}
+                          {cartTotal - discountAmount >= 50 && <div className="flex justify-between text-sm text-green-600">
                               <span>Verzending:</span>
                               <span>Gratis</span>
-                            </div>
-                          )}
+                            </div>}
                           <div className="flex justify-between font-bold text-lg border-t pt-2">
                             <span>Totaal:</span>
                             <span>€{finalTotal.toFixed(2)}</span>
@@ -615,7 +578,7 @@ const Webshop = () => {
               Bouw met Respect Shop
             </div>
             <h1 className="text-5xl md:text-7xl font-bold mb-8 text-foreground leading-tight">
-              Merchandise voor een <br/>
+              Merchandise voor een <br />
               <span className="bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent">
                 respectvolle bouwplaats
               </span>
@@ -673,25 +636,17 @@ const Webshop = () => {
             </div>
 
             {/* Products count indicator */}
-            {!productsLoading && products.length > 0 && (
-              <div className="text-center mb-8">
+            {!productsLoading && products.length > 0 && <div className="text-center mb-8">
                 <div className="inline-flex items-center px-4 py-2 bg-blue-500 text-white rounded-full font-semibold shadow-lg">
                   <div className="w-2 h-2 bg-yellow-400 rounded-full mr-2 animate-pulse"></div>
                   {products.length} {products.length === 1 ? 'product beschikbaar' : 'producten beschikbaar'}
                 </div>
-              </div>
-            )}
+              </div>}
 
-            <div className={`grid gap-8 mx-auto px-4 justify-items-center transition-all duration-500 ${
-              productsLoading ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 max-w-8xl' :
-              products.length === 1 ? 'grid-cols-1 max-w-md' :
-              products.length === 2 ? 'grid-cols-1 sm:grid-cols-2 max-w-2xl' :
-              products.length === 3 ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 max-w-4xl' :
-              'grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 max-w-8xl'
-            }`}>
-              {productsLoading && (
-                Array.from({ length: 4 }).map((_, index) => (
-                  <Card key={index} className="group relative overflow-hidden bg-gradient-to-br from-card/95 to-card/80 backdrop-blur-sm border-2 border-border/30 flex flex-col h-full animate-pulse w-full max-w-sm">
+            <div className={`grid gap-8 mx-auto px-4 justify-items-center transition-all duration-500 ${productsLoading ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 max-w-8xl' : products.length === 1 ? 'grid-cols-1 max-w-md' : products.length === 2 ? 'grid-cols-1 sm:grid-cols-2 max-w-2xl' : products.length === 3 ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 max-w-4xl' : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 max-w-8xl'}`}>
+              {productsLoading && Array.from({
+              length: 4
+            }).map((_, index) => <Card key={index} className="group relative overflow-hidden bg-gradient-to-br from-card/95 to-card/80 backdrop-blur-sm border-2 border-border/30 flex flex-col h-full animate-pulse w-full max-w-sm">
                     <CardHeader className="relative p-6">
                       <div className="aspect-square bg-muted rounded-3xl mb-6"></div>
                       <div className="h-4 bg-muted rounded mb-2"></div>
@@ -701,12 +656,9 @@ const Webshop = () => {
                       <div className="h-4 bg-muted rounded"></div>
                       <div className="h-4 bg-muted rounded w-3/4"></div>
                     </CardContent>
-                  </Card>
-                ))
-              )}
+                  </Card>)}
               
-              {!productsLoading && products.length === 0 && (
-                <div className="col-span-full text-center py-20">
+              {!productsLoading && products.length === 0 && <div className="col-span-full text-center py-20">
                   <div className="w-24 h-24 bg-muted rounded-full flex items-center justify-center mx-auto mb-6">
                     <ShoppingCart className="w-12 h-12 text-muted-foreground" />
                   </div>
@@ -714,11 +666,9 @@ const Webshop = () => {
                   <p className="text-lg text-muted-foreground max-w-md mx-auto">
                     Er zijn momenteel geen producten beschikbaar in de webshop.
                   </p>
-                </div>
-              )}
+                </div>}
               
-              {!productsLoading && products.length > 0 && products.map((product, index) => (
-                <Card key={product.id} className={`group relative overflow-hidden bg-gradient-to-br from-card/95 to-card/80 backdrop-blur-sm border-2 border-border/30 hover:border-primary/40 hover:shadow-2xl hover:shadow-primary/10 transition-all duration-700 hover:scale-[1.02] flex flex-col h-full w-full max-w-sm animate-in fade-in slide-in-from-bottom-4 ${productsVisible ? 'opacity-100 transform translate-y-0' : 'opacity-0 transform translate-y-8'}`} style={{
+              {!productsLoading && products.length > 0 && products.map((product, index) => <Card key={product.id} className={`group relative overflow-hidden bg-gradient-to-br from-card/95 to-card/80 backdrop-blur-sm border-2 border-border/30 hover:border-primary/40 hover:shadow-2xl hover:shadow-primary/10 transition-all duration-700 hover:scale-[1.02] flex flex-col h-full w-full max-w-sm animate-in fade-in slide-in-from-bottom-4 ${productsVisible ? 'opacity-100 transform translate-y-0' : 'opacity-0 transform translate-y-8'}`} style={{
               transitionDelay: productsVisible ? `${index * 150}ms` : '0ms'
             }}>
                   {/* Animated gradient overlay */}
@@ -736,13 +686,7 @@ const Webshop = () => {
                       {/* Image glow effect */}
                       <div className="absolute inset-0 bg-gradient-to-t from-primary/20 via-transparent to-secondary/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10"></div>
                       
-                      <img 
-                        src={product.image} 
-                        alt={product.name} 
-                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500 ease-out" 
-                        loading="lazy"
-                        decoding="async"
-                      />
+                      <img src={product.image} alt={product.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500 ease-out" loading="lazy" decoding="async" />
                       
                       {/* Shimmer effect */}
                       <div className="absolute inset-0 -translate-x-full group-hover:translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent transition-transform duration-500 ease-out"></div>
@@ -805,9 +749,8 @@ const Webshop = () => {
                   </CardFooter>
                   
                   {/* Corner accent */}
-                  <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-bl from-primary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                </Card>
-              ))}
+                  
+                </Card>)}
             </div>
             
             {/* Floating call-to-action */}
@@ -838,13 +781,13 @@ const Webshop = () => {
               Waarom Bouw met Respect
             </div>
             <h3 className="text-5xl md:text-6xl font-bold mb-8 text-foreground leading-tight">
-              Waarom onze <br/>
+              Waarom onze <br />
               <span className="bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent">
                 merchandise kopen?
               </span>
             </h3>
             <p className="text-xl md:text-2xl text-muted-foreground leading-relaxed">
-              Elke aankoop draagt bij aan een betere toekomst voor de bouwsector.<br/>
+              Elke aankoop draagt bij aan een betere toekomst voor de bouwsector.<br />
               <span className="text-primary font-semibold">Samen bouwen we aan respect.</span>
             </p>
           </div>
@@ -918,38 +861,20 @@ const Webshop = () => {
             </div>
 
             <div className="space-y-3 sm:space-y-4 md:space-y-5">
-              {webshopFaqs.map((faq, index) => (
-                <Card key={index} className="border-0 bg-card overflow-hidden">
-                  <Button
-                    variant="ghost"
-                    aria-expanded={faqOpenIndex === index}
-                    aria-controls={`faq-panel-${index}`}
-                    className="w-full p-4 sm:p-5 md:p-6 h-auto justify-between items-start text-left hover:bg-muted/50 whitespace-normal"
-                    onClick={() => setFaqOpenIndex(faqOpenIndex === index ? null : index)}
-                  >
+              {webshopFaqs.map((faq, index) => <Card key={index} className="border-0 bg-card overflow-hidden">
+                  <Button variant="ghost" aria-expanded={faqOpenIndex === index} aria-controls={`faq-panel-${index}`} className="w-full p-4 sm:p-5 md:p-6 h-auto justify-between items-start text-left hover:bg-muted/50 whitespace-normal" onClick={() => setFaqOpenIndex(faqOpenIndex === index ? null : index)}>
                     <span className="flex-1 min-w-0 text-base sm:text-lg md:text-xl font-semibold text-foreground pr-3 sm:pr-4 md:pr-5 leading-snug break-words">
                       {faq.question}
                     </span>
-                    {faqOpenIndex === index ? (
-                      <Minus className="w-5 h-5 md:w-6 md:h-6 text-accent flex-shrink-0 self-start mt-0.5" />
-                    ) : (
-                      <Plus className="w-5 h-5 md:w-6 md:h-6 text-accent flex-shrink-0 self-start mt-0.5" />
-                    )}
+                    {faqOpenIndex === index ? <Minus className="w-5 h-5 md:w-6 md:h-6 text-accent flex-shrink-0 self-start mt-0.5" /> : <Plus className="w-5 h-5 md:w-6 md:h-6 text-accent flex-shrink-0 self-start mt-0.5" />}
                   </Button>
                   
-                  {faqOpenIndex === index && (
-                    <div
-                        id={`faq-panel-${index}`}
-                        role="region"
-                        className="px-4 sm:px-5 md:px-6 pb-4 sm:pb-5 md:pb-6 animate-slide-down"
-                      >
+                  {faqOpenIndex === index && <div id={`faq-panel-${index}`} role="region" className="px-4 sm:px-5 md:px-6 pb-4 sm:pb-5 md:pb-6 animate-slide-down">
                         <p className="text-sm sm:text-base md:text-lg text-muted-foreground leading-relaxed">
                           {faq.answer}
                         </p>
-                      </div>
-                  )}
-                </Card>
-              ))}
+                      </div>}
+                </Card>)}
             </div>
           </div>
         </div>
@@ -962,8 +887,6 @@ const Webshop = () => {
       
       
       <Footer />
-    </div>
-  );
+    </div>;
 };
-
 export default Webshop;
