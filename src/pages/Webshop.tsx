@@ -637,7 +637,7 @@ const Webshop = () => {
                 </div>
               </div>}
 
-            <div className={`grid gap-8 mx-auto px-4 justify-items-center transition-all duration-500 ${productsLoading ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 max-w-8xl' : products.length === 1 ? 'grid-cols-1 max-w-md' : products.length === 2 ? 'grid-cols-1 sm:grid-cols-2 max-w-2xl' : products.length === 3 ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 max-w-4xl' : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 max-w-8xl'}`}>
+            <div className={`grid gap-8 mx-auto px-4 justify-items-center ${productsLoading ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 max-w-8xl' : products.length === 1 ? 'grid-cols-1 max-w-md' : products.length === 2 ? 'grid-cols-1 sm:grid-cols-2 max-w-2xl' : products.length === 3 ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 max-w-4xl' : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 max-w-8xl'}`}>
               {productsLoading && Array.from({
               length: 4
             }).map((_, index) => <Card key={index} className="group relative overflow-hidden bg-gradient-to-br from-card/95 to-card/80 backdrop-blur-sm border-2 border-border/30 flex flex-col h-full animate-pulse w-full max-w-sm">
