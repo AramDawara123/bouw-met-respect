@@ -1809,6 +1809,14 @@ Het Bouw met Respect team
                                     <Button variant="ghost" size="sm">
                                       <Eye className="w-4 h-4" />
                                     </Button>
+                                    <Button 
+                                      variant="ghost" 
+                                      size="sm"
+                                      onClick={() => handleDeleteProfile(profile.id)}
+                                      className="text-destructive hover:text-destructive"
+                                    >
+                                      <Trash2 className="w-4 h-4" />
+                                    </Button>
                                   </div>
                                 </TableCell>
                               </TableRow>
