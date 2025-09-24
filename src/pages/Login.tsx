@@ -105,6 +105,93 @@ const Login = () => {
     }
   };
 
+  const createAdminAccount = async () => {
+    setCreatingAdmin(true);
+    try {
+      // First try to sign up the admin account
+      const { data, error } = await supabase.auth.signUp({
+        email: "info@bouwmetrespect.nl",
+        password: "admin123456",
+        options: {
+          data: {
+            first_name: 'Admin',
+            last_name: 'User',
+            role: 'admin'
+          }
+        }
+      });
+
+      if (error && !error.message.includes("already registered")) {
+        throw error;
+      }
+
+      // Try to sign in immediately after creating the account
+      const { error: signInError } = await supabase.auth.signInWithPassword({
+        email: "info@bouwmetrespect.nl",
+        password: "admin123456"
+      });
+
+      if (signInError) {
+        toast({
+          title: "Admin Account Aangemaakt",
+          description: "Account aangemaakt maar kon niet automatisch inloggen. Probeer handmatig in te loggen.",
+          duration: 10000
+        });
+        setPassword('admin123456');
+      } else {
+        toast({
+          title: "Admin Account Aangemaakt",
+          description: "Account aangemaakt en je bent ingelogd!",
+          duration: 5000
+        });
+        navigate("/dashboard");
+      }
+      
+    } catch (error: any) {
+      console.error('Error creating admin account:', error);
+      toast({
+        title: "Fout",
+        description: `Kon admin account niet aanmaken: ${error.message}`,
+        variant: "destructive"
+      });
+    } finally {
+      setCreatingAdmin(false);
+    }
+  };
+
+  const testAdminLogin = async () => {
+    setTestingLogin(true);
+    try {
+      const { error } = await supabase.auth.signInWithPassword({
+        email: "info@bouwmetrespect.nl",
+        password: "admin123456"
+      });
+
+      if (error) {
+        toast({
+          title: "Test Login Mislukt",
+          description: `Account bestaat niet of wachtwoord klopt niet: ${error.message}`,
+          variant: "destructive"
+        });
+      } else {
+        toast({
+          title: "Test Login Succesvol",
+          description: "Admin account werkt! Je wordt doorgestuurd naar dashboard.",
+          duration: 3000
+        });
+        navigate("/dashboard");
+      }
+    } catch (error: any) {
+      toast({
+        title: "Test Login Fout",
+        description: `Onverwachte fout: ${error.message}`,
+        variant: "destructive"
+      });
+    } finally {
+      setTestingLogin(false);
+    }
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-primary/5 to-secondary/5 p-4">
       <div className="w-full max-w-md">
@@ -155,6 +242,26 @@ const Login = () => {
               <div className="space-y-2">
                 <Button type="submit" className="w-full" disabled={loading}>
                   {loading ? "Bezig..." : "Inloggen"}
+                </Button>
+                
+                <Button 
+                  type="button" 
+                  variant="outline" 
+                  className="w-full" 
+                  onClick={createAdminAccount}
+                  disabled={creatingAdmin}
+                >
+                  {creatingAdmin ? "Aanmaken..." : "Admin Account Aanmaken"}
+                </Button>
+
+                <Button 
+                  type="button" 
+                  variant="secondary" 
+                  className="w-full" 
+                  onClick={testAdminLogin}
+                  disabled={testingLogin}
+                >
+                  {testingLogin ? "Testen..." : "Test Admin Login"}
                 </Button>
               </div>
             </form>
