@@ -7,30 +7,32 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { Link, useNavigate } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
-
 const Login = () => {
   const [email, setEmail] = useState("info@bouwmetrespect.nl");
   const [password, setPassword] = useState("admin123456");
   const [loading, setLoading] = useState(false);
-  const { toast } = useToast();
+  const {
+    toast
+  } = useToast();
   const navigate = useNavigate();
-
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     try {
       // First try to sign in
-      const { error: signInError } = await supabase.auth.signInWithPassword({
+      const {
+        error: signInError
+      } = await supabase.auth.signInWithPassword({
         email,
         password
       });
-      
       if (signInError) {
         // If login fails, try to create the account first
         if (signInError.message.includes("Invalid login credentials")) {
           console.log("Account doesn't exist, creating admin account...");
-          
-          const { error: signUpError } = await supabase.auth.signUp({
+          const {
+            error: signUpError
+          } = await supabase.auth.signUp({
             email: "info@bouwmetrespect.nl",
             password: "admin123456",
             options: {
@@ -41,21 +43,20 @@ const Login = () => {
               }
             }
           });
-
           if (signUpError && !signUpError.message.includes("already registered")) {
             throw signUpError;
           }
 
           // Now try to sign in again
-          const { error: retrySignInError } = await supabase.auth.signInWithPassword({
+          const {
+            error: retrySignInError
+          } = await supabase.auth.signInWithPassword({
             email: "info@bouwmetrespect.nl",
             password: "admin123456"
           });
-
           if (retrySignInError) {
             throw retrySignInError;
           }
-
           toast({
             title: "Admin Account Aangemaakt",
             description: "Account aangemaakt en je bent ingelogd!",
@@ -72,20 +73,20 @@ const Login = () => {
       }
 
       // Check if user is admin or partner and redirect accordingly
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: {
+          user
+        }
+      } = await supabase.auth.getUser();
       if (user) {
         // Check if user has admin role or if it's the admin email
         if (user.email === 'info@bouwmetrespect.nl') {
           navigate("/dashboard");
         } else {
           // Check if user is a partner
-          const { data: partnerData } = await supabase
-            .from('partner_memberships')
-            .select('id')
-            .eq('user_id', user.id)
-            .eq('payment_status', 'paid')
-            .single();
-          
+          const {
+            data: partnerData
+          } = await supabase.from('partner_memberships').select('id').eq('user_id', user.id).eq('payment_status', 'paid').single();
           if (partnerData) {
             navigate("/partner-dashboard");
           } else {
@@ -104,9 +105,7 @@ const Login = () => {
       setLoading(false);
     }
   };
-
-  return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-primary/5 to-secondary/5 p-4">
+  return <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-primary/5 to-secondary/5 p-4">
       <div className="w-full max-w-md">
         <div className="mb-6">
           <Link to="/" className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground">
@@ -121,36 +120,17 @@ const Login = () => {
             <CardDescription className="text-center">
               Log in als admin of partner
             </CardDescription>
-            <div className="text-sm text-muted-foreground text-center mt-2 p-3 bg-muted/50 rounded-lg">
-              <strong>Admin toegang:</strong> Email en wachtwoord zijn al ingevuld.
-              <br />
-              <strong>Email:</strong> info@bouwmetrespect.nl
-              <br />
-              <strong>Wachtwoord:</strong> admin123456
-            </div>
+            
           </CardHeader>
           <CardContent>
             <form onSubmit={handleLogin} className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="email">Email</Label>
-                <Input 
-                  id="email" 
-                  type="email" 
-                  placeholder="info@bouwmetrespect.nl" 
-                  value={email} 
-                  onChange={e => setEmail(e.target.value)} 
-                  required 
-                />
+                <Input id="email" type="email" placeholder="info@bouwmetrespect.nl" value={email} onChange={e => setEmail(e.target.value)} required />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="password">Wachtwoord</Label>
-                <Input 
-                  id="password" 
-                  type="password" 
-                  value={password} 
-                  onChange={e => setPassword(e.target.value)} 
-                  required 
-                />
+                <Input id="password" type="password" value={password} onChange={e => setPassword(e.target.value)} required />
               </div>
               <div className="space-y-2">
                 <Button type="submit" className="w-full" disabled={loading}>
@@ -161,8 +141,6 @@ const Login = () => {
           </CardContent>
         </Card>
       </div>
-    </div>
-  );
+    </div>;
 };
-
 export default Login;
