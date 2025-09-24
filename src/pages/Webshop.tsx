@@ -449,108 +449,110 @@ const Webshop = () => {
                   })}
 
                      {cartItemCount > 0 && (
-                       <div className="mt-6 space-y-4 border-t pt-4">
-                         {/* Customer details form */}
-                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                          <div>
-                            <Label htmlFor="firstName">Voornaam</Label>
-                            <Input id="firstName" value={customer.firstName} onChange={e => setCustomer({
-                          ...customer,
-                          firstName: e.target.value
-                        })} placeholder="Jan" />
-                          </div>
-                          <div>
-                            <Label htmlFor="lastName">Achternaam</Label>
-                            <Input id="lastName" value={customer.lastName} onChange={e => setCustomer({
-                          ...customer,
-                          lastName: e.target.value
-                        })} placeholder="Jansen" />
-                          </div>
-                          <div className="sm:col-span-2">
-                            <Label htmlFor="email">E-mail</Label>
-                            <Input id="email" type="email" value={customer.email} onChange={e => setCustomer({
-                          ...customer,
-                          email: e.target.value
-                        })} placeholder="jan@voorbeeld.nl" />
-                          </div>
-                          <div className="sm:col-span-2">
-                            <Label htmlFor="phone">Telefoon</Label>
-                            <Input id="phone" value={customer.phone} onChange={e => setCustomer({
-                          ...customer,
-                          phone: e.target.value
-                        })} placeholder="0612345678" />
-                          </div>
-                          <div className="sm:col-span-2">
-                            <Label htmlFor="street">Straat</Label>
-                            <Input id="street" value={customer.street} onChange={e => setCustomer({
-                          ...customer,
-                          street: e.target.value
-                        })} placeholder="Hoofdstraat" />
-                          </div>
-                          <div>
-                            <Label htmlFor="houseNumber">Huisnummer</Label>
-                            <Input id="houseNumber" value={customer.houseNumber} onChange={e => setCustomer({
-                          ...customer,
-                          houseNumber: e.target.value
-                        })} placeholder="12A" />
-                          </div>
-                          <div>
-                            <Label htmlFor="postcode">Postcode</Label>
-                            <Input id="postcode" value={customer.postcode} onChange={e => setCustomer({
-                          ...customer,
-                          postcode: e.target.value
-                        })} placeholder="1234 AB" />
-                          </div>
-                          <div className="sm:col-span-2">
-                            <Label htmlFor="city">Plaats</Label>
-                            <Input id="city" value={customer.city} onChange={e => setCustomer({
-                          ...customer,
-                          city: e.target.value
-                        })} placeholder="Amsterdam" />
-                          </div>
-                          <div className="sm:col-span-2">
-                            <Label htmlFor="country">Land</Label>
-                            <Input id="country" value={customer.country} onChange={e => setCustomer({
-                          ...customer,
-                          country: e.target.value
-                         })} placeholder="Nederland" />
+                       <>
+                         <div className="mt-6 space-y-4 border-t pt-4">
+                           {/* Customer details form */}
+                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                             <div>
+                               <Label htmlFor="firstName">Voornaam</Label>
+                               <Input id="firstName" value={customer.firstName} onChange={e => setCustomer({
+                             ...customer,
+                             firstName: e.target.value
+                           })} placeholder="Jan" />
+                             </div>
+                             <div>
+                               <Label htmlFor="lastName">Achternaam</Label>
+                               <Input id="lastName" value={customer.lastName} onChange={e => setCustomer({
+                             ...customer,
+                             lastName: e.target.value
+                           })} placeholder="Jansen" />
+                             </div>
+                             <div className="sm:col-span-2">
+                               <Label htmlFor="email">E-mail</Label>
+                               <Input id="email" type="email" value={customer.email} onChange={e => setCustomer({
+                             ...customer,
+                             email: e.target.value
+                           })} placeholder="jan@voorbeeld.nl" />
+                             </div>
+                             <div className="sm:col-span-2">
+                               <Label htmlFor="phone">Telefoon</Label>
+                               <Input id="phone" value={customer.phone} onChange={e => setCustomer({
+                             ...customer,
+                             phone: e.target.value
+                           })} placeholder="0612345678" />
+                             </div>
+                             <div className="sm:col-span-2">
+                               <Label htmlFor="street">Straat</Label>
+                               <Input id="street" value={customer.street} onChange={e => setCustomer({
+                             ...customer,
+                             street: e.target.value
+                           })} placeholder="Hoofdstraat" />
+                             </div>
+                             <div>
+                               <Label htmlFor="houseNumber">Huisnummer</Label>
+                               <Input id="houseNumber" value={customer.houseNumber} onChange={e => setCustomer({
+                             ...customer,
+                             houseNumber: e.target.value
+                           })} placeholder="12A" />
+                             </div>
+                             <div>
+                               <Label htmlFor="postcode">Postcode</Label>
+                               <Input id="postcode" value={customer.postcode} onChange={e => setCustomer({
+                             ...customer,
+                             postcode: e.target.value
+                           })} placeholder="1234 AB" />
+                             </div>
+                             <div className="sm:col-span-2">
+                               <Label htmlFor="city">Plaats</Label>
+                               <Input id="city" value={customer.city} onChange={e => setCustomer({
+                             ...customer,
+                             city: e.target.value
+                           })} placeholder="Amsterdam" />
+                             </div>
+                             <div className="sm:col-span-2">
+                               <Label htmlFor="country">Land</Label>
+                               <Input id="country" value={customer.country} onChange={e => setCustomer({
+                             ...customer,
+                             country: e.target.value
+                            })} placeholder="Nederland" />
+                              </div>
+                             </div>
                            </div>
-                          </div>
-                        </div>
 
-                        <div className="space-y-3 pt-4 border-t">
-                          <Label htmlFor="discountCode" className="flex items-center gap-2">
-                            <Tag className="w-4 h-4" />
-                            Kortingscode (optioneel)
-                          </Label>
-                          <div className="flex gap-2">
-                            <Input
-                              id="discountCode"
-                              value={discountCode}
-                              onChange={(e) => {
-                                setDiscountCode(e.target.value.toUpperCase());
-                                checkDiscountCode(e.target.value);
-                              }}
-                              placeholder="KORTINGSCODE"
-                              className="uppercase"
-                            />
-                          </div>
-                          {discountError && (
-                            <p className="text-sm text-destructive">{discountError}</p>
-                          )}
-                          {appliedDiscount && (
-                            <div className="flex items-center gap-2">
-                              <Check className="w-4 h-4 text-green-600" />
-                              <Badge variant="default" className="bg-green-100 text-green-800">
-                                {formatDiscountDisplay(appliedDiscount)} toegepast
-                              </Badge>
+                           <div className="space-y-3 pt-4 border-t">
+                             <Label htmlFor="discountCode" className="flex items-center gap-2">
+                               <Tag className="w-4 h-4" />
+                               Kortingscode (optioneel)
+                             </Label>
+                             <div className="flex gap-2">
+                               <Input
+                                 id="discountCode"
+                                 value={discountCode}
+                                 onChange={(e) => {
+                                   setDiscountCode(e.target.value.toUpperCase());
+                                   checkDiscountCode(e.target.value);
+                                 }}
+                                 placeholder="KORTINGSCODE"
+                                 className="uppercase"
+                               />
+                             </div>
+                             {discountError && (
+                               <p className="text-sm text-destructive">{discountError}</p>
+                             )}
+                             {appliedDiscount && (
+                               <div className="flex items-center gap-2">
+                                 <Check className="w-4 h-4 text-green-600" />
+                                 <Badge variant="default" className="bg-green-100 text-green-800">
+                                   {formatDiscountDisplay(appliedDiscount)} toegepast
+                                 </Badge>
+                               </div>
+                             )}
                             </div>
-                          )}
-                         </div>
-                       </div>
+                       </>
                      )}
+                   </div>
 
-                     {cartItemCount > 0 && <div className="sticky bottom-0 left-0 right-0 -mx-6 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 border-t border-border p-4">
+                   {cartItemCount > 0 && <div className="sticky bottom-0 left-0 right-0 -mx-6 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 border-t border-border p-4">
                        <div className="space-y-2">
                          <div className="flex justify-between text-sm">
                            <span>Subtotaal:</span>
