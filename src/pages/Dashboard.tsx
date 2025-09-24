@@ -175,9 +175,9 @@ const Dashboard = () => {
         setUser(mockUser as any);
         setIsAdmin(true);
         toast({
-          title: "Test Modus",
-          description: "Je gebruikt het dashboard in test modus zonder inloggen",
-          duration: 5000
+          title: "Niet ingelogd",
+          description: "Je moet inloggen om alles te kunnen bewerken. Klik op 'Partner Login' hierboven.",
+          duration: 8000
         });
         await Promise.all([fetchMemberships(), fetchOrders(), fetchProfiles(), fetchProducts(), fetchPartners()]);
         setLoading(false);
