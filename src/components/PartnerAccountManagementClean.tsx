@@ -192,6 +192,15 @@ const PartnerAccountManagementClean = () => {
 
   const handleDeletePartner = async (partner: PartnerMembership) => {
     try {
+      // First delete any related company profiles
+      const { error: profileError } = await supabase
+        .from('company_profiles')
+        .delete()
+        .eq('partner_membership_id', partner.id);
+        
+      if (profileError) throw profileError;
+      
+      // Then delete the partner membership
       const { error } = await supabase
         .from('partner_memberships')
         .delete()
