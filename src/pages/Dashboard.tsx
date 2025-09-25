@@ -207,9 +207,7 @@ const Dashboard = () => {
 
   const fetchMemberships = async () => {
     try {
-      // Import admin client to bypass RLS when not authenticated
-      const { supabaseAdmin } = await import('@/integrations/supabase/admin-client');
-      const { data, error } = await supabaseAdmin
+      const { data, error } = await supabase
         .from('memberships')
         .select('*')
         .order('created_at', { ascending: false });
