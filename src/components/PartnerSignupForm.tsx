@@ -98,7 +98,9 @@ const PartnerSignupForm = ({ open, onOpenChange }: PartnerSignupFormProps) => {
 
     setIsCheckingDiscount(true);
     try {
+      console.log('Checking discount code:', discountCode, 'for amount:', baseAmount);
       const result = await validateDiscountCode(discountCode, 'partners', baseAmount);
+      console.log('Discount validation result:', result);
       setAppliedDiscount(result);
       
       if (result.valid) {
@@ -140,6 +142,14 @@ const PartnerSignupForm = ({ open, onOpenChange }: PartnerSignupFormProps) => {
         onOpenChange(false);
         return;
       }
+
+      console.log('Sending to edge function:', {
+        amount: amount,
+        discountCode: appliedDiscount?.valid ? values.discountCode : undefined,
+        discountAmount: discountAmount,
+        baseAmount: baseAmount,
+        finalAmount: finalAmount
+      });
 
       const { data, error } = await supabase.functions.invoke('create-partner-payment', {
         body: { 
