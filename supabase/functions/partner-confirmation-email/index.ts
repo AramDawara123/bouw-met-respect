@@ -1,128 +1,115 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 
 const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers":
+    "authorization, x-client-info, apikey, content-type",
 };
 
-// Generate random password
-function generateRandomPassword(): string {
-  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*';
-  let password = '';
-  for (let i = 0; i < 12; i++) {
-    password += chars.charAt(Math.floor(Math.random() * chars.length));
-  }
-  return password;
+interface PartnerConfirmationRequest {
+  user_id: string;
+  email: string;
+  first_name?: string;
+  last_name?: string;
 }
 
-// Send welcome email with login credentials
-async function sendWelcomeEmail(email: string, password: string) {
+const handler = async (req: Request): Promise<Response> => {
+  // Handle CORS preflight requests
+  if (req.method === "OPTIONS") {
+    return new Response(null, { headers: corsHeaders });
+  }
+
   try {
-    const response = await fetch('https://api.resend.com/emails', {
+    console.log("Partner confirmation email function called");
+    
+    const { user_id, email, first_name, last_name }: PartnerConfirmationRequest = await req.json();
+    
+    console.log(`Sending partner confirmation email to: ${email}`);
+
+    const displayName = first_name && last_name 
+      ? `${first_name} ${last_name}` 
+      : first_name || email;
+
+    // Send email via Resend API directly
+    const emailResponse = await fetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${Deno.env.get('RESEND_API_KEY')}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        from: 'Bouw met Respect <noreply@bouwmetrespect.nl>',
+        from: 'Bouw met Respect <info@bouwmetrespect.nl>',
         to: [email],
-        subject: 'Welkom bij Bouw met Respect - Je partner account is geactiveerd!',
+        subject: 'Welkom als partner bij Bouw met Respect!',
         html: `
-          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-            <h2 style="color: #2563eb;">Welkom bij Bouw met Respect!</h2>
-            <p>Je partner account is succesvol geactiveerd!</p>
+          <div style="max-width: 600px; margin: 0 auto; font-family: Arial, sans-serif;">
+            <h1 style="color: #2563eb; text-align: center;">Welkom bij Bouw met Respect!</h1>
             
-            <div style="background-color: #f3f4f6; padding: 20px; border-radius: 8px; margin: 20px 0;">
-              <h3 style="color: #1f2937; margin-top: 0;">Je inloggegevens:</h3>
-              <p><strong>Email:</strong> ${email}</p>
-              <p><strong>Nieuw Wachtwoord:</strong> ${password}</p>
+            <p>Beste ${displayName},</p>
+            
+            <p>Hartelijk welkom als partner bij Bouw met Respect! Je account is succesvol bevestigd en je kunt nu inloggen op het partner dashboard.</p>
+            
+            <div style="background-color: #f8fafc; padding: 20px; border-radius: 8px; margin: 20px 0;">
+              <h3 style="color: #374151; margin-top: 0;">Wat kun je nu doen?</h3>
+              <ul style="color: #6b7280;">
+                <li>Login op het partner dashboard</li>
+                <li>Je bedrijfsprofiel aanpassen</li>
+                <li>Je zichtbaarheid verhogen in ons partnernetwerk</li>
+                <li>Deelnemen aan onze community van respectvolle bouwprofessionals</li>
+              </ul>
             </div>
             
-            <p>Je kunt nu inloggen op je <a href="https://bouwmetrespect.nl/partner-dashboard" style="color: #2563eb;">Partner Dashboard</a> met je nieuwe wachtwoord.</p>
+            <div style="text-align: center; margin: 30px 0;">
+              <a href="https://bouwmetrespect.nl/partner-dashboard" 
+                 style="background-color: #2563eb; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">
+                Ga naar Partner Dashboard
+              </a>
+            </div>
             
-            <p><em>Tip: We raden aan om je wachtwoord te wijzigen na je eerste inlog.</em></p>
-            
-            <p>Voor vragen kun je altijd contact met ons opnemen.</p>
+            <p>Als je vragen hebt, neem dan gerust contact met ons op via <a href="mailto:info@bouwmetrespect.nl">info@bouwmetrespect.nl</a>.</p>
             
             <p>Met vriendelijke groet,<br>
-            Het Bouw met Respect team</p>
+            Het team van Bouw met Respect</p>
+            
+            <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 30px 0;">
+            <p style="color: #9ca3af; font-size: 12px; text-align: center;">
+              Deze email is verstuurd omdat je je hebt aangemeld als partner bij Bouw met Respect.
+            </p>
           </div>
         `,
       }),
     });
 
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+    if (!emailResponse.ok) {
+      const errorText = await emailResponse.text();
+      console.error('Failed to send email via Resend:', errorText);
+      throw new Error(`Email sending failed: ${emailResponse.status} ${errorText}`);
     }
 
-    const data = await response.json();
-    console.log('Welcome email sent successfully:', data);
-  } catch (error) {
-    console.error('Error sending welcome email:', error);
-    throw error;
-  }
-}
+    const emailResult = await emailResponse.json();
+    console.log("Partner confirmation email sent successfully:", emailResult);
 
-serve(async (req: Request) => {
-  // Handle CORS preflight requests
-  if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders });
-  }
-
-  try {
-    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-    const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-    
-    const supabase = createClient(supabaseUrl, supabaseServiceKey);
-
-    // Get the webhook payload
-    const payload = await req.json();
-    console.log('Received webhook payload:', payload);
-
-    // Check if this is a user confirmation event
-    if (payload.type === 'INSERT' && payload.table === 'auth.users') {
-      const user = payload.record;
-      
-      // Only process if user is confirmed (email_confirmed_at is set)
-      if (user.email_confirmed_at) {
-        console.log('Processing confirmed user:', user.email);
-
-        // Generate a new password
-        const newPassword = generateRandomPassword();
-
-        // Update the user's password
-        const { error: updateError } = await supabase.auth.admin.updateUserById(
-          user.id,
-          { password: newPassword }
-        );
-
-        if (updateError) {
-          console.error('Error updating user password:', updateError);
-          throw updateError;
-        }
-
-        // Send welcome email with credentials
-        await sendWelcomeEmail(user.email, newPassword);
-
-        console.log('Successfully processed user confirmation and sent welcome email');
-      }
-    }
-
-    return new Response(JSON.stringify({ success: true }), {
+    return new Response(JSON.stringify({
+      success: true,
+      message: 'Partner confirmation email sent successfully',
+      email_id: emailResult.id
+    }), {
       status: 200,
-      headers: { 'Content-Type': 'application/json', ...corsHeaders },
+      headers: {
+        "Content-Type": "application/json",
+        ...corsHeaders,
+      },
     });
-
   } catch (error: any) {
-    console.error('Error in partner-confirmation-email function:', error);
+    console.error("Error in partner-confirmation-email function:", error);
     return new Response(
       JSON.stringify({ error: error.message }),
       {
         status: 500,
-        headers: { 'Content-Type': 'application/json', ...corsHeaders },
+        headers: { "Content-Type": "application/json", ...corsHeaders },
       }
     );
   }
-});
+};
+
+serve(handler);
