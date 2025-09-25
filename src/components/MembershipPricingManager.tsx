@@ -84,6 +84,9 @@ const MembershipPricingManager = () => {
         description: "Lidmaatschapprijzen zijn bijgewerkt"
       });
 
+      // Dispatch custom event to notify other components
+      window.dispatchEvent(new CustomEvent('membership-pricing-updated'));
+
       setEditingId(null);
       setEditingData({});
       fetchPricingData();

@@ -74,6 +74,17 @@ const MembershipPlans = () => {
     };
 
     fetchMembershipPricing();
+
+    // Listen for pricing updates from admin panel
+    const handlePricingUpdate = () => {
+      fetchMembershipPricing();
+    };
+
+    window.addEventListener('membership-pricing-updated', handlePricingUpdate);
+
+    return () => {
+      window.removeEventListener('membership-pricing-updated', handlePricingUpdate);
+    };
   }, [toast]);
 
   const getBaseFeaturesForType = (type: MembershipType): string[] => {
