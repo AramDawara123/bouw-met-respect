@@ -42,14 +42,17 @@ const OrderVerification = () => {
           .eq('id', orderId)
           .maybeSingle();
 
-        if (error) throw error;
+        if (error) {
+          console.error('Supabase error:', error);
+          throw error;
+        }
 
         if (!data) {
           setError('Bestelling niet gevonden');
         } else {
           setOrder(data);
         }
-      } catch (error) {
+      } catch (error: any) {
         console.error('Error fetching order:', error);
         setError('Kon bestelling niet ophalen');
       } finally {
