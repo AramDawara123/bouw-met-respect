@@ -69,10 +69,13 @@ const handler = async (req: Request): Promise<Response> => {
       // For existing users, we'll generate a new password and update it
       password = generatePassword();
       
-      // Update the existing user's password
+      // Update the existing user's password and confirm email
       const { error: updateError } = await supabase.auth.admin.updateUserById(
         userExists.id,
-        { password: password }
+        { 
+          password: password,
+          email_confirm: true // Ensure email is confirmed
+        }
       );
       
       if (updateError) {

@@ -35,6 +35,30 @@ const AutoAccountCreator = () => {
   const [success, setSuccess] = useState<CreatedAccount | null>(null);
   const { toast } = useToast();
 
+  const handleConfirmUser = async (email: string) => {
+    setLoading(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('confirm-user', {
+        body: { email }
+      });
+
+      if (error) {
+        setError(error.message || 'Er ging iets mis bij het bevestigen van de gebruiker');
+        return;
+      }
+
+      toast({
+        title: "Gebruiker bevestigd!",
+        description: `Email bevestigd voor ${email}`,
+      });
+    } catch (error: any) {
+      console.error('Error confirming user:', error);
+      setError(error.message || 'Er ging iets mis bij het bevestigen van de gebruiker');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -223,6 +247,31 @@ const AutoAccountCreator = () => {
               </>
             )}
           </Button>
+          
+          <div className="border-t pt-4">
+            <p className="text-sm text-muted-foreground mb-2">
+              <strong>Noodknop:</strong> Als een gebruiker niet kan inloggen vanwege email bevestiging:
+            </p>
+            <Button 
+              type="button"
+              variant="outline"
+              onClick={() => form.email && handleConfirmUser(form.email)}
+              disabled={loading || !form.email}
+              className="w-full"
+            >
+              {loading ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Bevestigen...
+                </>
+              ) : (
+                <>
+                  <CheckCircle2 className="w-4 h-4 mr-2" />
+                  Handmatig Email Bevestigen
+                </>
+              )}
+            </Button>
+          </div>
         </form>
       </CardContent>
     </Card>

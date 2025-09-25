@@ -66,5 +66,8 @@ verify_jwt = false
 [functions.create-auto-account]
 verify_jwt = true
 
+[functions.confirm-user]
+verify_jwt = true
+
 [functions.partner-confirmation-email]
 verify_jwt = false
