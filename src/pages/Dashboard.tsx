@@ -642,7 +642,8 @@ const Dashboard = () => {
     let qrCodeDataUrl = '';
     try {
       const QRCode = await import('qrcode');
-      const verificationUrl = `${window.location.origin}/order-verification/${order.id}`;
+      // Use your production domain instead of window.location.origin
+      const verificationUrl = `https://bouwmetrespect.nl/order-verification/${order.id}`;
       qrCodeDataUrl = await QRCode.toDataURL(verificationUrl, {
         width: 150,
         margin: 2,
