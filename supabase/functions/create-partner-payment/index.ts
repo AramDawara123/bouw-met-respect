@@ -52,17 +52,72 @@ serve(async (req) => {
       db: { schema: 'public' }
     });
 
-    const { partnerData, amount, discountCode, discountAmount } = await req.json();
+    const { partnerData, amount, discountCode, discountAmount, skipPayment } = await req.json();
     
-     // Default amount if not provided (fallback to ZZP price)
+    // Default amount if not provided (fallback to ZZP price)
     const originalAmount = 25000; // Default ZZP price
     const partnerAmount = amount || originalAmount; // This is the final amount after discount
     const finalDiscountAmount = discountAmount || 0;
 
     console.log('Creating partner payment for:', partnerData);
     console.log('Original amount:', originalAmount, 'Final amount after discount:', partnerAmount, 'Discount amount:', finalDiscountAmount);
+    console.log('Skip payment:', skipPayment);
     if (discountCode) {
       console.log('Discount code applied:', discountCode);
+    }
+
+    // Handle free partnerships (skip Mollie payment)
+    if (skipPayment || partnerAmount === 0) {
+      console.log('Creating free partnership without Mollie payment');
+      
+      // Store partner membership data directly
+      const insertData = {
+        user_id: null,
+        first_name: partnerData.first_name,
+        last_name: partnerData.last_name,
+        email: partnerData.email,
+        phone: partnerData.phone,
+        company_name: partnerData.company_name,
+        website: partnerData.website,
+        industry: partnerData.industry,
+        description: partnerData.description || '',
+        mollie_payment_id: null, // No payment needed
+        amount: partnerAmount,
+        currency: 'EUR',
+        payment_status: 'paid' // Mark as paid since it's free
+      };
+
+      // If discount was applied, track it in description
+      if (discountCode && finalDiscountAmount > 0) {
+        insertData.description += `\n\nKortingscode toegepast: ${discountCode} (€${(finalDiscountAmount / 100).toFixed(2)} korting - GRATIS)`;
+      }
+
+      console.log('Inserting free partner membership:', insertData);
+
+      const { data: partnerMembership, error } = await supabaseService
+        .from('partner_memberships')
+        .insert(insertData)
+        .select()
+        .single();
+
+      if (error) {
+        console.error('Database error for free partnership:', error);
+        return new Response(
+          JSON.stringify({ error: `Failed to store partner data: ${error.message}` }),
+          { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 500 }
+        );
+      }
+
+      console.log('Free partner membership created:', partnerMembership.id);
+
+      return new Response(
+        JSON.stringify({
+          success: true,
+          partnerMembershipId: partnerMembership.id,
+          message: 'Free partnership created successfully'
+        }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
     }
 
     // Create payment with Mollie - use final discounted amount

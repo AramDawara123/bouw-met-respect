@@ -143,6 +143,66 @@ const PartnerSignupForm = ({ open, onOpenChange }: PartnerSignupFormProps) => {
         return;
       }
 
+      // Handle free partnership (100% discount)
+      if (finalAmount === 0) {
+        console.log('Free partnership detected, creating directly without payment');
+        
+        // Create partner membership directly without Mollie payment
+        const { data, error } = await supabase.functions.invoke('create-partner-payment', {
+          body: { 
+            partnerData: {
+              first_name: values.firstName,
+              last_name: values.lastName,
+              email: values.email,
+              phone: values.phone,
+              company_name: values.companyName,
+              website: values.website || null,
+              industry: values.industry,
+              company_size: values.companySize,
+              description: values.description
+            },
+            amount: 0,
+            discountCode: appliedDiscount?.valid ? values.discountCode : undefined,
+            discountAmount: discountAmount,
+            skipPayment: true // Special flag for free partnerships
+          }
+        });
+
+        if (error || data?.error) {
+          const msg = (data?.error as string) || (error?.message as string) || 'Onbekende fout';
+          console.error('Free partner creation error:', msg);
+          toast({
+            title: "Fout bij aanmelding",
+            description: msg,
+            variant: "destructive"
+          });
+          return;
+        }
+
+        // Send confirmation email for free partnership
+        try {
+          await supabase.functions.invoke('send-partner-confirmation', {
+            body: {
+              email: values.email,
+              firstName: values.firstName,
+              lastName: values.lastName,
+              companyName: values.companyName,
+              membershipType: values.companySize,
+              amount: 0,
+              discountCode: values.discountCode,
+              discountAmount: discountAmount
+            }
+          });
+        } catch (emailError) {
+          console.error('Email sending failed:', emailError);
+          // Don't block the flow if email fails
+        }
+
+        // Redirect to success page
+        window.location.href = '/partnership-success';
+        return;
+      }
+
       console.log('Sending to edge function:', {
         amount: amount,
         discountCode: appliedDiscount?.valid ? values.discountCode : undefined,
