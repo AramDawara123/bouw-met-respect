@@ -174,6 +174,7 @@ const CompanyProfileForm = ({
   };
 
   const onSubmit = async (data: FormData) => {
+    console.log('🚀 Form submission started with data:', data);
     setLoading(true);
     try {
       // Check authentication and user details first
@@ -234,23 +235,14 @@ const CompanyProfileForm = ({
 
       let updateResult;
       if (editingProfile) {
-        // Always use admin client for dashboard updates if user claims admin email
-        if (isAdmin && !isPartnerDashboard) {
-          console.log('🔧 Using admin client for update (bypassing RLS)');
-          const { supabaseAdmin } = await import('@/integrations/supabase/admin-client');
-          updateResult = await supabaseAdmin
-            .from('company_profiles')
-            .update(profileData)
-            .eq('id', editingProfile.id)
-            .select();
-        } else {
-          console.log('👥 Using regular client for update');
-          updateResult = await supabase
-            .from('company_profiles')
-            .update(profileData)
-            .eq('id', editingProfile.id)
-            .select();
-        }
+        console.log('📝 Starting UPDATE operation...');
+        // For partner dashboard, always use regular client since RLS allows partner updates
+        console.log('👥 Using regular client for update');
+        updateResult = await supabase
+          .from('company_profiles')
+          .update(profileData)
+          .eq('id', editingProfile.id)
+          .select();
 
         console.log('📝 Update result:', updateResult);
 
@@ -341,7 +333,19 @@ const CompanyProfileForm = ({
         </DialogHeader>
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+          <form 
+            onSubmit={(e) => {
+              console.log('📝 Form submit event triggered');
+              e.preventDefault();
+              form.handleSubmit((data) => {
+                console.log('📝 Form validation passed, calling onSubmit');
+                onSubmit(data);
+              }, (errors) => {
+                console.error('❌ Form validation failed:', errors);
+              })(e);
+            }} 
+            className="space-y-6"
+          >
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <FormField
                 control={form.control}
