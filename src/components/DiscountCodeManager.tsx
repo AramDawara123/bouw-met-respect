@@ -35,6 +35,8 @@ const DiscountCodeManager = () => {
   const [showAddDialog, setShowAddDialog] = useState(false);
   const [editingCode, setEditingCode] = useState<DiscountCode | null>(null);
   const [isEditing, setIsEditing] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
 
   const [newCode, setNewCode] = useState({
@@ -50,8 +52,29 @@ const DiscountCodeManager = () => {
   });
 
   useEffect(() => {
+    checkAdminAccess();
     fetchCodes();
   }, []);
+
+  const checkAdminAccess = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('is_admin, role')
+          .eq('user_id', user.id)
+          .single();
+        
+        setIsAdmin(profile?.is_admin === true || profile?.role === 'admin');
+      }
+    } catch (error) {
+      console.error('Error checking admin access:', error);
+      setIsAdmin(false);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const fetchCodes = async () => {
     try {
@@ -281,6 +304,41 @@ const DiscountCodeManager = () => {
     }
     return <Badge variant="default">Actief</Badge>;
   };
+
+  if (isLoading) {
+    return (
+      <Card>
+        <CardContent className="p-6">
+          <div className="flex items-center justify-center">
+            <div className="text-muted-foreground">Laden...</div>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (!isAdmin) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Tag className="h-5 w-5" />
+            Kortingscode Beheer
+          </CardTitle>
+          <CardDescription>
+            Alleen beheerders kunnen kortingscodes beheren
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="p-6">
+          <div className="text-center text-muted-foreground">
+            <div className="mb-4">🔒</div>
+            <p>Je hebt geen toegang tot deze functie.</p>
+            <p className="text-sm mt-2">Neem contact op met een beheerder voor toegang.</p>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <div className="space-y-6">
