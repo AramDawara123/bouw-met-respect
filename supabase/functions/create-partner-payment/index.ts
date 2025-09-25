@@ -52,24 +52,30 @@ serve(async (req) => {
       db: { schema: 'public' }
     });
 
-    const { partnerData, amount } = await req.json();
+    const { partnerData, amount, discountCode, discountAmount } = await req.json();
     
     // Default amount if not provided (fallback to ZZP price)
     const partnerAmount = amount || 25000;
+    const finalDiscountAmount = discountAmount || 0;
 
     console.log('Creating partner payment for:', partnerData);
+    console.log('Amount:', partnerAmount, 'Discount:', finalDiscountAmount, 'Final:', partnerAmount);
+    if (discountCode) {
+      console.log('Discount code applied:', discountCode);
+    }
 
     // Create payment with Mollie
     const molliePayload = {
       amount: { currency: 'EUR', value: (partnerAmount / 100).toFixed(2) },
-      description: `Partner lidmaatschap - ${partnerData.company_name}`,
+      description: `Partner lidmaatschap - ${partnerData.company_name}${discountCode ? ` (Code: ${discountCode})` : ''}`,
       redirectUrl: `${req.headers.get('origin')}/partnership-success`,
       webhookUrl: `${supabaseUrl}/functions/v1/mollie-webhook`,
       metadata: {
         type: 'partner_membership',
         company_name: partnerData.company_name,
         email: partnerData.email,
-        company_size: partnerData.company_size || 'zzp'
+        company_size: partnerData.company_size || 'zzp',
+        ...(discountCode && { discount_code: discountCode, discount_amount: finalDiscountAmount })
       }
     };
 
@@ -85,8 +91,25 @@ serve(async (req) => {
     if (!mollieResponse.ok) {
       const mollieError = await mollieResponse.text();
       console.error('Mollie API error:', mollieError);
+      console.error('Mollie Response Status:', mollieResponse.status);
+      console.error('Mollie Response Headers:', Object.fromEntries(mollieResponse.headers.entries()));
+      
+      // Parse the error response if possible
+      let errorMessage = 'Payment creation failed';
+      try {
+        const errorData = JSON.parse(mollieError);
+        if (errorData.detail) {
+          errorMessage = `Mollie API: ${errorData.detail}`;
+        }
+        if (mollieResponse.status === 401) {
+          errorMessage = 'Mollie API key authentication failed. Please check your API key configuration.';
+        }
+      } catch (e) {
+        console.error('Could not parse Mollie error response');
+      }
+      
       return new Response(
-        JSON.stringify({ error: 'Payment creation failed' }),
+        JSON.stringify({ error: errorMessage }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 500 }
       );
     }
@@ -95,8 +118,8 @@ serve(async (req) => {
     console.log('Mollie payment created:', mollieData.id);
 
     // Store partner membership data in database
-    console.log('Attempting to insert partner membership with data:', {
-      user_id: null,
+    const insertData = {
+      user_id: null, // Explicitly set to null for anonymous signups
       first_name: partnerData.first_name,
       last_name: partnerData.last_name,
       email: partnerData.email,
@@ -109,25 +132,20 @@ serve(async (req) => {
       amount: partnerAmount,
       currency: 'EUR',
       payment_status: 'pending'
-    });
+    };
+
+    console.log('Attempting to insert partner membership with data:', insertData);
+
+    // If discount was applied, track it in metadata or description
+    let finalDescription = partnerData.description || '';
+    if (discountCode && finalDiscountAmount > 0) {
+      finalDescription += `\n\nKortingscode toegepast: ${discountCode} (€${(finalDiscountAmount / 100).toFixed(2)} korting)`;
+      insertData.description = finalDescription;
+    }
 
     const { data: partnerMembership, error } = await supabaseService
       .from('partner_memberships')
-      .insert({
-        user_id: null, // Explicitly set to null for anonymous signups
-        first_name: partnerData.first_name,
-        last_name: partnerData.last_name,
-        email: partnerData.email,
-        phone: partnerData.phone,
-        company_name: partnerData.company_name,
-        website: partnerData.website,
-        industry: partnerData.industry,
-        description: partnerData.description,
-        mollie_payment_id: mollieData.id,
-        amount: partnerAmount,
-        currency: 'EUR',
-        payment_status: 'pending'
-      })
+      .insert(insertData)
       .select()
       .single();
 
