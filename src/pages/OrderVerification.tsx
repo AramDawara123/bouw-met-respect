@@ -4,6 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { CheckCircle, Package, Calendar, MapPin, Shield, Verified, Star, Clock } from 'lucide-react';
+import QRCode from 'qrcode';
 
 interface Order {
   id: string;
@@ -27,6 +28,7 @@ const OrderVerification = () => {
   const [order, setOrder] = useState<Order | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [qrCodeUrl, setQrCodeUrl] = useState<string>('');
 
   useEffect(() => {
     const fetchOrder = async () => {
@@ -52,6 +54,19 @@ const OrderVerification = () => {
           setError('Bestelling niet gevonden');
         } else {
           setOrder(data);
+          // Generate QR code for verification URL
+          if (data.payment_status === 'paid') {
+            const verificationUrl = `${window.location.origin}/order-verification/${data.id}`;
+            const qrUrl = await QRCode.toDataURL(verificationUrl, {
+              width: 64,
+              margin: 1,
+              color: {
+                dark: '#059669', // emerald-600
+                light: '#ffffff'
+              }
+            });
+            setQrCodeUrl(qrUrl);
+          }
         }
       } catch (error: any) {
         console.error('Error fetching order:', error);
@@ -226,14 +241,30 @@ const OrderVerification = () => {
                   
                   <div className="space-y-4">
                     <div className="p-5 bg-gradient-to-br from-emerald-50 to-green-50 rounded-2xl border border-emerald-100 shadow-sm">
-                      <p className="text-sm font-bold text-slate-700 mb-3">Betalingstatus</p>
-                      <Badge 
-                        variant={order.payment_status === 'paid' ? 'default' : 
-                                order.payment_status === 'pending' ? 'secondary' : 'destructive'}
-                        className="text-sm px-4 py-2 font-semibold rounded-xl"
-                      >
-                        {getStatusText(order.payment_status)}
-                      </Badge>
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-sm font-bold text-slate-700 mb-3">Betalingstatus</p>
+                          <Badge 
+                            variant={order.payment_status === 'paid' ? 'default' : 
+                                    order.payment_status === 'pending' ? 'secondary' : 'destructive'}
+                            className="text-sm px-4 py-2 font-semibold rounded-xl"
+                          >
+                            {getStatusText(order.payment_status)}
+                          </Badge>
+                        </div>
+                        {order.payment_status === 'paid' && qrCodeUrl && (
+                          <div className="flex flex-col items-center gap-2">
+                            <div className="bg-white p-2 rounded-lg border-2 border-emerald-200 shadow-sm">
+                              <img 
+                                src={qrCodeUrl} 
+                                alt="QR Verificatie Code" 
+                                className="w-16 h-16 rounded"
+                              />
+                            </div>
+                            <p className="text-xs text-emerald-700 font-medium text-center">QR Verificatie</p>
+                          </div>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </div>
