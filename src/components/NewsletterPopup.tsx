@@ -15,7 +15,7 @@ const NewsletterPopup = () => {
   const { toast } = useToast();
 
   // Don't show popup on login pages and dashboards
-  const excludedPaths = ['/login', '/dashboard', '/partner-dashboard'];
+  const excludedPaths = ['/login', '/dashboard', '/partner-dashboard', '/partner-auth'];
   const shouldShowPopup = !excludedPaths.includes(location.pathname);
 
   useEffect(() => {
