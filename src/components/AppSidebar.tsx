@@ -48,6 +48,11 @@ const navigationItems = {
     title: "Partner Prijzen",
     icon: Settings,
     description: "Stel partnerprijzen in"
+  }, {
+    key: "action-items-pricing",
+    title: "Actie-items Prijzen",
+    icon: Euro,
+    description: "Stel actie-items prijzen in"
   }],
   "Tools": [{
     key: "qrcode",

@@ -14,6 +14,45 @@ export type Database = {
   }
   public: {
     Tables: {
+      action_items_pricing: {
+        Row: {
+          created_at: string
+          display_order: number | null
+          employees_range: string
+          id: string
+          is_popular: boolean | null
+          is_quote: boolean | null
+          price_cents: number
+          price_display: string
+          size_type: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          display_order?: number | null
+          employees_range: string
+          id?: string
+          is_popular?: boolean | null
+          is_quote?: boolean | null
+          price_cents: number
+          price_display: string
+          size_type: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          display_order?: number | null
+          employees_range?: string
+          id?: string
+          is_popular?: boolean | null
+          is_quote?: boolean | null
+          price_cents?: number
+          price_display?: string
+          size_type?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       company_profiles: {
         Row: {
           contact_email: string | null
