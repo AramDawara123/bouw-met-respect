@@ -173,9 +173,16 @@ const CompanyProfileForm = ({
       };
 
       console.log('💾 Saving profile data:', profileData);
+      console.log('📝 Editing profile ID:', editingProfile?.id);
+      console.log('🆔 Partner membership ID:', partnerMembershipId);
 
       // Check authentication and user details once for both update and create
       const { data: { user }, error: authError } = await supabase.auth.getUser();
+      
+      if (authError) {
+        console.error('🚨 Auth error:', authError);
+        throw new Error('Authentication failed: ' + authError.message);
+      }
       
       console.log('👤 User ID:', user?.id || 'Not authenticated');
       console.log('📧 User email:', user?.email || 'No email');
@@ -183,6 +190,19 @@ const CompanyProfileForm = ({
       const isAdmin = user?.email === 'info@bouwmetrespect.nl';
       console.log('🔑 Is admin:', isAdmin);
       console.log('🏢 Is partner dashboard:', isPartnerDashboard);
+
+      // Check if user has a paid partner membership
+      if (isPartnerDashboard && user?.id) {
+        const { data: partnerCheck, error: partnerError } = await supabase
+          .from('partner_memberships')
+          .select('id, payment_status')
+          .eq('user_id', user.id)
+          .eq('payment_status', 'paid')
+          .single();
+        
+        console.log('🎫 Partner membership check:', partnerCheck);
+        if (partnerError) console.log('🚨 Partner check error:', partnerError);
+      }
 
       let updateResult;
       if (editingProfile) {
