@@ -47,40 +47,38 @@ const CompanyProfiles = () => {
   const fetchProfiles = async () => {
     try {
       console.log('🔄 Fetching company profiles...');
-      const {
-        data,
-        error
-      } = await supabase.from('company_profiles').select('*').order('display_order', {
-        ascending: true
-      }).order('name', {
-        ascending: true
-      });
+      const { data, error } = await supabase
+        .from('company_profiles')
+        .select('*')
+        .order('display_order', { ascending: true })
+        .order('name', { ascending: true });
+        
       if (error) throw error;
+      
       console.log('✅ Fetched profiles:', data);
       console.log(`📊 Total profiles found: ${data?.length || 0}`);
+      
+      // Enhanced logging for debugging
       data?.forEach((profile, index) => {
         console.log(`👤 Profile ${index + 1}: ${profile.name}`);
-        console.log(`🖼️  Logo URL: ${profile.logo_url || 'No logo'}`);
-        console.log(`🏢  Industry: ${profile.industry || 'No industry'}`);
-        console.log(`⭐  Featured: ${profile.is_featured ? 'Yes' : 'No'}`);
-
-        // Analyze the logo URL structure
-        if (profile.logo_url) {
-          console.log(`🔍  URL Analysis for ${profile.name}:`);
-          console.log(`   - Is absolute URL: ${profile.logo_url.startsWith('http')}`);
-          console.log(`   - Contains 'supabase': ${profile.logo_url.includes('supabase')}`);
-          console.log(`   - Is relative path: ${profile.logo_url.startsWith('/')}`);
-          console.log(`   - Full resolved URL: ${new URL(profile.logo_url, window.location.origin).href}`);
-        }
+        console.log(`🆔 Profile ID: ${profile.id}`);
+        console.log(`🤝 Partner membership ID: ${profile.partner_membership_id || 'None'}`);
+        console.log(`🖼️ Logo URL: ${profile.logo_url || 'No logo'}`);
+        console.log(`🏢 Industry: ${profile.industry || 'No industry'}`);
+        console.log(`⭐ Featured: ${profile.is_featured ? 'Yes' : 'No'}`);
+        console.log(`📧 Contact email: ${profile.contact_email || 'No contact email'}`);
+        console.log(`🌐 Website: ${profile.website || 'No website'}`);
+        console.log(`📝 Description: ${profile.description || 'No description'}`);
         console.log('---');
       });
+      
       setProfiles(data || []);
     } catch (error) {
       console.error('Error fetching profiles:', error);
       toast({
         title: "Fout",
         description: "Kon bedrijfsprofielen niet laden.",
-        variant: "destructive"
+        variant: "destructive",
       });
     } finally {
       setLoading(false);
