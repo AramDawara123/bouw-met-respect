@@ -54,17 +54,18 @@ serve(async (req) => {
 
     const { partnerData, amount, discountCode, discountAmount } = await req.json();
     
-    // Default amount if not provided (fallback to ZZP price)
-    const partnerAmount = amount || 25000;
+     // Default amount if not provided (fallback to ZZP price)
+    const originalAmount = 25000; // Default ZZP price
+    const partnerAmount = amount || originalAmount; // This is the final amount after discount
     const finalDiscountAmount = discountAmount || 0;
 
     console.log('Creating partner payment for:', partnerData);
-    console.log('Amount:', partnerAmount, 'Discount:', finalDiscountAmount, 'Final:', partnerAmount);
+    console.log('Original amount:', originalAmount, 'Final amount after discount:', partnerAmount, 'Discount amount:', finalDiscountAmount);
     if (discountCode) {
       console.log('Discount code applied:', discountCode);
     }
 
-    // Create payment with Mollie
+    // Create payment with Mollie - use final discounted amount
     const molliePayload = {
       amount: { currency: 'EUR', value: (partnerAmount / 100).toFixed(2) },
       description: `Partner lidmaatschap - ${partnerData.company_name}${discountCode ? ` (Code: ${discountCode})` : ''}`,
@@ -75,6 +76,8 @@ serve(async (req) => {
         company_name: partnerData.company_name,
         email: partnerData.email,
         company_size: partnerData.company_size || 'zzp',
+        original_amount: originalAmount,
+        final_amount: partnerAmount,
         ...(discountCode && { discount_code: discountCode, discount_amount: finalDiscountAmount })
       }
     };
