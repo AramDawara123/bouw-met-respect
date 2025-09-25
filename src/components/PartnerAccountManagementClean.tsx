@@ -11,6 +11,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Search, UserPlus, Key, Mail, Zap, Edit2, Trash2, Ban, RotateCcw } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { supabaseAdmin } from "@/integrations/supabase/admin-client";
 import { useToast } from "@/hooks/use-toast";
 import AutoAccountCreator from "./AutoAccountCreator";
 
@@ -192,16 +193,16 @@ const PartnerAccountManagementClean = () => {
 
   const handleDeletePartner = async (partner: PartnerMembership) => {
     try {
-      // First delete any related company profiles
-      const { error: profileError } = await supabase
+      // First delete any related company profiles using admin client
+      const { error: profileError } = await supabaseAdmin
         .from('company_profiles')
         .delete()
         .eq('partner_membership_id', partner.id);
         
       if (profileError) throw profileError;
       
-      // Then delete the partner membership
-      const { error } = await supabase
+      // Then delete the partner membership using admin client
+      const { error } = await supabaseAdmin
         .from('partner_memberships')
         .delete()
         .eq('id', partner.id);
