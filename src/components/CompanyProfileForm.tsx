@@ -187,9 +187,14 @@ const CompanyProfileForm = ({
       console.log('🔑 Is admin:', isAdmin);
       console.log('🏢 Is partner dashboard:', isPartnerDashboard);
 
-      // For partner dashboard, verify user has paid membership and get correct membership ID
+      // For partner dashboard, get the current partner membership ID from the editing profile
       let finalPartnerMembershipId = partnerMembershipId;
-      if (isPartnerDashboard && user?.id) {
+      if (isPartnerDashboard && editingProfile?.partner_membership_id) {
+        // For existing profiles, keep the same partner_membership_id
+        finalPartnerMembershipId = editingProfile.partner_membership_id;
+        console.log('✅ Using existing partner membership ID for edit:', finalPartnerMembershipId);
+      } else if (isPartnerDashboard && user?.id && !editingProfile) {
+        // Only verify for new profiles
         const { data: partnerCheck, error: partnerError } = await supabase
           .from('partner_memberships')
           .select('id, payment_status')
@@ -197,19 +202,13 @@ const CompanyProfileForm = ({
           .eq('payment_status', 'paid')
           .single();
         
-        console.log('🎫 Partner membership check:', partnerCheck);
-        if (partnerError) {
-          console.log('🚨 Partner check error:', partnerError);
+        console.log('🎫 Partner membership check for new profile:', partnerCheck);
+        if (partnerError || !partnerCheck) {
           throw new Error('Geen actieve partner membership gevonden');
         }
         
-        if (!partnerCheck) {
-          throw new Error('Geen betaalde partner membership gevonden');
-        }
-        
-        // Use the verified partner membership ID
         finalPartnerMembershipId = partnerCheck.id;
-        console.log('✅ Using verified partner membership ID:', finalPartnerMembershipId);
+        console.log('✅ Using verified partner membership ID for new profile:', finalPartnerMembershipId);
       }
 
       const profileData = {
