@@ -9,6 +9,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Search, Edit, Trash2, Plus, UserPlus, Key, Mail } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { supabaseAdmin } from "@/integrations/supabase/admin-client";
 import { useToast } from "@/hooks/use-toast";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -72,6 +73,8 @@ const PartnerAccountManagement = () => {
   const [partners, setPartners] = useState<PartnerMembership[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(true);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [adminLoading, setAdminLoading] = useState(true);
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [showEditDialog, setShowEditDialog] = useState(false);
   const [showAddPartnerDialog, setShowAddPartnerDialog] = useState(false);
@@ -112,14 +115,36 @@ const PartnerAccountManagement = () => {
     }
   });
   useEffect(() => {
+    checkAdminAccess();
     fetchPartners();
   }, []);
+
+  const checkAdminAccess = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('is_admin, role')
+          .eq('user_id', user.id)
+          .single();
+        
+        setIsAdmin(profile?.is_admin === true || profile?.role === 'admin');
+      }
+    } catch (error) {
+      console.error('Error checking admin access:', error);
+      setIsAdmin(false);
+    } finally {
+      setAdminLoading(false);
+    }
+  };
   const fetchPartners = async () => {
     try {
+      // Use admin client to fetch all partner memberships
       const {
         data,
         error
-      } = await supabase.from('partner_memberships').select('*').eq('payment_status', 'paid').order('created_at', {
+      } = await supabaseAdmin.from('partner_memberships').select('*').eq('payment_status', 'paid').order('created_at', {
         ascending: false
       });
       if (error) throw error;
@@ -284,10 +309,10 @@ const PartnerAccountManagement = () => {
         userId = authData.user.id;
       }
 
-      // Add partner to database
+      // Add partner to database using admin client
       const {
         error
-      } = await supabase.from('partner_memberships').insert({
+      } = await supabaseAdmin.from('partner_memberships').insert({
         user_id: userId,
         first_name: values.first_name,
         last_name: values.last_name,
@@ -356,10 +381,30 @@ const PartnerAccountManagement = () => {
     editForm.setValue('confirmPassword', '');
     setShowEditDialog(true);
   };
-  if (loading) {
+  if (adminLoading || loading) {
     return <div className="flex items-center justify-center p-8">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
       </div>;
+  }
+
+  if (!isAdmin) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle>Partner Account Beheer</CardTitle>
+          <CardDescription>
+            Alleen beheerders kunnen partner accounts beheren
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="p-6">
+          <div className="text-center text-muted-foreground">
+            <div className="mb-4">🔒</div>
+            <p>Je hebt geen toegang tot deze functie.</p>
+            <p className="text-sm mt-2">Log in als <strong>info@bouwmetrespect.nl</strong> voor toegang.</p>
+          </div>
+        </CardContent>
+      </Card>
+    );
   }
   return <div className="space-y-6">
       {/* Header */}
