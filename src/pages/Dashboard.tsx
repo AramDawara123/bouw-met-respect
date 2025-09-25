@@ -1634,9 +1634,19 @@ Het Bouw met Respect team
                                 </TableCell>
                                 <TableCell>{new Date(order.created_at).toLocaleDateString()}</TableCell>
                                 <TableCell className="text-right">
-                                  <Button variant="ghost" size="sm">
-                                    <Eye className="w-4 h-4" />
-                                  </Button>
+                                  <div className="flex items-center gap-2 justify-end">
+                                    <Button variant="ghost" size="sm">
+                                      <Eye className="w-4 h-4" />
+                                    </Button>
+                                    <Button
+                                      variant="ghost"
+                                      size="sm"
+                                      onClick={() => printOrderDetails(order)}
+                                      title="Print bestelling"
+                                    >
+                                      <Printer className="w-4 h-4" />
+                                    </Button>
+                                  </div>
                                 </TableCell>
                               </TableRow>
                             ))}
