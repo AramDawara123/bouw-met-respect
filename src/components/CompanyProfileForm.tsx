@@ -48,25 +48,25 @@ interface CompanyProfileFormProps {
     name: string;
     description: string | null;
     website: string | null;
-    logo_url: string | null;
     industry: string | null;
     contact_email: string | null;
     contact_phone: string | null;
     is_featured: boolean;
     display_order: number;
-    partner_membership_id?: string | null;
+    logo_url: string | null;
+    partner_membership_id: string | null;
   } | null;
   isPartnerDashboard?: boolean;
-  partnerMembershipId?: string;
+  partnerMembershipId?: string | null;
 }
 
-const CompanyProfileForm = ({ 
-  open, 
-  onOpenChange, 
-  onSuccess, 
-  editingProfile, 
-  isPartnerDashboard = false, 
-  partnerMembershipId 
+const CompanyProfileForm = ({
+  open,
+  onOpenChange,
+  onSuccess,
+  editingProfile = null,
+  isPartnerDashboard = false,
+  partnerMembershipId = null
 }: CompanyProfileFormProps) => {
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -87,39 +87,44 @@ const CompanyProfileForm = ({
     },
   });
 
+  console.log('🚪 Dialog opened - open:', open);
+  
+  // Debug partner membership ID
   useEffect(() => {
-    console.log('🔄 Form effect triggered - editingProfile:', editingProfile);
-    console.log('🆔 Partner membership ID:', partnerMembershipId);
-    if (editingProfile && open) {
-      // Ensure proper handling of null values from database
-      const formValues = {
-        name: editingProfile.name || "",
-        description: editingProfile.description || "",
-        website: editingProfile.website || "",
-        industry: editingProfile.industry || "",
-        contact_email: editingProfile.contact_email || "",
-        contact_phone: editingProfile.contact_phone || "",
-        is_featured: Boolean(editingProfile.is_featured),
-        display_order: editingProfile.display_order || 0,
-      };
-      
-      console.log('📝 Setting form values for editing:', formValues);
-      
-      form.reset(formValues);
-      setLogoUrl(editingProfile.logo_url);
-    } else if (!editingProfile && open) {
-      console.log('➕ Resetting form for new profile');
-      form.reset({
-        name: "",
-        description: "",
-        website: "",
-        industry: "",
-        contact_email: "",
-        contact_phone: "",
-        is_featured: false,
-        display_order: 0,
-      });
-      setLogoUrl(null);
+    console.log('🆔 Partner membership ID:', {
+      _type: typeof partnerMembershipId,
+      value: partnerMembershipId || 'undefined'
+    });
+  }, [partnerMembershipId]);
+
+  useEffect(() => {
+    console.log('🔄 Form effect triggered - editingProfile:', editingProfile ? 'exists' : 'null');
+    if (open) {
+      if (editingProfile) {
+        form.reset({
+          name: editingProfile.name || "",
+          description: editingProfile.description || "",
+          website: editingProfile.website || "",
+          industry: editingProfile.industry || "",
+          contact_email: editingProfile.contact_email || "",
+          contact_phone: editingProfile.contact_phone || "",
+          is_featured: editingProfile.is_featured || false,
+          display_order: editingProfile.display_order || 0,
+        });
+        setLogoUrl(editingProfile.logo_url);
+      } else {
+        form.reset({
+          name: "",
+          description: "",
+          website: "",
+          industry: "",
+          contact_email: "",
+          contact_phone: "",
+          is_featured: false,
+          display_order: 0,
+        });
+        setLogoUrl(null);
+      }
     }
   }, [editingProfile, open, form]);
 
@@ -236,8 +241,27 @@ const CompanyProfileForm = ({
       let updateResult;
       if (editingProfile) {
         console.log('📝 Starting UPDATE operation...');
-        // For partner dashboard, always use regular client since RLS allows partner updates
-        console.log('👥 Using regular client for update');
+        
+        // For partner updates, verify the user has permission to update this specific profile
+        if (isPartnerDashboard && !isAdmin) {
+          console.log('🔍 Verifying partner permission for profile update...');
+          const { data: verifyData, error: verifyError } = await supabase
+            .from('partner_memberships')
+            .select('id')
+            .eq('user_id', user?.id)
+            .eq('payment_status', 'paid')
+            .single();
+            
+          if (verifyError || !verifyData) {
+            throw new Error('Je hebt geen rechten om dit profiel te bewerken');
+          }
+          
+          // Ensure the profile belongs to this partner
+          if (editingProfile.partner_membership_id !== verifyData.id) {
+            throw new Error('Dit profiel behoort niet tot jouw partnership');
+          }
+        }
+        
         updateResult = await supabase
           .from('company_profiles')
           .update(profileData)
@@ -248,67 +272,43 @@ const CompanyProfileForm = ({
 
         if (updateResult.error) {
           console.error('❌ Update error:', updateResult.error);
-          console.error('❌ Error details:', JSON.stringify(updateResult.error, null, 2));
-          
-          // Provide more specific error messages
-          if (updateResult.error.message?.includes('row-level security')) {
-            throw new Error('Not authorized to edit this company profile. Please ensure you are logged in as an admin.');
-          } else if (updateResult.error.message?.includes('JWT')) {
-            throw new Error('Authentication session expired. Please log in again.');
-          }
-          
-          throw updateResult.error;
+          throw new Error(`Update failed: ${updateResult.error.message}`);
         }
-
-        console.log('✅ Profile updated successfully:', updateResult.data);
-        
-        toast({
-          title: "Succes",
-          description: "Bedrijfsprofiel succesvol bijgewerkt",
-        });
-        
-        // Dispatch event to refresh other pages
-        console.log('📡 Dispatching company-profile-updated event');
-        window.dispatchEvent(new CustomEvent('company-profile-updated'));
       } else {
-        console.log('➕ Creating new profile');
-        
-        // Use admin client if user claims admin email
-        if (isAdmin && !isPartnerDashboard) {
-          console.log('🔧 Using admin client for insert (bypassing RLS)');
-          const { supabaseAdmin } = await import('@/integrations/supabase/admin-client');
-          const { error } = await supabaseAdmin
-            .from('company_profiles')
-            .insert(profileData);
-          
-          if (error) throw error;
-        } else {
-          console.log('👥 Using regular client for insert');
-          const { error } = await supabase
-            .from('company_profiles')
-            .insert(profileData);
+        console.log('➕ Starting INSERT operation...');
+        updateResult = await supabase
+          .from('company_profiles')
+          .insert([profileData])
+          .select();
 
-          if (error) throw error;
+        console.log('➕ Insert result:', updateResult);
+
+        if (updateResult.error) {
+          console.error('❌ Insert error:', updateResult.error);
+          throw new Error(`Insert failed: ${updateResult.error.message}`);
         }
-
-        console.log('✅ Profile created successfully');
-        
-        toast({
-          title: "Succes",
-          description: "Bedrijfsprofiel succesvol aangemaakt",
-        });
-        
-        // Dispatch event to refresh other pages
-        console.log('📡 Dispatching company-profile-updated event');
-        window.dispatchEvent(new CustomEvent('company-profile-updated'));
       }
 
+      console.log('✅ Database operation successful');
+
+      // Dispatch custom event for any listening components
+      window.dispatchEvent(new CustomEvent('company-profile-updated'));
+      console.log('📡 Dispatched company-profile-updated event');
+
+      toast({
+        title: "Succes!",
+        description: editingProfile 
+          ? "Bedrijfsprofiel succesvol bijgewerkt" 
+          : "Bedrijfsprofiel succesvol aangemaakt",
+      });
+
       onSuccess();
-    } catch (error) {
-      console.error('💥 Error saving profile:', error);
+      onOpenChange(false);
+    } catch (error: any) {
+      console.error('❌ Form submission error:', error);
       toast({
         title: "Fout",
-        description: `Kon bedrijfsprofiel niet ${editingProfile ? 'bijwerken' : 'aanmaken'}: ${error.message}`,
+        description: error.message || "Er ging iets mis bij het opslaan van het profiel",
         variant: "destructive",
       });
     } finally {
@@ -316,49 +316,84 @@ const CompanyProfileForm = ({
     }
   };
 
-  console.log('🚪 Dialog opened - open:', open);
-
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>
-            {editingProfile ? "Bedrijfsprofiel Bewerken" : "Nieuw Bedrijfsprofiel"}
+            {editingProfile ? "Bedrijfsprofiel Bewerken" : "Bedrijfsprofiel Aanmaken"}
           </DialogTitle>
           <DialogDescription>
-            {editingProfile
-              ? "Wijzig de gegevens van het bedrijfsprofiel"
-              : "Voeg een nieuw bedrijfsprofiel toe aan de directory"}
+            {editingProfile 
+              ? "Pas de gegevens van je bedrijfsprofiel aan." 
+              : "Maak een nieuw bedrijfsprofiel aan dat zichtbaar wordt voor bezoekers."
+            }
           </DialogDescription>
         </DialogHeader>
 
         <Form {...form}>
-          <form 
-            onSubmit={(e) => {
-              console.log('📝 Form submit event triggered');
-              e.preventDefault();
-              form.handleSubmit((data) => {
-                console.log('📝 Form validation passed, calling onSubmit');
-                onSubmit(data);
-              }, (errors) => {
-                console.error('❌ Form validation failed:', errors);
-              })(e);
-            }} 
-            className="space-y-6"
-          >
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            {/* Logo Upload Section */}
+            <div className="space-y-4">
+              <div>
+                <label className="text-sm font-medium">Bedrijfslogo</label>
+                <div className="mt-2">
+                  {logoUrl ? (
+                    <div className="relative inline-block">
+                      <img 
+                        src={logoUrl} 
+                        alt="Company logo" 
+                        className="w-24 h-24 object-cover rounded-lg border-2 border-border"
+                      />
+                      <button
+                        type="button"
+                        onClick={removeLogo}
+                        className="absolute -top-2 -right-2 bg-destructive text-destructive-foreground rounded-full p-1 hover:bg-destructive/80"
+                      >
+                        <X className="h-3 w-3" />
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="w-24 h-24 border-2 border-dashed border-muted-foreground/25 rounded-lg flex items-center justify-center bg-muted/50">
+                      <Upload className="h-8 w-8 text-muted-foreground" />
+                    </div>
+                  )}
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleLogoUpload}
+                    disabled={uploading}
+                    className="mt-2 text-sm text-muted-foreground file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-primary-foreground hover:file:bg-primary/80"
+                  />
+                  {uploading && <p className="text-sm text-muted-foreground mt-1">Uploaden...</p>}
+                </div>
+              </div>
+            </div>
+
+            {/* Form Fields */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <FormField
                 control={form.control}
                 name="name"
                 render={({ field }) => (
-                  <FormItem>
+                  <FormItem className="md:col-span-2">
                     <FormLabel>Bedrijfsnaam *</FormLabel>
                     <FormControl>
-                      <Input 
-                        placeholder="Bedrijfsnaam" 
-                        disabled={loading || uploading}
-                        {...field} 
-                      />
+                      <Input placeholder="Bedrijfsnaam" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="website"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Website</FormLabel>
+                    <FormControl>
+                      <Input placeholder="https://example.com" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -372,101 +407,7 @@ const CompanyProfileForm = ({
                   <FormItem>
                     <FormLabel>Branche</FormLabel>
                     <FormControl>
-                      <Input 
-                        placeholder="Bijv. Bouw, Architectuur, etc." 
-                        disabled={loading || uploading}
-                        {...field} 
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-
-            <FormField
-              control={form.control}
-              name="description"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Beschrijving</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      placeholder="Korte beschrijving van het bedrijf..."
-                      className="min-h-[100px]"
-                      disabled={loading || uploading}
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormDescription>
-                    Een korte beschrijving van wat het bedrijf doet en waarom ze respectvol bouwen
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <div className="space-y-4">
-              <FormLabel>Logo</FormLabel>
-              {logoUrl ? (
-                <div className="flex items-center gap-4">
-                  <img
-                    src={logoUrl}
-                    alt="Company logo"
-                    className="w-16 h-16 object-contain border rounded-lg"
-                  />
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    onClick={removeLogo}
-                    className="flex items-center gap-2"
-                  >
-                    <X className="w-4 h-4" />
-                    Verwijderen
-                  </Button>
-                </div>
-              ) : (
-                <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-6">
-                  <div className="text-center">
-                    <Upload className="w-8 h-8 text-muted-foreground mx-auto mb-2" />
-                    <div className="text-sm text-muted-foreground mb-2">
-                      Sleep een logo hierheen of klik om te uploaden
-                    </div>
-                    <div className="text-xs text-muted-foreground mb-4">
-                      PNG, JPG tot 2MB
-                    </div>
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={handleLogoUpload}
-                      disabled={uploading}
-                      className="hidden"
-                      id="logo-upload"
-                    />
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      onClick={() => document.getElementById('logo-upload')?.click()}
-                      disabled={uploading}
-                    >
-                      {uploading ? "Uploading..." : "Bestand Selecteren"}
-                    </Button>
-                  </div>
-                </div>
-              )}
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <FormField
-                control={form.control}
-                name="website"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Website</FormLabel>
-                    <FormControl>
-                      <Input placeholder="https://www.bedrijf.nl" {...field} />
+                      <Input placeholder="bijv. Bouw, IT, Consultancy" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -486,84 +427,98 @@ const CompanyProfileForm = ({
                   </FormItem>
                 )}
               />
-            </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <FormField
                 control={form.control}
                 name="contact_phone"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Telefoon</FormLabel>
+                    <FormLabel>Contact Telefoon</FormLabel>
                     <FormControl>
-                      <Input placeholder="+31 6 12345678" {...field} />
+                      <Input placeholder="+31 20 1234567" {...field} />
                     </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="display_order"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Volgorde</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="number"
-                        min="0"
-                        placeholder="0"
-                        {...field}
-                        onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
-                      />
-                    </FormControl>
-                    <FormDescription>
-                      Lagere nummers verschijnen eerst
-                    </FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
               />
             </div>
 
-{!isPartnerDashboard && (
             <FormField
               control={form.control}
-              name="is_featured"
+              name="description"
               render={({ field }) => (
-                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
-                  <div className="space-y-0.5">
-                    <FormLabel className="text-base">Featured</FormLabel>
-                    <FormDescription>
-                      Uitgelichte bedrijven worden prominenter weergegeven
-                    </FormDescription>
-                  </div>
+                <FormItem>
+                  <FormLabel>Beschrijving</FormLabel>
                   <FormControl>
-                    <Switch
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
+                    <Textarea 
+                      placeholder="Vertel over je bedrijf, wat jullie doen, en hoe jullie bijdragen aan een respectvolle bouwsector..."
+                      className="min-h-[100px]"
+                      {...field} 
                     />
                   </FormControl>
+                  <FormMessage />
                 </FormItem>
               )}
             />
+
+            {!isPartnerDashboard && (
+              <>
+                <FormField
+                  control={form.control}
+                  name="is_featured"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                      <div className="space-y-0.5">
+                        <FormLabel className="text-base">Uitgelicht</FormLabel>
+                        <FormDescription>
+                          Uitgelichte profielen worden prominenter getoond
+                        </FormDescription>
+                      </div>
+                      <FormControl>
+                        <Switch
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                        />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="display_order"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Volgorde</FormLabel>
+                      <FormControl>
+                        <Input 
+                          type="number" 
+                          placeholder="0" 
+                          {...field}
+                          onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
+                        />
+                      </FormControl>
+                      <FormDescription>
+                        Bepaalt de volgorde waarin profielen worden getoond (lagere nummers eerst)
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </>
             )}
 
-            <div className="flex justify-end gap-4">
-              <Button
-                type="button"
-                variant="outline"
+            <div className="flex justify-end space-x-4 pt-6 border-t">
+              <Button 
+                type="button" 
+                variant="outline" 
                 onClick={() => onOpenChange(false)}
+                disabled={loading}
               >
                 Annuleren
               </Button>
-              <Button type="submit" disabled={loading}>
-                {loading
-                  ? "Opslaan..."
-                  : editingProfile
-                  ? "Bijwerken"
-                  : "Aanmaken"}
+              <Button type="submit" disabled={loading || uploading}>
+                {loading ? "Bezig..." : editingProfile ? "Bijwerken" : "Aanmaken"}
               </Button>
             </div>
           </form>

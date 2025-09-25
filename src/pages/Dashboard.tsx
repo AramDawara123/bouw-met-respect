@@ -97,6 +97,7 @@ interface CompanyProfile {
   contact_phone: string | null;
   is_featured: boolean;
   display_order: number;
+  partner_membership_id: string | null;
   created_at: string;
   updated_at: string;
 }
