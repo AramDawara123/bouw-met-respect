@@ -89,6 +89,7 @@ const CompanyProfileForm = ({
 
   useEffect(() => {
     console.log('🔄 Form effect triggered - editingProfile:', editingProfile);
+    console.log('🆔 Partner membership ID:', partnerMembershipId);
     if (editingProfile) {
       console.log('📝 Setting form values for editing:', {
         name: editingProfile.name,
