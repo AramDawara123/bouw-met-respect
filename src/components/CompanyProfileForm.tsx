@@ -220,12 +220,15 @@ const CompanyProfileForm = ({
           throw updateResult.error;
         }
 
+        console.log('✅ Profile updated successfully:', updateResult.data);
+        
         toast({
           title: "Succes",
           description: "Bedrijfsprofiel succesvol bijgewerkt",
         });
         
         // Dispatch event to refresh other pages
+        console.log('📡 Dispatching company-profile-updated event');
         window.dispatchEvent(new CustomEvent('company-profile-updated'));
       } else {
         console.log('➕ Creating new profile');
@@ -248,12 +251,15 @@ const CompanyProfileForm = ({
           if (error) throw error;
         }
 
+        console.log('✅ Profile created successfully');
+        
         toast({
           title: "Succes",
           description: "Bedrijfsprofiel succesvol aangemaakt",
         });
         
         // Dispatch event to refresh other pages
+        console.log('📡 Dispatching company-profile-updated event');
         window.dispatchEvent(new CustomEvent('company-profile-updated'));
       }
 

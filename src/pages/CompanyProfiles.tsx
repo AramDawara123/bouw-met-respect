@@ -39,12 +39,14 @@ const CompanyProfiles = () => {
       fetchProfiles();
     };
     window.addEventListener('company-profile-updated', handleProfileUpdate);
+    console.log('👂 Listening for company-profile-updated events');
     return () => {
       window.removeEventListener('company-profile-updated', handleProfileUpdate);
     };
   }, []);
   const fetchProfiles = async () => {
     try {
+      console.log('🔄 Fetching company profiles...');
       const {
         data,
         error
