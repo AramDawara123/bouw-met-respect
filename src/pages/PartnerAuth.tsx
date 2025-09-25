@@ -33,6 +33,9 @@ const PartnerAuth = () => {
     confirmPassword: ""
   });
 
+  const [resetEmail, setResetEmail] = useState("");
+  const [resetLoading, setResetLoading] = useState(false);
+
   useEffect(() => {
     // Set up auth state listener FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
@@ -159,6 +162,39 @@ const PartnerAuth = () => {
     }
   };
 
+  const handlePasswordReset = async (email?: string) => {
+    const emailToReset = email || resetEmail;
+    if (!emailToReset) {
+      setError("Voer een email adres in");
+      return;
+    }
+
+    setResetLoading(true);
+    setError("");
+
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(emailToReset, {
+        redirectTo: `${window.location.origin}/partner-auth`
+      });
+
+      if (error) {
+        setError("Kon geen reset email verzenden. Controleer het email adres.");
+        return;
+      }
+
+      toast({
+        title: "Reset email verzonden",
+        description: "Controleer je inbox voor de wachtwoord reset link."
+      });
+
+      setResetEmail("");
+    } catch (error: any) {
+      setError("Er ging iets mis bij het verzenden van de reset email");
+    } finally {
+      setResetLoading(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background to-muted">
@@ -270,6 +306,45 @@ const PartnerAuth = () => {
                     {signInLoading ? "Inloggen..." : "Inloggen"}
                   </Button>
                 </form>
+                
+                {/* Password Reset Section */}
+                <div className="mt-6 pt-4 border-t border-border">
+                  <div className="text-center mb-3">
+                    <p className="text-sm text-muted-foreground">Wachtwoord vergeten?</p>
+                  </div>
+                  <div className="space-y-2">
+                    <Input
+                      type="email"
+                      placeholder="Voer je email adres in"
+                      value={resetEmail}
+                      onChange={(e) => setResetEmail(e.target.value)}
+                    />
+                    <Button 
+                      type="button"
+                      variant="outline" 
+                      className="w-full"
+                      onClick={() => handlePasswordReset()}
+                      disabled={resetLoading}
+                    >
+                      {resetLoading ? "Verzenden..." : "Wachtwoord resetten"}
+                    </Button>
+                  </div>
+                  
+                  {/* Quick reset for known partner */}
+                  <div className="mt-3 text-center">
+                    <p className="text-xs text-muted-foreground mb-2">Of voor snelle toegang:</p>
+                    <Button 
+                      type="button"
+                      variant="ghost" 
+                      size="sm"
+                      onClick={() => handlePasswordReset("dawaraconsulting1@gmail.com")}
+                      disabled={resetLoading}
+                      className="text-xs"
+                    >
+                      Reset voor dawaraconsulting1@gmail.com
+                    </Button>
+                  </div>
+                </div>
               </TabsContent>
 
               {/* Sign Up Tab */}
