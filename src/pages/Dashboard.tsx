@@ -2071,6 +2071,319 @@ Het Bouw met Respect team
         isPartnerDashboard={false}
       />
 
+      {/* Membership Edit Dialog */}
+      <Dialog open={isEditing} onOpenChange={setIsEditing}>
+        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Lidmaatschap Bewerken</DialogTitle>
+          </DialogHeader>
+          {editingMembership && (
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="text-sm font-medium">Voornaam</label>
+                  <Input
+                    value={editingMembership.first_name}
+                    onChange={(e) => setEditingMembership({
+                      ...editingMembership,
+                      first_name: e.target.value
+                    })}
+                  />
+                </div>
+                <div>
+                  <label className="text-sm font-medium">Achternaam</label>
+                  <Input
+                    value={editingMembership.last_name}
+                    onChange={(e) => setEditingMembership({
+                      ...editingMembership,
+                      last_name: e.target.value
+                    })}
+                  />
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="text-sm font-medium">Email</label>
+                  <Input
+                    type="email"
+                    value={editingMembership.email}
+                    onChange={(e) => setEditingMembership({
+                      ...editingMembership,
+                      email: e.target.value
+                    })}
+                  />
+                </div>
+                <div>
+                  <label className="text-sm font-medium">Telefoon</label>
+                  <Input
+                    value={editingMembership.phone}
+                    onChange={(e) => setEditingMembership({
+                      ...editingMembership,
+                      phone: e.target.value
+                    })}
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="text-sm font-medium">Bedrijf</label>
+                  <Input
+                    value={editingMembership.company || ''}
+                    onChange={(e) => setEditingMembership({
+                      ...editingMembership,
+                      company: e.target.value
+                    })}
+                  />
+                </div>
+                <div>
+                  <label className="text-sm font-medium">Functietitel</label>
+                  <Input
+                    value={editingMembership.job_title}
+                    onChange={(e) => setEditingMembership({
+                      ...editingMembership,
+                      job_title: e.target.value
+                    })}
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="text-sm font-medium">Rol in de industrie</label>
+                  <Input
+                    value={editingMembership.industry_role}
+                    onChange={(e) => setEditingMembership({
+                      ...editingMembership,
+                      industry_role: e.target.value
+                    })}
+                  />
+                </div>
+                <div>
+                  <label className="text-sm font-medium">Ervaring</label>
+                  <Select
+                    value={editingMembership.experience_years}
+                    onValueChange={(value) => setEditingMembership({
+                      ...editingMembership,
+                      experience_years: value
+                    })}
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="0-1">0-1 jaar</SelectItem>
+                      <SelectItem value="1-3">1-3 jaar</SelectItem>
+                      <SelectItem value="3-5">3-5 jaar</SelectItem>
+                      <SelectItem value="5-10">5-10 jaar</SelectItem>
+                      <SelectItem value="10+">10+ jaar</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="text-sm font-medium">Lidmaatschap Type</label>
+                  <Select
+                    value={editingMembership.membership_type}
+                    onValueChange={(value: 'klein' | 'middelgroot' | 'groot' | 'offerte') => setEditingMembership({
+                      ...editingMembership,
+                      membership_type: value
+                    })}
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="klein">Klein</SelectItem>
+                      <SelectItem value="middelgroot">Middelgroot</SelectItem>
+                      <SelectItem value="groot">Groot</SelectItem>
+                      <SelectItem value="offerte">Offerte</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <label className="text-sm font-medium">Payment Status</label>
+                  <Select
+                    value={editingMembership.payment_status}
+                    onValueChange={(value) => setEditingMembership({
+                      ...editingMembership,
+                      payment_status: value
+                    })}
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="pending">Pending</SelectItem>
+                      <SelectItem value="paid">Paid</SelectItem>
+                      <SelectItem value="failed">Failed</SelectItem>
+                      <SelectItem value="cancelled">Cancelled</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              <div>
+                <label className="text-sm font-medium">Specialisaties</label>
+                <div className="grid grid-cols-2 gap-2 mt-2">
+                  {['duurzaam-bouwen', 'sociale-woningbouw', 'veiligheid', 'gemeenschapsprojecten', 'innovatie', 'circulariteit'].map(spec => (
+                    <label key={spec} className="flex items-center space-x-2">
+                      <Checkbox
+                        checked={editingMembership.specializations?.includes(spec) || false}
+                        onCheckedChange={(checked) => {
+                          const currentSpecs = editingMembership.specializations || [];
+                          const newSpecs = checked 
+                            ? [...currentSpecs, spec]
+                            : currentSpecs.filter(s => s !== spec);
+                          setEditingMembership({
+                            ...editingMembership,
+                            specializations: newSpecs
+                          });
+                        }}
+                      />
+                      <span className="text-sm capitalize">{spec.replace('-', ' ')}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+
+              <div className="flex justify-end gap-2 pt-4">
+                <Button 
+                  variant="outline" 
+                  onClick={() => {
+                    setIsEditing(false);
+                    setEditingMembership(null);
+                  }}
+                >
+                  Annuleren
+                </Button>
+                <Button onClick={() => updateMembership(editingMembership)}>
+                  Opslaan
+                </Button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Membership Details Dialog */}
+      <Dialog open={!!selectedMembership} onOpenChange={() => setSelectedMembership(null)}>
+        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Lidmaatschap Details</DialogTitle>
+          </DialogHeader>
+          {selectedMembership && (
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="text-sm font-medium text-muted-foreground">Naam</label>
+                  <p className="font-medium">{selectedMembership.first_name} {selectedMembership.last_name}</p>
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-muted-foreground">Email</label>
+                  <p className="font-medium">{selectedMembership.email}</p>
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="text-sm font-medium text-muted-foreground">Telefoon</label>
+                  <p className="font-medium">{selectedMembership.phone}</p>
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-muted-foreground">Bedrijf</label>
+                  <p className="font-medium">{selectedMembership.company || '-'}</p>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="text-sm font-medium text-muted-foreground">Functietitel</label>
+                  <p className="font-medium">{selectedMembership.job_title}</p>
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-muted-foreground">Rol in de industrie</label>
+                  <p className="font-medium">{selectedMembership.industry_role}</p>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="text-sm font-medium text-muted-foreground">Ervaring</label>
+                  <p className="font-medium">{selectedMembership.experience_years}</p>
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-muted-foreground">Lidmaatschap Type</label>
+                  <Badge variant="outline">{selectedMembership.membership_type}</Badge>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="text-sm font-medium text-muted-foreground">Payment Status</label>
+                  {getStatusBadge(selectedMembership.payment_status)}
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-muted-foreground">Bedrag</label>
+                  <p className="font-medium">€{(selectedMembership.amount / 100).toFixed(2)}</p>
+                </div>
+              </div>
+
+              <div>
+                <label className="text-sm font-medium text-muted-foreground">Specialisaties</label>
+                <div className="flex flex-wrap gap-2 mt-2">
+                  {selectedMembership.specializations?.map(spec => (
+                    <Badge key={spec} variant="secondary">
+                      {spec.replace('-', ' ')}
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="text-sm font-medium text-muted-foreground">Aangemeld op</label>
+                  <p className="font-medium">{new Date(selectedMembership.created_at).toLocaleDateString()}</p>
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-muted-foreground">Laatst gewijzigd</label>
+                  <p className="font-medium">{new Date(selectedMembership.updated_at).toLocaleDateString()}</p>
+                </div>
+              </div>
+
+              {selectedMembership.mollie_payment_id && (
+                <div>
+                  <label className="text-sm font-medium text-muted-foreground">Mollie Payment ID</label>
+                  <p className="font-medium font-mono text-sm">{selectedMembership.mollie_payment_id}</p>
+                </div>
+              )}
+
+              <div className="flex justify-end gap-2 pt-4">
+                <Button 
+                  variant="outline" 
+                  onClick={() => setSelectedMembership(null)}
+                >
+                  Sluiten
+                </Button>
+                <Button 
+                  onClick={() => {
+                    setEditingMembership(selectedMembership);
+                    setIsEditing(true);
+                    setSelectedMembership(null);
+                  }}
+                >
+                  <Edit className="w-4 h-4 mr-2" />
+                  Bewerken
+                </Button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+
       {/* Order Edit Dialog */}
       <Dialog open={isEditingOrder} onOpenChange={setIsEditingOrder}>
         <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
