@@ -51,47 +51,57 @@ const handler = async (req: Request): Promise<Response> => {
 
     console.log('Creating auto account for:', email);
 
-    // Generate random password
-    const password = generatePassword();
-    
-    // Create user account using admin client
-    const { data: authData, error: authError } = await supabase.auth.admin.createUser({
-      email: email,
-      password: password,
-      email_confirm: true, // Auto-confirm email
-      user_metadata: {
-        auto_generated: true,
-        created_by_admin: true
-      }
+    // First check if user already exists
+    const { data: existingUser } = await supabase.auth.admin.listUsers({
+      page: 1,
+      perPage: 1000
     });
+    
+    const userExists = existingUser?.users?.find(user => user.email === email);
+    
+    let userId: string;
+    let password: string;
+    let isNewUser = false;
+    
+    if (userExists) {
+      console.log('User already exists:', userExists.id);
+      userId = userExists.id;
+      // For existing users, we'll send a reset password email instead
+      password = 'Reset wachtwoord via email';
+    } else {
+      // Generate random password for new users
+      password = generatePassword();
+      
+      // Create user account using admin client
+      const { data: authData, error: authError } = await supabase.auth.admin.createUser({
+        email: email,
+        password: password,
+        email_confirm: true, // Auto-confirm email
+        user_metadata: {
+          auto_generated: true,
+          created_by_admin: true
+        }
+      });
 
-    if (authError) {
-      console.error('Auth error:', authError);
-      if (authError.message.includes('User already registered') || authError.message.includes('already been registered')) {
-        return new Response(JSON.stringify({
-          error: 'Email adres is al geregistreerd'
-        }), {
-          status: 400,
-          headers: {
-            'Content-Type': 'application/json',
-            ...corsHeaders,
-          },
-        });
+      if (authError) {
+        console.error('Auth error:', authError);
+        throw authError;
       }
-      throw authError;
-    }
 
-    if (!authData.user) {
-      throw new Error('Account aanmaken mislukt');
-    }
+      if (!authData.user) {
+        throw new Error('Account aanmaken mislukt');
+      }
 
-    console.log('User created:', authData.user.id);
+      userId = authData.user.id;
+      isNewUser = true;
+      console.log('New user created:', userId);
+    }
 
     // Create partner membership record
     const { error: membershipError } = await supabase
       .from('partner_memberships')
       .insert({
-        user_id: authData.user.id,
+        user_id: userId,
         email: email,
         first_name: first_name || '',
         last_name: last_name || '',
@@ -107,7 +117,7 @@ const handler = async (req: Request): Promise<Response> => {
     }
 
     // Send email with login credentials
-    const emailContent = `
+    const emailContent = isNewUser ? `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
         <h2 style="color: #2563eb;">Welkom bij Bouw met Respect</h2>
         
@@ -122,6 +132,32 @@ const handler = async (req: Request): Promise<Response> => {
         </div>
         
         <p style="color: #dc2626; font-weight: bold;">⚠️ Belangrijk: Wijzig je wachtwoord na je eerste login voor veiligheid!</p>
+        
+        <p>Je kunt nu inloggen op het partner portaal om:</p>
+        <ul>
+          <li>Je bedrijfsprofiel beheren</li>
+          <li>Toegang krijgen tot partner resources</li>
+          <li>Contact opnemen met ons team</li>
+        </ul>
+        
+        <p>Heb je vragen? Neem contact met ons op via info@bouwmetrespect.nl</p>
+        
+        <p>Met vriendelijke groet,<br>
+        Het Bouw met Respect team</p>
+      </div>
+    ` : `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <h2 style="color: #2563eb;">Partner Account Update - Bouw met Respect</h2>
+        
+        <p>Hallo${first_name ? ` ${first_name}` : ''},</p>
+        
+        <p>Je bestaande account is gekoppeld aan ons partner systeem!</p>
+        
+        <div style="background-color: #f3f4f6; padding: 20px; margin: 20px 0; border-radius: 8px;">
+          <p><strong>Email:</strong> ${email}</p>
+          <p><strong>Gebruik je bestaande wachtwoord</strong></p>
+          <p><strong>Login URL:</strong> <a href="https://bouwmetrespect.nl/partner-auth">https://bouwmetrespect.nl/partner-auth</a></p>
+        </div>
         
         <p>Je kunt nu inloggen op het partner portaal om:</p>
         <ul>
@@ -154,7 +190,7 @@ const handler = async (req: Request): Promise<Response> => {
     return new Response(JSON.stringify({
       success: true,
       message: 'Account aangemaakt en email verzonden',
-      user_id: authData.user.id,
+      user_id: userId,
       email: email,
       password: password, // Return for admin reference
       email_sent: !emailError
