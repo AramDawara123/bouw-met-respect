@@ -110,6 +110,12 @@ const DiscountCodeManager = () => {
         return;
       }
 
+      // Format expires_at properly for PostgreSQL
+      let expiresAt = null;
+      if (newCode.expires_at) {
+        expiresAt = new Date(newCode.expires_at).toISOString();
+      }
+
       const { error } = await supabase
         .from('discount_codes')
         .insert([{
@@ -123,7 +129,7 @@ const DiscountCodeManager = () => {
           usage_limit: newCode.usage_limit ? parseInt(newCode.usage_limit) : null,
           applies_to: newCode.applies_to,
           active: newCode.active,
-          expires_at: newCode.expires_at || null
+          expires_at: expiresAt
         }]);
 
       if (error) throw error;
@@ -148,16 +154,29 @@ const DiscountCodeManager = () => {
       fetchCodes();
     } catch (error: any) {
       console.error('Error adding discount code:', error);
+      console.error('Error details:', {
+        message: error.message,
+        code: error.code,
+        details: error.details,
+        hint: error.hint
+      });
+      
       if (error.code === '23505') {
         toast({
           title: "Fout",
           description: "Deze kortingscode bestaat al",
           variant: "destructive"
         });
+      } else if (error.message?.includes('violates check constraint')) {
+        toast({
+          title: "Fout", 
+          description: "Ongeldige waarden. Controleer of alle velden correct zijn ingevuld.",
+          variant: "destructive"
+        });
       } else {
         toast({
           title: "Fout",
-          description: "Kon kortingscode niet toevoegen",
+          description: `Kon kortingscode niet toevoegen: ${error.message || 'Onbekende fout'}`,
           variant: "destructive"
         });
       }
