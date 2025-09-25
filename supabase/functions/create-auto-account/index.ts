@@ -67,8 +67,16 @@ const handler = async (req: Request): Promise<Response> => {
 
     if (authError) {
       console.error('Auth error:', authError);
-      if (authError.message.includes('User already registered')) {
-        throw new Error('Email adres is al geregistreerd');
+      if (authError.message.includes('User already registered') || authError.message.includes('already been registered')) {
+        return new Response(JSON.stringify({
+          error: 'Email adres is al geregistreerd'
+        }), {
+          status: 400,
+          headers: {
+            'Content-Type': 'application/json',
+            ...corsHeaders,
+          },
+        });
       }
       throw authError;
     }
