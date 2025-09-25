@@ -416,7 +416,8 @@ const PartnerAccountManagement = () => {
       </Card>
     );
   }
-  return <div className="space-y-6">
+  return (
+    <div className="space-y-6">
       {/* Header */}
       <div>
         <h2 className="text-2xl font-bold">Partner Account Beheer</h2>
@@ -574,14 +575,14 @@ const PartnerAccountManagement = () => {
         </Card>
       </TabsContent>
 
-      {/* Auto Account Creator Tab */}
-      <TabsContent value="auto-create" className="space-y-4">
-        <AutoAccountCreator />
-      </TabsContent>
+       {/* Auto Account Creator Tab */}
+       <TabsContent value="auto-create" className="space-y-4">
+         <AutoAccountCreator />
+       </TabsContent>
 
-    </Tabs>
+     </Tabs>
 
-      {/* Create Account Dialog */}
+     {/* Create Account Dialog */}
       <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
         <DialogContent>
           <DialogHeader>
@@ -870,32 +871,8 @@ const PartnerAccountManagement = () => {
           </Form>
         </DialogContent>
       </Dialog>
-
-      {/* Manual Partner Add Tab */}
-      <TabsContent value="add-partner" className="space-y-4">
-        <Card>
-          <CardHeader>
-            <CardTitle>Partner Handmatig Toevoegen</CardTitle>
-            <CardDescription>
-              Voeg een nieuwe partner handmatig toe aan het systeem
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Button onClick={() => setShowAddPartnerDialog(true)} className="flex items-center gap-2">
-              <Plus className="w-4 h-4" />
-              Partner Toevoegen
-            </Button>
-          </CardContent>
-        </Card>
-      </TabsContent>
-
-      {/* Auto Account Creator Tab */}
-      <TabsContent value="auto-create" className="space-y-4">
-        <AutoAccountCreator />
-      </TabsContent>
-
-    </Tabs>
     </div>
   );
 };
+
 export default PartnerAccountManagement;
