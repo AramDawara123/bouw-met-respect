@@ -15,7 +15,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Link } from "react-router-dom";
 import CompanyProfileForm from "@/components/CompanyProfileForm";
 import ProductManagement from "@/components/ProductManagement";
-import PartnerAccountManagement from "@/components/PartnerAccountManagement";
+import PartnerAccountManagementClean from "@/components/PartnerAccountManagementClean";
 import MembershipPricingManager from "@/components/MembershipPricingManager";
 import DiscountCodeManager from "@/components/DiscountCodeManager";
 import PartnerPricingManager from "@/components/PartnerPricingManager";
@@ -2025,7 +2025,7 @@ Het Bouw met Respect team
 
               <TabsContent value="partners">
                 <div className="space-y-6">
-                  <PartnerAccountManagement />
+                  <PartnerAccountManagementClean />
                 </div>
               </TabsContent>
 

@@ -580,9 +580,9 @@ const PartnerAccountManagement = () => {
          <AutoAccountCreator />
        </TabsContent>
 
-     </Tabs>
+      </Tabs>
 
-     {/* Create Account Dialog */}
+      {/* Create Account Dialog */}
       <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
         <DialogContent>
           <DialogHeader>
