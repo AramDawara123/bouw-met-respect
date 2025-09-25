@@ -11,6 +11,7 @@ const Login = () => {
   const [email, setEmail] = useState("info@bouwmetrespect.nl");
   const [password, setPassword] = useState("admin123456");
   const [loading, setLoading] = useState(false);
+  const [resetting, setResetting] = useState(false);
   const {
     toast
   } = useToast();
@@ -105,6 +106,40 @@ const Login = () => {
       setLoading(false);
     }
   };
+
+  const handleResetAdmin = async () => {
+    setResetting(true);
+    try {
+      const response = await fetch('https://pkvayugxzgkoipclcpli.supabase.co/functions/v1/reset-admin-password', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${import.meta.env.SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBrdmF5dWd4emdrb2lwY2xjcGxpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTY1ODE3MjMsImV4cCI6MjA3MjE1NzcyM30.6pjPyFAoU5LQMi162jh5M9KzSLq5QA-TegXo8NnTnWE'}`
+        }
+      });
+
+      const result = await response.json();
+      
+      if (result.success) {
+        toast({
+          title: "Admin Account Gereset",
+          description: "Je kunt nu inloggen met info@bouwmetrespect.nl en wachtwoord admin123456",
+          duration: 5000
+        });
+      } else {
+        throw new Error(result.error || 'Reset failed');
+      }
+    } catch (error: any) {
+      console.error('Reset error:', error);
+      toast({
+        title: "Reset mislukt",
+        description: `Fout: ${error.message}`,
+        variant: "destructive"
+      });
+    } finally {
+      setResetting(false);
+    }
+  };
   return <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-primary/5 to-secondary/5 p-4">
       <div className="w-full max-w-md">
         <div className="mb-6">
@@ -135,6 +170,15 @@ const Login = () => {
               <div className="space-y-2">
                 <Button type="submit" className="w-full" disabled={loading}>
                   {loading ? "Bezig..." : "Inloggen"}
+                </Button>
+                <Button 
+                  type="button" 
+                  variant="outline" 
+                  className="w-full" 
+                  disabled={resetting}
+                  onClick={handleResetAdmin}
+                >
+                  {resetting ? "Bezig met resetten..." : "Reset Admin Account"}
                 </Button>
               </div>
             </form>
