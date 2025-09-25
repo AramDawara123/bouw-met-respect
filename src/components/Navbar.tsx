@@ -56,7 +56,7 @@ const Navbar = () => {
 
           {/* Mobile and Tablet Navigation */}
           {isMenuOpen && <div className="lg:hidden py-4 border-t border-border">
-              <div className="flex flex-col space-y-4">
+              <div className="flex flex-col space-y-4 items-center">
                 <a href="#probleem" className="text-muted-foreground hover:text-foreground transition-colors py-2" onClick={() => setIsMenuOpen(false)}>
                   Het probleem
                 </a>
