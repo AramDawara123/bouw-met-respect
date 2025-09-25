@@ -126,7 +126,7 @@ const CompanyProfileForm = ({
         setLogoUrl(null);
       }
     }
-  }, [editingProfile, open, form]);
+  }, [editingProfile, open]);
 
   const handleLogoUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
