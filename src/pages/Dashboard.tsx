@@ -1641,6 +1641,14 @@ Het Bouw met Respect team
                                     <Button
                                       variant="ghost"
                                       size="sm"
+                                      onClick={() => editOrder(order)}
+                                      title="Bewerk bestelling"
+                                    >
+                                      <Edit className="w-4 h-4" />
+                                    </Button>
+                                    <Button
+                                      variant="ghost"
+                                      size="sm"
                                       onClick={() => printOrderDetails(order)}
                                       title="Print bestelling"
                                     >
@@ -1898,6 +1906,177 @@ Het Bouw met Respect team
         editingProfile={editingProfile}
         isPartnerDashboard={false}
       />
+
+      {/* Order Edit Dialog */}
+      <Dialog open={isEditingOrder} onOpenChange={setIsEditingOrder}>
+        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Bestelling Bewerken</DialogTitle>
+          </DialogHeader>
+          {editingOrder && (
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="text-sm font-medium">Voornaam</label>
+                  <Input
+                    value={editingOrder.customer_first_name || ''}
+                    onChange={(e) => setEditingOrder({
+                      ...editingOrder,
+                      customer_first_name: e.target.value
+                    })}
+                  />
+                </div>
+                <div>
+                  <label className="text-sm font-medium">Achternaam</label>
+                  <Input
+                    value={editingOrder.customer_last_name || ''}
+                    onChange={(e) => setEditingOrder({
+                      ...editingOrder,
+                      customer_last_name: e.target.value
+                    })}
+                  />
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="text-sm font-medium">Email</label>
+                  <Input
+                    type="email"
+                    value={editingOrder.customer_email || ''}
+                    onChange={(e) => setEditingOrder({
+                      ...editingOrder,
+                      customer_email: e.target.value
+                    })}
+                  />
+                </div>
+                <div>
+                  <label className="text-sm font-medium">Telefoon</label>
+                  <Input
+                    value={editingOrder.customer_phone || ''}
+                    onChange={(e) => setEditingOrder({
+                      ...editingOrder,
+                      customer_phone: e.target.value
+                    })}
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <h4 className="font-medium">Adresgegevens</h4>
+                <div className="grid grid-cols-3 gap-4">
+                  <div className="col-span-2">
+                    <label className="text-sm font-medium">Straatnaam</label>
+                    <Input
+                      value={editingOrder.address_street || ''}
+                      onChange={(e) => setEditingOrder({
+                        ...editingOrder,
+                        address_street: e.target.value
+                      })}
+                    />
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium">Huisnummer</label>
+                    <Input
+                      value={editingOrder.address_house_number || ''}
+                      onChange={(e) => setEditingOrder({
+                        ...editingOrder,
+                        address_house_number: e.target.value
+                      })}
+                    />
+                  </div>
+                </div>
+                
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-sm font-medium">Postcode</label>
+                    <Input
+                      value={editingOrder.address_postcode || ''}
+                      onChange={(e) => setEditingOrder({
+                        ...editingOrder,
+                        address_postcode: e.target.value
+                      })}
+                    />
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium">Plaats</label>
+                    <Input
+                      value={editingOrder.address_city || ''}
+                      onChange={(e) => setEditingOrder({
+                        ...editingOrder,
+                        address_city: e.target.value
+                      })}
+                    />
+                  </div>
+                </div>
+                
+                <div>
+                  <label className="text-sm font-medium">Land</label>
+                  <Input
+                    value={editingOrder.address_country || ''}
+                    onChange={(e) => setEditingOrder({
+                      ...editingOrder,
+                      address_country: e.target.value
+                    })}
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <h4 className="font-medium">Bestelling Details</h4>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-sm font-medium">Payment Status</label>
+                    <Select
+                      value={editingOrder.payment_status}
+                      onValueChange={(value) => setEditingOrder({
+                        ...editingOrder,
+                        payment_status: value
+                      })}
+                    >
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="pending">Pending</SelectItem>
+                        <SelectItem value="paid">Paid</SelectItem>
+                        <SelectItem value="failed">Failed</SelectItem>
+                        <SelectItem value="cancelled">Cancelled</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium">Totaal (in centen)</label>
+                    <Input
+                      type="number"
+                      value={editingOrder.total}
+                      onChange={(e) => setEditingOrder({
+                        ...editingOrder,
+                        total: parseInt(e.target.value) || 0
+                      })}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex justify-end gap-2 pt-4">
+                <Button 
+                  variant="outline" 
+                  onClick={() => {
+                    setIsEditingOrder(false);
+                    setEditingOrder(null);
+                  }}
+                >
+                  Annuleren
+                </Button>
+                <Button onClick={updateOrder}>
+                  Opslaan
+                </Button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </SidebarProvider>
   );
 };
