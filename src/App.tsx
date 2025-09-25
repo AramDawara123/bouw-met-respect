@@ -17,6 +17,7 @@ import CompanyProfiles from "./pages/CompanyProfiles";
 import PartnerDashboard from "./pages/PartnerDashboard";
 import PartnerAuth from "./pages/PartnerAuth";
 import PartnershipSuccess from "./pages/PartnershipSuccess";
+import OrderVerification from "./pages/OrderVerification";
 
 import NotFound from "./pages/NotFound";
 
@@ -40,6 +41,7 @@ const AppContent = () => {
         <Route path="/partner-auth" element={<PartnerAuth />} />
         <Route path="/partner-dashboard" element={<PartnerDashboard />} />
         <Route path="/partnership-success" element={<PartnershipSuccess />} />
+        <Route path="/order-verification/:orderId" element={<OrderVerification />} />
         
         {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
         <Route path="*" element={<NotFound />} />

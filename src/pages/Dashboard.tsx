@@ -620,7 +620,7 @@ const Dashboard = () => {
 
   const formatPrice = (amount: number) => `€${(amount / 100).toFixed(2)}`;
 
-  const printOrderDetails = (order: Order) => {
+  const printOrderDetails = async (order: Order) => {
     const printWindow = window.open('', '_blank');
     if (!printWindow) return;
 
@@ -636,6 +636,23 @@ const Dashboard = () => {
     } catch (e) {
       console.error('Error parsing order items:', e);
       items = [];
+    }
+
+    // Generate QR code for order verification
+    let qrCodeDataUrl = '';
+    try {
+      const QRCode = await import('qrcode');
+      const verificationUrl = `${window.location.origin}/order-verification/${order.id}`;
+      qrCodeDataUrl = await QRCode.toDataURL(verificationUrl, {
+        width: 150,
+        margin: 2,
+        color: {
+          dark: '#2563eb',
+          light: '#ffffff'
+        }
+      });
+    } catch (error) {
+      console.error('Error generating QR code:', error);
     }
     
     printWindow.document.write(`
@@ -730,6 +747,20 @@ const Dashboard = () => {
         <div class="total">
           Totaalbedrag: €${(order.total / 100).toFixed(2)}
         </div>
+
+        ${qrCodeDataUrl ? `
+        <div class="section" style="margin-top: 30px; padding-top: 20px; border-top: 2px solid #e5e7eb; text-align: center;">
+          <h3 style="color: #2563eb; margin-bottom: 15px;">Verificatie QR-code</h3>
+          <img src="${qrCodeDataUrl}" alt="QR Code voor orderverificatie" style="display: block; margin: 0 auto 10px auto;">
+          <p style="font-size: 12px; color: #6b7280; margin: 5px 0;">
+            Scan deze code om te verifiëren dat dit product<br>
+            officieel is gekocht bij Bouw met Respect
+          </p>
+          <p style="font-size: 10px; color: #9ca3af; margin-top: 10px;">
+            Order ID: ${order.id}
+          </p>
+        </div>
+        ` : ''}
 
         <script>
           window.onload = function() {
