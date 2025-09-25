@@ -172,24 +172,7 @@ const CompanyProfileForm = ({
   const onSubmit = async (data: FormData) => {
     setLoading(true);
     try {
-      const profileData = {
-        name: data.name,
-        description: data.description || null,
-        website: data.website || null,
-        industry: data.industry || null,
-        contact_email: data.contact_email || null,
-        contact_phone: data.contact_phone || null,
-        is_featured: isPartnerDashboard ? false : data.is_featured,
-        display_order: data.display_order,
-        logo_url: logoUrl,
-        ...(isPartnerDashboard && partnerMembershipId && { partner_membership_id: partnerMembershipId })
-      };
-
-      console.log('💾 Saving profile data:', profileData);
-      console.log('📝 Editing profile ID:', editingProfile?.id);
-      console.log('🆔 Partner membership ID:', partnerMembershipId);
-
-      // Check authentication and user details once for both update and create
+      // Check authentication and user details first
       const { data: { user }, error: authError } = await supabase.auth.getUser();
       
       if (authError) {
@@ -204,7 +187,8 @@ const CompanyProfileForm = ({
       console.log('🔑 Is admin:', isAdmin);
       console.log('🏢 Is partner dashboard:', isPartnerDashboard);
 
-      // Check if user has a paid partner membership
+      // For partner dashboard, verify user has paid membership and get correct membership ID
+      let finalPartnerMembershipId = partnerMembershipId;
       if (isPartnerDashboard && user?.id) {
         const { data: partnerCheck, error: partnerError } = await supabase
           .from('partner_memberships')
@@ -214,8 +198,36 @@ const CompanyProfileForm = ({
           .single();
         
         console.log('🎫 Partner membership check:', partnerCheck);
-        if (partnerError) console.log('🚨 Partner check error:', partnerError);
+        if (partnerError) {
+          console.log('🚨 Partner check error:', partnerError);
+          throw new Error('Geen actieve partner membership gevonden');
+        }
+        
+        if (!partnerCheck) {
+          throw new Error('Geen betaalde partner membership gevonden');
+        }
+        
+        // Use the verified partner membership ID
+        finalPartnerMembershipId = partnerCheck.id;
+        console.log('✅ Using verified partner membership ID:', finalPartnerMembershipId);
       }
+
+      const profileData = {
+        name: data.name,
+        description: data.description || null,
+        website: data.website || null,
+        industry: data.industry || null,
+        contact_email: data.contact_email || null,
+        contact_phone: data.contact_phone || null,
+        is_featured: isPartnerDashboard ? false : data.is_featured,
+        display_order: data.display_order,
+        logo_url: logoUrl,
+        ...(isPartnerDashboard && finalPartnerMembershipId && { partner_membership_id: finalPartnerMembershipId })
+      };
+
+      console.log('💾 Saving profile data:', profileData);
+      console.log('📝 Editing profile ID:', editingProfile?.id);
+      console.log('🆔 Final partner membership ID:', finalPartnerMembershipId);
 
       let updateResult;
       if (editingProfile) {
