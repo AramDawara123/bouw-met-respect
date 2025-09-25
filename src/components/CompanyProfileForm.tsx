@@ -90,34 +90,38 @@ const CompanyProfileForm = ({
   useEffect(() => {
     console.log('🔄 Form effect triggered - editingProfile:', editingProfile);
     console.log('🆔 Partner membership ID:', partnerMembershipId);
-    if (editingProfile) {
-      console.log('📝 Setting form values for editing:', {
-        name: editingProfile.name,
+    if (editingProfile && open) {
+      // Ensure proper handling of null values from database
+      const formValues = {
+        name: editingProfile.name || "",
         description: editingProfile.description || "",
         website: editingProfile.website || "",
         industry: editingProfile.industry || "",
         contact_email: editingProfile.contact_email || "",
         contact_phone: editingProfile.contact_phone || "",
-        is_featured: editingProfile.is_featured,
-        display_order: editingProfile.display_order,
-      });
-      form.reset({
-        name: editingProfile.name,
-        description: editingProfile.description || "",
-        website: editingProfile.website || "",
-        industry: editingProfile.industry || "",
-        contact_email: editingProfile.contact_email || "",
-        contact_phone: editingProfile.contact_phone || "",
-        is_featured: editingProfile.is_featured,
-        display_order: editingProfile.display_order,
-      });
+        is_featured: Boolean(editingProfile.is_featured),
+        display_order: editingProfile.display_order || 0,
+      };
+      
+      console.log('📝 Setting form values for editing:', formValues);
+      
+      form.reset(formValues);
       setLogoUrl(editingProfile.logo_url);
-    } else {
+    } else if (!editingProfile && open) {
       console.log('➕ Resetting form for new profile');
-      form.reset();
+      form.reset({
+        name: "",
+        description: "",
+        website: "",
+        industry: "",
+        contact_email: "",
+        contact_phone: "",
+        is_featured: false,
+        display_order: 0,
+      });
       setLogoUrl(null);
     }
-  }, [editingProfile, form]);
+  }, [editingProfile, open, form]);
 
   const handleLogoUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -212,14 +216,14 @@ const CompanyProfileForm = ({
       }
 
       const profileData = {
-        name: data.name,
-        description: data.description || null,
-        website: data.website || null,
-        industry: data.industry || null,
-        contact_email: data.contact_email || null,
-        contact_phone: data.contact_phone || null,
+        name: data.name.trim(),
+        description: data.description?.trim() || null,
+        website: data.website?.trim() || null,
+        industry: data.industry?.trim() || null,
+        contact_email: data.contact_email?.trim() || null,
+        contact_phone: data.contact_phone?.trim() || null,
         is_featured: isPartnerDashboard ? false : data.is_featured,
-        display_order: data.display_order,
+        display_order: data.display_order || 0,
         logo_url: logoUrl,
         ...(isPartnerDashboard && finalPartnerMembershipId && { partner_membership_id: finalPartnerMembershipId })
       };
