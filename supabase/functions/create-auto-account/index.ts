@@ -66,8 +66,21 @@ const handler = async (req: Request): Promise<Response> => {
     if (userExists) {
       console.log('User already exists:', userExists.id);
       userId = userExists.id;
-      // For existing users, we'll send a reset password email instead
-      password = 'Reset wachtwoord via email';
+      // For existing users, we'll generate a new password and update it
+      password = generatePassword();
+      
+      // Update the existing user's password
+      const { error: updateError } = await supabase.auth.admin.updateUserById(
+        userExists.id,
+        { password: password }
+      );
+      
+      if (updateError) {
+        console.error('Error updating password:', updateError);
+        throw updateError;
+      }
+      
+      console.log('Password updated for existing user:', userExists.id);
     } else {
       // Generate random password for new users
       password = generatePassword();
@@ -151,13 +164,15 @@ const handler = async (req: Request): Promise<Response> => {
         
         <p>Hallo${first_name ? ` ${first_name}` : ''},</p>
         
-        <p>Je bestaande account is gekoppeld aan ons partner systeem!</p>
+        <p>Je bestaande account is gekoppeld aan ons partner systeem! Je wachtwoord is gereset voor veiligheid.</p>
         
         <div style="background-color: #f3f4f6; padding: 20px; margin: 20px 0; border-radius: 8px;">
           <p><strong>Email:</strong> ${email}</p>
-          <p><strong>Gebruik je bestaande wachtwoord</strong></p>
+          <p><strong>Nieuw Wachtwoord:</strong> ${password}</p>
           <p><strong>Login URL:</strong> <a href="https://bouwmetrespect.nl/partner-auth">https://bouwmetrespect.nl/partner-auth</a></p>
         </div>
+        
+        <p style="color: #dc2626; font-weight: bold;">⚠️ Belangrijk: Wijzig je wachtwoord na je eerste login voor veiligheid!</p>
         
         <p>Je kunt nu inloggen op het partner portaal om:</p>
         <ul>
