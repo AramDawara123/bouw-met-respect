@@ -5,7 +5,11 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Search, UserPlus, Key, Mail, Zap } from "lucide-react";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Search, UserPlus, Key, Mail, Zap, Edit2, Trash2, Ban, RotateCcw } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import AutoAccountCreator from "./AutoAccountCreator";
@@ -36,6 +40,8 @@ const PartnerAccountManagementClean = () => {
   const [loading, setLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
   const [adminLoading, setAdminLoading] = useState(true);
+  const [editingPartner, setEditingPartner] = useState<PartnerMembership | null>(null);
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
   const { toast } = useToast();
 
   const filteredPartners = partners.filter(partner =>
@@ -89,7 +95,7 @@ const PartnerAccountManagementClean = () => {
       const { data, error } = await supabase
         .from('partner_memberships')
         .select('*')
-        .eq('payment_status', 'paid')
+        .in('payment_status', ['paid', 'cancelled', 'pending'])
         .order('created_at', { ascending: false });
         
       if (error) throw error;
@@ -141,6 +147,115 @@ const PartnerAccountManagementClean = () => {
     } catch (error: any) {
       toast({
         title: "Fout bij aanmaken account",
+        description: error.message,
+        variant: "destructive"
+      });
+    }
+  };
+
+  const handleEditPartner = async (partner: PartnerMembership, formData: FormData) => {
+    try {
+      const updateData = {
+        first_name: formData.get('first_name') as string,
+        last_name: formData.get('last_name') as string,
+        email: formData.get('email') as string,
+        phone: formData.get('phone') as string,
+        company_name: formData.get('company_name') as string,
+        website: formData.get('website') as string,
+        industry: formData.get('industry') as string,
+        description: formData.get('description') as string,
+      };
+
+      const { error } = await supabase
+        .from('partner_memberships')
+        .update(updateData)
+        .eq('id', partner.id);
+        
+      if (error) throw error;
+      
+      toast({
+        title: "Partner bijgewerkt",
+        description: `${updateData.first_name} ${updateData.last_name} is succesvol bijgewerkt`
+      });
+
+      setEditDialogOpen(false);
+      setEditingPartner(null);
+      fetchPartners();
+    } catch (error: any) {
+      toast({
+        title: "Fout bij bijwerken",
+        description: error.message,
+        variant: "destructive"
+      });
+    }
+  };
+
+  const handleDeletePartner = async (partner: PartnerMembership) => {
+    try {
+      const { error } = await supabase
+        .from('partner_memberships')
+        .delete()
+        .eq('id', partner.id);
+        
+      if (error) throw error;
+      
+      toast({
+        title: "Partner verwijderd",
+        description: `${partner.first_name} ${partner.last_name} is verwijderd`
+      });
+
+      fetchPartners();
+    } catch (error: any) {
+      toast({
+        title: "Fout bij verwijderen",
+        description: error.message,
+        variant: "destructive"
+      });
+    }
+  };
+
+  const handleCancelSubscription = async (partner: PartnerMembership) => {
+    try {
+      const { error } = await supabase
+        .from('partner_memberships')
+        .update({ payment_status: 'cancelled' })
+        .eq('id', partner.id);
+        
+      if (error) throw error;
+      
+      toast({
+        title: "Abonnement stopgezet",
+        description: `Abonnement van ${partner.first_name} ${partner.last_name} is stopgezet`
+      });
+
+      fetchPartners();
+    } catch (error: any) {
+      toast({
+        title: "Fout bij stopzetten",
+        description: error.message,
+        variant: "destructive"
+      });
+    }
+  };
+
+  const handleReactivateSubscription = async (partner: PartnerMembership) => {
+    try {
+      const { error } = await supabase
+        .from('partner_memberships')
+        .update({ payment_status: 'paid' })
+        .eq('id', partner.id);
+        
+      if (error) throw error;
+      
+      toast({
+        title: "Abonnement heractiveerd",
+        description: `Abonnement van ${partner.first_name} ${partner.last_name} is heractiveerd`
+      });
+
+      fetchPartners();
+    } catch (error: any) {
+      toast({
+        title: "Fout bij heractiveren",
         description: error.message,
         variant: "destructive"
       });
@@ -236,8 +351,12 @@ const PartnerAccountManagementClean = () => {
                         <TableCell>{partner.email}</TableCell>
                         <TableCell>{partner.company_name}</TableCell>
                         <TableCell>
-                          <Badge variant={partner.payment_status === 'paid' ? 'default' : 'secondary'}>
-                            {partner.payment_status === 'paid' ? 'Betaald' : 'Niet betaald'}
+                          <Badge variant={
+                            partner.payment_status === 'paid' ? 'default' : 
+                            partner.payment_status === 'cancelled' ? 'destructive' : 'secondary'
+                          }>
+                            {partner.payment_status === 'paid' ? 'Actief' : 
+                             partner.payment_status === 'cancelled' ? 'Stopgezet' : 'In behandeling'}
                           </Badge>
                         </TableCell>
                         <TableCell>
@@ -252,7 +371,20 @@ const PartnerAccountManagementClean = () => {
                         </TableCell>
                         <TableCell>
                           <div className="flex items-center gap-2">
-                            {!partner.user_id && (
+                            <Button 
+                              variant="outline" 
+                              size="sm" 
+                              onClick={() => {
+                                setEditingPartner(partner);
+                                setEditDialogOpen(true);
+                              }}
+                              className="flex items-center gap-2"
+                            >
+                              <Edit2 className="w-4 h-4" />
+                              Bewerken
+                            </Button>
+                            
+                            {!partner.user_id && partner.payment_status === 'paid' && (
                               <Button 
                                 variant="outline" 
                                 size="sm" 
@@ -263,6 +395,63 @@ const PartnerAccountManagementClean = () => {
                                 Account
                               </Button>
                             )}
+
+                            {partner.payment_status === 'paid' ? (
+                              <AlertDialog>
+                                <AlertDialogTrigger asChild>
+                                  <Button variant="outline" size="sm">
+                                    <Ban className="w-4 h-4" />
+                                    Stop
+                                  </Button>
+                                </AlertDialogTrigger>
+                                <AlertDialogContent>
+                                  <AlertDialogHeader>
+                                    <AlertDialogTitle>Abonnement stopzetten?</AlertDialogTitle>
+                                    <AlertDialogDescription>
+                                      Het abonnement van {partner.first_name} {partner.last_name} wordt stopgezet.
+                                    </AlertDialogDescription>
+                                  </AlertDialogHeader>
+                                  <AlertDialogFooter>
+                                    <AlertDialogCancel>Annuleren</AlertDialogCancel>
+                                    <AlertDialogAction onClick={() => handleCancelSubscription(partner)}>
+                                      Stop Abonnement
+                                    </AlertDialogAction>
+                                  </AlertDialogFooter>
+                                </AlertDialogContent>
+                              </AlertDialog>
+                            ) : partner.payment_status === 'cancelled' && (
+                              <Button 
+                                variant="outline" 
+                                size="sm" 
+                                onClick={() => handleReactivateSubscription(partner)}
+                                className="flex items-center gap-2"
+                              >
+                                <RotateCcw className="w-4 h-4" />
+                                Heractiveer
+                              </Button>
+                            )}
+
+                            <AlertDialog>
+                              <AlertDialogTrigger asChild>
+                                <Button variant="destructive" size="sm">
+                                  <Trash2 className="w-4 h-4" />
+                                </Button>
+                              </AlertDialogTrigger>
+                              <AlertDialogContent>
+                                <AlertDialogHeader>
+                                  <AlertDialogTitle>Partner verwijderen?</AlertDialogTitle>
+                                  <AlertDialogDescription>
+                                    Dit verwijdert {partner.first_name} {partner.last_name} permanent uit het systeem. Deze actie kan niet ongedaan worden gemaakt.
+                                  </AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter>
+                                  <AlertDialogCancel>Annuleren</AlertDialogCancel>
+                                  <AlertDialogAction onClick={() => handleDeletePartner(partner)}>
+                                    Verwijder
+                                  </AlertDialogAction>
+                                </AlertDialogFooter>
+                              </AlertDialogContent>
+                            </AlertDialog>
                           </div>
                         </TableCell>
                       </TableRow>
@@ -298,6 +487,114 @@ const PartnerAccountManagementClean = () => {
           <AutoAccountCreator />
         </TabsContent>
       </Tabs>
+
+      {/* Edit Partner Dialog */}
+      <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Partner Bewerken</DialogTitle>
+            <DialogDescription>
+              Wijzig de gegevens van {editingPartner?.first_name} {editingPartner?.last_name}
+            </DialogDescription>
+          </DialogHeader>
+          
+          {editingPartner && (
+            <form onSubmit={(e) => {
+              e.preventDefault();
+              handleEditPartner(editingPartner, new FormData(e.currentTarget));
+            }} className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="first_name">Voornaam</Label>
+                  <Input 
+                    id="first_name" 
+                    name="first_name" 
+                    defaultValue={editingPartner.first_name}
+                    required 
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="last_name">Achternaam</Label>
+                  <Input 
+                    id="last_name" 
+                    name="last_name" 
+                    defaultValue={editingPartner.last_name}
+                    required 
+                  />
+                </div>
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="email">E-mail</Label>
+                <Input 
+                  id="email" 
+                  name="email" 
+                  type="email" 
+                  defaultValue={editingPartner.email}
+                  required 
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="phone">Telefoon</Label>
+                <Input 
+                  id="phone" 
+                  name="phone" 
+                  defaultValue={editingPartner.phone}
+                  required 
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="company_name">Bedrijfsnaam</Label>
+                <Input 
+                  id="company_name" 
+                  name="company_name" 
+                  defaultValue={editingPartner.company_name}
+                  required 
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="website">Website</Label>
+                <Input 
+                  id="website" 
+                  name="website" 
+                  defaultValue={editingPartner.website || ''}
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="industry">Sector</Label>
+                <Input 
+                  id="industry" 
+                  name="industry" 
+                  defaultValue={editingPartner.industry || ''}
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="description">Beschrijving</Label>
+                <Textarea 
+                  id="description" 
+                  name="description" 
+                  defaultValue={editingPartner.description || ''}
+                  rows={3}
+                />
+              </div>
+              
+              <DialogFooter>
+                <Button type="button" variant="outline" onClick={() => setEditDialogOpen(false)}>
+                  Annuleren
+                </Button>
+                <Button type="submit">
+                  Opslaan
+                </Button>
+              </DialogFooter>
+            </form>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
