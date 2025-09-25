@@ -88,7 +88,18 @@ const CompanyProfileForm = ({
   });
 
   useEffect(() => {
+    console.log('🔄 Form effect triggered - editingProfile:', editingProfile);
     if (editingProfile) {
+      console.log('📝 Setting form values for editing:', {
+        name: editingProfile.name,
+        description: editingProfile.description || "",
+        website: editingProfile.website || "",
+        industry: editingProfile.industry || "",
+        contact_email: editingProfile.contact_email || "",
+        contact_phone: editingProfile.contact_phone || "",
+        is_featured: editingProfile.is_featured,
+        display_order: editingProfile.display_order,
+      });
       form.reset({
         name: editingProfile.name,
         description: editingProfile.description || "",
@@ -101,6 +112,7 @@ const CompanyProfileForm = ({
       });
       setLogoUrl(editingProfile.logo_url);
     } else {
+      console.log('➕ Resetting form for new profile');
       form.reset();
       setLogoUrl(null);
     }
@@ -296,6 +308,8 @@ const CompanyProfileForm = ({
     }
   };
 
+  console.log('🚪 Dialog opened - open:', open);
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
@@ -320,7 +334,11 @@ const CompanyProfileForm = ({
                   <FormItem>
                     <FormLabel>Bedrijfsnaam *</FormLabel>
                     <FormControl>
-                      <Input placeholder="Bedrijfsnaam" {...field} />
+                      <Input 
+                        placeholder="Bedrijfsnaam" 
+                        disabled={loading || uploading}
+                        {...field} 
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -334,7 +352,11 @@ const CompanyProfileForm = ({
                   <FormItem>
                     <FormLabel>Branche</FormLabel>
                     <FormControl>
-                      <Input placeholder="Bijv. Bouw, Architectuur, etc." {...field} />
+                      <Input 
+                        placeholder="Bijv. Bouw, Architectuur, etc." 
+                        disabled={loading || uploading}
+                        {...field} 
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -352,6 +374,7 @@ const CompanyProfileForm = ({
                     <Textarea
                       placeholder="Korte beschrijving van het bedrijf..."
                       className="min-h-[100px]"
+                      disabled={loading || uploading}
                       {...field}
                     />
                   </FormControl>
