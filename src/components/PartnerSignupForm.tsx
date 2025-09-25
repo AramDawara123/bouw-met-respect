@@ -10,6 +10,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { validateDiscountCode, calculateDiscount, formatDiscountDisplay } from "@/lib/discountUtils";
+import type { DiscountValidationResult } from "@/lib/discountUtils";
 
 const formSchema = z.object({
   firstName: z.string().min(2, "Voornaam moet minimaal 2 karakters bevatten"),
@@ -25,6 +27,7 @@ const formSchema = z.object({
     required_error: "Selecteer bedrijfsgrootte"
   }),
   description: z.string().optional(),
+  discountCode: z.string().optional(),
 });
 
 interface PartnerSignupFormProps {
@@ -34,6 +37,8 @@ interface PartnerSignupFormProps {
 
 const PartnerSignupForm = ({ open, onOpenChange }: PartnerSignupFormProps) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isCheckingDiscount, setIsCheckingDiscount] = useState(false);
+  const [appliedDiscount, setAppliedDiscount] = useState<DiscountValidationResult | null>(null);
   const { toast } = useToast();
   
   const form = useForm<z.infer<typeof formSchema>>({
@@ -48,6 +53,7 @@ const PartnerSignupForm = ({ open, onOpenChange }: PartnerSignupFormProps) => {
       industry: "",
       companySize: "",
       description: "",
+      discountCode: "",
     }
   });
 
@@ -74,12 +80,56 @@ const PartnerSignupForm = ({ open, onOpenChange }: PartnerSignupFormProps) => {
 
   const selectedSize = form.watch('companySize');
   const currentPrice = getPriceDisplay(selectedSize);
+  
+  // Calculate price with discount
+  const baseAmount = getAmountFromSize(selectedSize);
+  const discountAmount = appliedDiscount?.valid && appliedDiscount.discount 
+    ? calculateDiscount(appliedDiscount.discount, baseAmount)
+    : 0;
+  const finalAmount = baseAmount - discountAmount;
+  const finalPrice = baseAmount === 0 ? 'Offerte op maat' : `€${(finalAmount / 100).toFixed(2)}`;
+
+  const checkDiscountCode = async () => {
+    const discountCode = form.getValues('discountCode');
+    if (!discountCode?.trim()) {
+      setAppliedDiscount(null);
+      return;
+    }
+
+    setIsCheckingDiscount(true);
+    try {
+      const result = await validateDiscountCode(discountCode, 'partners', baseAmount);
+      setAppliedDiscount(result);
+      
+      if (result.valid) {
+        toast({
+          title: "Kortingscode toegepast!",
+          description: `${formatDiscountDisplay(result.discount!)} korting toegepast.`,
+        });
+      } else {
+        toast({
+          title: "Ongeldige kortingscode",
+          description: result.error,
+          variant: "destructive"
+        });
+      }
+    } catch (error) {
+      console.error('Error checking discount code:', error);
+      toast({
+        title: "Fout",
+        description: "Kon kortingscode niet controleren",
+        variant: "destructive"
+      });
+    } finally {
+      setIsCheckingDiscount(false);
+    }
+  };
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     setIsSubmitting(true);
 
     try {
-      const amount = getAmountFromSize(values.companySize);
+      const amount = finalAmount;
       
       // Handle "groot" (offerte) case
       if (values.companySize === 'groot') {
@@ -104,7 +154,9 @@ const PartnerSignupForm = ({ open, onOpenChange }: PartnerSignupFormProps) => {
             company_size: values.companySize,
             description: values.description
           },
-          amount: amount
+          amount: amount,
+          discountCode: appliedDiscount?.valid ? values.discountCode : undefined,
+          discountAmount: discountAmount
         }
       });
 
@@ -312,6 +364,81 @@ const PartnerSignupForm = ({ open, onOpenChange }: PartnerSignupFormProps) => {
               />
             </div>
 
+            {/* Kortingscode */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold">Kortingscode (optioneel)</h3>
+              <div className="flex gap-2">
+                <FormField
+                  control={form.control}
+                  name="discountCode"
+                  render={({ field }) => (
+                    <FormItem className="flex-1">
+                      <FormControl>
+                        <Input 
+                          placeholder="Voer kortingscode in" 
+                          {...field}
+                          onChange={(e) => {
+                            field.onChange(e);
+                            if (!e.target.value) {
+                              setAppliedDiscount(null);
+                            }
+                          }}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <Button 
+                  type="button" 
+                  variant="outline" 
+                  onClick={checkDiscountCode}
+                  disabled={isCheckingDiscount || !form.getValues('discountCode')?.trim()}
+                >
+                  {isCheckingDiscount ? "Controleren..." : "Toepassen"}
+                </Button>
+              </div>
+              
+              {appliedDiscount?.valid && appliedDiscount.discount && (
+                <div className="p-3 bg-green-50 border border-green-200 rounded-lg">
+                  <p className="text-sm text-green-800 font-medium">
+                    ✓ {formatDiscountDisplay(appliedDiscount.discount)} toegepast
+                  </p>
+                  <p className="text-xs text-green-600 mt-1">
+                    Besparing: €{(discountAmount / 100).toFixed(2)}
+                  </p>
+                </div>
+              )}
+              
+              {appliedDiscount && !appliedDiscount.valid && (
+                <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
+                  <p className="text-sm text-red-800">
+                    {appliedDiscount.error}
+                  </p>
+                </div>
+              )}
+            </div>
+
+            {/* Prijsoverzicht */}
+            {selectedSize && baseAmount > 0 && (
+              <div className="p-4 bg-gray-50 rounded-lg space-y-2">
+                <div className="flex justify-between text-sm">
+                  <span>Basisprijs:</span>
+                  <span>€{(baseAmount / 100).toFixed(2)}</span>
+                </div>
+                {discountAmount > 0 && (
+                  <div className="flex justify-between text-sm text-green-600">
+                    <span>Korting:</span>
+                    <span>-€{(discountAmount / 100).toFixed(2)}</span>
+                  </div>
+                )}
+                <div className="flex justify-between font-semibold pt-2 border-t">
+                  <span>Totaal:</span>
+                  <span>€{(finalAmount / 100).toFixed(2)}</span>
+                </div>
+              </div>
+            )}
+
             {/* Submit button */}
             <div className="flex flex-col sm:flex-row gap-3 pt-4">
               <Button 
@@ -330,7 +457,7 @@ const PartnerSignupForm = ({ open, onOpenChange }: PartnerSignupFormProps) => {
                 {isSubmitting 
                   ? "Bezig met verwerken..." 
                   : selectedSize 
-                    ? `Partner worden voor ${currentPrice}/jaar`
+                    ? `Partner worden voor ${finalPrice}/jaar`
                     : "Selecteer eerst bedrijfsgrootte"
                 }
               </Button>
