@@ -1560,6 +1560,136 @@ Het Bouw met Respect team
                     </CardContent>
                   </Card>
                 </div>
+
+                {/* Memberships Table */}
+                <Card>
+                  <CardHeader>
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <CardTitle className="flex items-center gap-2">
+                          <Users className="w-5 h-5" />
+                          Lidmaatschappen
+                        </CardTitle>
+                        <CardDescription>Beheer alle lidmaatschappen en gebruikers</CardDescription>
+                      </div>
+                      <div className="flex gap-2">
+                        <div className="flex items-center gap-2">
+                          <Search className="w-4 h-4 text-muted-foreground" />
+                          <Input
+                            placeholder="Zoek lidmaatschappen..."
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            className="w-64"
+                          />
+                        </div>
+                        <Select value={statusFilter} onValueChange={setStatusFilter}>
+                          <SelectTrigger className="w-32">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="all">Alle status</SelectItem>
+                            <SelectItem value="paid">Betaald</SelectItem>
+                            <SelectItem value="pending">Openstaand</SelectItem>
+                            <SelectItem value="failed">Mislukt</SelectItem>
+                            <SelectItem value="cancelled">Geannuleerd</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <Select value={typeFilter} onValueChange={setTypeFilter}>
+                          <SelectTrigger className="w-32">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="all">Alle types</SelectItem>
+                            <SelectItem value="klein">Klein</SelectItem>
+                            <SelectItem value="middelgroot">Middelgroot</SelectItem>
+                            <SelectItem value="groot">Groot</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="rounded-md border">
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead>Naam</TableHead>
+                            <TableHead>Email</TableHead>
+                            <TableHead>Bedrijf</TableHead>
+                            <TableHead>Type</TableHead>
+                            <TableHead>Status</TableHead>
+                            <TableHead>Bedrag</TableHead>
+                            <TableHead>Datum</TableHead>
+                            <TableHead className="text-right">Acties</TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {filteredMemberships.length === 0 ? (
+                            <TableRow>
+                              <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
+                                {memberships.length === 0 
+                                  ? "Geen lidmaatschappen gevonden" 
+                                  : "Geen resultaten voor de huidige filters"
+                                }
+                              </TableCell>
+                            </TableRow>
+                          ) : (
+                            filteredMemberships.map((membership) => (
+                              <TableRow key={membership.id}>
+                                <TableCell className="font-medium">
+                                  {membership.first_name} {membership.last_name}
+                                </TableCell>
+                                <TableCell>{membership.email}</TableCell>
+                                <TableCell>{membership.company || '-'}</TableCell>
+                                <TableCell>
+                                  <Badge variant="outline">
+                                    {membership.membership_type}
+                                  </Badge>
+                                </TableCell>
+                                <TableCell>
+                                  {getStatusBadge(membership.payment_status)}
+                                </TableCell>
+                                <TableCell>€{(membership.amount / 100).toFixed(2)}</TableCell>
+                                <TableCell>{new Date(membership.created_at).toLocaleDateString()}</TableCell>
+                                <TableCell className="text-right">
+                                  <div className="flex items-center gap-2 justify-end">
+                                    <Button
+                                      variant="ghost"
+                                      size="sm"
+                                      onClick={() => setSelectedMembership(membership)}
+                                      title="Bekijk details"
+                                    >
+                                      <Eye className="w-4 h-4" />
+                                    </Button>
+                                    <Button
+                                      variant="ghost"
+                                      size="sm"
+                                      onClick={() => {
+                                        setEditingMembership(membership);
+                                        setIsEditing(true);
+                                      }}
+                                      title="Bewerk lidmaatschap"
+                                    >
+                                      <Edit className="w-4 h-4" />
+                                    </Button>
+                                    <Button
+                                      variant="ghost"
+                                      size="sm"
+                                      onClick={() => deleteMembership(membership.id)}
+                                      title="Verwijder lidmaatschap"
+                                    >
+                                      <Trash2 className="w-4 h-4" />
+                                    </Button>
+                                  </div>
+                                </TableCell>
+                              </TableRow>
+                            ))
+                          )}
+                        </TableBody>
+                      </Table>
+                    </div>
+                  </CardContent>
+                </Card>
               </TabsContent>
 
               <TabsContent value="orders">
