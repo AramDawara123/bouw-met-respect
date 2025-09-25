@@ -9,7 +9,6 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Search, Edit, Trash2, Plus, UserPlus, Key, Mail } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { supabaseAdmin } from "@/integrations/supabase/admin-client";
 import { useToast } from "@/hooks/use-toast";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -140,13 +139,13 @@ const PartnerAccountManagement = () => {
   };
   const fetchPartners = async () => {
     try {
-      // Use admin client to fetch all partner memberships
-      const {
-        data,
-        error
-      } = await supabaseAdmin.from('partner_memberships').select('*').eq('payment_status', 'paid').order('created_at', {
-        ascending: false
-      });
+      // Use regular client with admin access via RLS policies
+      const { data, error } = await supabase
+        .from('partner_memberships')
+        .select('*')
+        .eq('payment_status', 'paid')
+        .order('created_at', { ascending: false });
+        
       if (error) throw error;
       setPartners(data || []);
     } catch (error) {
@@ -171,30 +170,36 @@ const PartnerAccountManagement = () => {
   };
   const handleCreateAccount = async (values: z.infer<typeof createAccountSchema>) => {
     if (!selectedPartner) return;
+    
     try {
       // Create user account in Supabase Auth
-      const {
-        data: authData,
-        error: authError
-      } = await supabase.auth.signUp({
+      const { data: authData, error: authError } = await supabase.auth.signUp({
         email: values.email,
         password: values.password,
         options: {
-          emailRedirectTo: `${window.location.origin}/login`
+          emailRedirectTo: `${window.location.origin}/partner-dashboard`
         }
       });
-      if (authError) throw authError;
+      
+      if (authError) {
+        // Handle specific rate limiting error
+        if (authError.message.includes('security purposes') || authError.message.includes('rate limit')) {
+          throw new Error('Te veel pogingen. Probeer het over een paar minuten opnieuw.');
+        }
+        throw authError;
+      }
+      
       if (!authData.user) {
         throw new Error('Account aanmaken mislukt');
       }
 
       // Update partner membership with user_id
-      const {
-        error: updateError
-      } = await supabase.from('partner_memberships').update({
-        user_id: authData.user.id
-      }).eq('id', selectedPartner.id);
+      const { error: updateError } = await supabase.from('partner_memberships')
+        .update({ user_id: authData.user.id })
+        .eq('id', selectedPartner.id);
+        
       if (updateError) throw updateError;
+      
       toast({
         title: "Account aangemaakt",
         description: `Account voor ${selectedPartner.first_name} ${selectedPartner.last_name} is aangemaakt`
@@ -292,27 +297,30 @@ const PartnerAccountManagement = () => {
 
       // Create user account if requested
       if (values.create_account && values.password) {
-        const {
-          data: authData,
-          error: authError
-        } = await supabase.auth.signUp({
+        const { data: authData, error: authError } = await supabase.auth.signUp({
           email: values.email,
           password: values.password,
           options: {
-            emailRedirectTo: `${window.location.origin}/login`
+            emailRedirectTo: `${window.location.origin}/partner-dashboard`
           }
         });
-        if (authError) throw authError;
+        
+        if (authError) {
+          // Handle specific rate limiting error
+          if (authError.message.includes('security purposes') || authError.message.includes('rate limit')) {
+            throw new Error('Te veel account aanmaak pogingen. Probeer het over een paar minuten opnieuw.');
+          }
+          throw authError;
+        }
+        
         if (!authData.user) {
           throw new Error('Account aanmaken mislukt');
         }
         userId = authData.user.id;
       }
 
-      // Add partner to database using admin client
-      const {
-        error
-      } = await supabaseAdmin.from('partner_memberships').insert({
+      // Add partner to database using regular client with RLS
+      const { error } = await supabase.from('partner_memberships').insert({
         user_id: userId,
         first_name: values.first_name,
         last_name: values.last_name,
