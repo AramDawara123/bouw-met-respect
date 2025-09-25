@@ -13,7 +13,7 @@ import Webshop from "./pages/Webshop";
 import MembershipSuccess from "./pages/MembershipSuccess";
 import Dashboard from "./pages/Dashboard";
 import Login from "./pages/Login";
-
+import CompanyProfiles from "./pages/CompanyProfiles";
 import PartnerDashboard from "./pages/PartnerDashboard";
 import PartnerAuth from "./pages/PartnerAuth";
 import PartnershipSuccess from "./pages/PartnershipSuccess";
@@ -37,7 +37,7 @@ const AppContent = () => {
         <Route path="/membership-success" element={<MembershipSuccess />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/login" element={<Login />} />
-        
+        <Route path="/onze-partners" element={<CompanyProfiles />} />
         <Route path="/partner-auth" element={<PartnerAuth />} />
         <Route path="/partner-dashboard" element={<PartnerDashboard />} />
         <Route path="/partnership-success" element={<PartnershipSuccess />} />
