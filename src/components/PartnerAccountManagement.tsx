@@ -7,7 +7,9 @@ import { Switch } from "@/components/ui/switch";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Search, Edit, Trash2, Plus, UserPlus, Key, Mail } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Search, Edit, Trash2, Plus, UserPlus, Key, Mail, Zap } from "lucide-react";
+import AutoAccountCreator from "./AutoAccountCreator";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useForm } from "react-hook-form";
@@ -416,33 +418,39 @@ const PartnerAccountManagement = () => {
   }
   return <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div>
-          <h2 className="text-2xl font-bold">Partner Account Beheer</h2>
-          <p className="text-muted-foreground">Beheer accounts voor partners die hebben betaald</p>
-          {partners.length === 0}
-        </div>
-        <Button onClick={() => setShowAddPartnerDialog(true)} className="flex items-center gap-2">
-          <Plus className="w-4 h-4" />
-          Partner Toevoegen
-        </Button>
+      <div>
+        <h2 className="text-2xl font-bold">Partner Account Beheer</h2>
+        <p className="text-muted-foreground">Beheer accounts voor partners die hebben betaald</p>
       </div>
 
-      {/* Search */}
-      <div className="relative max-w-md">
-        <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-        <Input placeholder="Zoek partners..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} className="pl-9" />
-      </div>
+      {/* Tabs */}
+      <Tabs defaultValue="partners" className="w-full">
+        <TabsList className="grid w-full grid-cols-3">
+          <TabsTrigger value="partners">Partners Overzicht</TabsTrigger>
+          <TabsTrigger value="add-partner">Partner Toevoegen</TabsTrigger>
+          <TabsTrigger value="auto-create" className="flex items-center gap-2">
+            <Zap className="w-4 h-4" />
+            Auto Account
+          </TabsTrigger>
+        </TabsList>
 
-      {/* Partners Table */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Partners ({filteredPartners.length})</CardTitle>
-          <CardDescription>
-            Overzicht van partners die hebben betaald en hun account status
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
+        {/* Partners Overview Tab */}
+        <TabsContent value="partners" className="space-y-4">
+          {/* Search */}
+          <div className="relative max-w-md">
+            <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+            <Input placeholder="Zoek partners..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} className="pl-9" />
+          </div>
+
+          {/* Partners Table */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Partners ({filteredPartners.length})</CardTitle>
+              <CardDescription>
+                Overzicht van partners die hebben betaald en hun account status
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
           <div className="overflow-x-auto">
             <Table>
               <TableHeader>
@@ -518,8 +526,60 @@ const PartnerAccountManagement = () => {
               </TableBody>
             </Table>
           </div>
-        </CardContent>
-      </Card>
+         </CardContent>
+       </Card>
+       </TabsContent>
+
+       {/* Manual Partner Add Tab */}
+       <TabsContent value="add-partner" className="space-y-4">
+         <Card>
+           <CardHeader>
+             <CardTitle>Partner Handmatig Toevoegen</CardTitle>
+             <CardDescription>
+               Voeg een nieuwe partner handmatig toe aan het systeem
+             </CardDescription>
+           </CardHeader>
+           <CardContent>
+             <Button onClick={() => setShowAddPartnerDialog(true)} className="flex items-center gap-2">
+               <Plus className="w-4 h-4" />
+               Partner Toevoegen
+             </Button>
+           </CardContent>
+         </Card>
+       </TabsContent>
+
+       {/* Auto Account Creator Tab */}
+       <TabsContent value="auto-create" className="space-y-4">
+         <AutoAccountCreator />
+       </TabsContent>
+
+     </Tabs>
+
+
+      {/* Manual Partner Add Tab */}
+      <TabsContent value="add-partner" className="space-y-4">
+        <Card>
+          <CardHeader>
+            <CardTitle>Partner Handmatig Toevoegen</CardTitle>
+            <CardDescription>
+              Voeg een nieuwe partner handmatig toe aan het systeem
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Button onClick={() => setShowAddPartnerDialog(true)} className="flex items-center gap-2">
+              <Plus className="w-4 h-4" />
+              Partner Toevoegen
+            </Button>
+          </CardContent>
+        </Card>
+      </TabsContent>
+
+      {/* Auto Account Creator Tab */}
+      <TabsContent value="auto-create" className="space-y-4">
+        <AutoAccountCreator />
+      </TabsContent>
+
+    </Tabs>
 
       {/* Create Account Dialog */}
       <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
@@ -810,6 +870,32 @@ const PartnerAccountManagement = () => {
           </Form>
         </DialogContent>
       </Dialog>
-    </div>;
+
+      {/* Manual Partner Add Tab */}
+      <TabsContent value="add-partner" className="space-y-4">
+        <Card>
+          <CardHeader>
+            <CardTitle>Partner Handmatig Toevoegen</CardTitle>
+            <CardDescription>
+              Voeg een nieuwe partner handmatig toe aan het systeem
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Button onClick={() => setShowAddPartnerDialog(true)} className="flex items-center gap-2">
+              <Plus className="w-4 h-4" />
+              Partner Toevoegen
+            </Button>
+          </CardContent>
+        </Card>
+      </TabsContent>
+
+      {/* Auto Account Creator Tab */}
+      <TabsContent value="auto-create" className="space-y-4">
+        <AutoAccountCreator />
+      </TabsContent>
+
+    </Tabs>
+    </div>
+  );
 };
 export default PartnerAccountManagement;
