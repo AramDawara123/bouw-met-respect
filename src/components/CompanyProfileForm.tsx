@@ -180,6 +180,8 @@ const CompanyProfileForm = ({
 
   const onSubmit = async (data: FormData) => {
     console.log('🚀 Form submission started with data:', data);
+    console.log('🏢 Is partner dashboard:', isPartnerDashboard);
+    console.log('✏️ Editing profile:', editingProfile ? 'YES - ID: ' + editingProfile.id : 'NO - Creating new');
     setLoading(true);
     try {
       // Check authentication and user details first
@@ -241,26 +243,6 @@ const CompanyProfileForm = ({
       let updateResult;
       if (editingProfile) {
         console.log('📝 Starting UPDATE operation...');
-        
-        // For partner updates, verify the user has permission to update this specific profile
-        if (isPartnerDashboard && !isAdmin) {
-          console.log('🔍 Verifying partner permission for profile update...');
-          const { data: verifyData, error: verifyError } = await supabase
-            .from('partner_memberships')
-            .select('id')
-            .eq('user_id', user?.id)
-            .eq('payment_status', 'paid')
-            .single();
-            
-          if (verifyError || !verifyData) {
-            throw new Error('Je hebt geen rechten om dit profiel te bewerken');
-          }
-          
-          // Ensure the profile belongs to this partner
-          if (editingProfile.partner_membership_id !== verifyData.id) {
-            throw new Error('Dit profiel behoort niet tot jouw partnership');
-          }
-        }
         
         updateResult = await supabase
           .from('company_profiles')
