@@ -36,115 +36,173 @@ async function sendWelcomeEmail(email: string, firstName: string, password: stri
           <head>
               <meta charset="UTF-8">
               <meta name="viewport" content="width=device-width, initial-scale=1.0">
-              <title>Partner Account Update - Bouw met Respect</title>
+              <title>Je Partner Account is Klaar! - Bouw met Respect</title>
+              <style>
+                  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+                  * { margin: 0; padding: 0; box-sizing: border-box; }
+                  body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; }
+              </style>
           </head>
-          <body style="margin: 0; padding: 0; background-color: #f8fafc; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;">
-              <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff;">
-                  <!-- Header -->
-                  <div style="background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); padding: 40px 30px; text-align: center;">
-                      <h1 style="color: #ffffff; margin: 0; font-size: 28px; font-weight: 700; letter-spacing: -0.5px;">
-                          Partner Account Update
-                      </h1>
-                      <p style="color: #dbeafe; margin: 8px 0 0 0; font-size: 16px; font-weight: 400;">
-                          Bouw met Respect
-                      </p>
+          <body style="margin: 0; padding: 0; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); font-family: 'Inter', sans-serif; line-height: 1.6;">
+              <div style="max-width: 650px; margin: 40px auto; background: #ffffff; border-radius: 24px; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);">
+                  
+                  <!-- Modern Header with Geometric Pattern -->
+                  <div style="position: relative; background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a855f7 100%); padding: 60px 40px; text-align: center; overflow: hidden;">
+                      <!-- Geometric Background Pattern -->
+                      <div style="position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background-image: radial-gradient(circle at 20% 50%, rgba(255,255,255,0.1) 0%, transparent 50%), radial-gradient(circle at 80% 20%, rgba(255,255,255,0.15) 0%, transparent 50%), radial-gradient(circle at 40% 80%, rgba(255,255,255,0.1) 0%, transparent 50%);"></div>
+                      
+                      <div style="position: relative; z-index: 2;">
+                          <!-- Modern Icon -->
+                          <div style="width: 80px; height: 80px; background: rgba(255,255,255,0.2); border-radius: 20px; margin: 0 auto 24px; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.3);">
+                              <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+                                  <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+                                  <circle cx="9" cy="7" r="4"/>
+                                  <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
+                                  <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                              </svg>
+                          </div>
+                          
+                          <h1 style="color: #ffffff; margin: 0 0 12px; font-size: 32px; font-weight: 700; letter-spacing: -0.025em;">
+                              Welkom als Partner! 🎉
+                          </h1>
+                          <p style="color: rgba(255,255,255,0.9); margin: 0; font-size: 18px; font-weight: 500;">
+                              Bouw met Respect
+                          </p>
+                      </div>
                   </div>
                   
-                  <!-- Main Content -->
-                  <div style="padding: 40px 30px;">
-                      <p style="color: #374151; font-size: 16px; line-height: 1.6; margin: 0 0 20px 0;">
-                          Hallo ${firstName},
-                      </p>
+                  <!-- Main Content with Modern Spacing -->
+                  <div style="padding: 50px 40px;">
                       
-                      <p style="color: #6b7280; font-size: 16px; line-height: 1.6; margin: 0 0 30px 0;">
-                          Je bestaande account is gekoppeld aan ons partner systeem! Je wachtwoord is gereset voor veiligheid.
-                      </p>
-                      
-                      <!-- Login Credentials Card -->
-                      <div style="background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%); border: 1px solid #e2e8f0; border-radius: 12px; padding: 25px; margin: 30px 0;">
-                          <h3 style="color: #1e293b; margin: 0 0 20px 0; font-size: 18px; font-weight: 600;">
-                              Je inloggegevens:
-                          </h3>
-                          
-                          <div style="background-color: #ffffff; border-radius: 8px; padding: 20px; margin: 15px 0; border-left: 4px solid #2563eb;">
-                              <div style="margin-bottom: 12px;">
-                                  <span style="color: #64748b; font-size: 14px; font-weight: 500; display: block; margin-bottom: 4px;">Email:</span>
-                                  <span style="color: #1e293b; font-size: 16px; font-weight: 600; word-break: break-all;">${email}</span>
-                              </div>
-                              <div style="margin-bottom: 12px;">
-                                  <span style="color: #64748b; font-size: 14px; font-weight: 500; display: block; margin-bottom: 4px;">Nieuw Wachtwoord:</span>
-                                  <span style="color: #1e293b; font-size: 16px; font-weight: 600; background-color: #f1f5f9; padding: 6px 10px; border-radius: 6px; font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;">${password}</span>
-                              </div>
-                              <div>
-                                  <span style="color: #64748b; font-size: 14px; font-weight: 500; display: block; margin-bottom: 4px;">Login URL:</span>
-                                  <a href="https://bouwmetrespect.nl/partner-auth" style="color: #2563eb; font-size: 16px; font-weight: 500; text-decoration: none; word-break: break-all;">https://bouwmetrespect.nl/partner-auth</a>
-                              </div>
-                          </div>
-                      </div>
-                      
-                      <!-- Security Warning -->
-                      <div style="background-color: #fef3c7; border: 1px solid #f59e0b; border-radius: 8px; padding: 16px; margin: 25px 0;">
-                          <div style="display: flex; align-items: flex-start;">
-                              <div style="background-color: #f59e0b; color: #ffffff; border-radius: 50%; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 12px; margin-right: 12px; flex-shrink: 0;">!</div>
-                              <div>
-                                  <h4 style="color: #92400e; margin: 0 0 8px 0; font-size: 14px; font-weight: 600;">
-                                      Belangrijk: Wijzig je wachtwoord na je eerste login voor veiligheid!
-                                  </h4>
-                              </div>
-                          </div>
-                      </div>
-                      
-                      <!-- What you can do section -->
-                      <div style="margin: 30px 0;">
-                          <p style="color: #374151; font-size: 16px; line-height: 1.6; margin: 0 0 15px 0;">
-                              Je kunt nu inloggen op het partner portaal om:
+                      <!-- Personal Greeting -->
+                      <div style="text-align: center; margin-bottom: 40px;">
+                          <h2 style="color: #1f2937; font-size: 24px; font-weight: 600; margin: 0 0 12px;">
+                              Hallo ${firstName}! 👋
+                          </h2>
+                          <p style="color: #6b7280; font-size: 17px; line-height: 1.7; max-width: 480px; margin: 0 auto;">
+                              Je partner account is succesvol aangemaakt! Voor je veiligheid hebben we een nieuw wachtwoord gegenereerd.
                           </p>
-                          <ul style="color: #6b7280; font-size: 15px; line-height: 1.6; margin: 0; padding-left: 20px;">
-                              <li style="margin-bottom: 8px;">Je bedrijfsprofiel beheren</li>
-                              <li style="margin-bottom: 8px;">Toegang krijgen tot partner resources</li>
-                              <li style="margin-bottom: 8px;">Contact opnemen met ons team</li>
-                          </ul>
                       </div>
                       
-                      <!-- CTA Button -->
-                      <div style="text-align: center; margin: 35px 0;">
+                      <!-- Modern Credentials Card -->
+                      <div style="background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%); border: 2px solid #e2e8f0; border-radius: 20px; padding: 32px; margin: 40px 0; position: relative; overflow: hidden;">
+                          <!-- Decorative Element -->
+                          <div style="position: absolute; top: -20px; right: -20px; width: 80px; height: 80px; background: linear-gradient(135deg, #6366f1, #8b5cf6); border-radius: 50%; opacity: 0.1;"></div>
+                          
+                          <div style="position: relative; z-index: 2;">
+                              <div style="display: flex; align-items: center; margin-bottom: 24px;">
+                                  <div style="width: 48px; height: 48px; background: linear-gradient(135deg, #6366f1, #8b5cf6); border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-right: 16px;">
+                                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+                                          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                                          <circle cx="12" cy="16" r="1"/>
+                                          <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                                      </svg>
+                                  </div>
+                                  <h3 style="color: #1e293b; margin: 0; font-size: 20px; font-weight: 600;">
+                                      Je Inloggegevens
+                                  </h3>
+                              </div>
+                              
+                              <!-- Email Field -->
+                              <div style="background: #ffffff; border-radius: 16px; padding: 24px; margin: 20px 0; border: 1px solid #e5e7eb; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+                                  <label style="color: #6b7280; font-size: 14px; font-weight: 500; display: block; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">E-mailadres</label>
+                                  <div style="color: #1f2937; font-size: 16px; font-weight: 600; padding: 12px 16px; background: #f9fafb; border-radius: 12px; border: 2px solid #e5e7eb; word-break: break-all;">${email}</div>
+                              </div>
+                              
+                              <!-- Password Field -->
+                              <div style="background: #ffffff; border-radius: 16px; padding: 24px; margin: 20px 0; border: 1px solid #e5e7eb; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+                                  <label style="color: #6b7280; font-size: 14px; font-weight: 500; display: block; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">Tijdelijk Wachtwoord</label>
+                                  <div style="color: #1f2937; font-size: 18px; font-weight: 700; padding: 16px 20px; background: linear-gradient(135deg, #fef3c7, #fde68a); border-radius: 12px; border: 2px solid #f59e0b; font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace; text-align: center; letter-spacing: 2px;">${password}</div>
+                              </div>
+                          </div>
+                      </div>
+                      
+                      <!-- Modern Security Alert -->
+                      <div style="background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); border: 2px solid #f59e0b; border-radius: 16px; padding: 24px; margin: 32px 0; position: relative; overflow: hidden;">
+                          <div style="position: absolute; top: -10px; left: -10px; width: 40px; height: 40px; background: #f59e0b; border-radius: 50%; opacity: 0.2;"></div>
+                          <div style="display: flex; align-items: flex-start; position: relative; z-index: 2;">
+                              <div style="background: #f59e0b; color: #ffffff; border-radius: 12px; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 16px; margin-right: 16px; flex-shrink: 0;">⚠️</div>
+                              <div>
+                                  <h4 style="color: #92400e; margin: 0 0 8px; font-size: 16px; font-weight: 600;">
+                                      Belangrijk voor je veiligheid
+                                  </h4>
+                                  <p style="color: #b45309; margin: 0; font-size: 14px; line-height: 1.5;">
+                                      Wijzig dit wachtwoord direct na je eerste login voor optimale beveiliging van je account.
+                                  </p>
+                              </div>
+                          </div>
+                      </div>
+                      
+                      <!-- Features Section -->
+                      <div style="margin: 40px 0;">
+                          <h3 style="color: #1f2937; font-size: 20px; font-weight: 600; margin: 0 0 20px; text-align: center;">
+                              Wat kun je nu doen? ✨
+                          </h3>
+                          <div style="display: grid; gap: 16px;">
+                              <div style="display: flex; align-items: center; padding: 16px; background: #f8fafc; border-radius: 12px; border-left: 4px solid #6366f1;">
+                                  <span style="font-size: 24px; margin-right: 16px;">🏢</span>
+                                  <span style="color: #374151; font-size: 15px; font-weight: 500;">Je bedrijfsprofiel volledig personaliseren</span>
+                              </div>
+                              <div style="display: flex; align-items: center; padding: 16px; background: #f8fafc; border-radius: 12px; border-left: 4px solid #8b5cf6;">
+                                  <span style="font-size: 24px; margin-right: 16px;">📚</span>
+                                  <span style="color: #374151; font-size: 15px; font-weight: 500;">Exclusieve partner resources bekijken</span>
+                              </div>
+                              <div style="display: flex; align-items: center; padding: 16px; background: #f8fafc; border-radius: 12px; border-left: 4px solid #a855f7;">
+                                  <span style="font-size: 24px; margin-right: 16px;">💬</span>
+                                  <span style="color: #374151; font-size: 15px; font-weight: 500;">Direct contact met ons partner team</span>
+                              </div>
+                          </div>
+                      </div>
+                      
+                      <!-- Modern CTA Button -->
+                      <div style="text-align: center; margin: 48px 0;">
                           <a href="https://bouwmetrespect.nl/partner-auth" 
-                             style="background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); 
+                             style="background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a855f7 100%); 
                                     color: #ffffff; 
-                                    padding: 14px 28px; 
+                                    padding: 18px 36px; 
                                     text-decoration: none; 
-                                    border-radius: 8px; 
+                                    border-radius: 16px; 
                                     font-weight: 600; 
                                     font-size: 16px; 
                                     display: inline-block; 
-                                    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-                                    transition: all 0.2s;">
-                              Inloggen op Partner Dashboard
+                                    box-shadow: 0 10px 25px -5px rgba(99, 102, 241, 0.4);
+                                    transition: all 0.3s ease;
+                                    letter-spacing: 0.5px;">
+                              🚀 Start je Partner Journey
                           </a>
                       </div>
                       
-                      <!-- Support section -->
-                      <div style="background-color: #f8fafc; border-radius: 8px; padding: 20px; margin: 30px 0;">
-                          <p style="color: #374151; font-size: 15px; line-height: 1.6; margin: 0;">
-                              Heb je vragen? Neem contact met ons op via 
-                              <a href="mailto:info@bouwmetrespect.nl" style="color: #2563eb; text-decoration: none; font-weight: 500;">info@bouwmetrespect.nl</a>
+                      <!-- Modern Support Section -->
+                      <div style="background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%); border: 2px solid #0ea5e9; border-radius: 20px; padding: 28px; margin: 40px 0; text-align: center;">
+                          <div style="margin-bottom: 16px;">
+                              <span style="font-size: 32px;">🤝</span>
+                          </div>
+                          <h4 style="color: #0c4a6e; margin: 0 0 12px; font-size: 18px; font-weight: 600;">
+                              Hulp nodig?
+                          </h4>
+                          <p style="color: #0369a1; margin: 0; font-size: 15px; line-height: 1.6;">
+                              Ons partner team staat klaar om je te helpen! Neem gerust contact op via<br>
+                              <a href="mailto:info@bouwmetrespect.nl" style="color: #0284c7; text-decoration: none; font-weight: 600;">info@bouwmetrespect.nl</a>
                           </p>
                       </div>
                       
-                      <!-- Signature -->
-                      <div style="border-top: 1px solid #e5e7eb; padding-top: 25px; margin-top: 35px;">
-                          <p style="color: #374151; font-size: 16px; line-height: 1.6; margin: 0;">
-                              Met vriendelijke groet,<br>
-                              <span style="font-weight: 600; color: #1e293b;">Het Bouw met Respect team</span>
+                      <!-- Modern Signature -->
+                      <div style="text-align: center; border-top: 2px solid #f3f4f6; padding-top: 32px; margin-top: 48px;">
+                          <p style="color: #6b7280; font-size: 16px; line-height: 1.8; margin: 0;">
+                              Met veel enthousiasme,<br>
+                              <span style="font-weight: 700; color: #1f2937; font-size: 18px; background: linear-gradient(135deg, #6366f1, #8b5cf6); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Het Bouw met Respect Team</span>
                           </p>
                       </div>
                   </div>
                   
-                  <!-- Footer -->
-                  <div style="background-color: #f8fafc; padding: 20px 30px; text-align: center; border-top: 1px solid #e5e7eb;">
-                      <p style="color: #9ca3af; font-size: 12px; line-height: 1.4; margin: 0;">
-                          Deze email is verstuurd omdat je account is gekoppeld aan ons partner systeem.<br>
-                          © 2024 Bouw met Respect. Alle rechten voorbehouden.
+                  <!-- Modern Footer -->
+                  <div style="background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%); padding: 32px; text-align: center; border-top: 2px solid #e5e7eb;">
+                      <div style="margin-bottom: 16px;">
+                          <span style="font-size: 24px;">🏗️</span>
+                      </div>
+                      <p style="color: #9ca3af; font-size: 13px; line-height: 1.6; margin: 0; max-width: 400px; margin: 0 auto;">
+                          Deze email is automatisch verzonden omdat je partner account is geactiveerd.<br>
+                          <span style="font-weight: 600; color: #6b7280;">© 2024 Bouw met Respect</span> - Samen bouwen aan respect
                       </p>
                   </div>
               </div>
