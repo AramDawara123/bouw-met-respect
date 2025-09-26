@@ -2,34 +2,37 @@ import { Heart, Linkedin, Mail, Building, ArrowRight, Users } from "lucide-react
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
+
 const Footer = () => {
   const [email, setEmail] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const {
-    toast
-  } = useToast();
+  const { toast } = useToast();
+
   const handleNewsletterSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
     if (!email) {
       toast({
         title: "Fout",
         description: "Vul een geldig e-mailadres in",
-        variant: "destructive"
+        variant: "destructive",
       });
       return;
     }
+
     setIsLoading(true);
 
     // Simuleer een succesvolle aanmelding (zoals in de popup)
     setTimeout(() => {
       toast({
         title: "Gelukt!",
-        description: "Je bent succesvol aangemeld voor onze nieuwsbrief"
+        description: "Je bent succesvol aangemeld voor onze nieuwsbrief",
       });
       setEmail("");
       setIsLoading(false);
     }, 1000);
   };
+
   return <footer className="bg-foreground text-background py-20">
       <div className="container mx-auto px-4">
         {/* Main Content */}
@@ -51,31 +54,31 @@ const Footer = () => {
           {/* Community Section */}
           <div className="text-center lg:text-left">
             <h4 className="font-bold text-xl mb-6 flex items-center justify-center lg:justify-start">
-              
+              <div className="w-2 h-2 bg-primary rounded-full mr-3 hidden lg:block"></div>
               Community
             </h4>
             <ul className="space-y-4 text-background/80">
               <li>
                 <a href="#" className="hover:text-background transition-colors flex items-center justify-center lg:justify-start group">
-                  
+                  <ArrowRight className="w-4 h-4 mr-2 opacity-0 group-hover:opacity-100 transition-opacity hidden lg:block" />
                   Word lid
                 </a>
               </li>
               <li>
                 <a href="#" className="hover:text-background transition-colors flex items-center justify-center lg:justify-start group">
-                  
+                  <ArrowRight className="w-4 h-4 mr-2 opacity-0 group-hover:opacity-100 transition-opacity hidden lg:block" />
                   Events
                 </a>
               </li>
               <li>
                 <a href="#" className="hover:text-background transition-colors flex items-center justify-center lg:justify-start group">
-                  
+                  <ArrowRight className="w-4 h-4 mr-2 opacity-0 group-hover:opacity-100 transition-opacity hidden lg:block" />
                   Verhalen
                 </a>
               </li>
               <li>
                 <a href="#" className="hover:text-background transition-colors flex items-center justify-center lg:justify-start group">
-                  
+                  <ArrowRight className="w-4 h-4 mr-2 opacity-0 group-hover:opacity-100 transition-opacity hidden lg:block" />
                   Resources
                 </a>
               </li>
@@ -85,12 +88,14 @@ const Footer = () => {
           {/* Contact Section */}
           <div className="text-center lg:text-left">
             <h4 className="font-bold text-xl mb-6 flex items-center justify-center lg:justify-start">
-              
+              <div className="w-2 h-2 bg-primary rounded-full mr-3 hidden lg:block"></div>
               Contact
             </h4>
             <div className="space-y-4">
               <a href="mailto:info@bouwmetrespect.nl" className="flex items-center justify-center lg:justify-start space-x-3 text-background/80 hover:text-background transition-all duration-300 p-3 rounded-lg hover:bg-background/5">
-                
+                <div className="w-10 h-10 bg-background/10 rounded-lg flex items-center justify-center">
+                  <Mail className="w-5 h-5" />
+                </div>
                 <div className="text-center lg:text-left">
                   <div className="font-medium">Email ons</div>
                   <div className="text-sm opacity-80">info@bouwmetrespect.nl</div>
@@ -98,7 +103,9 @@ const Footer = () => {
               </a>
               
               <a href="#" className="flex items-center justify-center lg:justify-start space-x-3 text-background/80 hover:text-background transition-all duration-300 p-3 rounded-lg hover:bg-background/5">
-                
+                <div className="w-10 h-10 bg-background/10 rounded-lg flex items-center justify-center">
+                  <Linkedin className="w-5 h-5" />
+                </div>
                 <div className="text-center lg:text-left">
                   <div className="font-medium">Volg ons</div>
                   <div className="text-sm opacity-80">LinkedIn</div>
@@ -110,15 +117,27 @@ const Footer = () => {
           {/* Newsletter Section */}
           <div className="text-center lg:text-left">
             <h4 className="font-bold text-xl mb-6 flex items-center justify-center lg:justify-start">
-              
+              <div className="w-2 h-2 bg-primary rounded-full mr-3 hidden lg:block"></div>
               Nieuwsbrief
             </h4>
             <p className="text-background/70 mb-6 text-sm leading-relaxed">
               Ontvang maandelijks updates over onze initiatieven, events en inspirerende verhalen uit de bouwsector.
             </p>
             <form onSubmit={handleNewsletterSubmit} className="space-y-3">
-              <input type="email" placeholder="Je e-mailadres" value={email} onChange={e => setEmail(e.target.value)} required disabled={isLoading} className="w-full px-4 py-3 rounded-lg bg-background/10 text-background border border-background/20 placeholder:text-background/50 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50 transition-all disabled:opacity-50" />
-              <button type="submit" disabled={isLoading} className="w-full px-6 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-all duration-300 font-medium shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none">
+              <input
+                type="email"
+                placeholder="Je e-mailadres"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                disabled={isLoading}
+                className="w-full px-4 py-3 rounded-lg bg-background/10 text-background border border-background/20 placeholder:text-background/50 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50 transition-all disabled:opacity-50"
+              />
+              <button 
+                type="submit"
+                disabled={isLoading}
+                className="w-full px-6 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-all duration-300 font-medium shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+              >
                 {isLoading ? "Aanmelden..." : "Aanmelden"}
               </button>
             </form>
