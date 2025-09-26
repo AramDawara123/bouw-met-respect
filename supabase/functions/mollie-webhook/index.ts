@@ -157,11 +157,7 @@ serve(async (req) => {
           if (metadata.discount_code) {
             console.log(`[WEBHOOK] Updating usage count for discount code: ${metadata.discount_code}`);
             const { error: discountError } = await supabaseService
-              .from('discount_codes')
-              .update({ 
-                used_count: supabaseService.rpc('increment_discount_usage', { code_to_increment: metadata.discount_code })
-              })
-              .eq('code', metadata.discount_code);
+              .rpc('increment_discount_usage', { code_to_increment: metadata.discount_code });
 
             if (discountError) {
               console.error('Error updating discount code usage:', discountError);

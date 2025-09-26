@@ -636,6 +636,10 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: string
       }
+      increment_discount_usage: {
+        Args: { code_to_increment: string }
+        Returns: undefined
+      }
       verify_admin_access: {
         Args: Record<PropertyKey, never>
         Returns: boolean
