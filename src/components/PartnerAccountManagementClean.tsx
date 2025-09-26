@@ -310,11 +310,15 @@ const PartnerAccountManagementClean = () => {
 
       {/* Tabs */}
       <Tabs defaultValue="partners" className="w-full">
-        <TabsList className="grid w-full grid-cols-2">
+        <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="partners">Partners Overzicht</TabsTrigger>
+          <TabsTrigger value="auto-accounts" className="flex items-center gap-2">
+            <Key className="w-4 h-4" />
+            Auto Accounts
+          </TabsTrigger>
           <TabsTrigger value="auto-create" className="flex items-center gap-2">
             <Zap className="w-4 h-4" />
-            Auto Account
+            Auto Account Creator
           </TabsTrigger>
         </TabsList>
 
@@ -481,6 +485,78 @@ const PartnerAccountManagementClean = () => {
                                 </p>
                               </div>
                             )}
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    )}
+                  </TableBody>
+                </Table>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* Auto Accounts Overview Tab */}
+        <TabsContent value="auto-accounts" className="space-y-4">
+          <Card>
+            <CardHeader>
+              <CardTitle>Auto Accounts Overzicht</CardTitle>
+              <CardDescription>
+                Partners die automatisch een account hebben gekregen ({partners.filter(p => p.user_id).length} accounts)
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Naam</TableHead>
+                      <TableHead>Email</TableHead>
+                      <TableHead>Bedrijf</TableHead>
+                      <TableHead>Account Status</TableHead>
+                      <TableHead>Aangemaakt</TableHead>
+                      <TableHead>Betaal Status</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {partners.filter(partner => partner.user_id).map((partner) => (
+                      <TableRow key={partner.id}>
+                        <TableCell className="font-medium">
+                          {partner.first_name} {partner.last_name}
+                        </TableCell>
+                        <TableCell>{partner.email}</TableCell>
+                        <TableCell>{partner.company_name}</TableCell>
+                        <TableCell>
+                          <Badge variant="default">
+                            <Key className="w-3 h-3 mr-1" />
+                            Actief Account
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
+                          {new Date(partner.created_at).toLocaleDateString('nl-NL')}
+                        </TableCell>
+                        <TableCell>
+                          <Badge variant={
+                            partner.payment_status === 'paid' ? 'default' : 
+                            partner.payment_status === 'cancelled' ? 'destructive' : 'secondary'
+                          }>
+                            {partner.payment_status === 'paid' ? 'Actief' : 
+                             partner.payment_status === 'cancelled' ? 'Stopgezet' : 'In behandeling'}
+                          </Badge>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                    {partners.filter(p => p.user_id).length === 0 && (
+                      <TableRow>
+                        <TableCell colSpan={6} className="text-center py-8">
+                          <div className="space-y-4">
+                            <div className="text-muted-foreground">
+                              <Key className="w-8 h-8 mx-auto mb-2 opacity-50" />
+                              <p>Nog geen auto accounts aangemaakt</p>
+                              <p className="text-sm mt-2">
+                                Gebruik de "Auto Account Creator" tab om automatisch accounts aan te maken voor partners.
+                              </p>
+                            </div>
                           </div>
                         </TableCell>
                       </TableRow>
