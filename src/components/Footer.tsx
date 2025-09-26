@@ -83,27 +83,20 @@ const Footer = () => {
           </div>
           
           {/* Contact Section */}
-          <div className="text-center lg:text-left">
-            <h4 className="font-bold text-xl mb-6 flex items-center justify-center lg:justify-start">
-              
+          <div className="text-left">
+            <h4 className="font-bold text-xl mb-6">
               Contact
             </h4>
             <div className="space-y-4">
-              <a href="mailto:info@bouwmetrespect.nl" className="flex items-center justify-center lg:justify-start space-x-3 text-background/80 hover:text-background transition-all duration-300 p-3 rounded-lg hover:bg-background/5">
-                
-                <div className="text-center lg:text-left">
-                  <div className="font-medium">Email ons</div>
-                  <div className="text-sm opacity-80">info@bouwmetrespect.nl</div>
-                </div>
-              </a>
+              <div className="text-background/80">
+                <div className="font-medium">Email ons</div>
+                <div className="text-sm opacity-80">info@bouwmetrespect.nl</div>
+              </div>
               
-              <a href="#" className="flex items-center justify-center lg:justify-start space-x-3 text-background/80 hover:text-background transition-all duration-300 p-3 rounded-lg hover:bg-background/5">
-                
-                <div className="text-center lg:text-left">
-                  <div className="font-medium">Volg ons</div>
-                  <div className="text-sm opacity-80">LinkedIn</div>
-                </div>
-              </a>
+              <div className="text-background/80">
+                <div className="font-medium">Volg ons</div>
+                <div className="text-sm opacity-80">LinkedIn</div>
+              </div>
             </div>
           </div>
           
