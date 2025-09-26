@@ -307,9 +307,12 @@ const PartnerAccountManagementClean = () => {
         throw new Error(result.error || 'Er is een fout opgetreden');
       }
 
+      // Copy password to clipboard
+      await navigator.clipboard.writeText(result.tempPassword);
+
       toast({
         title: "Wachtwoord gereset",
-        description: `Nieuw tijdelijk wachtwoord voor ${partner.first_name} ${partner.last_name}: ${result.tempPassword}`,
+        description: `Nieuw tijdelijk wachtwoord voor ${partner.first_name} ${partner.last_name}: ${result.tempPassword} (gekopieerd naar klembord)`,
         duration: 10000,
       });
 
