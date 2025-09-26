@@ -144,7 +144,7 @@ const OrderVerification = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-secondary/5">
+    <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-secondary/5 mt-16">
       {/* Header Section */}
       <div className="bg-gradient-to-r from-primary to-primary/80 text-primary-foreground py-8">
         <div className="max-w-4xl mx-auto px-6">
