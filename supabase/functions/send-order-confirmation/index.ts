@@ -206,7 +206,7 @@ const handler = async (req: Request): Promise<Response> => {
                     <table cellpadding="0" cellspacing="0" border="0" style="margin: 0 auto;">
                       <tr>
                         <td style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 8px;">
-                          <a href="mailto:info@bouwmetrespect.nl" style="color: #ffffff; text-decoration: none; padding: 12px 24px; font-weight: 600; display: block;">
+                          <a href="mailto:info@bouwmetrespect.nl" style="color: #1f2937; text-decoration: none; padding: 12px 24px; font-weight: 600; display: block; background-color: rgba(255,255,255,0.9); border-radius: 6px;">
                             📧 info@bouwmetrespect.nl
                           </a>
                         </td>
