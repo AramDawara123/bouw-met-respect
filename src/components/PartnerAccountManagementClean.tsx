@@ -33,6 +33,7 @@ interface PartnerMembership {
   currency: string;
   created_at: string;
   updated_at: string;
+  discount_code?: string; // Add this field to prevent the "new" record error
 }
 
 const PartnerAccountManagementClean = () => {
@@ -193,16 +194,16 @@ const PartnerAccountManagementClean = () => {
 
   const handleDeletePartner = async (partner: PartnerMembership) => {
     try {
-      // First delete any related company profiles using admin client
-      const { error: profileError } = await supabaseAdmin
+      // First delete any related company profiles using regular client with admin privileges
+      const { error: profileError } = await supabase
         .from('company_profiles')
         .delete()
         .eq('partner_membership_id', partner.id);
         
       if (profileError) throw profileError;
       
-      // Then delete the partner membership using admin client
-      const { error } = await supabaseAdmin
+      // Then delete the partner membership using regular client with admin privileges
+      const { error } = await supabase
         .from('partner_memberships')
         .delete()
         .eq('id', partner.id);
