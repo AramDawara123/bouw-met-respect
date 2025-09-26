@@ -5,8 +5,8 @@ import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Link, useNavigate } from "react-router-dom";
-import { ArrowLeft, Building2, Edit, Plus, LogOut } from "lucide-react";
-import CompanyProfileForm from "@/components/CompanyProfileForm";
+import { ArrowLeft, Building2, LogOut } from "lucide-react";
+import CompanyProfileManager from "@/components/company-profile/CompanyProfileManager";
 import { User, Session } from '@supabase/supabase-js';
 
 interface PartnerMembership {
@@ -24,27 +24,11 @@ interface PartnerMembership {
   created_at: string;
 }
 
-interface CompanyProfile {
-  id: string;
-  name: string;
-  description: string | null;
-  website: string | null;
-  logo_url: string | null;
-  industry: string | null;
-  contact_email: string | null;
-  contact_phone: string | null;
-  is_featured: boolean;
-  display_order: number;
-  partner_membership_id: string | null;
-}
-
 const PartnerDashboard = () => {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [partnerMembership, setPartnerMembership] = useState<PartnerMembership | null>(null);
-  const [companyProfile, setCompanyProfile] = useState<CompanyProfile | null>(null);
   const [loading, setLoading] = useState(true);
-  const [showProfileForm, setShowProfileForm] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
 
@@ -91,10 +75,7 @@ const PartnerDashboard = () => {
 
   const fetchPartnerData = async (user: User) => {
     try {
-      await Promise.all([
-        fetchPartnerMembership(user.id),
-        fetchCompanyProfile(user.id)
-      ]);
+      await fetchPartnerMembership(user.id);
     } catch (error) {
       console.error('Error fetching partner data:', error);
       toast({
@@ -127,34 +108,6 @@ const PartnerDashboard = () => {
     }
   };
 
-  const fetchCompanyProfile = async (userId: string) => {
-    try {
-      const { data: partnerData } = await supabase
-        .from('partner_memberships')
-        .select('id')
-        .eq('user_id', userId)
-        .eq('payment_status', 'paid')
-        .single();
-
-      if (!partnerData) return;
-
-      const { data, error } = await supabase
-        .from('company_profiles')
-        .select('*')
-        .eq('partner_membership_id', partnerData.id)
-        .maybeSingle();
-
-      if (error && error.code !== 'PGRST116') {
-        console.error('Error fetching company profile:', error);
-        return;
-      }
-
-      setCompanyProfile(data);
-    } catch (error) {
-      console.error('Error fetching company profile:', error);
-    }
-  };
-
   const handleLogout = async () => {
     try {
       await supabase.auth.signOut();
@@ -167,13 +120,6 @@ const PartnerDashboard = () => {
         variant: "destructive"
       });
     }
-  };
-
-  const handleProfileFormSuccess = () => {
-    if (user) {
-      fetchCompanyProfile(user.id);
-    }
-    setShowProfileForm(false);
   };
 
   if (loading) {
@@ -277,90 +223,13 @@ const PartnerDashboard = () => {
         </Card>
 
         {/* Company Profile Management */}
-        <Card>
-          <CardHeader>
-            <div className="flex items-center justify-between">
-              <div>
-                <CardTitle>Bedrijfsprofiel</CardTitle>
-                <CardDescription>
-                  {companyProfile 
-                    ? "Beheer je bedrijfsprofiel dat zichtbaar is voor bezoekers" 
-                    : "Maak je bedrijfsprofiel aan om zichtbaar te zijn voor bezoekers"
-                  }
-                </CardDescription>
-              </div>
-              {companyProfile ? (
-                <Button onClick={() => setShowProfileForm(true)} className="flex items-center gap-2">
-                  <Edit className="w-4 h-4" />
-                  Bewerken
-                </Button>
-              ) : (
-                <Button onClick={() => setShowProfileForm(true)} className="flex items-center gap-2">
-                  <Plus className="w-4 h-4" />
-                  Profiel Aanmaken
-                </Button>
-              )}
-            </div>
-          </CardHeader>
-          <CardContent>
-            {companyProfile ? (
-              <div className="space-y-4">
-                <div className="flex items-start gap-4">
-                  {companyProfile.logo_url ? (
-                    <img 
-                      src={companyProfile.logo_url} 
-                      alt={`${companyProfile.name} logo`}
-                      className="w-16 h-16 object-cover rounded-lg border"
-                    />
-                  ) : (
-                    <div className="w-16 h-16 bg-muted rounded-lg flex items-center justify-center">
-                      <Building2 className="w-8 h-8 text-muted-foreground" />
-                    </div>
-                  )}
-                  <div className="flex-1">
-                    <h3 className="text-lg font-semibold">{companyProfile.name}</h3>
-                    {companyProfile.industry && (
-                      <Badge variant="outline" className="mb-2">{companyProfile.industry}</Badge>
-                    )}
-                    {companyProfile.description && (
-                      <p className="text-sm text-muted-foreground line-clamp-3">
-                        {companyProfile.description}
-                      </p>
-                    )}
-                  </div>
-                </div>
-                <div className="flex items-center gap-4 pt-2">
-                  <Link to="/company-profiles" target="_blank">
-                    <Button variant="outline" size="sm">
-                      Bekijk Openbaar Profiel
-                    </Button>
-                  </Link>
-                  {companyProfile.is_featured && (
-                    <Badge className="bg-yellow-100 text-yellow-800">Uitgelicht</Badge>
-                  )}
-                </div>
-              </div>
-            ) : (
-              <div className="text-center py-8">
-                <Building2 className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
-                <p className="text-muted-foreground mb-4">
-                  Je hebt nog geen bedrijfsprofiel aangemaakt. Maak er één aan om zichtbaar te zijn voor potentiële klanten.
-                </p>
-              </div>
-            )}
-          </CardContent>
-        </Card>
+        <CompanyProfileManager
+          partnerMembershipId={partnerMembership.id}
+          isPartnerDashboard={true}
+          showCreateButton={true}
+          showDeleteButton={false}
+        />
 
-        {showProfileForm && (
-          <CompanyProfileForm
-            open={showProfileForm}
-            onOpenChange={setShowProfileForm}
-            onSuccess={handleProfileFormSuccess}
-            editingProfile={companyProfile}
-            isPartnerDashboard={true}
-            partnerMembershipId={partnerMembership.id}
-          />
-        )}
       </div>
     </div>
   );

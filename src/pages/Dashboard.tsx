@@ -13,7 +13,7 @@ import { Search, Users, CreditCard, Edit, Trash2, Download, Filter, Eye, Save, H
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Link } from "react-router-dom";
-import CompanyProfileForm from "@/components/CompanyProfileForm";
+import CompanyProfileForm from "@/components/company-profile/CompanyProfileForm";
 import ProductManagement from "@/components/ProductManagement";
 import PartnerAccountManagementClean from "@/components/PartnerAccountManagementClean";
 import MembershipPricingManager from "@/components/MembershipPricingManager";
