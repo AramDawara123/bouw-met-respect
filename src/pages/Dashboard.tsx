@@ -11,6 +11,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Search, Users, CreditCard, Edit, Trash2, Download, Filter, Eye, Save, Home, ShoppingBag, Building2, Plus, Globe, Mail, Phone, Package, Printer, CheckCircle, Euro, Tag, Settings, UserPlus } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { supabaseAdmin } from "@/integrations/supabase/admin-client";
 import { useToast } from "@/hooks/use-toast";
 import { Link } from "react-router-dom";
 import CompanyProfileForm from "@/components/company-profile/CompanyProfileForm";
@@ -250,7 +251,7 @@ const Dashboard = () => {
       setLoadingAutoAccounts(true);
       
       // Haal gebruikers op die via auto account aangemaakt zijn
-      const { data: authUsers, error: authError } = await supabase.auth.admin.listUsers();
+      const { data: authUsers, error: authError } = await supabaseAdmin.auth.admin.listUsers();
       
       if (authError) throw authError;
       
@@ -334,7 +335,7 @@ const Dashboard = () => {
       setUpdatingPassword(true);
       
       // Update user metadata
-      const { error: updateError } = await supabase.auth.admin.updateUserById(
+      const { error: updateError } = await supabaseAdmin.auth.admin.updateUserById(
         editingAutoAccount.id,
         {
           email: autoAccountEmail,
@@ -352,7 +353,7 @@ const Dashboard = () => {
 
       // Update partner membership if exists
       if (editingAutoAccount.partner_membership) {
-        const { error: partnerError } = await supabase
+        const { error: partnerError } = await supabaseAdmin
           .from('partner_memberships')
           .update({
             first_name: autoAccountFirstName,
@@ -391,7 +392,7 @@ const Dashboard = () => {
     if (!confirm('Weet je zeker dat je dit auto account wilt verwijderen?')) return;
     
     try {
-      const { error } = await supabase.auth.admin.deleteUser(accountId);
+      const { error } = await supabaseAdmin.auth.admin.deleteUser(accountId);
       
       if (error) throw error;
 
