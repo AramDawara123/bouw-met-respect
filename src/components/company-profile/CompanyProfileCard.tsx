@@ -2,15 +2,14 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Building2, Edit, ExternalLink, Globe, Mail, Phone, Trash2 } from "lucide-react";
-import type { CompanyProfile, CompanyProfileWithPartner } from "@/types/companyProfile";
+import type { CompanyProfile } from "@/types/companyProfile";
 
 interface CompanyProfileCardProps {
-  profile: CompanyProfile | CompanyProfileWithPartner;
+  profile: CompanyProfile;
   onEdit?: (profile: CompanyProfile) => void;
   onDelete?: (profileId: string) => void;
   showActions?: boolean;
   showFeaturedBadge?: boolean;
-  showPricing?: boolean;
   className?: string;
 }
 
@@ -20,34 +19,8 @@ const CompanyProfileCard = ({
   onDelete,
   showActions = false,
   showFeaturedBadge = true,
-  showPricing = false,
   className = ""
 }: CompanyProfileCardProps) => {
-  // Helper function to format price
-  const formatPrice = (amount: number, currency: string) => {
-    return new Intl.NumberFormat('nl-NL', {
-      style: 'currency',
-      currency: currency,
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    }).format(amount / 100);
-  };
-
-  // Helper function to get status badge color
-  const getStatusBadgeColor = (status: string) => {
-    switch (status.toLowerCase()) {
-      case 'paid':
-        return 'bg-green-100 text-green-800';
-      case 'pending':
-        return 'bg-yellow-100 text-yellow-800';
-      case 'expired':
-        return 'bg-red-100 text-red-800';
-      default:
-        return 'bg-gray-100 text-gray-800';
-    }
-  };
-
-  const partnerInfo = 'partner_membership' in profile ? profile.partner_membership : undefined;
   return (
     <Card className={`hover:shadow-lg transition-shadow duration-200 ${className}`}>
       <CardContent className="p-6">
@@ -90,24 +63,6 @@ const CompanyProfileCard = ({
           <p className="text-sm text-muted-foreground mb-4 line-clamp-3">
             {profile.description}
           </p>
-        )}
-
-        {/* Pricing info */}
-        {showPricing && partnerInfo && (
-          <div className="mb-4 p-3 bg-muted/50 rounded-lg">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-sm font-medium">Partner Abonnement</span>
-              <Badge className={getStatusBadgeColor(partnerInfo.payment_status)}>
-                {partnerInfo.payment_status === 'paid' ? 'Actief' : 
-                 partnerInfo.payment_status === 'pending' ? 'In behandeling' : 
-                 partnerInfo.payment_status === 'expired' ? 'Verlopen' : partnerInfo.payment_status}
-              </Badge>
-            </div>
-            <div className="text-lg font-semibold text-primary">
-              {formatPrice(partnerInfo.amount, partnerInfo.currency)}
-              <span className="text-sm font-normal text-muted-foreground ml-1">per jaar</span>
-            </div>
-          </div>
         )}
 
         {/* Contact info */}

@@ -13,10 +13,7 @@ import Footer from "@/components/Footer";
 const CompanyProfiles = () => {
   const [showPartnerForm, setShowPartnerForm] = useState(false);
   const { toast } = useToast();
-  const { profiles, loading, error } = useCompanyProfiles({ 
-    includePartnerInfo: true, 
-    enableRealtime: true 
-  });
+  const { profiles, loading, error } = useCompanyProfiles({ enableRealtime: true });
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-primary/5 to-secondary/5">
@@ -66,7 +63,6 @@ const CompanyProfiles = () => {
                     key={profile.id}
                     profile={profile}
                     showFeaturedBadge={true}
-                    showPricing={true}
                     className="h-full"
                   />
                 ))}
