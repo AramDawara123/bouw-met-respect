@@ -153,6 +153,23 @@ serve(async (req) => {
       // If payment is successful, create user account and company profile
       if (newStatus === 'paid') {
         try {
+          // Update discount code usage count if discount was applied
+          if (metadata.discount_code) {
+            console.log(`[WEBHOOK] Updating usage count for discount code: ${metadata.discount_code}`);
+            const { error: discountError } = await supabaseService
+              .from('discount_codes')
+              .update({ 
+                used_count: supabaseService.rpc('increment_discount_usage', { code_to_increment: metadata.discount_code })
+              })
+              .eq('code', metadata.discount_code);
+
+            if (discountError) {
+              console.error('Error updating discount code usage:', discountError);
+            } else {
+              console.log(`[WEBHOOK] Successfully updated usage count for discount code: ${metadata.discount_code}`);
+            }
+          }
+
           // Get partner membership details
           const { data: partnerData, error: partnerError } = await supabaseService
             .from('partner_memberships')
