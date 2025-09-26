@@ -21,11 +21,6 @@ const navigationItems = {
     title: "Partners",
     icon: Building2,
     description: "Beheer partneraccounts"
-  }, {
-    key: "auto-accounts",
-    title: "Auto Accounts",
-    icon: UserPlus,
-    description: "Beheer automatisch aangemaakte accounts"
   }],
   "Webshop": [{
     key: "orders",
