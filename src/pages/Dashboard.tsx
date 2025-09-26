@@ -250,31 +250,35 @@ const Dashboard = () => {
     try {
       setLoadingAutoAccounts(true);
       
-      // Haal partners op die een user_id hebben (dus een account hebben)
+      // Haal alle betaalde partners op (ook die zonder user_id)
       const { data: autoPartners, error } = await supabase
         .from('partner_memberships')
         .select('*')
-        .not('user_id', 'is', null)
+        .eq('payment_status', 'paid')
         .order('created_at', { ascending: false });
       
       if (error) throw error;
       
+      console.log('🔍 Fetched partner memberships:', autoPartners);
+      
       // Transform to match expected format
       const formattedAccounts = autoPartners.map((partner: any) => ({
-        id: partner.user_id,
+        id: partner.user_id || partner.id, // Use partner.id als fallback
         email: partner.email,
         created_at: partner.created_at,
         last_sign_in_at: null,
-        confirmed_at: partner.created_at,
+        confirmed_at: partner.user_id ? partner.created_at : null,
         first_name: partner.first_name || '',
         last_name: partner.last_name || '',
         company_name: partner.company_name || '',
         phone: partner.phone || '',
         partner_membership: partner,
-        auto_created: true,
-        payment_status: partner.payment_status
+        auto_created: !!partner.user_id, // Alleen true als er een user_id is
+        payment_status: partner.payment_status,
+        has_account: !!partner.user_id // Nieuwe vlag om te tonen of account bestaat
       }));
       
+      console.log('✅ Formatted accounts:', formattedAccounts);
       setAutoAccounts(formattedAccounts);
     } catch (error) {
       console.error('Error fetching auto accounts:', error);
@@ -1785,9 +1789,22 @@ Het Bouw met Respect team
                                     <TableCell>{account.email}</TableCell>
                                     <TableCell>{account.company_name}</TableCell>
                                     <TableCell>
-                                      <Badge variant={account.confirmed_at ? "default" : "secondary"}>
-                                        {account.confirmed_at ? "Bevestigd" : "Niet bevestigd"}
-                                      </Badge>
+                                      <div className="flex gap-2">
+                                        {account.has_account ? (
+                                          <Badge variant="default">
+                                            <UserPlus className="w-3 h-3 mr-1" />
+                                            Account Actief
+                                          </Badge>
+                                        ) : (
+                                          <Badge variant="secondary">
+                                            <UserPlus className="w-3 h-3 mr-1" />
+                                            Geen Account
+                                          </Badge>
+                                        )}
+                                        <Badge variant={account.payment_status === 'paid' ? "default" : "destructive"}>
+                                          {account.payment_status === 'paid' ? 'Betaald' : 'Niet Betaald'}
+                                        </Badge>
+                                      </div>
                                     </TableCell>
                                     <TableCell>
                                       {new Date(account.created_at).toLocaleDateString('nl-NL')}
@@ -1801,15 +1818,48 @@ Het Bouw met Respect team
                                         <span className="text-muted-foreground text-sm">Geen</span>
                                       )}
                                     </TableCell>
-                                    <TableCell className="text-right">
-                                      <div className="flex items-center gap-2 justify-end">
-                                        <Button 
-                                          variant="ghost" 
-                                          size="sm"
-                                          onClick={() => handleEditAutoAccount(account)}
-                                        >
-                                          <Edit className="w-4 h-4" />
-                                        </Button>
+                                     <TableCell className="text-right">
+                                       <div className="flex items-center gap-2 justify-end">
+                                         {!account.has_account && (
+                                           <Button 
+                                             variant="default" 
+                                             size="sm"
+                                             onClick={async () => {
+                                               try {
+                                                 await supabase.functions.invoke('create-auto-account', {
+                                                   body: {
+                                                     email: account.email,
+                                                     first_name: account.first_name,
+                                                     last_name: account.last_name,
+                                                     company_name: account.company_name,
+                                                     update_existing: false
+                                                   }
+                                                 });
+                                                 toast({
+                                                   title: "Account aangemaakt!",
+                                                   description: "Inloggegevens zijn per email verzonden.",
+                                                 });
+                                                 fetchAutoAccounts();
+                                               } catch (error: any) {
+                                                 toast({
+                                                   title: "Fout",
+                                                   description: error.message || "Kon account niet aanmaken",
+                                                   variant: "destructive",
+                                                 });
+                                               }
+                                             }}
+                                           >
+                                             <UserPlus className="w-4 h-4 mr-1" />
+                                             Account Maken
+                                           </Button>
+                                         )}
+                                         <Button 
+                                           variant="ghost" 
+                                           size="sm"
+                                           onClick={() => handleEditAutoAccount(account)}
+                                         >
+                                           <Edit className="w-4 h-4" />
+                                         </Button>
                                         <Button 
                                           variant="ghost" 
                                           size="sm"
