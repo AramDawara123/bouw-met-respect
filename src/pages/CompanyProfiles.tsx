@@ -3,9 +3,12 @@ import { useToast } from "@/hooks/use-toast";
 import { Building2, ArrowLeft } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Badge } from "@/components/ui/badge";
 import { Link } from "react-router-dom";
 import PartnerSignupForm from "@/components/PartnerSignupForm";
 import { useCompanyProfiles } from "@/hooks/useCompanyProfile";
+import { useActionItemsPricing } from "@/hooks/useActionItemsPricing";
 import CompanyProfileCard from "@/components/company-profile/CompanyProfileCard";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -14,6 +17,7 @@ const CompanyProfiles = () => {
   const [showPartnerForm, setShowPartnerForm] = useState(false);
   const { toast } = useToast();
   const { profiles, loading, error } = useCompanyProfiles({ enableRealtime: true });
+  const { pricingData, loading: pricingLoading } = useActionItemsPricing();
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-primary/5 to-secondary/5">
@@ -33,6 +37,46 @@ const CompanyProfiles = () => {
               Ontdek bedrijven die samen met ons werken aan een respectvolle bouwsector
             </p>
           </div>
+        </div>
+
+        {/* Pricing Selector */}
+        <div className="mb-8">
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg">Actie-items Prijzen</CardTitle>
+              <CardDescription>
+                Bekijk onze tarieven voor verschillende bedrijfsgroottes
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Select>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Selecteer bedrijfsgrootte" />
+                </SelectTrigger>
+                <SelectContent>
+                  {pricingData.map((pricing) => (
+                    <SelectItem key={pricing.id} value={pricing.id}>
+                      <div className="flex items-center justify-between w-full">
+                        <span className="flex items-center gap-2">
+                          {pricing.employees_range} - {pricing.price_display}
+                          {pricing.is_popular && (
+                            <Badge variant="default" className="text-xs">
+                              Populair
+                            </Badge>
+                          )}
+                          {pricing.is_quote && (
+                            <Badge variant="secondary" className="text-xs">
+                              Offerte
+                            </Badge>
+                          )}
+                        </span>
+                      </div>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </CardContent>
+          </Card>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
