@@ -127,7 +127,7 @@ const Footer = () => {
             <div className="w-full border-t border-background/20"></div>
           </div>
           <div className="relative flex justify-center">
-            <div className="bg-foreground px-6 py-2">
+            <div className="px-6 py-2 bg-transparent">
               <div className="flex items-center space-x-2">
                 <div className="w-2 h-2 bg-primary rounded-full"></div>
                 <div className="w-2 h-2 bg-primary/60 rounded-full"></div>
