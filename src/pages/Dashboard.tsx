@@ -9,7 +9,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Search, Users, CreditCard, Edit, Trash2, Download, Filter, Eye, Save, Home, ShoppingBag, Building2, Plus, Globe, Mail, Phone, Package, Printer, CheckCircle, Euro, Tag, Settings } from "lucide-react";
+import { Search, Users, CreditCard, Edit, Trash2, Download, Filter, Eye, Save, Home, ShoppingBag, Building2, Plus, Globe, Mail, Phone, Package, Printer, CheckCircle, Euro, Tag, Settings, UserPlus } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Link } from "react-router-dom";
@@ -142,7 +142,7 @@ const Dashboard = () => {
   const [isEditingProduct, setIsEditingProduct] = useState(false);
   const [user, setUser] = useState(null);
   const [isAdmin, setIsAdmin] = useState(false);
-  const [viewMode, setViewMode] = useState<'memberships' | 'orders' | 'profiles' | 'products' | 'partners' | 'pricing' | 'partner-pricing' | 'action-items-pricing' | 'discounts' | 'qrcode'>("memberships");
+  const [viewMode, setViewMode] = useState<'memberships' | 'orders' | 'profiles' | 'products' | 'partners' | 'pricing' | 'partner-pricing' | 'action-items-pricing' | 'discounts' | 'qrcode' | 'auto-accounts'>("memberships");
   const [showProfileForm, setShowProfileForm] = useState(false);
   const [editingProfile, setEditingProfile] = useState<CompanyProfile | null>(null);
   const [editingPartner, setEditingPartner] = useState<PartnerAccount | null>(null);
@@ -156,11 +156,29 @@ const Dashboard = () => {
   const [newPassword, setNewPassword] = useState('');
   const [testingEmail, setTestingEmail] = useState(false);
   const [creatingTestOrder, setCreatingTestOrder] = useState(false);
+  
+  // Auto Accounts State
+  const [autoAccounts, setAutoAccounts] = useState([]);
+  const [loadingAutoAccounts, setLoadingAutoAccounts] = useState(false);
+  const [editingAutoAccount, setEditingAutoAccount] = useState(null);
+  const [showAutoAccountDialog, setShowAutoAccountDialog] = useState(false);
+  const [autoAccountEmail, setAutoAccountEmail] = useState('');
+  const [autoAccountPassword, setAutoAccountPassword] = useState('');
+  const [autoAccountFirstName, setAutoAccountFirstName] = useState('');
+  const [autoAccountLastName, setAutoAccountLastName] = useState('');
+  const [autoAccountCompany, setAutoAccountCompany] = useState('');
+  const [updatingPassword, setUpdatingPassword] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
     checkAuthAndFetch();
   }, []);
+
+  useEffect(() => {
+    if (viewMode === 'auto-accounts' && isAdmin) {
+      fetchAutoAccounts();
+    }
+  }, [viewMode, isAdmin]);
 
   const checkAuthAndFetch = async () => {
     try {
@@ -224,6 +242,172 @@ const Dashboard = () => {
       });
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchAutoAccounts = async () => {
+    try {
+      setLoadingAutoAccounts(true);
+      
+      // Haal gebruikers op die via auto account aangemaakt zijn
+      const { data: authUsers, error: authError } = await supabase.auth.admin.listUsers();
+      
+      if (authError) throw authError;
+      
+      // Filter op gebruikers die mogelijk auto-aangemaakt zijn
+      // Deze hebben meestal een specifiek patroon in hun metadata
+      const autoUsers = authUsers.users.filter((user: any) => {
+        return user.user_metadata && 
+               (user.user_metadata.created_via_admin || 
+                user.user_metadata.auto_created ||
+                user.email?.includes('test') ||
+                user.email?.includes('auto'));
+      });
+      
+      // Verrijk met partner membership data indien beschikbaar
+      const enrichedUsers = await Promise.all(autoUsers.map(async (user: any) => {
+        try {
+          const { data: partnerData } = await supabase
+            .from('partner_memberships')
+            .select('*')
+            .eq('user_id', user.id)
+            .maybeSingle();
+            
+          return {
+            id: user.id,
+            email: user.email,
+            created_at: user.created_at,
+            last_sign_in_at: user.last_sign_in_at,
+            confirmed_at: user.confirmed_at,
+            first_name: user.user_metadata?.first_name || partnerData?.first_name || '',
+            last_name: user.user_metadata?.last_name || partnerData?.last_name || '',
+            company_name: user.user_metadata?.company_name || partnerData?.company_name || '',
+            phone: user.user_metadata?.phone || partnerData?.phone || '',
+            partner_membership: partnerData,
+            auto_created: user.user_metadata?.auto_created || user.user_metadata?.created_via_admin || false
+          };
+        } catch (error) {
+          console.error(`Error enriching user ${user.id}:`, error);
+          return {
+            id: user.id,
+            email: user.email,
+            created_at: user.created_at,
+            last_sign_in_at: user.last_sign_in_at,
+            confirmed_at: user.confirmed_at,
+            first_name: user.user_metadata?.first_name || '',
+            last_name: user.user_metadata?.last_name || '',
+            company_name: user.user_metadata?.company_name || '',
+            phone: user.user_metadata?.phone || '',
+            partner_membership: null,
+            auto_created: user.user_metadata?.auto_created || user.user_metadata?.created_via_admin || false
+          };
+        }
+      }));
+      
+      setAutoAccounts(enrichedUsers);
+    } catch (error) {
+      console.error('Error fetching auto accounts:', error);
+      toast({
+        title: "Fout",
+        description: "Kon auto accounts niet laden",
+        variant: "destructive"
+      });
+    } finally {
+      setLoadingAutoAccounts(false);
+    }
+  };
+
+  const handleEditAutoAccount = (account: any) => {
+    setEditingAutoAccount(account);
+    setAutoAccountEmail(account.email || '');
+    setAutoAccountFirstName(account.first_name || '');
+    setAutoAccountLastName(account.last_name || '');
+    setAutoAccountCompany(account.company_name || '');
+    setAutoAccountPassword('');
+    setShowAutoAccountDialog(true);
+  };
+
+  const updateAutoAccount = async () => {
+    if (!editingAutoAccount) return;
+    
+    try {
+      setUpdatingPassword(true);
+      
+      // Update user metadata
+      const { error: updateError } = await supabase.auth.admin.updateUserById(
+        editingAutoAccount.id,
+        {
+          email: autoAccountEmail,
+          user_metadata: {
+            first_name: autoAccountFirstName,
+            last_name: autoAccountLastName,
+            company_name: autoAccountCompany,
+            created_via_admin: true
+          },
+          ...(autoAccountPassword && { password: autoAccountPassword })
+        }
+      );
+
+      if (updateError) throw updateError;
+
+      // Update partner membership if exists
+      if (editingAutoAccount.partner_membership) {
+        const { error: partnerError } = await supabase
+          .from('partner_memberships')
+          .update({
+            first_name: autoAccountFirstName,
+            last_name: autoAccountLastName,
+            company_name: autoAccountCompany,
+            email: autoAccountEmail
+          })
+          .eq('id', editingAutoAccount.partner_membership.id);
+          
+        if (partnerError) {
+          console.error('Error updating partner membership:', partnerError);
+        }
+      }
+
+      toast({
+        title: "Succes!",
+        description: "Auto account succesvol bijgewerkt",
+      });
+
+      setShowAutoAccountDialog(false);
+      setEditingAutoAccount(null);
+      fetchAutoAccounts();
+    } catch (error: any) {
+      console.error('Error updating auto account:', error);
+      toast({
+        title: "Fout",
+        description: error.message || "Kon auto account niet bijwerken",
+        variant: "destructive",
+      });
+    } finally {
+      setUpdatingPassword(false);
+    }
+  };
+
+  const deleteAutoAccount = async (accountId: string) => {
+    if (!confirm('Weet je zeker dat je dit auto account wilt verwijderen?')) return;
+    
+    try {
+      const { error } = await supabase.auth.admin.deleteUser(accountId);
+      
+      if (error) throw error;
+
+      toast({
+        title: "Succes!",
+        description: "Auto account succesvol verwijderd",
+      });
+
+      fetchAutoAccounts();
+    } catch (error: any) {
+      console.error('Error deleting auto account:', error);
+      toast({
+        title: "Fout",
+        description: error.message || "Kon auto account niet verwijderen",
+        variant: "destructive",
+      });
     }
   };
 
@@ -1440,7 +1624,7 @@ Het Bouw met Respect team
       <div className="min-h-screen bg-gradient-to-br from-background via-primary/5 to-secondary/5 flex w-full">
         <AppSidebar 
           viewMode={viewMode} 
-          onViewModeChange={(mode) => setViewMode(mode as 'memberships' | 'orders' | 'profiles' | 'products' | 'partners' | 'pricing' | 'partner-pricing' | 'action-items-pricing' | 'discounts' | 'qrcode')} 
+          onViewModeChange={(mode) => setViewMode(mode as 'memberships' | 'orders' | 'profiles' | 'products' | 'partners' | 'pricing' | 'partner-pricing' | 'action-items-pricing' | 'discounts' | 'qrcode' | 'auto-accounts')} 
         />
         
         <main className="flex-1 overflow-auto">
@@ -1490,7 +1674,168 @@ Het Bouw met Respect team
           </div>
 
           <div className="p-6 mt-6">
-                <Tabs value={viewMode} onValueChange={(value) => setViewMode(value as 'memberships' | 'orders' | 'profiles' | 'products' | 'partners' | 'pricing' | 'partner-pricing' | 'action-items-pricing' | 'discounts' | 'qrcode')}>
+                <Tabs value={viewMode} onValueChange={(value) => setViewMode(value as 'memberships' | 'orders' | 'profiles' | 'products' | 'partners' | 'pricing' | 'partner-pricing' | 'action-items-pricing' | 'discounts' | 'qrcode' | 'auto-accounts')}>
+                  <TabsContent value="auto-accounts" className="space-y-6">
+                    {/* Auto Accounts Management */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+                      <Card className="bg-gradient-to-br from-purple-500/5 to-purple-500/10 border-purple-200/30">
+                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                          <CardTitle className="text-sm font-medium text-muted-foreground">
+                            Totaal Accounts
+                          </CardTitle>
+                          <UserPlus className="h-4 w-4 text-purple-500" />
+                        </CardHeader>
+                        <CardContent>
+                          <div className="text-2xl font-bold text-foreground">{autoAccounts.length}</div>
+                        </CardContent>
+                      </Card>
+                      
+                      <Card className="bg-gradient-to-br from-green-500/5 to-green-500/10 border-green-200/30">
+                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                          <CardTitle className="text-sm font-medium text-muted-foreground">
+                            Actieve Accounts
+                          </CardTitle>
+                          <Users className="h-4 w-4 text-green-500" />
+                        </CardHeader>
+                        <CardContent>
+                          <div className="text-2xl font-bold text-foreground">
+                            {autoAccounts.filter(acc => acc.confirmed_at).length}
+                          </div>
+                        </CardContent>
+                      </Card>
+                      
+                      <Card className="bg-gradient-to-br from-blue-500/5 to-blue-500/10 border-blue-200/30">
+                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                          <CardTitle className="text-sm font-medium text-muted-foreground">
+                            Met Partner Membership
+                          </CardTitle>
+                          <Building2 className="h-4 w-4 text-blue-500" />
+                        </CardHeader>
+                        <CardContent>
+                          <div className="text-2xl font-bold text-foreground">
+                            {autoAccounts.filter(acc => acc.partner_membership).length}
+                          </div>
+                        </CardContent>
+                      </Card>
+                      
+                      <Card className="bg-gradient-to-br from-orange-500/5 to-orange-500/10 border-orange-200/30">
+                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                          <CardTitle className="text-sm font-medium text-muted-foreground">
+                            Laatste Week
+                          </CardTitle>
+                          <Users className="h-4 w-4 text-orange-500" />
+                        </CardHeader>
+                        <CardContent>
+                          <div className="text-2xl font-bold text-foreground">
+                            {autoAccounts.filter(acc => 
+                              new Date(acc.created_at) > new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
+                            ).length}
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </div>
+
+                    <Card>
+                      <CardHeader>
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <CardTitle className="flex items-center gap-2">
+                              <UserPlus className="w-5 h-5" />
+                              Auto Accounts
+                            </CardTitle>
+                            <CardDescription>Beheer automatisch aangemaakte accounts en hun wachtwoorden</CardDescription>
+                          </div>
+                          <Button onClick={() => fetchAutoAccounts()} disabled={loadingAutoAccounts}>
+                            {loadingAutoAccounts ? "Laden..." : "Vernieuwen"}
+                          </Button>
+                        </div>
+                      </CardHeader>
+                      <CardContent>
+                        {loadingAutoAccounts ? (
+                          <div className="text-center py-8">
+                            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+                            <p className="text-muted-foreground">Auto accounts laden...</p>
+                          </div>
+                        ) : autoAccounts.length === 0 ? (
+                          <div className="text-center py-8">
+                            <UserPlus className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
+                            <p className="text-muted-foreground">Geen auto accounts gevonden.</p>
+                          </div>
+                        ) : (
+                          <div className="overflow-x-auto">
+                            <Table>
+                              <TableHeader>
+                                <TableRow>
+                                  <TableHead>Naam</TableHead>
+                                  <TableHead>Email</TableHead>
+                                  <TableHead>Bedrijf</TableHead>
+                                  <TableHead>Status</TableHead>
+                                  <TableHead>Aangemaakt</TableHead>
+                                  <TableHead>Partner</TableHead>
+                                  <TableHead className="text-right">Acties</TableHead>
+                                </TableRow>
+                              </TableHeader>
+                              <TableBody>
+                                {autoAccounts.map((account: any) => (
+                                  <TableRow key={account.id}>
+                                    <TableCell>
+                                      <div>
+                                        <div className="font-medium">
+                                          {account.first_name} {account.last_name}
+                                        </div>
+                                        <div className="text-sm text-muted-foreground">
+                                          {account.phone}
+                                        </div>
+                                      </div>
+                                    </TableCell>
+                                    <TableCell>{account.email}</TableCell>
+                                    <TableCell>{account.company_name}</TableCell>
+                                    <TableCell>
+                                      <Badge variant={account.confirmed_at ? "default" : "secondary"}>
+                                        {account.confirmed_at ? "Bevestigd" : "Niet bevestigd"}
+                                      </Badge>
+                                    </TableCell>
+                                    <TableCell>
+                                      {new Date(account.created_at).toLocaleDateString('nl-NL')}
+                                    </TableCell>
+                                    <TableCell>
+                                      {account.partner_membership ? (
+                                        <Badge variant="outline">
+                                          {account.partner_membership.payment_status === 'paid' ? 'Actief' : 'Pending'}
+                                        </Badge>
+                                      ) : (
+                                        <span className="text-muted-foreground text-sm">Geen</span>
+                                      )}
+                                    </TableCell>
+                                    <TableCell className="text-right">
+                                      <div className="flex items-center gap-2 justify-end">
+                                        <Button 
+                                          variant="ghost" 
+                                          size="sm"
+                                          onClick={() => handleEditAutoAccount(account)}
+                                        >
+                                          <Edit className="w-4 h-4" />
+                                        </Button>
+                                        <Button 
+                                          variant="ghost" 
+                                          size="sm"
+                                          onClick={() => deleteAutoAccount(account.id)}
+                                          className="text-destructive hover:text-destructive"
+                                        >
+                                          <Trash2 className="w-4 h-4" />
+                                        </Button>
+                                      </div>
+                                    </TableCell>
+                                  </TableRow>
+                                ))}
+                              </TableBody>
+                            </Table>
+                          </div>
+                        )}
+                      </CardContent>
+                    </Card>
+                  </TabsContent>
+                  
                   <TabsContent value="action-items-pricing" className="space-y-6">
                     <ActionItemsPricingManager />
                   </TabsContent>
@@ -2553,6 +2898,80 @@ Het Bouw met Respect team
               </div>
             </div>
           )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Auto Account Edit Dialog */}
+      <Dialog open={showAutoAccountDialog} onOpenChange={setShowAutoAccountDialog}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Auto Account Bewerken</DialogTitle>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Voornaam</label>
+                <Input
+                  value={autoAccountFirstName}
+                  onChange={(e) => setAutoAccountFirstName(e.target.value)}
+                  placeholder="Voornaam"
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Achternaam</label>
+                <Input
+                  value={autoAccountLastName}
+                  onChange={(e) => setAutoAccountLastName(e.target.value)}
+                  placeholder="Achternaam"
+                />
+              </div>
+            </div>
+            
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Email</label>
+              <Input
+                value={autoAccountEmail}
+                onChange={(e) => setAutoAccountEmail(e.target.value)}
+                placeholder="email@voorbeeld.nl"
+                type="email"
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Bedrijf</label>
+              <Input
+                value={autoAccountCompany}
+                onChange={(e) => setAutoAccountCompany(e.target.value)}
+                placeholder="Bedrijfsnaam"
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Nieuw Wachtwoord (optioneel)</label>
+              <Input
+                value={autoAccountPassword}
+                onChange={(e) => setAutoAccountPassword(e.target.value)}
+                placeholder="Laat leeg om wachtwoord niet te wijzigen"
+                type="password"
+              />
+              <p className="text-xs text-muted-foreground">
+                Alleen invullen als je het wachtwoord wilt wijzigen
+              </p>
+            </div>
+          </div>
+          
+          <div className="flex justify-end space-x-2">
+            <Button
+              variant="outline"
+              onClick={() => setShowAutoAccountDialog(false)}
+              disabled={updatingPassword}
+            >
+              Annuleren
+            </Button>
+            <Button onClick={updateAutoAccount} disabled={updatingPassword}>
+              {updatingPassword ? "Bijwerken..." : "Opslaan"}
+            </Button>
+          </div>
         </DialogContent>
       </Dialog>
     </SidebarProvider>

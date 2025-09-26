@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Users, Building2, ShoppingBag, Package, Tag, Euro, Settings, Home, QrCode } from "lucide-react";
+import { Users, Building2, ShoppingBag, Package, Tag, Euro, Settings, Home, QrCode, UserPlus } from "lucide-react";
 import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarHeader, useSidebar } from "@/components/ui/sidebar";
 interface AppSidebarProps {
   viewMode: string;
@@ -21,6 +21,11 @@ const navigationItems = {
     title: "Partners",
     icon: Building2,
     description: "Beheer partneraccounts"
+  }, {
+    key: "auto-accounts",
+    title: "Auto Accounts",
+    icon: UserPlus,
+    description: "Beheer automatisch aangemaakte accounts"
   }],
   "Webshop": [{
     key: "orders",
