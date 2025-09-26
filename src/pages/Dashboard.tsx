@@ -293,12 +293,29 @@ const Dashboard = () => {
   };
 
   const handleEditAutoAccount = (account: any) => {
+    console.log('🔧 Editing auto account:', account);
+    console.log('📋 Account details:', {
+      email: account.email,
+      first_name: account.first_name,
+      last_name: account.last_name,
+      company_name: account.company_name,
+      partner_membership: account.partner_membership
+    });
+    
     setEditingAutoAccount(account);
     setAutoAccountEmail(account.email || '');
     setAutoAccountFirstName(account.first_name || '');
     setAutoAccountLastName(account.last_name || '');
     setAutoAccountCompany(account.company_name || '');
     setAutoAccountPassword('');
+    
+    console.log('✅ Form values set:', {
+      email: account.email || '',
+      firstName: account.first_name || '',
+      lastName: account.last_name || '', 
+      company: account.company_name || ''
+    });
+    
     setShowAutoAccountDialog(true);
   };
 
