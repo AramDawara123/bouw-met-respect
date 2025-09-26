@@ -322,23 +322,32 @@ const Dashboard = () => {
         }
       }
 
-      // If password needs to be updated, call the create-auto-account function
-      if (autoAccountPassword) {
-        const { error: passwordError } = await supabase.functions.invoke('create-auto-account', {
-          body: {
-            email: autoAccountEmail,
-            first_name: autoAccountFirstName,
-            last_name: autoAccountLastName,
-            company_name: autoAccountCompany,
-            update_existing: true
-          }
-        });
+        // If password needs to be updated, call the create-auto-account function
+        if (autoAccountPassword) {
+          const { data, error: passwordError } = await supabase.functions.invoke('create-auto-account', {
+            body: {
+              email: autoAccountEmail,
+              first_name: autoAccountFirstName,
+              last_name: autoAccountLastName,
+              company_name: autoAccountCompany,
+              update_existing: true
+            }
+          });
 
-        if (passwordError) {
-          console.error('Error updating password:', passwordError);
-          throw passwordError;
+          if (passwordError) {
+            console.error('Error updating password:', passwordError);
+            throw passwordError;
+          }
+
+          // Show the new password to the admin
+          if (data?.password) {
+            toast({
+              title: "Wachtwoord bijgewerkt!",
+              description: `Nieuw wachtwoord: ${data.password} (email verstuurd naar gebruiker)`,
+              duration: 10000
+            });
+          }
         }
-      }
 
       toast({
         title: "Succes!",

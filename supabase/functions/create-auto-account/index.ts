@@ -101,13 +101,48 @@ const handler = async (req: Request): Promise<Response> => {
 
         console.log('Auto account updated successfully for:', email);
 
+        // Send email with new password
+        const emailContent = `
+          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+            <h2 style="color: #2563eb;">Account Bijgewerkt - Bouw met Respect</h2>
+            
+            <p>Hallo${first_name ? ` ${first_name}` : ''},</p>
+            
+            <p>Je partner account is bijgewerkt! Hier zijn je nieuwe inloggegevens:</p>
+            
+            <div style="background-color: #f3f4f6; padding: 20px; margin: 20px 0; border-radius: 8px;">
+              <p><strong>Email:</strong> ${email}</p>
+              <p><strong>Nieuw Wachtwoord:</strong> ${password}</p>
+              <p><strong>Login URL:</strong> <a href="https://bouwmetrespect.nl/partner-auth">https://bouwmetrespect.nl/partner-auth</a></p>
+            </div>
+            
+            <p style="color: #dc2626; font-weight: bold;">⚠️ Belangrijk: Wijzig je wachtwoord na je eerste login voor veiligheid!</p>
+            
+            <p>Heb je vragen? Neem contact met ons op via info@bouwmetrespect.nl</p>
+            
+            <p>Met vriendelijke groet,<br>
+            Het Bouw met Respect team</p>
+          </div>
+        `;
+
+        const { error: emailError } = await resend.emails.send({
+          from: 'Bouw met Respect <noreply@bouwmetrespect.nl>',
+          to: [email],
+          subject: 'Je account is bijgewerkt - Nieuwe inloggegevens',
+          html: emailContent,
+        });
+
+        if (emailError) {
+          console.error('Email error:', emailError);
+        }
+
         return new Response(JSON.stringify({
           success: true,
-          message: 'Account bijgewerkt',
+          message: 'Account bijgewerkt en email verzonden',
           user_id: existingMembership.user_id,
           email: email,
           password: password,
-          email_sent: false
+          email_sent: !emailError
         }), {
           status: 200,
           headers: {
