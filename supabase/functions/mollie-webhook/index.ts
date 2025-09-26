@@ -3,7 +3,8 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-requested-with',
+  'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
 };
 
 // Generate random password
@@ -62,7 +63,12 @@ async function sendWelcomeEmail(email: string, firstName: string, password: stri
 }
 
 serve(async (req) => {
+  console.log(`[WEBHOOK] ${req.method} request received from: ${req.headers.get('origin') || 'unknown'}`);
+  console.log(`[WEBHOOK] URL: ${req.url}`);
+  console.log(`[WEBHOOK] User-Agent: ${req.headers.get('user-agent') || 'unknown'}`);
+  
   if (req.method === 'OPTIONS') {
+    console.log('[WEBHOOK] Handling CORS preflight request');
     return new Response(null, { headers: corsHeaders });
   }
 
@@ -87,8 +93,11 @@ serve(async (req) => {
     }
 
     if (!paymentId) {
+      console.error('[WEBHOOK] No payment ID found in request');
       return new Response('No payment id', { headers: corsHeaders, status: 400 });
     }
+
+    console.log(`[WEBHOOK] Processing payment ID: ${paymentId}`);
 
     const detailsResp = await fetch(`https://api.mollie.com/v2/payments/${paymentId}`, {
       headers: { 'Authorization': `Bearer ${mollieApiKey}` }
@@ -102,9 +111,14 @@ serve(async (req) => {
     const status = payment.status as string;
     const metadata = payment.metadata || {};
     
-    console.log("Payment details:", payment);
-    console.log("Payment status:", status);
-    console.log("Payment metadata:", metadata);
+    console.log(`[WEBHOOK] Payment details for ${paymentId}:`, {
+      status,
+      amount: payment.amount,
+      description: payment.description,
+      metadata
+    });
+    console.log(`[WEBHOOK] Payment status: ${status}`);
+    console.log(`[WEBHOOK] Payment metadata:`, metadata);
 
     const supabaseService = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
@@ -263,8 +277,10 @@ serve(async (req) => {
       }
     }
 
+    console.log(`[WEBHOOK] Successfully processed payment ${paymentId} with status: ${newStatus}`);
     return new Response('OK', { headers: corsHeaders, status: 200 });
   } catch (e: any) {
+    console.error(`[WEBHOOK] Error processing webhook:`, e);
     return new Response(e?.message || 'Webhook error', { headers: corsHeaders, status: 500 });
   }
 });
