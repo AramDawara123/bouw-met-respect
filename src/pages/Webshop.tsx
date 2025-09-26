@@ -14,6 +14,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { validateDiscountCode, calculateDiscount, formatDiscountDisplay } from "@/lib/discountUtils";
+import { MarqueeAnimation } from "@/components/ui/marquee-effect";
 const Webshop = () => {
   const [faqOpenIndex, setFaqOpenIndex] = useState<number | null>(null);
   const webshopFaqs = [{
@@ -563,6 +564,17 @@ const Webshop = () => {
           </div>
         </div>
       </header>
+
+      {/* Marquee Section */}
+      <section className="py-8 bg-gradient-to-r from-primary to-secondary overflow-hidden">
+        <MarqueeAnimation 
+          baseVelocity={15} 
+          direction="left" 
+          className="text-white/90 text-4xl sm:text-5xl lg:text-6xl font-bold tracking-wider"
+        >
+          BOUW MET RESPECT • WEBSHOP • KWALITEIT • RESPECT • 
+        </MarqueeAnimation>
+      </section>
 
       {/* Hero Section */}
       <section className="relative py-32 hero-gradient overflow-hidden">
