@@ -49,16 +49,25 @@ const CompanyProfiles = () => {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <Select>
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Selecteer bedrijfsgrootte" />
-                </SelectTrigger>
-                <SelectContent>
-                  {pricingData.map((pricing) => (
-                    <SelectItem key={pricing.id} value={pricing.id}>
-                      <div className="flex items-center justify-between w-full">
-                        <span className="flex items-center gap-2">
-                          {pricing.employees_range} - {pricing.price_display}
+              {pricingLoading ? (
+                <div className="flex items-center justify-center py-4">
+                  <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
+                  <span className="ml-2 text-muted-foreground">Laden...</span>
+                </div>
+              ) : pricingData.length === 0 ? (
+                <p className="text-muted-foreground">Geen prijsgegevens beschikbaar</p>
+              ) : (
+                <Select>
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Selecteer bedrijfsgrootte" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {pricingData.map((pricing) => (
+                      <SelectItem key={pricing.id} value={pricing.id}>
+                        <div className="flex items-center gap-2">
+                          <span>
+                            {pricing.employees_range} - {pricing.price_display}
+                          </span>
                           {pricing.is_popular && (
                             <Badge variant="default" className="text-xs">
                               Populair
@@ -69,12 +78,12 @@ const CompanyProfiles = () => {
                               Offerte
                             </Badge>
                           )}
-                        </span>
-                      </div>
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+                        </div>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
             </CardContent>
           </Card>
         </div>
