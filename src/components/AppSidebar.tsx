@@ -39,11 +39,6 @@ const navigationItems = {
     description: "Beheer kortingscodes"
   }],
   "Configuratie": [{
-    key: "pricing",
-    title: "Lidmaatschap Prijzen",
-    icon: Euro,
-    description: "Stel lidmaatschapprijzen in"
-  }, {
     key: "partner-pricing",
     title: "Partner Prijzen",
     icon: Settings,

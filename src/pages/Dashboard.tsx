@@ -143,7 +143,7 @@ const Dashboard = () => {
   const [isEditingProduct, setIsEditingProduct] = useState(false);
   const [user, setUser] = useState(null);
   const [isAdmin, setIsAdmin] = useState(false);
-  const [viewMode, setViewMode] = useState<'memberships' | 'orders' | 'profiles' | 'products' | 'partners' | 'pricing' | 'partner-pricing' | 'action-items-pricing' | 'discounts' | 'qrcode'>("memberships");
+  const [viewMode, setViewMode] = useState<'memberships' | 'orders' | 'profiles' | 'products' | 'partners' | 'partner-pricing' | 'action-items-pricing' | 'discounts' | 'qrcode'>("memberships");
   const [showProfileForm, setShowProfileForm] = useState(false);
   const [editingProfile, setEditingProfile] = useState<CompanyProfile | null>(null);
   const [editingPartner, setEditingPartner] = useState<PartnerAccount | null>(null);
@@ -1442,7 +1442,7 @@ Het Bouw met Respect team
       <div className="min-h-screen bg-gradient-to-br from-background via-primary/5 to-secondary/5 flex w-full">
         <AppSidebar 
           viewMode={viewMode} 
-          onViewModeChange={(mode) => setViewMode(mode as 'memberships' | 'orders' | 'profiles' | 'products' | 'partners' | 'pricing' | 'partner-pricing' | 'action-items-pricing' | 'discounts' | 'qrcode')} 
+          onViewModeChange={(mode) => setViewMode(mode as 'memberships' | 'orders' | 'profiles' | 'products' | 'partners' | 'partner-pricing' | 'action-items-pricing' | 'discounts' | 'qrcode')} 
         />
         
         <main className="flex-1 overflow-auto">
@@ -1492,7 +1492,7 @@ Het Bouw met Respect team
           </div>
 
           <div className="p-6 mt-6">
-                <Tabs value={viewMode} onValueChange={(value) => setViewMode(value as 'memberships' | 'orders' | 'profiles' | 'products' | 'partners' | 'pricing' | 'partner-pricing' | 'action-items-pricing' | 'discounts' | 'qrcode')}>
+                <Tabs value={viewMode} onValueChange={(value) => setViewMode(value as 'memberships' | 'orders' | 'profiles' | 'products' | 'partners' | 'partner-pricing' | 'action-items-pricing' | 'discounts' | 'qrcode')}>
                   
                   <TabsContent value="action-items-pricing" className="space-y-6">
                     <ActionItemsPricingManager />
@@ -2039,12 +2039,6 @@ Het Bouw met Respect team
               <TabsContent value="partners">
                 <div className="space-y-6">
                   <PartnerAccountManagementClean />
-                </div>
-              </TabsContent>
-
-              <TabsContent value="pricing">
-                <div className="space-y-6">
-                  <MembershipPricingManager />
                 </div>
               </TabsContent>
 
