@@ -55,34 +55,49 @@ const CompanyProfiles = () => {
                   <span className="ml-2 text-muted-foreground">Laden...</span>
                 </div>
               ) : pricingData.length === 0 ? (
-                <p className="text-muted-foreground">Geen prijsgegevens beschikbaar</p>
+                <div className="p-4 bg-yellow-50 border border-yellow-200 rounded">
+                  <p className="text-yellow-800">Geen prijsgegevens beschikbaar</p>
+                  <p className="text-sm text-yellow-600 mt-1">
+                    Controleer of de Action Items Pricing Manager in de dashboard correct is ingesteld.
+                  </p>
+                </div>
               ) : (
-                <Select>
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Selecteer bedrijfsgrootte" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {pricingData.map((pricing) => (
-                      <SelectItem key={pricing.id} value={pricing.id}>
-                        <div className="flex items-center gap-2">
-                          <span>
-                            {pricing.employees_range} - {pricing.price_display}
-                          </span>
-                          {pricing.is_popular && (
-                            <Badge variant="default" className="text-xs">
-                              Populair
-                            </Badge>
-                          )}
-                          {pricing.is_quote && (
-                            <Badge variant="secondary" className="text-xs">
-                              Offerte
-                            </Badge>
-                          )}
-                        </div>
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <div className="space-y-4">
+                  <div className="p-3 bg-green-50 border border-green-200 rounded">
+                    <p className="text-green-800 font-medium">
+                      ✅ {pricingData.length} prijsopties geladen
+                    </p>
+                    <p className="text-xs text-green-600 mt-1">
+                      Laatste update: {new Date().toLocaleTimeString()}
+                    </p>
+                  </div>
+                  <Select>
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Selecteer bedrijfsgrootte" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {pricingData.map((pricing) => (
+                        <SelectItem key={pricing.id} value={pricing.id}>
+                          <div className="flex items-center gap-2">
+                            <span>
+                              {pricing.employees_range} - {pricing.price_display}
+                            </span>
+                            {pricing.is_popular && (
+                              <Badge variant="default" className="text-xs">
+                                Populair
+                              </Badge>
+                            )}
+                            {pricing.is_quote && (
+                              <Badge variant="secondary" className="text-xs">
+                                Offerte
+                              </Badge>
+                            )}
+                          </div>
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
               )}
             </CardContent>
           </Card>
