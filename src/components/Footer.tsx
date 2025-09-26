@@ -90,7 +90,7 @@ const Footer = () => {
             <div className="space-y-4">
               <div className="text-background/80">
                 <div className="font-medium">Email ons</div>
-                <div className="text-sm opacity-80">info@bouwmetrespect.nl</div>
+                <a href="mailto:info@bouwmetrespect.nl" className="text-sm opacity-80 hover:opacity-100 transition-opacity">info@bouwmetrespect.nl</a>
               </div>
               
               <div className="text-background/80">
