@@ -92,8 +92,8 @@ const ReportSection = () => {
                       </div>
                     </div>
                   </div>
-                  <Button variant="outline" className="w-full border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white" onClick={() => window.location.href = 'tel:0639580341'}>
-                    Bel nu
+                  <Button variant="outline" className="w-full border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white" onClick={() => window.open('https://wa.me/31639580341', '_blank')}>
+                    WhatsApp
                     <Phone className="w-4 h-4 ml-2" />
                   </Button>
                 </div>
