@@ -12,6 +12,7 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { validateDiscountCode, calculateDiscount, formatDiscountDisplay } from "@/lib/discountUtils";
 import type { DiscountValidationResult } from "@/lib/discountUtils";
+import { useActionItemsPricing } from "@/hooks/useActionItemsPricing";
 
 const formSchema = z.object({
   firstName: z.string().min(2, "Voornaam moet minimaal 2 karakters bevatten"),
@@ -40,6 +41,7 @@ const PartnerSignupForm = ({ open, onOpenChange }: PartnerSignupFormProps) => {
   const [isCheckingDiscount, setIsCheckingDiscount] = useState(false);
   const [appliedDiscount, setAppliedDiscount] = useState<DiscountValidationResult | null>(null);
   const { toast } = useToast();
+  const { pricingData, loading: pricingLoading } = useActionItemsPricing();
   
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -57,25 +59,37 @@ const PartnerSignupForm = ({ open, onOpenChange }: PartnerSignupFormProps) => {
     }
   });
 
-  // Pricing logic based on company size
+  // Pricing logic based on company size using dynamic pricing from database
   const getAmountFromSize = (size: string) => {
-    switch(size) {
-      case 'zzp': return 25000; // €250
-      case 'klein': return 45000; // €450
-      case 'middelgroot': return 75000; // €750
-      case 'groot': return 0; // Offerte
-      default: return 25000;
+    if (!pricingData?.length) {
+      // Fallback prices if no pricing data available
+      switch(size) {
+        case 'zzp': return 25000; // €250
+        case 'klein': return 45000; // €450
+        case 'middelgroot': return 75000; // €750
+        case 'groot': return 0; // Offerte
+        default: return 25000;
+      }
     }
+    
+    const priceOption = pricingData.find(p => p.size_type === size);
+    return priceOption ? (priceOption.is_quote ? 0 : priceOption.price_cents) : 25000;
   };
 
   const getPriceDisplay = (size: string) => {
-    switch(size) {
-      case 'zzp': return '€250';
-      case 'klein': return '€450';
-      case 'middelgroot': return '€750';
-      case 'groot': return 'Offerte op maat';
-      default: return '€250';
+    if (!pricingData?.length) {
+      // Fallback prices if no pricing data available
+      switch(size) {
+        case 'zzp': return '€250';
+        case 'klein': return '€450';
+        case 'middelgroot': return '€750';
+        case 'groot': return 'Offerte op maat';
+        default: return '€250';
+      }
     }
+    
+    const priceOption = pricingData.find(p => p.size_type === size);
+    return priceOption ? priceOption.price_display : '€250';
   };
 
   const selectedSize = form.watch('companySize');
@@ -404,10 +418,25 @@ const PartnerSignupForm = ({ open, onOpenChange }: PartnerSignupFormProps) => {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="zzp">ZZP - €250/jaar</SelectItem>
-                        <SelectItem value="klein">2-10 medewerkers - €450/jaar</SelectItem>
-                        <SelectItem value="middelgroot">11-20 medewerkers - €750/jaar</SelectItem>
-                        <SelectItem value="groot">Meer dan 20 medewerkers - Offerte</SelectItem>
+                        {pricingLoading ? (
+                          <SelectItem value="loading" disabled>Prijzen laden...</SelectItem>
+                        ) : pricingData?.length > 0 ? (
+                          pricingData
+                            .sort((a, b) => a.display_order - b.display_order)
+                            .map((option) => (
+                              <SelectItem key={option.id} value={option.size_type}>
+                                {option.employees_range} - {option.price_display}
+                              </SelectItem>
+                            ))
+                        ) : (
+                          // Fallback options if no pricing data available
+                          <>
+                            <SelectItem value="zzp">ZZP - €250/jaar</SelectItem>
+                            <SelectItem value="klein">2-10 medewerkers - €450/jaar</SelectItem>
+                            <SelectItem value="middelgroot">11-20 medewerkers - €750/jaar</SelectItem>
+                            <SelectItem value="groot">Meer dan 20 medewerkers - Offerte</SelectItem>
+                          </>
+                        )}
                       </SelectContent>
                     </Select>
                     <FormMessage />
