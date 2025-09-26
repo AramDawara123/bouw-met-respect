@@ -8,7 +8,6 @@ import { ShoppingCart, Coffee, Edit3, ArrowLeft, Plus, Minus, X, ChevronDown, Ta
 import { Link } from "react-router-dom";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 import { useToast } from "@/hooks/use-toast";
-
 import Footer from "@/components/Footer";
 import { supabase } from "@/integrations/supabase/client";
 import { Input } from "@/components/ui/input";
@@ -553,9 +552,7 @@ const Webshop = () => {
                 </SheetContent>
               </Sheet>
               <div className="text-right">
-                <p className="text-2xl font-bold text-foreground">
-                  €{finalTotal.toFixed(2)}
-                </p>
+                
                 <p className="text-sm text-muted-foreground">
                   {cartItemCount > 0 ? `${cartItemCount} items` : 'Winkelwagen leeg'}
                 </p>
@@ -610,11 +607,7 @@ const Webshop = () => {
 
       {/* Marquee Section */}
       <section className="py-8 bg-gradient-to-r from-primary to-secondary overflow-hidden">
-        <MarqueeAnimation 
-          baseVelocity={1} 
-          direction="right" 
-          className="text-white/90 text-4xl sm:text-5xl lg:text-6xl font-bold tracking-wider"
-        >
+        <MarqueeAnimation baseVelocity={1} direction="right" className="text-white/90 text-4xl sm:text-5xl lg:text-6xl font-bold tracking-wider">
           Bouw met Respect • Respectvolle Bouwplaats • Hoogwaardige Merchandise • Steun de Beweging • Premium Kwaliteit • Samen Bouwen aan Respect • Bouw met Respect •
         </MarqueeAnimation>
       </section>
