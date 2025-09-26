@@ -31,25 +31,125 @@ async function sendWelcomeEmail(email: string, firstName: string, password: stri
         to: [email],
         subject: 'Welkom bij Bouw met Respect - Je partner account is klaar!',
         html: `
-          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-            <h2 style="color: #2563eb;">Welkom bij Bouw met Respect!</h2>
-            <p>Beste ${firstName},</p>
-            <p>Gefeliciteerd! Je betaling is succesvol verwerkt en je partner account is aangemaakt.</p>
-            
-            <div style="background-color: #f3f4f6; padding: 20px; border-radius: 8px; margin: 20px 0;">
-              <h3 style="color: #1f2937; margin-top: 0;">Je inloggegevens:</h3>
-              <p><strong>Email:</strong> ${email}</p>
-              <p><strong>Wachtwoord:</strong> ${password}</p>
-              <p><strong>Bedrijf:</strong> ${companyName}</p>
-            </div>
-            
-            <p>Je kunt nu inloggen op je <a href="https://bouwmetrespect.nl/partner-dashboard" style="color: #2563eb;">Partner Dashboard</a> om je bedrijfsprofiel te beheren.</p>
-            
-            <p>Voor vragen kun je altijd contact met ons opnemen.</p>
-            
-            <p>Met vriendelijke groet,<br>
-            Het Bouw met Respect team</p>
-          </div>
+          <!DOCTYPE html>
+          <html lang="nl">
+          <head>
+              <meta charset="UTF-8">
+              <meta name="viewport" content="width=device-width, initial-scale=1.0">
+              <title>Partner Account Update - Bouw met Respect</title>
+          </head>
+          <body style="margin: 0; padding: 0; background-color: #f8fafc; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;">
+              <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff;">
+                  <!-- Header -->
+                  <div style="background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); padding: 40px 30px; text-align: center;">
+                      <h1 style="color: #ffffff; margin: 0; font-size: 28px; font-weight: 700; letter-spacing: -0.5px;">
+                          Partner Account Update
+                      </h1>
+                      <p style="color: #dbeafe; margin: 8px 0 0 0; font-size: 16px; font-weight: 400;">
+                          Bouw met Respect
+                      </p>
+                  </div>
+                  
+                  <!-- Main Content -->
+                  <div style="padding: 40px 30px;">
+                      <p style="color: #374151; font-size: 16px; line-height: 1.6; margin: 0 0 20px 0;">
+                          Hallo ${firstName},
+                      </p>
+                      
+                      <p style="color: #6b7280; font-size: 16px; line-height: 1.6; margin: 0 0 30px 0;">
+                          Je bestaande account is gekoppeld aan ons partner systeem! Je wachtwoord is gereset voor veiligheid.
+                      </p>
+                      
+                      <!-- Login Credentials Card -->
+                      <div style="background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%); border: 1px solid #e2e8f0; border-radius: 12px; padding: 25px; margin: 30px 0;">
+                          <h3 style="color: #1e293b; margin: 0 0 20px 0; font-size: 18px; font-weight: 600;">
+                              Je inloggegevens:
+                          </h3>
+                          
+                          <div style="background-color: #ffffff; border-radius: 8px; padding: 20px; margin: 15px 0; border-left: 4px solid #2563eb;">
+                              <div style="margin-bottom: 12px;">
+                                  <span style="color: #64748b; font-size: 14px; font-weight: 500; display: block; margin-bottom: 4px;">Email:</span>
+                                  <span style="color: #1e293b; font-size: 16px; font-weight: 600; word-break: break-all;">${email}</span>
+                              </div>
+                              <div style="margin-bottom: 12px;">
+                                  <span style="color: #64748b; font-size: 14px; font-weight: 500; display: block; margin-bottom: 4px;">Nieuw Wachtwoord:</span>
+                                  <span style="color: #1e293b; font-size: 16px; font-weight: 600; background-color: #f1f5f9; padding: 6px 10px; border-radius: 6px; font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;">${password}</span>
+                              </div>
+                              <div>
+                                  <span style="color: #64748b; font-size: 14px; font-weight: 500; display: block; margin-bottom: 4px;">Login URL:</span>
+                                  <a href="https://bouwmetrespect.nl/partner-auth" style="color: #2563eb; font-size: 16px; font-weight: 500; text-decoration: none; word-break: break-all;">https://bouwmetrespect.nl/partner-auth</a>
+                              </div>
+                          </div>
+                      </div>
+                      
+                      <!-- Security Warning -->
+                      <div style="background-color: #fef3c7; border: 1px solid #f59e0b; border-radius: 8px; padding: 16px; margin: 25px 0;">
+                          <div style="display: flex; align-items: flex-start;">
+                              <div style="background-color: #f59e0b; color: #ffffff; border-radius: 50%; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 12px; margin-right: 12px; flex-shrink: 0;">!</div>
+                              <div>
+                                  <h4 style="color: #92400e; margin: 0 0 8px 0; font-size: 14px; font-weight: 600;">
+                                      Belangrijk: Wijzig je wachtwoord na je eerste login voor veiligheid!
+                                  </h4>
+                              </div>
+                          </div>
+                      </div>
+                      
+                      <!-- What you can do section -->
+                      <div style="margin: 30px 0;">
+                          <p style="color: #374151; font-size: 16px; line-height: 1.6; margin: 0 0 15px 0;">
+                              Je kunt nu inloggen op het partner portaal om:
+                          </p>
+                          <ul style="color: #6b7280; font-size: 15px; line-height: 1.6; margin: 0; padding-left: 20px;">
+                              <li style="margin-bottom: 8px;">Je bedrijfsprofiel beheren</li>
+                              <li style="margin-bottom: 8px;">Toegang krijgen tot partner resources</li>
+                              <li style="margin-bottom: 8px;">Contact opnemen met ons team</li>
+                          </ul>
+                      </div>
+                      
+                      <!-- CTA Button -->
+                      <div style="text-align: center; margin: 35px 0;">
+                          <a href="https://bouwmetrespect.nl/partner-auth" 
+                             style="background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); 
+                                    color: #ffffff; 
+                                    padding: 14px 28px; 
+                                    text-decoration: none; 
+                                    border-radius: 8px; 
+                                    font-weight: 600; 
+                                    font-size: 16px; 
+                                    display: inline-block; 
+                                    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+                                    transition: all 0.2s;">
+                              Inloggen op Partner Dashboard
+                          </a>
+                      </div>
+                      
+                      <!-- Support section -->
+                      <div style="background-color: #f8fafc; border-radius: 8px; padding: 20px; margin: 30px 0;">
+                          <p style="color: #374151; font-size: 15px; line-height: 1.6; margin: 0;">
+                              Heb je vragen? Neem contact met ons op via 
+                              <a href="mailto:info@bouwmetrespect.nl" style="color: #2563eb; text-decoration: none; font-weight: 500;">info@bouwmetrespect.nl</a>
+                          </p>
+                      </div>
+                      
+                      <!-- Signature -->
+                      <div style="border-top: 1px solid #e5e7eb; padding-top: 25px; margin-top: 35px;">
+                          <p style="color: #374151; font-size: 16px; line-height: 1.6; margin: 0;">
+                              Met vriendelijke groet,<br>
+                              <span style="font-weight: 600; color: #1e293b;">Het Bouw met Respect team</span>
+                          </p>
+                      </div>
+                  </div>
+                  
+                  <!-- Footer -->
+                  <div style="background-color: #f8fafc; padding: 20px 30px; text-align: center; border-top: 1px solid #e5e7eb;">
+                      <p style="color: #9ca3af; font-size: 12px; line-height: 1.4; margin: 0;">
+                          Deze email is verstuurd omdat je account is gekoppeld aan ons partner systeem.<br>
+                          © 2024 Bouw met Respect. Alle rechten voorbehouden.
+                      </p>
+                  </div>
+              </div>
+          </body>
+          </html>
         `,
       }),
     });
