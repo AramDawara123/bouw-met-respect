@@ -30,25 +30,25 @@ const MissionStatement = () => {
         </div>
 
         {/* Statistics Section */}
-        <Card className="p-12 border-0 relative overflow-hidden bg-accent">
+        <Card className="p-12 border-2 border-primary relative overflow-hidden bg-primary text-accent">
           <div className="relative z-10 grid lg:grid-cols-2 gap-12 items-center">
             <div>
-              <h3 className="text-3xl font-bold mb-6 text-accent-foreground">
+              <h3 className="text-3xl font-bold mb-6 text-accent">
                 De cijfers spreken voor zich
               </h3>
-              <p className="text-accent-foreground/80 leading-relaxed mb-8 text-lg">
+              <p className="text-accent/80 leading-relaxed mb-8 text-lg">
                 De Nederlandse bouwsector verliest jaarlijks duizenden jonge professionals. 
                 Grensoverschrijdend gedrag in de bouw en gebrek aan respect op de werkvloer 
                 zijn de hoofdoorzaken. Dit moet veranderen.
               </p>
               <div className="grid grid-cols-2 gap-8">
                 <div>
-                  <div className="text-4xl font-bold text-primary mb-2">40%</div>
-                  <p className="text-accent-foreground/70">Jongeren verlaat de bouw binnen 2 jaar</p>
+                  <div className="text-4xl font-bold text-accent mb-2">40%</div>
+                  <p className="text-accent/70">Jongeren verlaat de bouw binnen 2 jaar</p>
                 </div>
                 <div>
-                  <div className="text-4xl font-bold text-primary mb-2">200k+</div>
-                  <p className="text-accent-foreground/70">Extra bouwvakkers nodig tot 2030</p>
+                  <div className="text-4xl font-bold text-accent mb-2">200k+</div>
+                  <p className="text-accent/70">Extra bouwvakkers nodig tot 2030</p>
                 </div>
               </div>
             </div>
