@@ -636,7 +636,10 @@ const PartnerAccountManagementClean = () => {
                               <Button
                                 variant="outline"
                                 size="sm"
-                                onClick={() => setEditingPartner(partner)}
+                                onClick={() => {
+                                  setEditingPartner(partner);
+                                  setEditDialogOpen(true);
+                                }}
                                 className="p-2"
                               >
                                 <Edit2 className="w-4 h-4" />
