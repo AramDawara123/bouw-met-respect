@@ -619,7 +619,7 @@ const Webshop = () => {
         <div className="absolute bottom-0 right-1/4 w-80 h-80 bg-gradient-to-r from-accent/10 to-primary/10 rounded-full blur-3xl opacity-50"></div>
         
         <div className="container mx-auto px-4 relative">
-          <div ref={productsRef} className={`transition-all duration-500 ${productsVisible ? 'opacity-100 transform translate-y-0' : 'opacity-0 transform translate-y-8'}`}>
+          <div ref={productsRef}>
             <div className="text-center mb-20">
               <div className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-primary/20 to-accent/20 backdrop-blur-sm rounded-full text-primary font-semibold text-sm mb-8 border border-primary/20">
                 <ShoppingCart className="w-4 h-4 mr-2" />
@@ -637,7 +637,7 @@ const Webshop = () => {
             {/* Products count indicator */}
             {!productsLoading && products.length > 0 && <div className="text-center mb-8">
                 <div className="inline-flex items-center px-4 py-2 bg-blue-500 text-white rounded-full font-semibold shadow-lg">
-                  <div className="w-2 h-2 bg-yellow-400 rounded-full mr-2 animate-pulse"></div>
+                  <div className="w-2 h-2 bg-yellow-400 rounded-full mr-2"></div>
                   {products.length} {products.length === 1 ? 'product beschikbaar' : 'producten beschikbaar'}
                 </div>
               </div>}
@@ -645,7 +645,7 @@ const Webshop = () => {
             <div className={`grid gap-8 mx-auto px-4 justify-items-center ${productsLoading ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 max-w-8xl' : products.length === 1 ? 'grid-cols-1 max-w-md' : products.length === 2 ? 'grid-cols-1 sm:grid-cols-2 max-w-2xl' : products.length === 3 ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 max-w-4xl' : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 max-w-8xl'}`}>
               {productsLoading && Array.from({
               length: 4
-            }).map((_, index) => <Card key={index} className="group relative overflow-hidden bg-gradient-to-br from-card/95 to-card/80 backdrop-blur-sm border-2 border-border/30 flex flex-col h-full animate-pulse w-full max-w-sm">
+            }).map((_, index) => <Card key={index} className="group relative overflow-hidden bg-gradient-to-br from-card/95 to-card/80 backdrop-blur-sm border-2 border-border/30 flex flex-col h-full w-full max-w-sm">
                     <CardHeader className="relative p-6">
                       <div className="aspect-square bg-muted rounded-3xl mb-6"></div>
                       <div className="h-4 bg-muted rounded mb-2"></div>
@@ -667,54 +667,37 @@ const Webshop = () => {
                   </p>
                 </div>}
               
-              {!productsLoading && products.length > 0 && products.map((product, index) => <Card key={product.id} className={`group relative overflow-hidden bg-gradient-to-br from-card/95 to-card/80 backdrop-blur-sm border-2 border-border/30 hover:border-primary/40 hover:shadow-2xl hover:shadow-primary/10 transition-all duration-700 hover:scale-[1.02] flex flex-col h-full w-full max-w-sm animate-in fade-in slide-in-from-bottom-4 ${productsVisible ? 'opacity-100 transform translate-y-0' : 'opacity-0 transform translate-y-8'}`} style={{
-              transitionDelay: productsVisible ? `${index * 150}ms` : '0ms'
-            }}>
-                  {/* Animated gradient overlay */}
-                  <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-secondary/5 opacity-0 group-hover:opacity-100 transition-all duration-700"></div>
-                  <div className="absolute inset-0 bg-gradient-to-t from-background/10 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500"></div>
-                  
-                  {/* Floating elements */}
-                  <div className="absolute top-4 right-4 w-3 h-3 bg-primary/30 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-500 animate-pulse"></div>
-                  <div className="absolute top-6 right-8 w-2 h-2 bg-secondary/40 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-700 animate-pulse" style={{
-                animationDelay: '0.3s'
-              }}></div>
+              {!productsLoading && products.length > 0 && products.map((product, index) => <Card key={product.id} className="group relative overflow-hidden bg-gradient-to-br from-card/95 to-card/80 backdrop-blur-sm border-2 border-border/30 flex flex-col h-full w-full max-w-sm">
                   
                   <CardHeader className="relative p-6">
-                    <div className="aspect-square bg-gradient-to-br from-muted/50 to-muted/80 rounded-3xl overflow-hidden mb-6 shadow-xl group-hover:shadow-2xl transition-all duration-300 relative">
-                      {/* Image glow effect */}
-                      <div className="absolute inset-0 bg-gradient-to-t from-primary/20 via-transparent to-secondary/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10"></div>
-                      
-                      <img src={product.image} alt={product.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500 ease-out" loading="lazy" decoding="async" />
-                      
-                      {/* Shimmer effect */}
-                      <div className="absolute inset-0 -translate-x-full group-hover:translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent transition-transform duration-500 ease-out"></div>
+                    <div className="aspect-square bg-gradient-to-br from-muted/50 to-muted/80 rounded-3xl overflow-hidden mb-6 shadow-xl relative">
+                      <img src={product.image} alt={product.name} className="w-full h-full object-cover" loading="lazy" decoding="async" />
                     </div>
                     
                     <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
-                      <Badge className="bg-primary/15 text-primary border-primary/30 font-semibold px-3 py-1.5 text-sm rounded-full group-hover:bg-primary/25 transition-colors duration-300">
+                      <Badge className="bg-primary/15 text-primary border-primary/30 font-semibold px-3 py-1.5 text-sm rounded-full">
                         {product.category}
                       </Badge>
-                      {product.inStock && <Badge className="bg-green-500/15 text-green-600 border-green-500/30 font-semibold text-sm rounded-full flex items-center gap-1.5 px-3 py-1.5 group-hover:bg-green-500/25 transition-colors duration-300">
-                          <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                      {product.inStock && <Badge className="bg-green-500/15 text-green-600 border-green-500/30 font-semibold text-sm rounded-full flex items-center gap-1.5 px-3 py-1.5">
+                          <div className="w-2 h-2 bg-green-500 rounded-full"></div>
                           Op voorraad
                         </Badge>}
                     </div>
                     
-                    <CardTitle className="text-xl lg:text-2xl font-bold group-hover:text-primary transition-all duration-300 leading-tight mb-1">
+                    <CardTitle className="text-xl lg:text-2xl font-bold leading-tight mb-1">
                       {product.name}
                     </CardTitle>
                   </CardHeader>
 
                   <CardContent className="relative space-y-6 p-6 pt-0 flex-1">
-                    <p className="text-muted-foreground leading-relaxed text-base group-hover:text-foreground/80 transition-colors duration-300">
+                    <p className="text-muted-foreground leading-relaxed text-base">
                       {product.description}
                     </p>
                     
                     <div className="space-y-3">
                       <h4 className="font-semibold text-foreground text-sm uppercase tracking-wider text-primary/80">Kenmerken</h4>
-                      {product.features.map((feature, idx) => <div key={idx} className="flex items-center text-muted-foreground group-hover:text-foreground/90 transition-all duration-300">
-                          <div className="w-6 h-6 bg-primary/15 rounded-full flex items-center justify-center mr-3 flex-shrink-0 group-hover:bg-primary/25 group-hover:scale-110 transition-all duration-300">
+                      {product.features.map((feature, idx) => <div key={idx} className="flex items-center text-muted-foreground">
+                          <div className="w-6 h-6 bg-primary/15 rounded-full flex items-center justify-center mr-3 flex-shrink-0">
                             <div className="w-2 h-2 bg-primary rounded-full"></div>
                           </div>
                           <span className="font-medium text-sm">{feature}</span>
@@ -723,7 +706,7 @@ const Webshop = () => {
 
                     <div className="flex flex-col sm:flex-row sm:items-end justify-between pt-6 border-t border-border/50 gap-4 mt-auto">
                       <div className="flex-1">
-                        <span className="text-3xl font-bold text-primary block group-hover:scale-105 transition-transform duration-300 origin-left">
+                        <span className="text-3xl font-bold text-primary block">
                           €{product.price.toFixed(2)}
                         </span>
                         <p className="text-sm text-muted-foreground">Incl. BTW</p>
@@ -740,14 +723,12 @@ const Webshop = () => {
                   </CardContent>
 
                   <CardFooter className="relative pt-0 p-6 mt-auto">
-                    <Button onClick={() => addToCart(product.id)} className="w-full h-14 text-base font-bold bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 text-blue-900 shadow-lg hover:shadow-xl hover:shadow-yellow-400/30 transition-all duration-300 hover:scale-105 transform-gpu border-2 border-yellow-300 hover:border-yellow-400 rounded-xl" disabled={!product.inStock} size="lg">
-                      <ShoppingCart className="w-5 h-5 mr-2 flex-shrink-0 group-hover:rotate-12 transition-transform duration-300" />
+                    <Button onClick={() => addToCart(product.id)} className="w-full h-14 text-base font-bold bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 text-blue-900 shadow-lg border-2 border-yellow-300 hover:border-yellow-400 rounded-xl" disabled={!product.inStock} size="lg">
+                      <ShoppingCart className="w-5 h-5 mr-2 flex-shrink-0" />
                       <span className="hidden sm:inline">In Winkelwagen</span>
                       <span className="sm:hidden">In Winkelwagen</span>
                     </Button>
                   </CardFooter>
-                  
-                  {/* Corner accent */}
                   
                 </Card>)}
             </div>
@@ -755,9 +736,9 @@ const Webshop = () => {
             {/* Floating call-to-action */}
             <div className="text-center mt-16">
               <div className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-primary/10 via-secondary/10 to-primary/10 backdrop-blur-sm rounded-2xl border border-primary/20 shadow-lg">
-                <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse mr-3"></div>
+                <div className="w-3 h-3 bg-green-500 rounded-full mr-3"></div>
                 <span className="text-foreground font-semibold">Alle producten zijn direct leverbaar</span>
-                <div className="w-3 h-3 bg-primary rounded-full animate-pulse ml-3"></div>
+                <div className="w-3 h-3 bg-primary rounded-full ml-3"></div>
               </div>
             </div>
           </div>
