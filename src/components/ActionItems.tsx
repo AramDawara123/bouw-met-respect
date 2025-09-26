@@ -165,7 +165,7 @@ const ActionItems = () => {
       <div className="container mx-auto px-4 relative">
         <div 
           ref={headerRef}
-          className={`text-center mb-20 transition-all duration-1000 ${
+          className={`text-center mb-20 transition-all duration-500 ${
             headerVisible 
               ? 'opacity-100 transform translate-y-0' 
               : 'opacity-0 transform translate-y-8'
@@ -187,7 +187,7 @@ const ActionItems = () => {
         {/* Pricing Section */}
         <div 
           ref={pricingRef}
-          className={`mb-20 transition-all duration-1000 ${
+          className={`mb-20 transition-all duration-500 ${
             pricingVisible 
               ? 'opacity-100 transform translate-y-0' 
               : 'opacity-0 transform translate-y-8'
@@ -202,13 +202,13 @@ const ActionItems = () => {
             {pricingTiers.map((tier, index) => (
               <Card 
                 key={index}
-                className={`relative p-4 sm:p-6 lg:p-8 text-center transition-all duration-500 border-2 hover:shadow-2xl hover:scale-105 ${
+                className={`relative p-4 sm:p-6 lg:p-8 text-center transition-all duration-300 border-2 hover:shadow-2xl hover:scale-105 ${
                   tier.popular 
                     ? 'border-primary shadow-xl bg-gradient-to-br from-primary/5 to-primary/10' 
                     : 'border-border hover:border-primary/50 bg-card'
                 }`}
                 style={{ 
-                  transitionDelay: pricingVisible ? `${index * 150}ms` : '0ms'
+                  transitionDelay: pricingVisible ? `${index * 100}ms` : '0ms'
                 }}
               >
                 {tier.popular && (
@@ -252,13 +252,13 @@ const ActionItems = () => {
           {businessValues.map((value, index) => (
             <Card 
               key={index} 
-              className={`group relative p-4 sm:p-6 lg:p-8 transition-all duration-700 border-0 hover:shadow-2xl hover:scale-[1.02] bg-gradient-to-br ${value.gradient} backdrop-blur-sm ${
+              className={`group relative p-4 sm:p-6 lg:p-8 transition-all duration-400 border-0 hover:shadow-2xl hover:scale-[1.02] bg-gradient-to-br ${value.gradient} backdrop-blur-sm ${
                 cardsVisible 
                   ? 'opacity-100 transform translate-x-0' 
                   : 'opacity-0 transform ' + (index % 2 === 0 ? '-translate-x-12' : 'translate-x-12')
               }`}
               style={{ 
-                transitionDelay: cardsVisible ? `${index * 200}ms` : '0ms'
+                transitionDelay: cardsVisible ? `${index * 120}ms` : '0ms'
               }}
             >
               {/* Subtle border gradient */}
