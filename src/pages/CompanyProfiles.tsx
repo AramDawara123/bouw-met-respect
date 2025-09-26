@@ -50,17 +50,11 @@ const CompanyProfiles = () => {
             
             {/* Action Buttons */}
             <div className="flex items-center justify-center gap-3">
-              <Button 
-                variant="outline" 
-                className="flex items-center gap-2 bg-background border-border hover:bg-muted"
-              >
+              <Button variant="outline" className="flex items-center gap-2 bg-background border-border hover:bg-muted">
                 <div className="w-2 h-2 bg-green-500 rounded-full"></div>
                 Partners gallerij
               </Button>
-              <Button 
-                onClick={() => setShowPartnerForm(true)}
-                className="bg-blue-600 hover:bg-blue-700 text-white font-medium px-6"
-              >
+              <Button onClick={() => setShowPartnerForm(true)} className="bg-blue-600 hover:bg-blue-700 text-white font-medium px-6">
                 Word Partner
               </Button>
             </div>
@@ -90,21 +84,7 @@ const CompanyProfiles = () => {
               </div>}
           </div>
 
-          <div className="lg:col-span-1">
-            <Card className="sticky top-8">
-              <CardHeader>
-                <CardTitle>Word Partner</CardTitle>
-                <CardDescription>
-                  Sluit je aan bij onze missie voor een respectvolle bouwsector
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Button onClick={() => setShowPartnerForm(true)} className="w-full">
-                  Partner Worden
-                </Button>
-              </CardContent>
-            </Card>
-          </div>
+          
         </div>
       </div>
 
