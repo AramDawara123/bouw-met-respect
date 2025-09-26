@@ -121,6 +121,7 @@ export type Database = {
           expires_at: string | null
           id: string
           minimum_order_amount: number | null
+          partner_membership_ids: string[] | null
           starts_at: string | null
           updated_at: string
           usage_limit: number | null
@@ -137,6 +138,7 @@ export type Database = {
           expires_at?: string | null
           id?: string
           minimum_order_amount?: number | null
+          partner_membership_ids?: string[] | null
           starts_at?: string | null
           updated_at?: string
           usage_limit?: number | null
@@ -153,6 +155,7 @@ export type Database = {
           expires_at?: string | null
           id?: string
           minimum_order_amount?: number | null
+          partner_membership_ids?: string[] | null
           starts_at?: string | null
           updated_at?: string
           usage_limit?: number | null
@@ -353,6 +356,7 @@ export type Database = {
       partner_memberships: {
         Row: {
           amount: number | null
+          billing_frequency: string | null
           company_name: string
           created_at: string
           currency: string | null
@@ -364,14 +368,18 @@ export type Database = {
           last_name: string
           logo_url: string | null
           mollie_payment_id: string | null
+          next_billing_date: string | null
           payment_status: string | null
           phone: string
+          subscription_id: string | null
+          subscription_status: string | null
           updated_at: string
           user_id: string | null
           website: string | null
         }
         Insert: {
           amount?: number | null
+          billing_frequency?: string | null
           company_name: string
           created_at?: string
           currency?: string | null
@@ -383,14 +391,18 @@ export type Database = {
           last_name: string
           logo_url?: string | null
           mollie_payment_id?: string | null
+          next_billing_date?: string | null
           payment_status?: string | null
           phone: string
+          subscription_id?: string | null
+          subscription_status?: string | null
           updated_at?: string
           user_id?: string | null
           website?: string | null
         }
         Update: {
           amount?: number | null
+          billing_frequency?: string | null
           company_name?: string
           created_at?: string
           currency?: string | null
@@ -402,8 +414,11 @@ export type Database = {
           last_name?: string
           logo_url?: string | null
           mollie_payment_id?: string | null
+          next_billing_date?: string | null
           payment_status?: string | null
           phone?: string
+          subscription_id?: string | null
+          subscription_status?: string | null
           updated_at?: string
           user_id?: string | null
           website?: string | null

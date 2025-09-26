@@ -238,7 +238,8 @@ const PartnerSignupForm = ({ open, onOpenChange }: PartnerSignupFormProps) => {
             company_size: values.companySize,
             description: values.description
           },
-          amount: amount,
+          amount: finalAmount, // Use final amount after discount
+          originalAmount: amount, // Keep original for metadata
           discountCode: appliedDiscount?.valid ? values.discountCode : undefined,
           discountAmount: discountAmount
         }

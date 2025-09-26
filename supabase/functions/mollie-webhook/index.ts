@@ -123,7 +123,13 @@ serve(async (req) => {
     if (metadata.type === 'partner_membership') {
       const { error } = await supabaseService
         .from('partner_memberships')
-        .update({ payment_status: newStatus })
+        .update({ 
+          payment_status: newStatus,
+          // Update discount usage tracking
+          ...(newStatus === 'paid' && metadata.discount_code ? {
+            discount_code: metadata.discount_code
+          } : {})
+        })
         .eq('mollie_payment_id', paymentId);
 
       if (error) {

@@ -52,15 +52,15 @@ serve(async (req) => {
       db: { schema: 'public' }
     });
 
-    const { partnerData, amount, discountCode, discountAmount, skipPayment } = await req.json();
+    const { partnerData, amount, originalAmount, discountCode, discountAmount, skipPayment } = await req.json();
     
-    // Default amount if not provided (fallback to ZZP price)
-    const originalAmount = 25000; // Default ZZP price
-    const partnerAmount = amount || originalAmount; // This is the final amount after discount
+    // Use originalAmount from frontend, fallback to 25000 (ZZP price)
+    const baseAmount = originalAmount || 25000; 
+    const partnerAmount = amount || baseAmount; // This is the final amount after discount
     const finalDiscountAmount = discountAmount || 0;
 
     console.log('Creating partner payment for:', partnerData);
-    console.log('Original amount:', originalAmount, 'Final amount after discount:', partnerAmount, 'Discount amount:', finalDiscountAmount);
+    console.log('Original amount:', baseAmount, 'Final amount after discount:', partnerAmount, 'Discount amount:', finalDiscountAmount);
     console.log('Skip payment:', skipPayment);
     if (discountCode) {
       console.log('Discount code applied:', discountCode);
@@ -131,7 +131,7 @@ serve(async (req) => {
         company_name: partnerData.company_name,
         email: partnerData.email,
         company_size: partnerData.company_size || 'zzp',
-        original_amount: originalAmount,
+        original_amount: baseAmount,
         final_amount: partnerAmount,
         ...(discountCode && { discount_code: discountCode, discount_amount: finalDiscountAmount })
       }
