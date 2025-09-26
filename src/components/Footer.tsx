@@ -30,7 +30,7 @@ const Footer = () => {
       setIsLoading(false);
     }, 1000);
   };
-  return <footer className="bg-foreground text-background py-20">
+  return <footer className="text-background py-20 bg-[#042253]">
       <div className="container mx-auto px-4">
         {/* Main Content */}
         <div className="grid lg:grid-cols-4 gap-12 mb-16">
@@ -90,7 +90,7 @@ const Footer = () => {
             <div className="space-y-4">
               <div className="text-background/80">
                 <div className="font-medium">Email ons</div>
-                <a href="mailto:info@bouwmetrespect.nl" className="text-sm opacity-80 hover:opacity-100 transition-opacity">info@bouwmetrespect.nl</a>
+                <div className="text-sm opacity-80">info@bouwmetrespect.nl</div>
               </div>
               
               <div className="text-background/80">
