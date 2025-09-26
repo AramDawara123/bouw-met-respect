@@ -250,66 +250,36 @@ const Dashboard = () => {
     try {
       setLoadingAutoAccounts(true);
       
-      // Haal gebruikers op die via auto account aangemaakt zijn
-      const { data: authUsers, error: authError } = await supabaseAdmin.auth.admin.listUsers();
+      // Haal partners op die een user_id hebben (dus een account hebben)
+      const { data: autoPartners, error } = await supabase
+        .from('partner_memberships')
+        .select('*')
+        .not('user_id', 'is', null)
+        .order('created_at', { ascending: false });
       
-      if (authError) throw authError;
+      if (error) throw error;
       
-      // Filter op gebruikers die mogelijk auto-aangemaakt zijn
-      // Deze hebben meestal een specifiek patroon in hun metadata
-      const autoUsers = authUsers.users.filter((user: any) => {
-        return user.user_metadata && 
-               (user.user_metadata.created_via_admin || 
-                user.user_metadata.auto_created ||
-                user.email?.includes('test') ||
-                user.email?.includes('auto'));
-      });
-      
-      // Verrijk met partner membership data indien beschikbaar
-      const enrichedUsers = await Promise.all(autoUsers.map(async (user: any) => {
-        try {
-          const { data: partnerData } = await supabase
-            .from('partner_memberships')
-            .select('*')
-            .eq('user_id', user.id)
-            .maybeSingle();
-            
-          return {
-            id: user.id,
-            email: user.email,
-            created_at: user.created_at,
-            last_sign_in_at: user.last_sign_in_at,
-            confirmed_at: user.confirmed_at,
-            first_name: user.user_metadata?.first_name || partnerData?.first_name || '',
-            last_name: user.user_metadata?.last_name || partnerData?.last_name || '',
-            company_name: user.user_metadata?.company_name || partnerData?.company_name || '',
-            phone: user.user_metadata?.phone || partnerData?.phone || '',
-            partner_membership: partnerData,
-            auto_created: user.user_metadata?.auto_created || user.user_metadata?.created_via_admin || false
-          };
-        } catch (error) {
-          console.error(`Error enriching user ${user.id}:`, error);
-          return {
-            id: user.id,
-            email: user.email,
-            created_at: user.created_at,
-            last_sign_in_at: user.last_sign_in_at,
-            confirmed_at: user.confirmed_at,
-            first_name: user.user_metadata?.first_name || '',
-            last_name: user.user_metadata?.last_name || '',
-            company_name: user.user_metadata?.company_name || '',
-            phone: user.user_metadata?.phone || '',
-            partner_membership: null,
-            auto_created: user.user_metadata?.auto_created || user.user_metadata?.created_via_admin || false
-          };
-        }
+      // Transform to match expected format
+      const formattedAccounts = autoPartners.map((partner: any) => ({
+        id: partner.user_id,
+        email: partner.email,
+        created_at: partner.created_at,
+        last_sign_in_at: null,
+        confirmed_at: partner.created_at,
+        first_name: partner.first_name || '',
+        last_name: partner.last_name || '',
+        company_name: partner.company_name || '',
+        phone: partner.phone || '',
+        partner_membership: partner,
+        auto_created: true,
+        payment_status: partner.payment_status
       }));
       
-      setAutoAccounts(enrichedUsers);
+      setAutoAccounts(formattedAccounts);
     } catch (error) {
       console.error('Error fetching auto accounts:', error);
       toast({
-        title: "Fout",
+        title: "Fout", 
         description: "Kon auto accounts niet laden",
         variant: "destructive"
       });
