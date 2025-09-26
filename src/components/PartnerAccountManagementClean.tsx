@@ -9,7 +9,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Search, UserPlus, Key, Mail, Zap, Edit2, Trash2, Ban, RotateCcw } from "lucide-react";
+import { Search, UserPlus, Key, Mail, Zap, Edit2, Trash2, Ban, RotateCcw, Users, CheckCircle2, Building2, Calendar } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { supabaseAdmin } from "@/integrations/supabase/admin-client";
 import { useToast } from "@/hooks/use-toast";
@@ -506,63 +506,170 @@ const PartnerAccountManagementClean = () => {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="overflow-x-auto">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Naam</TableHead>
-                      <TableHead>Email</TableHead>
-                      <TableHead>Bedrijf</TableHead>
-                      <TableHead>Account Status</TableHead>
-                      <TableHead>Aangemaakt</TableHead>
-                      <TableHead>Betaal Status</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {partners.filter(partner => partner.user_id).map((partner) => (
-                      <TableRow key={partner.id}>
-                        <TableCell className="font-medium">
-                          {partner.first_name} {partner.last_name}
-                        </TableCell>
-                        <TableCell>{partner.email}</TableCell>
-                        <TableCell>{partner.company_name}</TableCell>
-                        <TableCell>
-                          <Badge variant="default">
-                            <Key className="w-3 h-3 mr-1" />
-                            Actief Account
-                          </Badge>
-                        </TableCell>
-                        <TableCell>
-                          {new Date(partner.created_at).toLocaleDateString('nl-NL')}
-                        </TableCell>
-                        <TableCell>
-                          <Badge variant={
-                            partner.payment_status === 'paid' ? 'default' : 
-                            partner.payment_status === 'cancelled' ? 'destructive' : 'secondary'
-                          }>
-                            {partner.payment_status === 'paid' ? 'Actief' : 
-                             partner.payment_status === 'cancelled' ? 'Stopgezet' : 'In behandeling'}
-                          </Badge>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                    {partners.filter(p => p.user_id).length === 0 && (
+              {/* Statistics Cards */}
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+                <Card>
+                  <CardContent className="flex items-center p-4">
+                    <div className="flex items-center space-x-3">
+                      <div className="p-2 bg-purple-100 rounded-lg">
+                        <Users className="h-5 w-5 text-purple-600" />
+                      </div>
+                      <div>
+                        <p className="text-sm text-muted-foreground">Total Accounts</p>
+                        <p className="text-2xl font-bold">{partners.filter(p => p.user_id).length}</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+                
+                <Card>
+                  <CardContent className="flex items-center p-4">
+                    <div className="flex items-center space-x-3">
+                      <div className="p-2 bg-green-100 rounded-lg">
+                        <CheckCircle2 className="h-5 w-5 text-green-600" />
+                      </div>
+                      <div>
+                        <p className="text-sm text-muted-foreground">Active Accounts</p>
+                        <p className="text-2xl font-bold">{partners.filter(p => p.user_id && p.payment_status === 'paid').length}</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+                
+                <Card>
+                  <CardContent className="flex items-center p-4">
+                    <div className="flex items-center space-x-3">
+                      <div className="p-2 bg-blue-100 rounded-lg">
+                        <Building2 className="h-5 w-5 text-blue-600" />
+                      </div>
+                      <div>
+                        <p className="text-sm text-muted-foreground">Met Partner Membership</p>
+                        <p className="text-2xl font-bold">{partners.filter(p => p.user_id && p.payment_status === 'paid').length}</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+                
+                <Card>
+                  <CardContent className="flex items-center p-4">
+                    <div className="flex items-center space-x-3">
+                      <div className="p-2 bg-orange-100 rounded-lg">
+                        <Calendar className="h-5 w-5 text-orange-600" />
+                      </div>
+                      <div>
+                        <p className="text-sm text-muted-foreground">Laatste Week</p>
+                        <p className="text-2xl font-bold">{partners.filter(p => p.user_id && new Date(p.created_at) > new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)).length}</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* Auto Accounts Section */}
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-2">
+                    <Users className="h-5 w-5 text-primary" />
+                    <div>
+                      <h3 className="text-lg font-semibold">Auto Accounts</h3>
+                      <p className="text-sm text-muted-foreground">
+                        Beheer automatisch aangemaakte accounts en hun wachtwoorden
+                      </p>
+                    </div>
+                  </div>
+                  <Button onClick={fetchPartners} className="bg-yellow-500 hover:bg-yellow-600 text-black">
+                    Vernieuwen
+                  </Button>
+                </div>
+
+                <div className="overflow-x-auto">
+                  <Table>
+                    <TableHeader>
                       <TableRow>
-                        <TableCell colSpan={6} className="text-center py-8">
-                          <div className="space-y-4">
-                            <div className="text-muted-foreground">
-                              <Key className="w-8 h-8 mx-auto mb-2 opacity-50" />
-                              <p>Nog geen auto accounts aangemaakt</p>
-                              <p className="text-sm mt-2">
-                                Gebruik de "Auto Account Creator" tab om automatisch accounts aan te maken voor partners.
-                              </p>
-                            </div>
-                          </div>
-                        </TableCell>
+                        <TableHead>Naam</TableHead>
+                        <TableHead>Email</TableHead>
+                        <TableHead>Bedrijf</TableHead>
+                        <TableHead>Status</TableHead>
+                        <TableHead>Aangemaakt</TableHead>
+                        <TableHead>Partner</TableHead>
+                        <TableHead>Acties</TableHead>
                       </TableRow>
-                    )}
-                  </TableBody>
-                </Table>
+                    </TableHeader>
+                    <TableBody>
+                      {partners.filter(partner => partner.user_id).map((partner) => (
+                        <TableRow key={partner.id}>
+                          <TableCell className="font-medium">
+                            {partner.first_name} {partner.last_name}
+                            {partner.phone && (
+                              <div className="text-sm text-muted-foreground">
+                                {partner.phone}
+                              </div>
+                            )}
+                          </TableCell>
+                          <TableCell>{partner.email}</TableCell>
+                          <TableCell>{partner.company_name}</TableCell>
+                          <TableCell>
+                            <div className="flex gap-2">
+                              <Badge variant="default" className="bg-blue-500">
+                                Account Actief
+                              </Badge>
+                              <Badge variant="default" className="bg-green-500">
+                                Betaald
+                              </Badge>
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            {new Date(partner.created_at).toLocaleDateString('nl-NL', {
+                              day: '2-digit',
+                              month: '2-digit',
+                              year: 'numeric'
+                            })}
+                          </TableCell>
+                          <TableCell>
+                            <Badge variant="secondary">
+                              Actief
+                            </Badge>
+                          </TableCell>
+                          <TableCell>
+                            <div className="flex gap-2">
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => setEditingPartner(partner)}
+                                className="p-2"
+                              >
+                                <Edit2 className="w-4 h-4" />
+                              </Button>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => handleDeletePartner(partner)}
+                                className="p-2 text-destructive hover:text-destructive"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </Button>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                      {partners.filter(p => p.user_id).length === 0 && (
+                        <TableRow>
+                          <TableCell colSpan={7} className="text-center py-8">
+                            <div className="space-y-4">
+                              <div className="text-muted-foreground">
+                                <Key className="w-8 h-8 mx-auto mb-2 opacity-50" />
+                                <p>Nog geen auto accounts aangemaakt</p>
+                                <p className="text-sm mt-2">
+                                  Gebruik de "Auto Account Creator" tab om automatisch accounts aan te maken voor partners.
+                                </p>
+                              </div>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      )}
+                    </TableBody>
+                  </Table>
+                </div>
               </div>
             </CardContent>
           </Card>
