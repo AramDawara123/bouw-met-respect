@@ -568,7 +568,7 @@ const Webshop = () => {
       {/* Marquee Section */}
       <section className="py-8 bg-gradient-to-r from-primary to-secondary overflow-hidden">
         <MarqueeAnimation 
-          baseVelocity={15} 
+          baseVelocity={8} 
           direction="left" 
           className="text-white/90 text-4xl sm:text-5xl lg:text-6xl font-bold tracking-wider"
         >
