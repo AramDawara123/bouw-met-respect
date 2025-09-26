@@ -30,7 +30,7 @@ const MissionStatement = () => {
         </div>
 
         {/* Statistics Section */}
-        <Card className="p-12 border-0 relative overflow-hidden bg-[#fdd45c]">
+        <Card className="p-12 border-0 relative overflow-hidden bg-accent">
           <div className="relative z-10 grid lg:grid-cols-2 gap-12 items-center">
             <div>
               <h3 className="text-3xl font-bold mb-6 text-accent-foreground">
