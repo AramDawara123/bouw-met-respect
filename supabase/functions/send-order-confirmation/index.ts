@@ -148,23 +148,23 @@ const handler = async (req: Request): Promise<Response> => {
                 <!-- Total Summary -->
                 <tr>
                   <td style="padding: 0 30px 20px 30px;">
-                    <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 8px; color: #ffffff;">
+                    <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 8px;">
                       <tr>
                         <td style="padding: 24px;">
-                          <h3 style="color: #ffffff; font-size: 20px; font-weight: 600; margin: 0 0 16px 0;">💰 Besteloverzicht</h3>
+                          <h3 style="color: #1f2937; font-size: 20px; font-weight: 600; margin: 0 0 16px 0; background-color: rgba(255,255,255,0.9); padding: 8px 12px; border-radius: 6px; display: inline-block;">💰 Besteloverzicht</h3>
                           
-                          <table width="100%" cellpadding="8" cellspacing="0" border="0">
-                            <tr style="border-bottom: 1px solid rgba(255,255,255,0.2);">
-                              <td style="font-weight: 500; opacity: 0.9; color: #ffffff;">Subtotaal:</td>
-                              <td style="font-weight: 600; text-align: right; color: #ffffff;">€${(orderData.subtotal / 100).toFixed(2)}</td>
+                          <table width="100%" cellpadding="8" cellspacing="0" border="0" style="background-color: rgba(255,255,255,0.95); border-radius: 6px;">
+                            <tr style="border-bottom: 1px solid #e5e7eb;">
+                              <td style="font-weight: 500; color: #374151; padding: 12px;">Subtotaal:</td>
+                              <td style="font-weight: 600; text-align: right; color: #1f2937; padding: 12px;">€${(orderData.subtotal / 100).toFixed(2)}</td>
                             </tr>
-                            <tr style="border-bottom: 1px solid rgba(255,255,255,0.2);">
-                              <td style="font-weight: 500; opacity: 0.9; color: #ffffff; padding: 8px 0;">Verzendkosten:</td>
-                              <td style="font-weight: 600; text-align: right; color: #ffffff; padding: 8px 0;">€${(orderData.shipping / 100).toFixed(2)}</td>
+                            <tr style="border-bottom: 1px solid #e5e7eb;">
+                              <td style="font-weight: 500; color: #374151; padding: 12px;">Verzendkosten:</td>
+                              <td style="font-weight: 600; text-align: right; color: #1f2937; padding: 12px;">€${(orderData.shipping / 100).toFixed(2)}</td>
                             </tr>
-                            <tr style="border-top: 2px solid rgba(255,255,255,0.3);">
-                              <td style="font-size: 20px; font-weight: 700; color: #ffffff; padding: 16px 0 8px 0;">Totaal:</td>
-                              <td style="font-size: 24px; font-weight: 700; text-align: right; color: #ffffff; padding: 16px 0 8px 0;">€${(orderData.total / 100).toFixed(2)}</td>
+                            <tr style="border-top: 2px solid #667eea;">
+                              <td style="font-size: 20px; font-weight: 700; color: #1f2937; padding: 16px 12px 12px 12px;">Totaal:</td>
+                              <td style="font-size: 24px; font-weight: 700; text-align: right; color: #667eea; padding: 16px 12px 12px 12px;">€${(orderData.total / 100).toFixed(2)}</td>
                             </tr>
                           </table>
                         </td>
