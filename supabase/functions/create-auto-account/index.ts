@@ -121,6 +121,7 @@ const handler = async (req: Request): Promise<Response> => {
         email: email,
         first_name: first_name || '',
         last_name: last_name || '',
+        phone: 'Niet opgegeven', // Required field
         company_name: company_name || 'Niet opgegeven',
         payment_status: 'paid', // Auto-approve
         amount: 0, // Free account
