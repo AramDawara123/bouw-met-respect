@@ -2225,6 +2225,15 @@ Het Bouw met Respect team
                                     >
                                       <Printer className="w-4 h-4" />
                                     </Button>
+                                    <Button
+                                      variant="ghost"
+                                      size="sm"
+                                      onClick={() => deleteOrder(order.id)}
+                                      title="Verwijder bestelling"
+                                      className="text-destructive hover:text-destructive"
+                                    >
+                                      <Trash2 className="w-4 h-4" />
+                                    </Button>
                                   </div>
                                 </TableCell>
                               </TableRow>
