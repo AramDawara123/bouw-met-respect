@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -8,7 +7,6 @@ import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import ReportForm from "./ReportForm";
-
 const Contact = () => {
   const [formData, setFormData] = useState({
     name: '',
@@ -18,15 +16,18 @@ const Contact = () => {
   });
   const [reportFormOpen, setReportFormOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { toast } = useToast();
-
+  const {
+    toast
+  } = useToast();
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-
     try {
       // Send email notification
-      const { data, error } = await supabase.functions.invoke('send-contact-email', {
+      const {
+        data,
+        error
+      } = await supabase.functions.invoke('send-contact-email', {
         body: {
           name: formData.name,
           email: formData.email,
@@ -34,13 +35,12 @@ const Contact = () => {
           message: formData.message
         }
       });
-
       if (error || data?.error) {
         console.error('Email sending error:', error || data?.error);
         toast({
           title: "Fout",
           description: "Er is een fout opgetreden bij het versturen van je bericht. Probeer het opnieuw.",
-          variant: "destructive",
+          variant: "destructive"
         });
         return;
       }
@@ -48,7 +48,7 @@ const Contact = () => {
       // Success
       toast({
         title: "Bericht verzonden!",
-        description: "Je bericht is succesvol verzonden. We nemen zo snel mogelijk contact met je op.",
+        description: "Je bericht is succesvol verzonden. We nemen zo snel mogelijk contact met je op."
       });
 
       // Reset form
@@ -58,28 +58,24 @@ const Contact = () => {
         company: '',
         message: ''
       });
-
     } catch (error) {
       console.error('Error submitting form:', error);
       toast({
         title: "Fout",
         description: "Er is een onverwachte fout opgetreden. Probeer het opnieuw.",
-        variant: "destructive",
+        variant: "destructive"
       });
     } finally {
       setIsSubmitting(false);
     }
   };
-
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormData(prev => ({
       ...prev,
       [e.target.name]: e.target.value
     }));
   };
-
-  return (
-    <section id="contact" className="py-20 bg-background">
+  return <section id="contact" className="py-20 bg-background">
       <div className="container mx-auto px-4">
         {/* Header */}
         <div className="text-center mb-16">
@@ -94,12 +90,7 @@ const Contact = () => {
           
           {/* Meldpunt Button */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <Button 
-              size="lg" 
-              variant="outline"
-              onClick={() => setReportFormOpen(true)}
-              className="border-destructive/30 text-destructive hover:bg-destructive/10"
-            >
+            <Button size="lg" variant="outline" onClick={() => setReportFormOpen(true)} className="border-destructive/30 text-destructive hover:bg-destructive/10">
               <AlertTriangle className="w-5 h-5 mr-2" />
               Meld grensoverschrijdend gedrag
             </Button>
@@ -116,28 +107,13 @@ const Contact = () => {
                   <label htmlFor="name" className="block text-sm font-medium mb-2 text-foreground">
                     Naam <span className="text-destructive">*</span>
                   </label>
-                  <Input
-                    id="name"
-                    name="name"
-                    value={formData.name}
-                    onChange={handleChange}
-                    required
-                    className="h-12"
-                  />
+                  <Input id="name" name="name" value={formData.name} onChange={handleChange} required className="h-12" />
                 </div>
                 <div>
                   <label htmlFor="email" className="block text-sm font-medium mb-2 text-foreground">
                     Email <span className="text-destructive">*</span>
                   </label>
-                  <Input
-                    id="email"
-                    name="email"
-                    type="email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    required
-                    className="h-12"
-                  />
+                  <Input id="email" name="email" type="email" value={formData.email} onChange={handleChange} required className="h-12" />
                 </div>
               </div>
 
@@ -145,30 +121,14 @@ const Contact = () => {
                 <label htmlFor="company" className="block text-sm font-medium mb-2 text-foreground">
                   Bedrijf/Organisatie <span className="text-destructive">*</span>
                 </label>
-                <Input
-                  id="company"
-                  name="company"
-                  value={formData.company}
-                  onChange={handleChange}
-                  required
-                  className="h-12"
-                />
+                <Input id="company" name="company" value={formData.company} onChange={handleChange} required className="h-12" />
               </div>
 
               <div>
                 <label htmlFor="message" className="block text-sm font-medium mb-2 text-foreground">
                   Bericht <span className="text-destructive">*</span>
                 </label>
-                <Textarea
-                  id="message"
-                  name="message"
-                  rows={6}
-                  value={formData.message}
-                  onChange={handleChange}
-                  required
-                  placeholder="Vertel ons over je vragen over grensoverschrijdend gedrag, sociale veiligheid, of hoe je wilt bijdragen aan cultuurverandering in de bouw..."
-                  className="resize-none"
-                />
+                <Textarea id="message" name="message" rows={6} value={formData.message} onChange={handleChange} required placeholder="Vertel ons over je vragen over grensoverschrijdend gedrag, sociale veiligheid, of hoe je wilt bijdragen aan cultuurverandering in de bouw..." className="resize-none" />
               </div>
 
               <Button type="submit" size="lg" className="w-full" disabled={isSubmitting}>
@@ -225,7 +185,7 @@ const Contact = () => {
                   </div>
                   <div>
                     <h4 className="font-semibold text-foreground">Locatie</h4>
-                    <p className="text-muted-foreground">Amsterdam, Nederland</p>
+                    <p className="text-muted-foreground">Alkamaar, Nederland</p>
                   </div>
                 </div>
               </Card>
@@ -235,8 +195,6 @@ const Contact = () => {
       </div>
       
       <ReportForm open={reportFormOpen} onOpenChange={setReportFormOpen} />
-    </section>
-  );
+    </section>;
 };
-
 export default Contact;
