@@ -58,7 +58,7 @@ const handler = async (req: Request): Promise<Response> => {
                 <!-- Header -->
                 <tr>
                   <td style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 40px 30px; text-align: center; border-radius: 12px 12px 0 0;">
-                    <h1 style="color: #ffffff; font-size: 32px; font-weight: 700; margin: 0 0 10px 0; text-shadow: 0 2px 4px rgba(0,0,0,0.1);">Bouw met Respect</h1>
+                    <h1 style="color: #1f2937; font-size: 32px; font-weight: 700; margin: 0 0 10px 0; text-shadow: none; background-color: rgba(255,255,255,0.9); padding: 8px 16px; border-radius: 8px; display: inline-block;">Bouw met Respect</h1>
                     <div style="background-color: #10b981; color: #ffffff; padding: 8px 16px; border-radius: 20px; font-size: 14px; font-weight: 600; display: inline-block;">
                       ✅ Bestelling Bevestigd
                     </div>
