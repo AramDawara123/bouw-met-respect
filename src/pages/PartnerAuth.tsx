@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Eye, EyeOff, LogIn, UserPlus, ArrowLeft, Building2 } from "lucide-react";
+import { Eye, EyeOff, LogIn, UserPlus, ArrowLeft, Building2, Mail } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { User, Session } from '@supabase/supabase-js';
@@ -29,7 +29,10 @@ const PartnerAuth = () => {
   const [signUpForm, setSignUpForm] = useState({
     email: "",
     password: "",
-    confirmPassword: ""
+    confirmPassword: "",
+    first_name: "",
+    last_name: "",
+    company_name: ""
   });
   const [resetEmail, setResetEmail] = useState("");
   const [resetLoading, setResetLoading] = useState(false);
@@ -141,7 +144,10 @@ const PartnerAuth = () => {
       setSignUpForm({
         email: "",
         password: "",
-        confirmPassword: ""
+        confirmPassword: "",
+        first_name: "",
+        last_name: "",
+        company_name: ""
       });
 
       // If user is immediately confirmed, they'll be redirected by the auth state change
@@ -281,34 +287,111 @@ const PartnerAuth = () => {
               {/* Sign Up Tab */}
               <TabsContent value="signup" className="space-y-4">
                 <form onSubmit={handleSignUp} className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="signup-email">Email</Label>
-                    <Input id="signup-email" type="email" placeholder="partner@bedrijf.nl" value={signUpForm.email} onChange={e => setSignUpForm({
-                    ...signUpForm,
-                    email: e.target.value
-                  })} required />
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="signup-first-name">Voornaam *</Label>
+                      <Input
+                        id="signup-first-name"
+                        type="text"
+                        placeholder="Jan"
+                        value={signUpForm.first_name}
+                        onChange={(e) => setSignUpForm({...signUpForm, first_name: e.target.value})}
+                        required
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="signup-last-name">Achternaam *</Label>
+                      <Input
+                        id="signup-last-name"
+                        type="text"
+                        placeholder="Jansen"
+                        value={signUpForm.last_name}
+                        onChange={(e) => setSignUpForm({...signUpForm, last_name: e.target.value})}
+                        required
+                      />
+                    </div>
                   </div>
+
                   <div className="space-y-2">
-                    <Label htmlFor="signup-password">Wachtwoord</Label>
+                    <Label htmlFor="signup-email">Email Adres *</Label>
                     <div className="relative">
-                      <Input id="signup-password" type={showPassword ? "text" : "password"} placeholder="••••••••" value={signUpForm.password} onChange={e => setSignUpForm({
-                      ...signUpForm,
-                      password: e.target.value
-                    })} required minLength={6} />
-                      <Button type="button" variant="ghost" size="sm" className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent" onClick={() => setShowPassword(!showPassword)}>
+                      <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
+                      <Input
+                        id="signup-email"
+                        type="email"
+                        placeholder="partner@bedrijf.nl"
+                        className="pl-10"
+                        value={signUpForm.email}
+                        onChange={(e) => setSignUpForm({...signUpForm, email: e.target.value})}
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="signup-company">Bedrijfsnaam</Label>
+                    <div className="relative">
+                      <Building2 className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
+                      <Input
+                        id="signup-company"
+                        type="text"
+                        placeholder="Bouwbedrijf BV"
+                        className="pl-10"
+                        value={signUpForm.company_name}
+                        onChange={(e) => setSignUpForm({...signUpForm, company_name: e.target.value})}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="signup-password">Wachtwoord *</Label>
+                    <div className="relative">
+                      <Input
+                        id="signup-password"
+                        type={showPassword ? "text" : "password"}
+                        placeholder="••••••••"
+                        value={signUpForm.password}
+                        onChange={(e) => setSignUpForm({...signUpForm, password: e.target.value})}
+                        required
+                        minLength={6}
+                      />
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                        onClick={() => setShowPassword(!showPassword)}
+                      >
                         {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                       </Button>
                     </div>
                   </div>
+
                   <div className="space-y-2">
-                    <Label htmlFor="signup-confirm-password">Bevestig Wachtwoord</Label>
-                    <Input id="signup-confirm-password" type={showPassword ? "text" : "password"} placeholder="••••••••" value={signUpForm.confirmPassword} onChange={e => setSignUpForm({
-                    ...signUpForm,
-                    confirmPassword: e.target.value
-                  })} required minLength={6} />
+                    <Label htmlFor="signup-confirm-password">Bevestig Wachtwoord *</Label>
+                    <Input
+                      id="signup-confirm-password"
+                      type={showPassword ? "text" : "password"}
+                      placeholder="••••••••"
+                      value={signUpForm.confirmPassword}
+                      onChange={(e) => setSignUpForm({...signUpForm, confirmPassword: e.target.value})}
+                      required
+                      minLength={6}
+                    />
                   </div>
+
+                  <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                    <h4 className="font-semibold text-blue-800 mb-2">Account wordt aangemaakt met:</h4>
+                    <ul className="text-blue-700 text-sm space-y-1">
+                      <li>• Toegang tot partner dashboard</li>
+                      <li>• Bedrijfsprofiel beheer</li>
+                      <li>• Email notificaties</li>
+                      <li>• Direct inloggen na registratie</li>
+                    </ul>
+                  </div>
+
                   <Button type="submit" className="w-full" disabled={signUpLoading}>
-                    {signUpLoading ? "Registreren..." : "Registreren"}
+                    {signUpLoading ? "Partner Account Aanmaken..." : "Partner Account Aanmaken"}
                   </Button>
                 </form>
               </TabsContent>
