@@ -111,11 +111,15 @@ class CompanyProfileService {
           partner_membership_id: profileData.partner_membership_id || null,
         }])
         .select()
-        .single();
+        .maybeSingle();
 
       if (error) {
         console.error('Error creating company profile:', error);
         throw new Error(`Failed to create company profile: ${error.message}`);
+      }
+
+      if (!data) {
+        throw new Error('Failed to create company profile - no data returned');
       }
 
       // Dispatch custom event for UI updates
@@ -154,11 +158,15 @@ class CompanyProfileService {
         .update(cleanedData)
         .eq('id', id)
         .select()
-        .single();
+        .maybeSingle();
 
       if (error) {
         console.error('Error updating company profile:', error);
         throw new Error(`Failed to update company profile: ${error.message}`);
+      }
+
+      if (!data) {
+        throw new Error('Company profile not found or you do not have permission to update it');
       }
 
       // Dispatch custom event for UI updates
