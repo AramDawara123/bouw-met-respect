@@ -9,13 +9,13 @@
   :root {
     /* Light background */
     --background: 0 0% 98%;
-    --foreground: 217 91% 17%;
+    --foreground: 45 95% 45%; /* Yellow text */
 
     --card: 0 0% 100%;
-    --card-foreground: 217 91% 17%;
+    --card-foreground: 45 95% 45%; /* Yellow text on cards */
 
     --popover: 0 0% 100%;
-    --popover-foreground: 217 91% 17%;
+    --popover-foreground: 45 95% 45%; /* Yellow text on popovers */
 
     /* Primary: Helder Blauw (Bright Blue) - voor blauwe vierkanten */
     --primary: 214 100% 50%;
@@ -26,7 +26,7 @@
     --secondary-foreground: 45 100% 65%;
 
     --muted: 214 25% 90%;
-    --muted-foreground: 214 100% 25%;
+    --muted-foreground: 45 85% 40%; /* Yellow muted text */
 
     /* Accent: Helder Geel (Bright Yellow) - voor gele symbolen */
     --accent: 45 100% 65%;
@@ -35,9 +35,9 @@
     --destructive: 0 84% 60%;
     --destructive-foreground: 210 40% 98%;
 
-    /* Borders */
-    --border: 214 25% 80%;
-    --input: 214 25% 80%;
+    /* Borders - Blue theme */
+    --border: 214 100% 60%; /* Blue borders */
+    --input: 214 100% 60%; /* Blue input borders */
     --ring: 214 100% 50%;
 
     --radius: 0.75rem;
