@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -62,16 +62,34 @@ const CompanyProfileForm = ({
   const form = useForm<CompanyProfileFormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: profile?.name || "",
-      description: profile?.description || "",
-      website: profile?.website || "",
-      industry: profile?.industry || "",
-      contact_email: profile?.contact_email || "",
-      contact_phone: profile?.contact_phone || "",
-      is_featured: profile?.is_featured || false,
-      display_order: profile?.display_order || 0,
+      name: "",
+      description: "",
+      website: "",
+      industry: "",
+      contact_email: "",
+      contact_phone: "",
+      is_featured: false,
+      display_order: 0,
     },
   });
+
+  // Reset form when profile changes or dialog opens
+  useEffect(() => {
+    if (open) {
+      const formValues = {
+        name: profile?.name || "",
+        description: profile?.description || "",
+        website: profile?.website || "",
+        industry: profile?.industry || "",
+        contact_email: profile?.contact_email || "",
+        contact_phone: profile?.contact_phone || "",
+        is_featured: profile?.is_featured || false,
+        display_order: profile?.display_order || 0,
+      };
+      form.reset(formValues);
+      setLogoUrl(profile?.logo_url || null);
+    }
+  }, [open, profile, form]);
 
   const handleLogoUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
