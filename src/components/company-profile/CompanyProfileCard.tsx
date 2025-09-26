@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Building2, Edit, ExternalLink, Globe, Mail, Phone, Trash2 } from "lucide-react";
 import type { CompanyProfile } from "@/types/companyProfile";
+import { useActionItemsPricing } from "@/hooks/useActionItemsPricing";
 
 interface CompanyProfileCardProps {
   profile: CompanyProfile;
@@ -21,6 +22,7 @@ const CompanyProfileCard = ({
   showFeaturedBadge = true,
   className = ""
 }: CompanyProfileCardProps) => {
+  const { pricing } = useActionItemsPricing();
   return (
     <Card className={`hover:shadow-lg transition-shadow duration-200 ${className}`}>
       <CardContent className="p-6">
@@ -106,6 +108,23 @@ const CompanyProfileCard = ({
             </div>
           )}
         </div>
+
+        {/* Pricing Info */}
+        {pricing.length > 0 && (
+          <div className="border-t pt-4 mb-4">
+            <h4 className="text-sm font-medium mb-2 text-muted-foreground">Actie-items Prijzen</h4>
+            <div className="grid grid-cols-2 gap-2">
+              {pricing.map((price) => (
+                <div key={price.id} className="flex items-center justify-between text-xs">
+                  <span className="text-muted-foreground">{price.size_type}</span>
+                  <Badge variant={price.is_popular ? "default" : "outline"} className="text-xs">
+                    {price.price_display}
+                  </Badge>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Actions */}
         {showActions && (onEdit || onDelete) && (
