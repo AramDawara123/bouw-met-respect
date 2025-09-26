@@ -259,47 +259,45 @@ const MembershipForm = ({
                   render={({ field }) => (
                     <FormItem>
                        <RadioGroup onValueChange={field.onChange} value={field.value} className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div 
-                          className={`border rounded-lg p-4 cursor-pointer hover:bg-muted/50 transition-colors ${form.watch('membershipType')==='klein' ? 'border-primary bg-primary/5' : 'border-border'}`}
-                          onClick={() => field.onChange('klein')}
+                        <Label 
+                          htmlFor="klein"
+                          className={`border rounded-lg p-4 cursor-pointer hover:bg-muted/50 transition-colors block ${form.watch('membershipType')==='klein' ? 'border-primary bg-primary/5' : 'border-border'}`}
                         >
                           <div className="flex items-center space-x-3">
                             <RadioGroupItem value="klein" id="klein" />
-                            <Label htmlFor="klein" className="cursor-pointer">Klein — €250/jaar</Label>
+                            <span>Klein — €250/jaar</span>
                           </div>
-                        </div>
-                        <div 
-                          className={`border rounded-lg p-4 cursor-pointer hover:bg-muted/50 transition-colors ${form.watch('membershipType')==='middelgroot' ? 'border-primary bg-primary/5' : 'border-border'}`}
-                          onClick={() => field.onChange('middelgroot')}
+                        </Label>
+                        <Label 
+                          htmlFor="middelgroot"
+                          className={`border rounded-lg p-4 cursor-pointer hover:bg-muted/50 transition-colors block ${form.watch('membershipType')==='middelgroot' ? 'border-primary bg-primary/5' : 'border-border'}`}
                         >
                           <div className="flex items-center space-x-3">
                             <RadioGroupItem value="middelgroot" id="middelgroot" />
-                            <Label htmlFor="middelgroot" className="cursor-pointer">Middelgroot — €750/jaar</Label>
+                            <span>Middelgroot — €750/jaar</span>
                           </div>
-                        </div>
-                        <div 
-                          className={`border rounded-lg p-4 cursor-pointer hover:bg-muted/50 transition-colors ${form.watch('membershipType')==='groot' ? 'border-primary bg-primary/5' : 'border-border'}`}
-                          onClick={() => field.onChange('groot')}
+                        </Label>
+                        <Label 
+                          htmlFor="groot"
+                          className={`border rounded-lg p-4 cursor-pointer hover:bg-muted/50 transition-colors block ${form.watch('membershipType')==='groot' ? 'border-primary bg-primary/5' : 'border-border'}`}
                         >
                           <div className="flex items-center space-x-3">
                             <RadioGroupItem value="groot" id="groot" />
-                            <Label htmlFor="groot" className="cursor-pointer">Groot — €1250/jaar</Label>
+                            <span>Groot — €1250/jaar</span>
                           </div>
-                        </div>
-                        <div 
-                          className={`border rounded-lg p-4 cursor-pointer hover:bg-muted/50 transition-colors ${form.watch('membershipType')==='offerte' ? 'border-primary bg-primary/5' : 'border-border'}`}
-                          onClick={() => field.onChange('offerte')}
+                        </Label>
+                        <Label 
+                          htmlFor="offerte"
+                          className={`border rounded-lg p-4 cursor-pointer hover:bg-muted/50 transition-colors block ${form.watch('membershipType')==='offerte' ? 'border-primary bg-primary/5' : 'border-border'}`}
                         >
                           <div className="flex items-center space-x-3">
                             <RadioGroupItem value="offerte" id="offerte" />
-                            <Label htmlFor="offerte" className="cursor-pointer">
-                              <div>
-                                <div className="font-medium">Offerte op maat</div>
-                                <div className="text-sm text-muted-foreground">Voor grote organisaties</div>
-                              </div>
-                            </Label>
+                            <div>
+                              <div className="font-medium">Offerte op maat</div>
+                              <div className="text-sm text-muted-foreground">Voor grote organisaties</div>
+                            </div>
                           </div>
-                        </div>
+                        </Label>
                       </RadioGroup>
                       <FormMessage />
                     </FormItem>
