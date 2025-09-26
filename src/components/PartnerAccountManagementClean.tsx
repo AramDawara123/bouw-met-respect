@@ -9,7 +9,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Search, UserPlus, Key, Mail, Zap, Edit2, Trash2, Ban, RotateCcw, Users, CheckCircle2, Building2, Calendar } from "lucide-react";
+import { Search, UserPlus, Key, Mail, Zap, Edit2, Trash2, Ban, RotateCcw, Users, CheckCircle2, Building2, Calendar, KeyRound } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { supabaseAdmin } from "@/integrations/supabase/admin-client";
 import { useToast } from "@/hooks/use-toast";
@@ -269,6 +269,56 @@ const PartnerAccountManagementClean = () => {
         title: "Fout bij heractiveren",
         description: error.message,
         variant: "destructive"
+      });
+    }
+  };
+
+  const handleResetPassword = async (partner: PartnerMembership) => {
+    if (!partner.user_id) {
+      toast({
+        title: "Fout",
+        description: "Deze partner heeft geen gebruikersaccount.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (!session) {
+        throw new Error('Geen actieve sessie');
+      }
+
+      const response = await fetch('/functions/v1/reset-partner-password', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session.access_token}`,
+        },
+        body: JSON.stringify({
+          partnerId: partner.id,
+        }),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.error || 'Er is een fout opgetreden');
+      }
+
+      toast({
+        title: "Wachtwoord gereset",
+        description: `Nieuw tijdelijk wachtwoord voor ${partner.first_name} ${partner.last_name}: ${result.tempPassword}`,
+        duration: 10000,
+      });
+
+    } catch (error: any) {
+      console.error('Error resetting password:', error);
+      toast({
+        title: "Fout",
+        description: error.message || "Er is een fout opgetreden bij het resetten van het wachtwoord.",
+        variant: "destructive",
       });
     }
   };
@@ -644,6 +694,16 @@ const PartnerAccountManagementClean = () => {
                               >
                                 <Edit2 className="w-4 h-4" />
                               </Button>
+                              {partner.user_id && (
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => handleResetPassword(partner)}
+                                  className="p-2 text-blue-600 hover:text-blue-700"
+                                >
+                                  <KeyRound className="w-4 h-4" />
+                                </Button>
+                              )}
                               <Button
                                 variant="outline"
                                 size="sm"
