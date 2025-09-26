@@ -144,99 +144,161 @@ const OrderVerification = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
-      <div className="max-w-4xl mx-auto">
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center gap-3 bg-green-600 text-white px-6 py-3 rounded-lg mb-4">
-            <CheckCircle className="w-6 h-6" />
-            <h1 className="text-xl font-semibold">Order Geverifieerd</h1>
+    <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-secondary/5">
+      {/* Header Section */}
+      <div className="bg-gradient-to-r from-primary to-primary/80 text-primary-foreground py-8">
+        <div className="max-w-4xl mx-auto px-6">
+          <div className="text-center">
+            <div className="inline-flex items-center gap-3 bg-white/20 backdrop-blur-sm px-6 py-3 rounded-full mb-4 border border-white/30">
+              <Shield className="w-6 h-6" />
+              <h1 className="text-xl font-semibold">Officiële Verificatie</h1>
+            </div>
+            <p className="text-primary-foreground/90 text-lg">
+              Gecontroleerd door Bouw met Respect
+            </p>
           </div>
-          <p className="text-gray-600">
-            Dit product is officieel gekocht bij Bouw met Respect
-          </p>
         </div>
+      </div>
 
-        <Card className="mb-6">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-3">
-              <Package className="w-6 h-6" />
-              Bestelling Details
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="bg-gray-50 p-4 rounded-lg mb-4">
-              <p className="text-sm text-gray-600 mb-1">Bestelling ID</p>
-              <p className="font-mono text-lg font-semibold">{order.id}</p>
+      <div className="max-w-4xl mx-auto px-6 -mt-4">
+        {/* Verification Status Card */}
+        <Card className="mb-8 border-0 shadow-xl bg-gradient-to-r from-emerald-50 to-green-50 border-l-4 border-l-emerald-500">
+          <CardContent className="p-6">
+            <div className="flex items-center gap-4">
+              <div className="bg-emerald-100 p-3 rounded-full">
+                <CheckCircle className="w-8 h-8 text-emerald-600" />
+              </div>
+              <div>
+                <h2 className="text-2xl font-bold text-emerald-800 mb-1">Geverifieerd Product</h2>
+                <p className="text-emerald-700">Dit product is officieel gekocht bij Bouw met Respect</p>
+              </div>
             </div>
           </CardContent>
         </Card>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Calendar className="w-5 h-5" />
-                Order Informatie
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div>
-                <p className="text-sm text-gray-600">Besteldatum</p>
-                <p className="font-semibold">
-                  {new Date(order.created_at).toLocaleDateString('nl-NL')}
+        {/* Order ID Card */}
+        <Card className="mb-8 shadow-lg border-0">
+          <CardContent className="p-6">
+            <div className="text-center">
+              <div className="flex items-center justify-center gap-2 mb-3">
+                <Package className="w-5 h-5 text-muted-foreground" />
+                <span className="text-sm font-medium text-muted-foreground uppercase tracking-wider">
+                  Bestelling Identificatie
+                </span>
+              </div>
+              <div className="bg-muted/50 p-4 rounded-lg border-2 border-dashed border-muted-foreground/20">
+                <p className="font-mono text-xl font-bold text-foreground tracking-wider">
+                  {order.id}
                 </p>
               </div>
-              <div>
-                <p className="text-sm text-gray-600">Status</p>
-                <Badge 
-                  variant={order.payment_status === 'paid' ? 'default' : 
-                          order.payment_status === 'pending' ? 'secondary' : 'destructive'}
-                >
-                  {getStatusText(order.payment_status)}
-                </Badge>
-              </div>
-              <div>
-                <p className="text-sm text-gray-600">Totaal</p>
-                <p className="text-xl font-bold">{formatPrice(order.total)}</p>
-              </div>
-              {order.payment_status === 'paid' && qrCodeUrl && (
-                <div className="text-center">
-                  <p className="text-sm text-gray-600 mb-2">QR Verificatie</p>
-                  <img src={qrCodeUrl} alt="QR Code" className="mx-auto" />
+            </div>
+          </CardContent>
+        </Card>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          {/* Order Information Card */}
+          <Card className="shadow-lg border-0 hover:shadow-xl transition-shadow duration-300">
+            <CardHeader className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-t-lg">
+              <CardTitle className="flex items-center gap-3 text-xl">
+                <div className="bg-blue-500 p-2 rounded-lg">
+                  <Calendar className="w-5 h-5 text-white" />
                 </div>
-              )}
+                Bestelling Details
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="p-6 space-y-6">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="bg-muted/50 p-4 rounded-lg">
+                  <p className="text-sm font-medium text-muted-foreground mb-1">Besteldatum</p>
+                  <p className="font-semibold text-foreground">
+                    {new Date(order.created_at).toLocaleDateString('nl-NL', {
+                      day: 'numeric',
+                      month: 'long',
+                      year: 'numeric'
+                    })}
+                  </p>
+                </div>
+                <div className="bg-muted/50 p-4 rounded-lg">
+                  <p className="text-sm font-medium text-muted-foreground mb-1">Tijd</p>
+                  <p className="font-semibold text-foreground">
+                    {new Date(order.created_at).toLocaleTimeString('nl-NL', {
+                      hour: '2-digit',
+                      minute: '2-digit'
+                    })}
+                  </p>
+                </div>
+              </div>
+              
+              <div className="flex items-center justify-between p-4 bg-gradient-to-r from-emerald-50 to-green-50 rounded-lg border border-emerald-200">
+                <div>
+                  <p className="text-sm font-medium text-emerald-700 mb-1">Betalingstatus</p>
+                  <Badge 
+                    variant={order.payment_status === 'paid' ? 'default' : 
+                            order.payment_status === 'pending' ? 'secondary' : 'destructive'}
+                    className="px-3 py-1"
+                  >
+                    {getStatusText(order.payment_status)}
+                  </Badge>
+                </div>
+                {order.payment_status === 'paid' && qrCodeUrl && (
+                  <div className="text-center">
+                    <p className="text-xs text-emerald-700 mb-2 font-medium">QR Verificatie</p>
+                    <div className="bg-white p-2 rounded-lg border shadow-sm">
+                      <img src={qrCodeUrl} alt="QR Code" className="w-16 h-16" />
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              <div className="bg-gradient-to-r from-primary/10 to-secondary/10 p-4 rounded-lg border border-primary/20">
+                <p className="text-sm font-medium text-muted-foreground mb-1">Totaalbedrag</p>
+                <p className="text-2xl font-bold text-primary">{formatPrice(order.total)}</p>
+              </div>
             </CardContent>
           </Card>
 
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <MapPin className="w-5 h-5" />
-                Klant & Adres
+          {/* Customer Information Card */}
+          <Card className="shadow-lg border-0 hover:shadow-xl transition-shadow duration-300">
+            <CardHeader className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-t-lg">
+              <CardTitle className="flex items-center gap-3 text-xl">
+                <div className="bg-purple-500 p-2 rounded-lg">
+                  <MapPin className="w-5 h-5 text-white" />
+                </div>
+                Klant & Leveringsadres
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div>
-                <p className="text-sm text-gray-600">Naam</p>
-                <p className="font-semibold">{order.customer_first_name} {order.customer_last_name}</p>
-              </div>
-              <div>
-                <p className="text-sm text-gray-600">Email</p>
-                <p>{order.customer_email}</p>
-              </div>
-              {order.customer_phone && (
-                <div>
-                  <p className="text-sm text-gray-600">Telefoon</p>
-                  <p>{order.customer_phone}</p>
+            <CardContent className="p-6 space-y-6">
+              {/* Customer Details */}
+              <div className="space-y-4">
+                <div className="bg-muted/50 p-4 rounded-lg">
+                  <p className="text-sm font-medium text-muted-foreground mb-1">Naam</p>
+                  <p className="font-semibold text-foreground text-lg">
+                    {order.customer_first_name} {order.customer_last_name}
+                  </p>
                 </div>
-              )}
+                
+                <div className="grid grid-cols-1 gap-4">
+                  <div className="bg-muted/50 p-4 rounded-lg">
+                    <p className="text-sm font-medium text-muted-foreground mb-1">Email</p>
+                    <p className="text-foreground">{order.customer_email}</p>
+                  </div>
+                  {order.customer_phone && (
+                    <div className="bg-muted/50 p-4 rounded-lg">
+                      <p className="text-sm font-medium text-muted-foreground mb-1">Telefoon</p>
+                      <p className="text-foreground">{order.customer_phone}</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Address Information */}
               {(order.address_street || order.address_city) && (
-                <div>
-                  <p className="text-sm text-gray-600">Adres</p>
-                  <div className="text-sm">
-                    <p>{order.address_street} {order.address_house_number}</p>
+                <div className="bg-gradient-to-r from-orange-50 to-amber-50 p-4 rounded-lg border border-orange-200">
+                  <p className="text-sm font-medium text-orange-700 mb-3">Leveringsadres</p>
+                  <div className="space-y-1 text-foreground">
+                    <p className="font-medium">{order.address_street} {order.address_house_number}</p>
                     <p>{order.address_postcode} {order.address_city}</p>
-                    <p>{order.address_country}</p>
+                    <p className="text-muted-foreground">{order.address_country}</p>
                   </div>
                 </div>
               )}
@@ -244,43 +306,88 @@ const OrderVerification = () => {
           </Card>
         </div>
 
+        {/* Products Section */}
         {items.length > 0 && (
-          <Card className="mt-6">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Package className="w-5 h-5" />
+          <Card className="mt-8 shadow-lg border-0 overflow-hidden">
+            <CardHeader className="bg-gradient-to-r from-green-50 to-emerald-50">
+              <CardTitle className="flex items-center gap-3 text-xl">
+                <div className="bg-green-500 p-2 rounded-lg">
+                  <Package className="w-5 h-5 text-white" />
+                </div>
                 Bestelde Producten
               </CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="p-6">
               <div className="space-y-4">
                 {items.map((item: any, index: number) => (
-                  <div key={index} className="flex justify-between items-center p-4 bg-gray-50 rounded-lg">
-                    <div>
-                      <h4 className="font-semibold">{item.name || 'Product'}</h4>
-                      <p className="text-sm text-gray-600">
-                        {item.quantity || 1}x × {formatPrice(item.price || 0)}
+                  <div key={index} className="flex justify-between items-center p-5 bg-gradient-to-r from-muted/50 to-muted/30 rounded-lg border hover:shadow-md transition-shadow duration-200">
+                    <div className="flex-1">
+                      <h4 className="font-semibold text-lg text-foreground mb-1">
+                        {item.name || 'Product'}
+                      </h4>
+                      <div className="flex items-center gap-4">
+                        <span className="bg-primary text-primary-foreground px-3 py-1 rounded-full text-sm font-medium">
+                          {item.quantity || 1}x
+                        </span>
+                        <span className="text-muted-foreground">
+                          {formatPrice(item.price || 0)} per stuk
+                        </span>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-xl font-bold text-primary">
+                        {formatPrice((item.price || 0) * (item.quantity || 1))}
                       </p>
                     </div>
-                    <p className="font-semibold">
-                      {formatPrice((item.price || 0) * (item.quantity || 1))}
-                    </p>
                   </div>
                 ))}
+                
+                {/* Total Section */}
+                <div className="border-t-2 border-primary/20 pt-4 mt-6">
+                  <div className="flex justify-between items-center p-5 bg-gradient-to-r from-primary/10 to-secondary/10 rounded-lg border-2 border-primary/20">
+                    <div className="flex items-center gap-3">
+                      <div className="bg-primary p-2 rounded-lg">
+                        <CheckCircle className="w-5 h-5 text-primary-foreground" />
+                      </div>
+                      <span className="text-xl font-bold text-foreground">Totaalbedrag</span>
+                    </div>
+                    <p className="text-3xl font-bold text-primary">
+                      {formatPrice(order.total)}
+                    </p>
+                  </div>
+                </div>
               </div>
             </CardContent>
           </Card>
         )}
 
-        <div className="text-center mt-8 p-6 bg-green-50 rounded-lg">
-          <div className="flex items-center justify-center gap-2 mb-2">
-            <Shield className="w-5 h-5 text-green-600" />
-            <span className="font-semibold text-green-800">Bouw met Respect</span>
-          </div>
-          <p className="text-sm text-green-700">
-            Deze bestelling is geverifieerd en authentiek.
-          </p>
-        </div>
+        {/* Footer Verification Section */}
+        <Card className="mt-8 mb-8 shadow-xl border-0 bg-gradient-to-r from-primary to-primary/80 text-primary-foreground overflow-hidden">
+          <CardContent className="p-8 text-center relative">
+            <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent"></div>
+            <div className="relative z-10">
+              <div className="flex items-center justify-center gap-4 mb-4">
+                <div className="bg-white/20 p-3 rounded-full">
+                  <Shield className="w-8 h-8" />
+                </div>
+                <div>
+                  <h3 className="text-2xl font-bold">Bouw met Respect</h3>
+                  <p className="text-primary-foreground/90">Officiële Webshop Verificatie</p>
+                </div>
+              </div>
+              <div className="bg-white/10 backdrop-blur-sm rounded-lg p-6 border border-white/20">
+                <div className="flex items-center justify-center gap-3 mb-3">
+                  <CheckCircle className="w-6 h-6 text-emerald-300" />
+                  <p className="text-lg font-semibold">Deze bestelling is geverifieerd en authentiek</p>
+                </div>
+                <p className="text-primary-foreground/90">
+                  Alle producten zijn echt en worden geleverd conform onze kwaliteitsstandaarden. 
+                  Voor vragen over deze bestelling kunt u contact opnemen via onze klantenservice.
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );
