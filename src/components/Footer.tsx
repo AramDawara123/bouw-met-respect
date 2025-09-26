@@ -83,7 +83,7 @@ const Footer = () => {
           </div>
           
           {/* Contact Section */}
-          <div className="text-left">
+          <div className="text-center lg:text-left">
             <h4 className="font-bold text-xl mb-6">
               Contact
             </h4>
