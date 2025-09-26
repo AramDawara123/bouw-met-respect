@@ -32,18 +32,38 @@ const CompanyProfiles = () => {
       <Navbar />
       
       <div className="container mx-auto px-4 py-8 pt-24">
-        <div className="flex items-center gap-4 mb-8">
-          <Link to="/">
-            <Button variant="outline" className="flex items-center gap-2">
-              <ArrowLeft className="w-4 h-4" />
-              Terug
-            </Button>
-          </Link>
-          <div>
-            <h1 className="text-4xl font-bold text-foreground">Onze Partners</h1>
-            <p className="text-muted-foreground">
-              Ontdek bedrijven die samen met ons werken aan een respectvolle bouwsector
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
+          <div className="flex items-center gap-4">
+            <Link to="/">
+              <Button variant="outline" className="flex items-center gap-2">
+                <ArrowLeft className="w-4 h-4" />
+                Terug naar Home
+              </Button>
+            </Link>
+          </div>
+          
+          <div className="text-center flex-1">
+            <h1 className="text-4xl font-bold text-foreground mb-2">Onze Partners</h1>
+            <p className="text-muted-foreground mb-6">
+              Ontdek de bedrijven die samen met ons bouwen aan een respectvolle en veilige bouwsector
             </p>
+            
+            {/* Action Buttons */}
+            <div className="flex items-center justify-center gap-3">
+              <Button 
+                variant="outline" 
+                className="flex items-center gap-2 bg-background border-border hover:bg-muted"
+              >
+                <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                Partners gallerij
+              </Button>
+              <Button 
+                onClick={() => setShowPartnerForm(true)}
+                className="bg-blue-600 hover:bg-blue-700 text-white font-medium px-6"
+              >
+                Word Partner
+              </Button>
+            </div>
           </div>
         </div>
 
