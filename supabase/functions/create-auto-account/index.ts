@@ -12,6 +12,7 @@ interface AutoAccountRequest {
   company_name?: string;
   first_name?: string;
   last_name?: string;
+  update_existing?: boolean;
 }
 
 const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
@@ -43,13 +44,79 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
-    const { email, company_name, first_name, last_name }: AutoAccountRequest = await req.json();
+    const { email, company_name, first_name, last_name, update_existing }: AutoAccountRequest = await req.json();
 
     if (!email) {
       throw new Error('Email is verplicht');
     }
 
-    console.log('Creating auto account for:', email);
+    console.log('Creating/updating auto account for:', email);
+
+    // If this is an update request, handle it differently
+    if (update_existing) {
+      // Update existing partner membership
+      const { data: existingMembership, error: findError } = await supabase
+        .from('partner_memberships')
+        .select('*')
+        .eq('email', email)
+        .maybeSingle();
+
+      if (findError) {
+        console.error('Error finding membership:', findError);
+        throw findError;
+      }
+
+      if (existingMembership) {
+        const { error: updateMembershipError } = await supabase
+          .from('partner_memberships')
+          .update({
+            first_name: first_name || existingMembership.first_name,
+            last_name: last_name || existingMembership.last_name,
+            company_name: company_name || existingMembership.company_name,
+          })
+          .eq('id', existingMembership.id);
+
+        if (updateMembershipError) {
+          console.error('Error updating membership:', updateMembershipError);
+          throw updateMembershipError;
+        }
+
+        // Generate new password for the user
+        const password = generatePassword();
+        
+        if (existingMembership.user_id) {
+          const { error: updatePasswordError } = await supabase.auth.admin.updateUserById(
+            existingMembership.user_id,
+            { 
+              password: password,
+              email_confirm: true
+            }
+          );
+          
+          if (updatePasswordError) {
+            console.error('Error updating password:', updatePasswordError);
+            throw updatePasswordError;
+          }
+        }
+
+        console.log('Auto account updated successfully for:', email);
+
+        return new Response(JSON.stringify({
+          success: true,
+          message: 'Account bijgewerkt',
+          user_id: existingMembership.user_id,
+          email: email,
+          password: password,
+          email_sent: false
+        }), {
+          status: 200,
+          headers: {
+            'Content-Type': 'application/json',
+            ...corsHeaders,
+          },
+        });
+      }
+    }
 
     // First check if user already exists
     const { data: existingUser } = await supabase.auth.admin.listUsers({

@@ -304,26 +304,9 @@ const Dashboard = () => {
     try {
       setUpdatingPassword(true);
       
-      // Update user metadata
-      const { error: updateError } = await supabaseAdmin.auth.admin.updateUserById(
-        editingAutoAccount.id,
-        {
-          email: autoAccountEmail,
-          user_metadata: {
-            first_name: autoAccountFirstName,
-            last_name: autoAccountLastName,
-            company_name: autoAccountCompany,
-            created_via_admin: true
-          },
-          ...(autoAccountPassword && { password: autoAccountPassword })
-        }
-      );
-
-      if (updateError) throw updateError;
-
-      // Update partner membership if exists
+      // Update partner membership instead of user metadata
       if (editingAutoAccount.partner_membership) {
-        const { error: partnerError } = await supabaseAdmin
+        const { error: partnerError } = await supabase
           .from('partner_memberships')
           .update({
             first_name: autoAccountFirstName,
@@ -335,12 +318,33 @@ const Dashboard = () => {
           
         if (partnerError) {
           console.error('Error updating partner membership:', partnerError);
+          throw partnerError;
+        }
+      }
+
+      // If password needs to be updated, call the create-auto-account function
+      if (autoAccountPassword) {
+        const { error: passwordError } = await supabase.functions.invoke('create-auto-account', {
+          body: {
+            email: autoAccountEmail,
+            first_name: autoAccountFirstName,
+            last_name: autoAccountLastName,
+            company_name: autoAccountCompany,
+            update_existing: true
+          }
+        });
+
+        if (passwordError) {
+          console.error('Error updating password:', passwordError);
+          throw passwordError;
         }
       }
 
       toast({
         title: "Succes!",
-        description: "Auto account succesvol bijgewerkt",
+        description: autoAccountPassword ? 
+          "Auto account en wachtwoord succesvol bijgewerkt" : 
+          "Auto account succesvol bijgewerkt",
       });
 
       setShowAutoAccountDialog(false);
@@ -362,7 +366,17 @@ const Dashboard = () => {
     if (!confirm('Weet je zeker dat je dit auto account wilt verwijderen?')) return;
     
     try {
-      const { error } = await supabaseAdmin.auth.admin.deleteUser(accountId);
+      // Find the partner membership for this account
+      const accountToDelete = autoAccounts.find(acc => acc.id === accountId);
+      if (!accountToDelete || !accountToDelete.partner_membership) {
+        throw new Error('Partner membership niet gevonden');
+      }
+
+      // Delete the partner membership record instead of the user
+      const { error } = await supabase
+        .from('partner_memberships')
+        .delete()
+        .eq('id', accountToDelete.partner_membership.id);
       
       if (error) throw error;
 
