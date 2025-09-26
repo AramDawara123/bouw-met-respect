@@ -17,6 +17,7 @@ export const useActionItemsPricing = () => {
   const [loading, setLoading] = useState(true);
 
   const fetchPricing = async () => {
+    console.log('🔄 Fetching action items pricing...');
     try {
       const { data, error } = await supabase
         .from('action_items_pricing')
@@ -24,9 +25,10 @@ export const useActionItemsPricing = () => {
         .order('display_order', { ascending: true });
       
       if (error) throw error;
+      console.log('✅ Action items pricing fetched:', data);
       setPricingData(data || []);
     } catch (error) {
-      console.error('Error fetching action items pricing:', error);
+      console.error('❌ Error fetching action items pricing:', error);
     } finally {
       setLoading(false);
     }
@@ -37,13 +39,32 @@ export const useActionItemsPricing = () => {
 
     // Listen for pricing updates from dashboard
     const handlePricingUpdate = () => {
+      console.log('Pricing update event received, refetching...');
       fetchPricing();
     };
+
+    // Setup real-time subscription for immediate updates
+    const channel = supabase
+      .channel('schema-db-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'action_items_pricing'
+        },
+        (payload) => {
+          console.log('Real-time pricing update:', payload);
+          fetchPricing();
+        }
+      )
+      .subscribe();
 
     window.addEventListener('action-items-pricing-updated', handlePricingUpdate);
     
     return () => {
       window.removeEventListener('action-items-pricing-updated', handlePricingUpdate);
+      supabase.removeChannel(channel);
     };
   }, []);
 
