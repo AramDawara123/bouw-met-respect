@@ -565,17 +565,6 @@ const Webshop = () => {
         </div>
       </header>
 
-      {/* Marquee Section */}
-      <section className="py-8 bg-gradient-to-r from-primary to-secondary overflow-hidden">
-        <MarqueeAnimation 
-          baseVelocity={8} 
-          direction="left" 
-          className="text-white/90 text-4xl sm:text-5xl lg:text-6xl font-bold tracking-wider"
-        >
-          Bouw met Respect • Respectvolle Bouwplaats • Hoogwaardige Merchandise • Steun de Beweging • Premium Kwaliteit • Samen Bouwen aan Respect • Bouw met Respect •
-        </MarqueeAnimation>
-      </section>
-
       {/* Hero Section */}
       <section className="relative py-32 hero-gradient overflow-hidden">
         {/* Background decoration */}
@@ -617,6 +606,17 @@ const Webshop = () => {
             </div>
           </div>
         </div>
+      </section>
+
+      {/* Marquee Section */}
+      <section className="py-8 bg-gradient-to-r from-primary to-secondary overflow-hidden">
+        <MarqueeAnimation 
+          baseVelocity={2} 
+          direction="left" 
+          className="text-white/90 text-4xl sm:text-5xl lg:text-6xl font-bold tracking-wider"
+        >
+          Bouw met Respect • Respectvolle Bouwplaats • Hoogwaardige Merchandise • Steun de Beweging • Premium Kwaliteit • Samen Bouwen aan Respect • Bouw met Respect •
+        </MarqueeAnimation>
       </section>
 
       <section className="py-24 relative overflow-hidden bg-gradient-to-br from-primary/3 via-background to-secondary/3">
