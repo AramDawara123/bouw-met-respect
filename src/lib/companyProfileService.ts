@@ -22,7 +22,12 @@ class CompanyProfileService {
                 company_name,
                 first_name,
                 last_name,
-                email
+                email,
+                amount,
+                currency,
+                payment_status,
+                created_at,
+                updated_at
               )
             `)
             .order('display_order', { ascending: true })
@@ -252,10 +257,10 @@ class CompanyProfileService {
   }
 
   /**
-   * Set up real-time subscription for company profiles
+   * Set up real-time subscription for company profiles and partner memberships
    */
   setupRealtimeSubscription(callback: (payload: any) => void) {
-    const channel = supabase
+    const profilesChannel = supabase
       .channel('company-profiles-changes')
       .on(
         'postgres_changes',
@@ -268,8 +273,22 @@ class CompanyProfileService {
       )
       .subscribe();
 
+    const partnersChannel = supabase
+      .channel('partner-memberships-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'partner_memberships'
+        },
+        callback
+      )
+      .subscribe();
+
     return () => {
-      supabase.removeChannel(channel);
+      supabase.removeChannel(profilesChannel);
+      supabase.removeChannel(partnersChannel);
     };
   }
 }

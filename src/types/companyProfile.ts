@@ -41,5 +41,10 @@ export interface CompanyProfileWithPartner extends CompanyProfile {
     first_name: string;
     last_name: string;
     email: string;
+    amount: number;
+    currency: string;
+    payment_status: string;
+    created_at: string;
+    updated_at: string;
   };
 }
