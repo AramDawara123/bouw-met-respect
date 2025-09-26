@@ -290,7 +290,7 @@ const PartnerAccountManagementClean = () => {
         throw new Error('Geen actieve sessie');
       }
 
-      const response = await fetch('/functions/v1/reset-partner-password', {
+      const response = await fetch('https://pkvayugxzgkoipclcpli.supabase.co/functions/v1/reset-partner-password', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
