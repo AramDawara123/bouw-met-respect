@@ -2068,7 +2068,7 @@ Het Bouw met Respect team
           setShowProfileForm(false);
           setEditingProfile(null);
         }}
-        editingProfile={editingProfile}
+        profile={editingProfile}
         isPartnerDashboard={false}
       />
 
