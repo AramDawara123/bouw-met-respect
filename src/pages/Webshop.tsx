@@ -572,7 +572,7 @@ const Webshop = () => {
           direction="left" 
           className="text-white/90 text-4xl sm:text-5xl lg:text-6xl font-bold tracking-wider"
         >
-          BOUW MET RESPECT • WEBSHOP • KWALITEIT • RESPECT • 
+          Bouw met Respect • Respectvolle Bouwplaats • Hoogwaardige Merchandise • Steun de Beweging • Premium Kwaliteit • Samen Bouwen aan Respect • Bouw met Respect •
         </MarqueeAnimation>
       </section>
 
