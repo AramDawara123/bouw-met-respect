@@ -28,8 +28,6 @@ const PartnerAuth = () => {
   });
   const [signUpForm, setSignUpForm] = useState({
     email: "",
-    password: "",
-    confirmPassword: "",
     first_name: "",
     last_name: "",
     company_name: ""
@@ -103,56 +101,51 @@ const PartnerAuth = () => {
     e.preventDefault();
     setSignUpLoading(true);
     setError("");
-    if (signUpForm.password !== signUpForm.confirmPassword) {
-      setError("Wachtwoorden komen niet overeen");
-      setSignUpLoading(false);
-      return;
-    }
-    if (signUpForm.password.length < 6) {
-      setError("Wachtwoord moet minimaal 6 karakters lang zijn");
-      setSignUpLoading(false);
-      return;
-    }
-    try {
-      const redirectUrl = `${window.location.origin}/partner-dashboard`;
 
-      // Use standard Supabase signup with email confirmation
-      const {
-        data,
-        error: signUpError
-      } = await supabase.auth.signUp({
-        email: signUpForm.email,
-        password: signUpForm.password,
-        options: {
-          emailRedirectTo: redirectUrl
+    if (!signUpForm.first_name || !signUpForm.last_name) {
+      setError("Voornaam en achternaam zijn verplicht");
+      setSignUpLoading(false);
+      return;
+    }
+
+    try {
+      // Create partner account with auto-generated password
+      const { data, error: functionError } = await supabase.functions.invoke('create-auto-account', {
+        body: {
+          email: signUpForm.email,
+          first_name: signUpForm.first_name,
+          last_name: signUpForm.last_name,
+          company_name: signUpForm.company_name
         }
       });
-      if (signUpError) {
-        if (signUpError.message.includes("User already registered")) {
-          setError("Email adres is al geregistreerd. Probeer in te loggen of gebruik het wachtwoord reset formulier.");
-        } else {
-          setError(signUpError.message);
-        }
-        return;
+
+      if (functionError) {
+        throw new Error(functionError.message);
       }
+
+      if (data.error) {
+        throw new Error(data.error);
+      }
+
       toast({
-        title: "Registratie succesvol",
-        description: data.user?.email_confirmed_at ? "Account aangemaakt en bevestigd! Je wordt doorgestuurd naar het dashboard." : "Controleer je email voor de bevestigingslink om je account te activeren."
+        title: "Partner account aangemaakt!",
+        description: `Inloggegevens zijn verzonden naar ${signUpForm.email}. Controleer je inbox.`
       });
 
       // Clear form
       setSignUpForm({
         email: "",
-        password: "",
-        confirmPassword: "",
         first_name: "",
         last_name: "",
         company_name: ""
       });
 
-      // If user is immediately confirmed, they'll be redirected by the auth state change
     } catch (error: any) {
-      setError("Er ging iets mis bij het registreren");
+      if (error.message.includes("User already registered") || error.message.includes("already exists")) {
+        setError("Email adres is al geregistreerd. Probeer in te loggen of gebruik het wachtwoord reset formulier.");
+      } else {
+        setError(error.message || "Er ging iets mis bij het registreren");
+      }
     } finally {
       setSignUpLoading(false);
     }
@@ -343,55 +336,18 @@ const PartnerAuth = () => {
                     </div>
                   </div>
 
-                  <div className="space-y-2">
-                    <Label htmlFor="signup-password">Wachtwoord *</Label>
-                    <div className="relative">
-                      <Input
-                        id="signup-password"
-                        type={showPassword ? "text" : "password"}
-                        placeholder="••••••••"
-                        value={signUpForm.password}
-                        onChange={(e) => setSignUpForm({...signUpForm, password: e.target.value})}
-                        required
-                        minLength={6}
-                      />
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
-                        onClick={() => setShowPassword(!showPassword)}
-                      >
-                        {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                      </Button>
-                    </div>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="signup-confirm-password">Bevestig Wachtwoord *</Label>
-                    <Input
-                      id="signup-confirm-password"
-                      type={showPassword ? "text" : "password"}
-                      placeholder="••••••••"
-                      value={signUpForm.confirmPassword}
-                      onChange={(e) => setSignUpForm({...signUpForm, confirmPassword: e.target.value})}
-                      required
-                      minLength={6}
-                    />
-                  </div>
-
                   <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
-                    <h4 className="font-semibold text-blue-800 mb-2">Account wordt aangemaakt met:</h4>
+                    <h4 className="font-semibold text-blue-800 mb-2">Automatisch account proces:</h4>
                     <ul className="text-blue-700 text-sm space-y-1">
-                      <li>• Toegang tot partner dashboard</li>
-                      <li>• Bedrijfsprofiel beheer</li>
-                      <li>• Email notificaties</li>
-                      <li>• Direct inloggen na registratie</li>
+                      <li>• Veilig wachtwoord wordt automatisch gegenereerd</li>
+                      <li>• Partner account wordt aangemaakt</li>
+                      <li>• Email met inloggegevens wordt direct verzonden</li>
+                      <li>• Direct inloggen mogelijk na email ontvangst</li>
                     </ul>
                   </div>
 
                   <Button type="submit" className="w-full" disabled={signUpLoading}>
-                    {signUpLoading ? "Partner Account Aanmaken..." : "Partner Account Aanmaken"}
+                    {signUpLoading ? "Partner Account Aanmaken..." : "Partner Account Aanmaken & Email Versturen"}
                   </Button>
                 </form>
               </TabsContent>
