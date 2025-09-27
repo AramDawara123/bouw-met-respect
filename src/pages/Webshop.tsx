@@ -195,25 +195,33 @@ const Webshop = () => {
   }, [getTotalItemCount]);
   const discountAmount = useMemo(() => {
     if (!appliedDiscount) return 0;
-    const discount = calculateDiscount(appliedDiscount, cartTotal * 100) / 100; // Convert back to euros
+    const discountCents = calculateDiscount(appliedDiscount, cartTotal * 100); // Keep in cents
     console.log('[Webshop] Discount calculation:', { 
       appliedDiscount, 
       cartTotal, 
       cartTotalCents: cartTotal * 100,
-      discountInCents: calculateDiscount(appliedDiscount, cartTotal * 100),
-      discountInEuros: discount 
+      discountInCents: discountCents,
+      discountInEuros: discountCents / 100 
     });
-    return discount;
+    return discountCents; // Return in cents instead of euros
   }, [appliedDiscount, cartTotal]);
   const finalTotal = useMemo(() => {
-    const subtotal = cartTotal - discountAmount;
-    const isFreeShipping = subtotal >= 50 || discountAmount >= cartTotal; // Free shipping for 100% discount
-    const total = subtotal + (isFreeShipping ? 0 : 5.00);
+    const subtotalCents = cartTotal * 100; // Work in cents
+    const subtotalAfterDiscountCents = Math.max(0, subtotalCents - discountAmount);
+    const isFreeShipping = subtotalAfterDiscountCents >= 5000 || discountAmount >= subtotalCents; // 50 EUR = 5000 cents
+    const shippingCents = isFreeShipping ? 0 : 500; // 5 EUR = 500 cents
+    const totalCents = subtotalAfterDiscountCents + shippingCents;
+    const total = totalCents / 100; // Convert back to euros for display
+    
     console.log('[Webshop] Final total calculation:', { 
       cartTotal, 
-      discountAmount, 
-      subtotal, 
+      cartTotalCents: subtotalCents,
+      discountAmountCents: discountAmount,
+      discountAmountEuros: discountAmount / 100, 
+      subtotalAfterDiscountCents,
       isFreeShipping, 
+      shippingCents,
+      totalCents,
       finalTotal: total 
     });
     return total;
@@ -326,7 +334,7 @@ const Webshop = () => {
           items,
           customer,
           discountCode: appliedDiscount?.code,
-          discountAmount: discountAmount * 100 // Convert to cents, edge function expects cents
+          discountAmount: discountAmount // Already in cents, don't convert again
         }
       });
       
@@ -334,8 +342,10 @@ const Webshop = () => {
         items,
         discountCode: appliedDiscount?.code,
         discountAmount,
-        discountAmountCents: discountAmount * 100,
-        finalTotal
+        discountAmountEuros: discountAmount / 100,
+        finalTotal,
+        cartTotal,
+        cartTotalCents: cartTotal * 100
       });
       console.log('[Webshop] create-shop-order response', {
         data,
@@ -663,16 +673,16 @@ const Webshop = () => {
                         {appliedDiscount && discountAmount > 0 && (
                           <div className="flex justify-between text-sm text-green-600">
                             <span>Korting ({formatDiscountDisplay(appliedDiscount)}):</span>
-                            <span>-€{discountAmount.toFixed(2)}</span>
+                            <span>-€{(discountAmount / 100).toFixed(2)}</span>
                           </div>
                         )}
-                        {((cartTotal - discountAmount) < 50 && discountAmount < cartTotal) && (
+                        {((cartTotal * 100 - discountAmount) < 5000 && discountAmount < cartTotal * 100) && (
                           <div className="flex justify-between text-sm">
                             <span>Verzendkosten:</span>
                             <span>€5.00</span>
                           </div>
                         )}
-                        {((cartTotal - discountAmount) >= 50 || discountAmount >= cartTotal) && (
+                        {((cartTotal * 100 - discountAmount) >= 5000 || discountAmount >= cartTotal * 100) && (
                           <div className="flex justify-between text-sm text-green-600">
                             <span>Verzending:</span>
                             <span>Gratis</span>

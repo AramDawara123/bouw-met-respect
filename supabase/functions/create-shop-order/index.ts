@@ -50,7 +50,8 @@ serve(async (req) => {
       shippingCents, 
       totalCents,
       totalEuroValue,
-      isFreeOrder: totalCents === 0
+      isFreeOrder: totalCents === 0,
+      discountCoversAll: discountAmountCents >= subtotalCents
     });
 
     const origin = req.headers.get('origin') || Deno.env.get('PUBLIC_SITE_URL') || 'https://example.com';
