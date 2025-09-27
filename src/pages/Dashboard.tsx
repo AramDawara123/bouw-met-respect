@@ -1775,15 +1775,21 @@ Het Bouw met Respect team
                     <Card className="bg-gradient-to-br from-purple-500/5 to-purple-500/10 border-purple-200/30">
                       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                         <CardTitle className="text-sm font-medium text-muted-foreground">
-                          Gemiddelde Bestelling
+                          Totale Omzet
                         </CardTitle>
                         <Package className="h-4 w-4 text-purple-500" />
                       </CardHeader>
                       <CardContent>
                         <div className="text-2xl font-bold text-foreground">
-                          €{orders.length > 0 ? (orders.reduce((sum, o) => sum + o.total, 0) / orders.length / 100).toFixed(2) : '0.00'}
+                          €{orders.length > 0 ? (orders.reduce((sum, o) => sum + o.total, 0) / 100).toFixed(2) : '0.00'}
                         </div>
-                        <p className="text-xs text-muted-foreground">per bestelling</p>
+                        <p className="text-xs text-muted-foreground">
+                          {orders.length > 0 && (
+                            <>
+                              Laatste: €{(orders[0]?.total / 100).toFixed(2)}
+                            </>
+                          )}
+                        </p>
                       </CardContent>
                     </Card>
                   </div>
