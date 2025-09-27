@@ -2,6 +2,7 @@ import { Heart, Linkedin, Mail, Building, ArrowRight, Users } from "lucide-react
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 const Footer = () => {
   const [email, setEmail] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -20,15 +21,30 @@ const Footer = () => {
     }
     setIsLoading(true);
 
-    // Simuleer een succesvolle aanmelding (zoals in de popup)
-    setTimeout(() => {
+    try {
+      const { data, error } = await supabase.functions.invoke('mailchimp-newsletter', {
+        body: { email }
+      });
+
+      if (error) {
+        throw error;
+      }
+
       toast({
         title: "Gelukt!",
         description: "Je bent succesvol aangemeld voor onze nieuwsbrief"
       });
       setEmail("");
+    } catch (error: any) {
+      console.error('Newsletter signup error:', error);
+      toast({
+        title: "Fout",
+        description: error.message || "Er is een fout opgetreden. Probeer het opnieuw.",
+        variant: "destructive"
+      });
+    } finally {
       setIsLoading(false);
-    }, 1000);
+    }
   };
   return <footer className="bg-foreground text-background py-20">
       <div className="container mx-auto px-4">

@@ -47,8 +47,15 @@ const NewsletterPopup = () => {
 
     setIsLoading(true);
 
-    // Simuleer een succesvolle aanmelding
-    setTimeout(() => {
+    try {
+      const { data, error } = await supabase.functions.invoke('mailchimp-newsletter', {
+        body: { email }
+      });
+
+      if (error) {
+        throw error;
+      }
+
       setIsSubmitted(true);
       toast({
         title: "Gelukt!",
@@ -57,7 +64,16 @@ const NewsletterPopup = () => {
       setTimeout(() => {
         setIsVisible(false);
       }, 2000);
-    }, 1000);
+    } catch (error: any) {
+      console.error('Newsletter signup error:', error);
+      toast({
+        title: "Fout",
+        description: error.message || "Er is een fout opgetreden. Probeer het opnieuw.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   if (!isVisible || !shouldShowPopup) return null;
