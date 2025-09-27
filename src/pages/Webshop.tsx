@@ -391,15 +391,15 @@ const Webshop = () => {
                       </div>}
                   </Button>
                 </SheetTrigger>
-                <SheetContent className="w-full max-w-md sm:max-w-lg flex flex-col">
-                  <SheetHeader className="pb-4">
+                <SheetContent className="w-full max-w-md sm:max-w-lg flex flex-col h-full">
+                  <SheetHeader className="pb-4 flex-shrink-0">
                     <SheetTitle className="flex items-center gap-2 text-lg">
                       <ShoppingCart className="w-5 h-5" />
                       Winkelwagen ({cartItemCount} items)
                     </SheetTitle>
                   </SheetHeader>
                   
-                  <div className="flex-1 overflow-y-auto -mx-2 px-2">
+                  <div className="flex-1 overflow-y-auto -mx-2 px-2 min-h-0">
                     <div className="space-y-4 pb-4">
                       {Object.entries(cart).length === 0 ? (
                         <div className="text-center py-8">
@@ -598,7 +598,7 @@ const Webshop = () => {
                   </div>
 
                   {cartItemCount > 0 && (
-                    <div className="border-t bg-background p-4 mt-4 -mx-6 -mb-6">
+                    <div className="flex-shrink-0 border-t bg-background p-4 -mx-6 -mb-6 mt-4 safe-area-inset-bottom">
                       <div className="space-y-2">
                         <div className="flex justify-between text-sm">
                           <span>Subtotaal:</span>
@@ -627,7 +627,12 @@ const Webshop = () => {
                           <span>€{finalTotal.toFixed(2)}</span>
                         </div>
                       </div>
-                      <Button className="w-full mt-4" size="lg" onClick={checkout} disabled={isCheckingOut}>
+                      <Button 
+                        className="w-full mt-4 h-12 text-base font-semibold" 
+                        size="lg" 
+                        onClick={checkout} 
+                        disabled={isCheckingOut}
+                      >
                         <ShoppingCart className="w-4 h-4 mr-2" />
                         {isCheckingOut ? 'Bezig met afrekenen...' : 'Naar afrekenen'}
                       </Button>
