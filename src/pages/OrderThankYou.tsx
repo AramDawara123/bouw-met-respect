@@ -265,7 +265,7 @@ const OrderThankYou = () => {
         {/* Footer */}
         <div className="text-center pt-4">
           <p className="text-sm text-muted-foreground">
-            © 2024 Bouw met Respect. Bedankt voor het vertrouwen in ons!
+            © 2025 Bouw met Respect. Bedankt voor het vertrouwen in ons!
           </p>
         </div>
       </div>
