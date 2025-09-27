@@ -26,7 +26,6 @@ import ActionItemsPricingManager from "@/components/ActionItemsPricingManager";
 import PartnerPricingTiersManager from "@/components/PartnerPricingTiersManager";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
-
 interface Membership {
   id: string;
   first_name: string;
@@ -50,12 +49,11 @@ interface Membership {
   created_at: string;
   updated_at: string;
 }
-
 interface Order {
   id: string;
   user_id?: string | null;
   email?: string | null;
-  items: any;  // Changed from any[] to any to match JSONB type
+  items: any; // Changed from any[] to any to match JSONB type
   subtotal: number;
   shipping: number;
   total: number;
@@ -74,7 +72,6 @@ interface Order {
   address_city?: string | null;
   address_country?: string | null;
 }
-
 interface Product {
   id: string;
   name: string;
@@ -87,7 +84,6 @@ interface Product {
   created_at: string;
   updated_at: string;
 }
-
 interface CompanyProfile {
   id: string;
   name: string;
@@ -103,7 +99,6 @@ interface CompanyProfile {
   created_at: string;
   updated_at: string;
 }
-
 interface PartnerAccount {
   id: string;
   first_name: string;
@@ -122,7 +117,6 @@ interface PartnerAccount {
   generated_password?: string;
   account_created?: boolean;
 }
-
 const Dashboard = () => {
   const [memberships, setMemberships] = useState<Membership[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
@@ -158,16 +152,19 @@ const Dashboard = () => {
   const [newPassword, setNewPassword] = useState('');
   const [testingEmail, setTestingEmail] = useState(false);
   const [creatingTestOrder, setCreatingTestOrder] = useState(false);
-  
-  const { toast } = useToast();
-
+  const {
+    toast
+  } = useToast();
   useEffect(() => {
     checkAuthAndFetch();
   }, []);
-
   const checkAuthAndFetch = async () => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: {
+          user
+        }
+      } = await supabase.auth.getUser();
       // If no user, create a mock user for testing
       if (!user) {
         console.log('No user found, using test mode');
@@ -190,12 +187,10 @@ const Dashboard = () => {
         setLoading(false);
         return;
       }
-
       setUser(user);
 
       // Allow any logged in user to access dashboard
       console.log('User logged in:', user.email);
-
       setIsAdmin(true);
       await Promise.all([fetchMemberships(), fetchOrders(), fetchProfiles(), fetchProducts(), fetchPartners()]);
     } catch (error) {
@@ -208,14 +203,14 @@ const Dashboard = () => {
       setLoading(false);
     }
   };
-
   const fetchMemberships = async () => {
     try {
-      const { data, error } = await supabase
-        .from('memberships')
-        .select('*')
-        .order('created_at', { ascending: false });
-
+      const {
+        data,
+        error
+      } = await supabase.from('memberships').select('*').order('created_at', {
+        ascending: false
+      });
       if (error) throw error;
       setMemberships(data || []);
     } catch (error) {
@@ -229,14 +224,14 @@ const Dashboard = () => {
       setLoading(false);
     }
   };
-
   const fetchOrders = async () => {
     try {
-      const { data, error } = await supabase
-        .from('orders')
-        .select('*')
-        .order('created_at', { ascending: false });
-
+      const {
+        data,
+        error
+      } = await supabase.from('orders').select('*').order('created_at', {
+        ascending: false
+      });
       if (error) throw error;
       setOrders(data || []);
     } catch (error) {
@@ -248,15 +243,16 @@ const Dashboard = () => {
       });
     }
   };
-
   const fetchProfiles = async () => {
     try {
-      const { data, error } = await supabase
-        .from('company_profiles')
-        .select('*')
-        .order('display_order', { ascending: true })
-        .order('name', { ascending: true });
-
+      const {
+        data,
+        error
+      } = await supabase.from('company_profiles').select('*').order('display_order', {
+        ascending: true
+      }).order('name', {
+        ascending: true
+      });
       if (error) throw error;
       setProfiles(data || []);
     } catch (error) {
@@ -268,21 +264,20 @@ const Dashboard = () => {
       });
     }
   };
-
   const fetchProducts = async () => {
     try {
       console.log('🔄 Fetching products...');
       // Use any type to bypass TypeScript error for products table
-      const { data, error } = await (supabase as any)
-        .from('products')
-        .select('*')
-        .order('created_at', { ascending: false });
-
+      const {
+        data,
+        error
+      } = await (supabase as any).from('products').select('*').order('created_at', {
+        ascending: false
+      });
       if (error) {
         console.error('❌ Products fetch error:', error);
         console.error('Error code:', error.code);
         console.error('Error message:', error.message);
-        
         if (error.code === '42P01') {
           console.error('💡 Products table does not exist - need to run migration');
           toast({
@@ -300,10 +295,9 @@ const Dashboard = () => {
         setProducts([]);
         return;
       }
-
       console.log('✅ Products fetched successfully:', data);
       console.log(`📦 Total products: ${data?.length || 0}`);
-      
+
       // Transform data to match Product interface
       const transformedProducts: Product[] = (data || []).map((item: any) => ({
         id: item.id,
@@ -317,7 +311,6 @@ const Dashboard = () => {
         created_at: item.created_at,
         updated_at: item.updated_at
       }));
-      
       setProducts(transformedProducts);
     } catch (error) {
       console.error('💥 Unexpected error fetching products:', error);
@@ -329,13 +322,13 @@ const Dashboard = () => {
       setProducts([]);
     }
   };
-
   const fetchPartners = async () => {
     try {
       console.log('🔄 Fetching partners...');
-      const { data, error } = await supabase
-        .from('partner_memberships')
-        .select(`
+      const {
+        data,
+        error
+      } = await supabase.from('partner_memberships').select(`
           *,
           company_profiles (
             id,
@@ -351,9 +344,9 @@ const Dashboard = () => {
             created_at,
             updated_at
           )
-        `)
-        .order('created_at', { ascending: false });
-
+        `).order('created_at', {
+        ascending: false
+      });
       if (error) {
         console.error('❌ Partners fetch error:', error);
         toast({
@@ -364,10 +357,9 @@ const Dashboard = () => {
         setPartners([]);
         return;
       }
-
       console.log('✅ Partners fetched successfully:', data);
       console.log(`🤝 Total partners: ${data?.length || 0}`);
-      
+
       // Transform data to match PartnerAccount interface
       const transformedPartners: PartnerAccount[] = (data || []).map((item: any) => ({
         id: item.id,
@@ -387,7 +379,6 @@ const Dashboard = () => {
         generated_password: item.generated_password || null,
         account_created: item.account_created || false
       }));
-      
       setPartners(transformedPartners);
     } catch (error) {
       console.error('💥 Unexpected error fetching partners:', error);
@@ -399,16 +390,15 @@ const Dashboard = () => {
       setPartners([]);
     }
   };
-
   const updatePaymentStatus = async (id: string, status: string) => {
     try {
-      const { error } = await supabase
-        .from('memberships')
-        .update({ payment_status: status, updated_at: new Date().toISOString() })
-        .eq('id', id);
-
+      const {
+        error
+      } = await supabase.from('memberships').update({
+        payment_status: status,
+        updated_at: new Date().toISOString()
+      }).eq('id', id);
       if (error) throw error;
-      
       await fetchMemberships();
       toast({
         title: "Bijgewerkt",
@@ -423,29 +413,25 @@ const Dashboard = () => {
       });
     }
   };
-
   const updateMembership = async (updatedMembership: Membership) => {
     try {
-      const { error } = await supabase
-        .from('memberships')
-        .update({
-          first_name: updatedMembership.first_name,
-          last_name: updatedMembership.last_name,
-          email: updatedMembership.email,
-          phone: updatedMembership.phone,
-          company: updatedMembership.company,
-          job_title: updatedMembership.job_title,
-          industry_role: updatedMembership.industry_role,
-          experience_years: updatedMembership.experience_years,
-          specializations: updatedMembership.specializations,
-          membership_type: updatedMembership.membership_type,
-          payment_status: updatedMembership.payment_status,
-          updated_at: new Date().toISOString()
-        })
-        .eq('id', updatedMembership.id);
-
+      const {
+        error
+      } = await supabase.from('memberships').update({
+        first_name: updatedMembership.first_name,
+        last_name: updatedMembership.last_name,
+        email: updatedMembership.email,
+        phone: updatedMembership.phone,
+        company: updatedMembership.company,
+        job_title: updatedMembership.job_title,
+        industry_role: updatedMembership.industry_role,
+        experience_years: updatedMembership.experience_years,
+        specializations: updatedMembership.specializations,
+        membership_type: updatedMembership.membership_type,
+        payment_status: updatedMembership.payment_status,
+        updated_at: new Date().toISOString()
+      }).eq('id', updatedMembership.id);
       if (error) throw error;
-      
       await fetchMemberships();
       setIsEditing(false);
       setEditingMembership(null);
@@ -462,18 +448,13 @@ const Dashboard = () => {
       });
     }
   };
-
   const deleteMembership = async (id: string) => {
     if (!confirm('Weet je zeker dat je dit lidmaatschap wilt verwijderen?')) return;
-    
     try {
-      const { error } = await supabase
-        .from('memberships')
-        .delete()
-        .eq('id', id);
-
+      const {
+        error
+      } = await supabase.from('memberships').delete().eq('id', id);
       if (error) throw error;
-      
       await fetchMemberships();
       toast({
         title: "Verwijderd",
@@ -488,20 +469,20 @@ const Dashboard = () => {
       });
     }
   };
-
   const testEmail = async () => {
     setTestingEmail(true);
     try {
-      const { data, error } = await supabase.functions.invoke('test-email', {
+      const {
+        data,
+        error
+      } = await supabase.functions.invoke('test-email', {
         body: {}
       });
-
       if (error) throw error;
-
       console.log('Test email response:', data);
       toast({
         title: "Test Email Verzonden",
-        description: "Test bestelbevestiging is verzonden naar info@bouwmetrespect.nl",
+        description: "Test bestelbevestiging is verzonden naar info@bouwmetrespect.nl"
       });
     } catch (error) {
       console.error('Error sending test email:', error);
@@ -514,20 +495,20 @@ const Dashboard = () => {
       setTestingEmail(false);
     }
   };
-
   const createTestOrder = async () => {
     setCreatingTestOrder(true);
     try {
-      const { data, error } = await supabase.functions.invoke('create-test-order');
-
+      const {
+        data,
+        error
+      } = await supabase.functions.invoke('create-test-order');
       if (error) throw error;
-
       console.log('Test order response:', data);
       toast({
         title: "Test Bestelling Aangemaakt",
-        description: "Test bestelling is aangemaakt en bevestigingsemail is verzonden naar info@bouwmetrespect.nl",
+        description: "Test bestelling is aangemaakt en bevestigingsemail is verzonden naar info@bouwmetrespect.nl"
       });
-      
+
       // Refresh orders to show the new test order
       await fetchOrders();
     } catch (error) {
@@ -541,62 +522,45 @@ const Dashboard = () => {
       setCreatingTestOrder(false);
     }
   };
-
   const handleEditProfile = (profile: CompanyProfile) => {
     setEditingProfile(profile);
     setShowProfileForm(true);
   };
-
   const handleDeleteProfile = async (id: string) => {
     if (!confirm('Weet je zeker dat je dit bedrijfsprofiel wilt verwijderen?')) return;
-
     try {
-      const { error } = await supabase
-        .from('company_profiles')
-        .delete()
-        .eq('id', id);
-
+      const {
+        error
+      } = await supabase.from('company_profiles').delete().eq('id', id);
       if (error) throw error;
-
       toast({
         title: "Succes",
-        description: "Bedrijfsprofiel succesvol verwijderd.",
+        description: "Bedrijfsprofiel succesvol verwijderd."
       });
-
       fetchProfiles();
     } catch (error) {
       console.error('Error deleting profile:', error);
       toast({
         title: "Fout",
         description: "Kon bedrijfsprofiel niet verwijderen.",
-        variant: "destructive",
+        variant: "destructive"
       });
     }
   };
-
   const handleProfileFormClose = () => {
     setShowProfileForm(false);
     setEditingProfile(null);
   };
-
   const handleProfileFormSuccess = () => {
     fetchProfiles();
     handleProfileFormClose();
   };
-
   const filteredMemberships = memberships.filter(membership => {
-    const matchesSearch = 
-      membership.first_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      membership.last_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      membership.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      membership.company?.toLowerCase().includes(searchTerm.toLowerCase());
-    
+    const matchesSearch = membership.first_name.toLowerCase().includes(searchTerm.toLowerCase()) || membership.last_name.toLowerCase().includes(searchTerm.toLowerCase()) || membership.email.toLowerCase().includes(searchTerm.toLowerCase()) || membership.company?.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus = statusFilter === "all" || membership.payment_status === statusFilter;
     const matchesType = typeFilter === "all" || membership.membership_type === typeFilter;
-    
     return matchesSearch && matchesStatus && matchesType;
   });
-
   const getStatusBadge = (status: string) => {
     const variants: Record<string, "default" | "secondary" | "destructive" | "outline"> = {
       paid: "default",
@@ -606,7 +570,6 @@ const Dashboard = () => {
     };
     return <Badge variant={variants[status] || "outline"}>{status}</Badge>;
   };
-
   const getTypeBadge = (type: string) => {
     const colors: Record<string, string> = {
       klein: "bg-blue-100 text-blue-800",
@@ -614,28 +577,21 @@ const Dashboard = () => {
       groot: "bg-purple-100 text-purple-800",
       offerte: "bg-green-100 text-green-800"
     };
-    return (
-      <Badge className={colors[type] || "bg-gray-100 text-gray-800"}>
+    return <Badge className={colors[type] || "bg-gray-100 text-gray-800"}>
         {type === 'offerte' ? 'Offerte' : type}
-      </Badge>
-    );
+      </Badge>;
   };
-
   const formatPrice = (amount: number) => `€${(amount / 100).toFixed(2)}`;
-
   const printOrderDetails = async (order: Order) => {
     const printWindow = window.open('', '_blank');
     if (!printWindow) return;
-
     const orderDate = new Date(order.created_at).toLocaleDateString('nl-NL');
     const orderTime = new Date(order.created_at).toLocaleTimeString('nl-NL');
-    
+
     // Handle items correctly - they might already be parsed from JSONB
     let items = [];
     try {
-      items = Array.isArray(order.items) ? order.items : 
-              typeof order.items === 'string' ? JSON.parse(order.items) : 
-              order.items ? [order.items] : [];
+      items = Array.isArray(order.items) ? order.items : typeof order.items === 'string' ? JSON.parse(order.items) : order.items ? [order.items] : [];
     } catch (e) {
       console.error('Error parsing order items:', e);
       items = [];
@@ -658,7 +614,6 @@ const Dashboard = () => {
     } catch (error) {
       console.error('Error generating QR code:', error);
     }
-    
     printWindow.document.write(`
       <!DOCTYPE html>
       <html>
@@ -743,7 +698,7 @@ const Dashboard = () => {
               <div><strong>${item.name || 'Onbekend product'}</strong></div>
               <div>Prijs: €${((item.price || 0) / 100).toFixed(2)}</div>
               <div>Aantal: ${item.quantity || 1}</div>
-              <div>Subtotaal: €${(((item.price || 0) * (item.quantity || 1)) / 100).toFixed(2)}</div>
+              <div>Subtotaal: €${((item.price || 0) * (item.quantity || 1) / 100).toFixed(2)}</div>
             </div>
           `).join('') : '<p>Geen producten gevonden</p>'}
         </div>
@@ -777,122 +732,103 @@ const Dashboard = () => {
       </body>
       </html>
     `);
-    
     printWindow.document.close();
   };
-
   const updateOrderStatus = async (orderId: string, newStatus: string) => {
     try {
-      const { error } = await supabase
-        .from('orders')
-        .update({ payment_status: newStatus })
-        .eq('id', orderId);
-
+      const {
+        error
+      } = await supabase.from('orders').update({
+        payment_status: newStatus
+      }).eq('id', orderId);
       if (error) throw error;
-
       toast({
         title: "Status bijgewerkt",
-        description: "Bestelling status is succesvol gewijzigd",
+        description: "Bestelling status is succesvol gewijzigd"
       });
-
       fetchOrders();
     } catch (error) {
       console.error('Error updating order status:', error);
       toast({
         title: "Fout",
         description: "Kon de bestelling status niet bijwerken",
-        variant: "destructive",
+        variant: "destructive"
       });
     }
   };
-
   const deleteOrder = async (orderId: string) => {
     if (confirm('Weet je zeker dat je deze bestelling wilt verwijderen? Deze actie kan niet ongedaan worden gemaakt.')) {
       try {
-        const { error } = await supabase
-          .from('orders')
-          .delete()
-          .eq('id', orderId);
-
+        const {
+          error
+        } = await supabase.from('orders').delete().eq('id', orderId);
         if (error) throw error;
-
         toast({
           title: "Bestelling verwijderd",
-          description: "De bestelling is succesvol verwijderd",
+          description: "De bestelling is succesvol verwijderd"
         });
-
         fetchOrders();
       } catch (error) {
         console.error('Error deleting order:', error);
         toast({
           title: "Fout",
           description: "Kon de bestelling niet verwijderen",
-          variant: "destructive",
+          variant: "destructive"
         });
       }
     }
   };
-
   const processOrder = async (orderId: string) => {
     try {
-      const { error } = await supabase
-        .from('orders')
-        .update({ payment_status: 'processed' })
-        .eq('id', orderId);
-
+      const {
+        error
+      } = await supabase.from('orders').update({
+        payment_status: 'processed'
+      }).eq('id', orderId);
       if (error) throw error;
-
       toast({
         title: "Bestelling verwerkt",
-        description: "De bestelling is gemarkeerd als verwerkt",
+        description: "De bestelling is gemarkeerd als verwerkt"
       });
-
       fetchOrders();
     } catch (error) {
       console.error('Error processing order:', error);
       toast({
         title: "Fout",
         description: "Kon de bestelling niet verwerken",
-        variant: "destructive",
+        variant: "destructive"
       });
     }
   };
-
   const editOrder = (order: Order) => {
     setEditingOrder(order);
     setIsEditingOrder(true);
   };
-
   const updateOrder = async () => {
     if (!editingOrder) return;
-
     try {
-      const { error } = await supabase
-        .from('orders')
-        .update({
-          customer_first_name: editingOrder.customer_first_name,
-          customer_last_name: editingOrder.customer_last_name,
-          customer_email: editingOrder.customer_email,
-          customer_phone: editingOrder.customer_phone,
-          address_street: editingOrder.address_street,
-          address_house_number: editingOrder.address_house_number,
-          address_postcode: editingOrder.address_postcode,
-          address_city: editingOrder.address_city,
-          address_country: editingOrder.address_country,
-          payment_status: editingOrder.payment_status,
-          subtotal: editingOrder.subtotal,
-          shipping: editingOrder.shipping,
-          total: editingOrder.total
-        })
-        .eq('id', editingOrder.id);
-
+      const {
+        error
+      } = await supabase.from('orders').update({
+        customer_first_name: editingOrder.customer_first_name,
+        customer_last_name: editingOrder.customer_last_name,
+        customer_email: editingOrder.customer_email,
+        customer_phone: editingOrder.customer_phone,
+        address_street: editingOrder.address_street,
+        address_house_number: editingOrder.address_house_number,
+        address_postcode: editingOrder.address_postcode,
+        address_city: editingOrder.address_city,
+        address_country: editingOrder.address_country,
+        payment_status: editingOrder.payment_status,
+        subtotal: editingOrder.subtotal,
+        shipping: editingOrder.shipping,
+        total: editingOrder.total
+      }).eq('id', editingOrder.id);
       if (error) throw error;
-
       toast({
         title: "Bestelling bijgewerkt",
-        description: "De bestelling is succesvol bijgewerkt",
+        description: "De bestelling is succesvol bijgewerkt"
       });
-
       setIsEditingOrder(false);
       setEditingOrder(null);
       fetchOrders();
@@ -901,20 +837,19 @@ const Dashboard = () => {
       toast({
         title: "Fout",
         description: "Kon de bestelling niet bijwerken",
-        variant: "destructive",
+        variant: "destructive"
       });
     }
   };
-
   const createPartnerAccount = async (partner: PartnerAccount) => {
     try {
       // Generate random password
       const password = generateRandomPassword();
-      
+
       // Note: Cannot create user account from frontend - requires admin privileges
       // For now, just generate password and show instructions
       console.log('Note: User account creation requires admin privileges. Please create manually from Supabase Dashboard.');
-      
+
       // Generate password and show instructions
       const updatedPartner = {
         ...partner,
@@ -922,12 +857,7 @@ const Dashboard = () => {
       };
 
       // Update the partner in state
-      setPartners(prevPartners => 
-        prevPartners.map(p => 
-          p.id === partner.id ? updatedPartner : p
-        )
-      );
-
+      setPartners(prevPartners => prevPartners.map(p => p.id === partner.id ? updatedPartner : p));
       toast({
         title: "Wachtwoord Gegenereerd",
         description: `Wachtwoord is gegenereerd voor ${partner.company_name}. Maak handmatig een account aan in Supabase en koppel de User ID.`,
@@ -950,15 +880,11 @@ Stappen:
 5. Klik "🔗 User ID Koppelen" in de dashboard
 6. Plak de User ID en klik "Koppelen"
       `;
-
       await navigator.clipboard.writeText(accountDetails);
 
       // Send welcome email
       await sendPartnerWelcomeEmail(partner.email, partner.first_name, password, partner.company_name);
-
       return; // Exit early since we can't create the account automatically
-
-
     } catch (error: any) {
       console.error('Error creating partner account:', error);
       toast({
@@ -968,7 +894,6 @@ Stappen:
       });
     }
   };
-
   const copyToClipboard = async (text: string, label: string) => {
     try {
       await navigator.clipboard.writeText(text);
@@ -986,7 +911,6 @@ Stappen:
       });
     }
   };
-
   const linkUserId = async () => {
     if (!selectedPartner || !userIdInput.trim()) {
       toast({
@@ -996,34 +920,29 @@ Stappen:
       });
       return;
     }
-
     try {
-      const { error } = await supabase
-        .from('partner_memberships')
-        .update({ user_id: userIdInput.trim() })
-        .eq('id', selectedPartner.id);
-
+      const {
+        error
+      } = await supabase.from('partner_memberships').update({
+        user_id: userIdInput.trim()
+      }).eq('id', selectedPartner.id);
       if (error) {
         throw error;
       }
 
       // Update local state
-      setPartners(prevPartners => 
-        prevPartners.map(p => 
-          p.id === selectedPartner.id ? { ...p, user_id: userIdInput.trim() } : p
-        )
-      );
-
+      setPartners(prevPartners => prevPartners.map(p => p.id === selectedPartner.id ? {
+        ...p,
+        user_id: userIdInput.trim()
+      } : p));
       toast({
         title: "User ID Gekoppeld",
         description: `User ID is succesvol gekoppeld aan ${selectedPartner.company_name}`,
         duration: 3000
       });
-
       setShowUserIdDialog(false);
       setSelectedPartner(null);
       setUserIdInput('');
-
     } catch (error: any) {
       console.error('Error linking user ID:', error);
       toast({
@@ -1033,57 +952,50 @@ Stappen:
       });
     }
   };
-
   const updatePartner = async (updatedPartner: PartnerAccount) => {
     try {
       console.log('🔄 Updating partner:', updatedPartner.id);
       console.log('📝 Updated data:', updatedPartner);
-      
-      // Update partner membership
-      const { error: partnerError } = await supabase
-        .from('partner_memberships')
-        .update({
-          first_name: updatedPartner.first_name,
-          last_name: updatedPartner.last_name,
-          email: updatedPartner.email,
-          phone: updatedPartner.phone,
-          company_name: updatedPartner.company_name,
-          website: updatedPartner.website,
-          industry: updatedPartner.industry,
-          description: updatedPartner.description,
-          payment_status: updatedPartner.payment_status,
-          updated_at: new Date().toISOString()
-        })
-        .eq('id', updatedPartner.id);
 
+      // Update partner membership
+      const {
+        error: partnerError
+      } = await supabase.from('partner_memberships').update({
+        first_name: updatedPartner.first_name,
+        last_name: updatedPartner.last_name,
+        email: updatedPartner.email,
+        phone: updatedPartner.phone,
+        company_name: updatedPartner.company_name,
+        website: updatedPartner.website,
+        industry: updatedPartner.industry,
+        description: updatedPartner.description,
+        payment_status: updatedPartner.payment_status,
+        updated_at: new Date().toISOString()
+      }).eq('id', updatedPartner.id);
       if (partnerError) {
         console.error('❌ Partner update error:', partnerError);
         throw partnerError;
       }
-
       console.log('✅ Partner updated successfully');
 
       // Update company profile if it exists
       if (updatedPartner.company_profile) {
-        const { error: profileError } = await supabase
-          .from('company_profiles')
-          .update({
-            name: updatedPartner.company_name,
-            description: updatedPartner.description || `Welkom bij ${updatedPartner.company_name}`,
-            website: updatedPartner.website,
-            industry: updatedPartner.industry || 'Bouw & Constructie',
-            contact_email: updatedPartner.email,
-            contact_phone: updatedPartner.phone || '',
-            updated_at: new Date().toISOString()
-          })
-          .eq('partner_membership_id', updatedPartner.id);
-
+        const {
+          error: profileError
+        } = await supabase.from('company_profiles').update({
+          name: updatedPartner.company_name,
+          description: updatedPartner.description || `Welkom bij ${updatedPartner.company_name}`,
+          website: updatedPartner.website,
+          industry: updatedPartner.industry || 'Bouw & Constructie',
+          contact_email: updatedPartner.email,
+          contact_phone: updatedPartner.phone || '',
+          updated_at: new Date().toISOString()
+        }).eq('partner_membership_id', updatedPartner.id);
         if (profileError) {
           console.error('Error updating company profile:', profileError);
           // Don't fail the entire operation
         }
       }
-      
       await fetchPartners();
       setIsEditingPartner(false);
       setEditingPartner(null);
@@ -1100,7 +1012,6 @@ Stappen:
       });
     }
   };
-
   const generateRandomPassword = (): string => {
     const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*';
     let password = '';
@@ -1109,34 +1020,28 @@ Stappen:
     }
     return password;
   };
-
   const deletePartnerAccount = async (partner: PartnerAccount) => {
     try {
       // Delete company profile first
       if (partner.company_profile) {
-        const { error: profileError } = await supabase
-          .from('company_profiles')
-          .delete()
-          .eq('partner_membership_id', partner.id);
-
+        const {
+          error: profileError
+        } = await supabase.from('company_profiles').delete().eq('partner_membership_id', partner.id);
         if (profileError) {
           console.error('Error deleting company profile:', profileError);
         }
       }
 
       // Delete partner membership
-      const { error: deleteError } = await supabase
-        .from('partner_memberships')
-        .delete()
-        .eq('id', partner.id);
-
+      const {
+        error: deleteError
+      } = await supabase.from('partner_memberships').delete().eq('id', partner.id);
       if (deleteError) {
         throw deleteError;
       }
 
       // Refresh partners list
       await fetchPartners();
-
       toast({
         title: "Partner Verwijderd",
         description: `${partner.company_name} is succesvol verwijderd uit de database`,
@@ -1151,7 +1056,6 @@ Stappen:
           duration: 5000
         });
       }
-
     } catch (error: any) {
       console.error('Error deleting partner account:', error);
       toast({
@@ -1161,11 +1065,9 @@ Stappen:
       });
     }
   };
-
   const createNewPartnerAccount = async () => {
     try {
       console.log('🔄 Creating new partner account...');
-      
       const newPartner = {
         first_name: 'Nieuwe',
         last_name: 'Partner',
@@ -1179,44 +1081,38 @@ Stappen:
         amount: 0,
         company_size: 'klein'
       };
-
       console.log('📝 Partner data:', newPartner);
 
       // Create partner membership first
-      const { data: partnerData, error: partnerError } = await supabase
-        .from('partner_memberships')
-        .insert({
-          first_name: newPartner.first_name,
-          last_name: newPartner.last_name,
-          email: newPartner.email,
-          phone: newPartner.phone,
-          company_name: newPartner.company_name,
-          website: newPartner.website,
-          industry: newPartner.industry,
-          description: newPartner.description,
-          payment_status: newPartner.payment_status,
-          amount: newPartner.amount,
-          company_size: newPartner.company_size
-        })
-        .select()
-        .single();
-
+      const {
+        data: partnerData,
+        error: partnerError
+      } = await supabase.from('partner_memberships').insert({
+        first_name: newPartner.first_name,
+        last_name: newPartner.last_name,
+        email: newPartner.email,
+        phone: newPartner.phone,
+        company_name: newPartner.company_name,
+        website: newPartner.website,
+        industry: newPartner.industry,
+        description: newPartner.description,
+        payment_status: newPartner.payment_status,
+        amount: newPartner.amount,
+        company_size: newPartner.company_size
+      }).select().single();
       if (partnerError) {
         console.error('❌ Partner creation error:', partnerError);
         throw partnerError;
       }
-
       console.log('✅ Partner created successfully:', partnerData);
 
       // Refresh partners list
       await fetchPartners();
-
       toast({
         title: "Nieuwe Partner Toegevoegd",
         description: "Je kunt nu de partner gegevens bewerken via de 'Bewerken' knop",
         duration: 3000
       });
-
     } catch (error: any) {
       console.error('💥 Error creating new partner:', error);
       toast({
@@ -1226,29 +1122,26 @@ Stappen:
       });
     }
   };
-
   const updatePartnerCredentials = async (partner: PartnerAccount, newEmail: string, newPassword: string) => {
     try {
       // Update email in partner_memberships
-      const { error: partnerError } = await supabase
-        .from('partner_memberships')
-        .update({ 
-          email: newEmail,
-          generated_password: newPassword || partner.generated_password
-        })
-        .eq('id', partner.id);
-
+      const {
+        error: partnerError
+      } = await supabase.from('partner_memberships').update({
+        email: newEmail,
+        generated_password: newPassword || partner.generated_password
+      }).eq('id', partner.id);
       if (partnerError) {
         throw partnerError;
       }
 
       // Update company profile email
       if (partner.company_profile) {
-        const { error: profileError } = await supabase
-          .from('company_profiles')
-          .update({ contact_email: newEmail })
-          .eq('partner_membership_id', partner.id);
-
+        const {
+          error: profileError
+        } = await supabase.from('company_profiles').update({
+          contact_email: newEmail
+        }).eq('partner_membership_id', partner.id);
         if (profileError) {
           console.error('Error updating company profile email:', profileError);
         }
@@ -1256,7 +1149,6 @@ Stappen:
 
       // Refresh partners list
       await fetchPartners();
-
       toast({
         title: "Gegevens Bijgewerkt",
         description: `Email en wachtwoord voor ${partner.company_name} zijn bijgewerkt in de database`,
@@ -1271,7 +1163,6 @@ Stappen:
           duration: 5000
         });
       }
-
     } catch (error: any) {
       console.error('Error updating partner credentials:', error);
       toast({
@@ -1281,7 +1172,6 @@ Stappen:
       });
     }
   };
-
   const sendPartnerWelcomeEmail = async (email: string, firstName: string, password: string, companyName: string) => {
     try {
       // Create email content and copy to clipboard
@@ -1303,30 +1193,18 @@ Voor vragen kun je altijd contact met ons opnemen.
 Met vriendelijke groet,
 Het Bouw met Respect team
       `;
-      
       await navigator.clipboard.writeText(emailContent);
       console.log('Email content copied to clipboard');
-      
     } catch (error) {
       console.error('Error preparing email content:', error);
     }
   };
-
   const exportToCsv = () => {
     if (viewMode === 'memberships') {
-      const csvContent = [
-        ["Naam", "Email", "Bedrijf", "Type", "Status", "Bedrag", "Datum"].join(","),
-        ...filteredMemberships.map(m => [
-          `${m.first_name} ${m.last_name}`,
-          m.email,
-          m.company || "",
-          m.membership_type,
-          m.payment_status,
-          formatPrice(m.amount),
-          new Date(m.created_at).toLocaleDateString()
-        ].join(","))
-      ].join("\n");
-      const blob = new Blob([csvContent], { type: "text/csv" });
+      const csvContent = [["Naam", "Email", "Bedrijf", "Type", "Status", "Bedrag", "Datum"].join(","), ...filteredMemberships.map(m => [`${m.first_name} ${m.last_name}`, m.email, m.company || "", m.membership_type, m.payment_status, formatPrice(m.amount), new Date(m.created_at).toLocaleDateString()].join(","))].join("\n");
+      const blob = new Blob([csvContent], {
+        type: "text/csv"
+      });
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.setAttribute("hidden", "");
@@ -1336,19 +1214,10 @@ Het Bouw met Respect team
       a.click();
       document.body.removeChild(a);
     } else {
-      const csvContent = [
-        ["Naam", "Email", "Telefoon", "Adres", "Status", "Totaal", "Datum"].join(","),
-        ...filteredOrders.map(o => [
-          `${o.customer_first_name || ''} ${o.customer_last_name || ''}`.trim() || '-',
-          o.customer_email || o.email || '-',
-          o.customer_phone || '-',
-          `${o.address_street || ''} ${o.address_house_number || ''}, ${o.address_postcode || ''} ${o.address_city || ''}`.trim(),
-          o.payment_status,
-          formatPrice(o.total),
-          new Date(o.created_at).toLocaleDateString()
-        ].join(","))
-      ].join("\n");
-      const blob = new Blob([csvContent], { type: "text/csv" });
+      const csvContent = [["Naam", "Email", "Telefoon", "Adres", "Status", "Totaal", "Datum"].join(","), ...filteredOrders.map(o => [`${o.customer_first_name || ''} ${o.customer_last_name || ''}`.trim() || '-', o.customer_email || o.email || '-', o.customer_phone || '-', `${o.address_street || ''} ${o.address_house_number || ''}, ${o.address_postcode || ''} ${o.address_city || ''}`.trim(), o.payment_status, formatPrice(o.total), new Date(o.created_at).toLocaleDateString()].join(","))].join("\n");
+      const blob = new Blob([csvContent], {
+        type: "text/csv"
+      });
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.setAttribute("hidden", "");
@@ -1359,48 +1228,32 @@ Het Bouw met Respect team
       document.body.removeChild(a);
     }
   };
-
-  const stats = viewMode === 'memberships'
-    ? {
-        total: memberships.length,
-        paid: memberships.filter(m => m.payment_status === 'paid').length,
-        pending: memberships.filter(m => m.payment_status === 'pending').length,
-        revenue: memberships
-          .filter(m => m.payment_status === 'paid')
-          .reduce((sum, m) => sum + m.amount, 0)
-      }
-    : viewMode === 'orders'
-    ? {
-        total: orders.length,
-        paid: orders.filter(o => o.payment_status === 'paid').length,
-        pending: orders.filter(o => o.payment_status === 'pending').length,
-        revenue: orders
-          .filter(o => o.payment_status === 'paid')
-          .reduce((sum, o) => sum + o.total, 0)
-      }
-    : viewMode === 'profiles'
-    ? {
-        total: profiles.length,
-        paid: profiles.filter(p => p.is_featured).length,
-        pending: profiles.filter(p => !p.is_featured).length,
-        revenue: 0
-      }
-    : viewMode === 'products'
-    ? {
-        total: products.length,
-        paid: products.filter(p => p.in_stock).length,
-        pending: products.filter(p => !p.in_stock).length,
-        revenue: products.reduce((sum, p) => sum + p.price, 0)
-      }
-    : {
-        total: partners.length,
-        paid: partners.filter(p => p.payment_status === 'paid').length,
-        pending: partners.filter(p => p.payment_status === 'pending').length,
-        revenue: partners
-          .filter(p => p.payment_status === 'paid')
-          .reduce((sum, p) => sum + p.amount, 0)
-      };
-
+  const stats = viewMode === 'memberships' ? {
+    total: memberships.length,
+    paid: memberships.filter(m => m.payment_status === 'paid').length,
+    pending: memberships.filter(m => m.payment_status === 'pending').length,
+    revenue: memberships.filter(m => m.payment_status === 'paid').reduce((sum, m) => sum + m.amount, 0)
+  } : viewMode === 'orders' ? {
+    total: orders.length,
+    paid: orders.filter(o => o.payment_status === 'paid').length,
+    pending: orders.filter(o => o.payment_status === 'pending').length,
+    revenue: orders.filter(o => o.payment_status === 'paid').reduce((sum, o) => sum + o.total, 0)
+  } : viewMode === 'profiles' ? {
+    total: profiles.length,
+    paid: profiles.filter(p => p.is_featured).length,
+    pending: profiles.filter(p => !p.is_featured).length,
+    revenue: 0
+  } : viewMode === 'products' ? {
+    total: products.length,
+    paid: products.filter(p => p.in_stock).length,
+    pending: products.filter(p => !p.in_stock).length,
+    revenue: products.reduce((sum, p) => sum + p.price, 0)
+  } : {
+    total: partners.length,
+    paid: partners.filter(p => p.payment_status === 'paid').length,
+    pending: partners.filter(p => p.payment_status === 'pending').length,
+    revenue: partners.filter(p => p.payment_status === 'paid').reduce((sum, p) => sum + p.amount, 0)
+  };
   const filteredOrders = orders.filter(order => {
     const name = `${order.customer_first_name || ''} ${order.customer_last_name || ''}`.toLowerCase();
     const email = (order.customer_email || order.email || '').toLowerCase();
@@ -1409,18 +1262,13 @@ Het Bouw met Respect team
     const matchesStatus = orderStatusFilter === 'all' || order.payment_status === orderStatusFilter;
     return matchesSearch && matchesStatus;
   });
-
   if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
+    return <div className="min-h-screen flex items-center justify-center">
         <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>
-      </div>
-    );
+      </div>;
   }
-
   if (!user || !isAdmin) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
+    return <div className="min-h-screen flex items-center justify-center">
         <Card className="w-full max-w-md">
           <CardContent className="pt-6">
             <div className="text-center">
@@ -1434,17 +1282,11 @@ Het Bouw met Respect team
             </div>
           </CardContent>
         </Card>
-      </div>
-    );
+      </div>;
   }
-
-  return (
-    <SidebarProvider>
+  return <SidebarProvider>
       <div className="min-h-screen bg-gradient-to-br from-background via-primary/5 to-secondary/5 flex w-full">
-        <AppSidebar 
-          viewMode={viewMode} 
-          onViewModeChange={(mode) => setViewMode(mode as 'memberships' | 'orders' | 'profiles' | 'products' | 'partners' | 'partner-pricing' | 'lidmaatschappen-prijzen' | 'onze-partners-prijzen' | 'discounts' | 'qrcode')} 
-        />
+        <AppSidebar viewMode={viewMode} onViewModeChange={mode => setViewMode(mode as 'memberships' | 'orders' | 'profiles' | 'products' | 'partners' | 'partner-pricing' | 'lidmaatschappen-prijzen' | 'onze-partners-prijzen' | 'discounts' | 'qrcode')} />
         
         <main className="flex-1 overflow-auto">
           {/* Header */}
@@ -1469,31 +1311,15 @@ Het Bouw met Respect team
                     <Download className="w-4 h-4" />
                     Export CSV
                   </Button>
-                  <Button 
-                    onClick={testEmail} 
-                    disabled={testingEmail}
-                    className="flex items-center gap-2"
-                    variant="outline"
-                  >
-                    <Mail className="w-4 h-4" />
-                    {testingEmail ? "Verzenden..." : "Test Email"}
-                  </Button>
-                  <Button 
-                    onClick={createTestOrder} 
-                    disabled={creatingTestOrder}
-                    className="flex items-center gap-2"
-                    variant="secondary"
-                  >
-                    <ShoppingBag className="w-4 h-4" />
-                    {creatingTestOrder ? "Aanmaken..." : "Test Bestelling"}
-                  </Button>
+                  
+                  
                 </div>
               </div>
             </div>
           </div>
 
           <div className="p-6 mt-6">
-                <Tabs value={viewMode} onValueChange={(value) => setViewMode(value as 'memberships' | 'orders' | 'profiles' | 'products' | 'partners' | 'partner-pricing' | 'lidmaatschappen-prijzen' | 'onze-partners-prijzen' | 'discounts' | 'qrcode')}>
+                <Tabs value={viewMode} onValueChange={value => setViewMode(value as 'memberships' | 'orders' | 'profiles' | 'products' | 'partners' | 'partner-pricing' | 'lidmaatschappen-prijzen' | 'onze-partners-prijzen' | 'discounts' | 'qrcode')}>
                   
                   <TabsContent value="lidmaatschappen-prijzen" className="space-y-6">
                     <div className="space-y-6">
@@ -1552,10 +1378,10 @@ Het Bouw met Respect team
                     <CardContent>
                       <div className="text-2xl font-bold text-foreground">
                         {memberships.filter(m => {
-                          const created = new Date(m.created_at);
-                          const now = new Date();
-                          return created.getMonth() === now.getMonth() && created.getFullYear() === now.getFullYear();
-                        }).length}
+                        const created = new Date(m.created_at);
+                        const now = new Date();
+                        return created.getMonth() === now.getMonth() && created.getFullYear() === now.getFullYear();
+                      }).length}
                       </div>
                       <p className="text-xs text-muted-foreground">dit kalenderjaar</p>
                     </CardContent>
@@ -1606,12 +1432,7 @@ Het Bouw met Respect team
                       <div className="flex gap-2">
                         <div className="flex items-center gap-2">
                           <Search className="w-4 h-4 text-muted-foreground" />
-                          <Input
-                            placeholder="Zoek lidmaatschappen..."
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                            className="w-64"
-                          />
+                          <Input placeholder="Zoek lidmaatschappen..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} className="w-64" />
                         </div>
                         <Select value={statusFilter} onValueChange={setStatusFilter}>
                           <SelectTrigger className="w-32">
@@ -1655,18 +1476,11 @@ Het Bouw met Respect team
                           </TableRow>
                         </TableHeader>
                         <TableBody>
-                          {filteredMemberships.length === 0 ? (
-                            <TableRow>
+                          {filteredMemberships.length === 0 ? <TableRow>
                               <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
-                                {memberships.length === 0 
-                                  ? "Geen lidmaatschappen gevonden" 
-                                  : "Geen resultaten voor de huidige filters"
-                                }
+                                {memberships.length === 0 ? "Geen lidmaatschappen gevonden" : "Geen resultaten voor de huidige filters"}
                               </TableCell>
-                            </TableRow>
-                          ) : (
-                            filteredMemberships.map((membership) => (
-                              <TableRow key={membership.id}>
+                            </TableRow> : filteredMemberships.map(membership => <TableRow key={membership.id}>
                                 <TableCell className="font-medium">
                                   {membership.first_name} {membership.last_name}
                                 </TableCell>
@@ -1684,38 +1498,21 @@ Het Bouw met Respect team
                                 <TableCell>{new Date(membership.created_at).toLocaleDateString()}</TableCell>
                                 <TableCell className="text-right">
                                   <div className="flex items-center gap-2 justify-end">
-                                    <Button
-                                      variant="ghost"
-                                      size="sm"
-                                      onClick={() => setSelectedMembership(membership)}
-                                      title="Bekijk details"
-                                    >
+                                    <Button variant="ghost" size="sm" onClick={() => setSelectedMembership(membership)} title="Bekijk details">
                                       <Eye className="w-4 h-4" />
                                     </Button>
-                                    <Button
-                                      variant="ghost"
-                                      size="sm"
-                                      onClick={() => {
-                                        setEditingMembership(membership);
-                                        setIsEditing(true);
-                                      }}
-                                      title="Bewerk lidmaatschap"
-                                    >
+                                    <Button variant="ghost" size="sm" onClick={() => {
+                                setEditingMembership(membership);
+                                setIsEditing(true);
+                              }} title="Bewerk lidmaatschap">
                                       <Edit className="w-4 h-4" />
                                     </Button>
-                                    <Button
-                                      variant="ghost"
-                                      size="sm"
-                                      onClick={() => deleteMembership(membership.id)}
-                                      title="Verwijder lidmaatschap"
-                                    >
+                                    <Button variant="ghost" size="sm" onClick={() => deleteMembership(membership.id)} title="Verwijder lidmaatschap">
                                       <Trash2 className="w-4 h-4" />
                                     </Button>
                                   </div>
                                 </TableCell>
-                              </TableRow>
-                            ))
-                          )}
+                              </TableRow>)}
                         </TableBody>
                       </Table>
                     </div>
@@ -1784,11 +1581,9 @@ Het Bouw met Respect team
                           €{orders.length > 0 ? (orders.reduce((sum, o) => sum + o.total, 0) / 100).toFixed(2) : '0.00'}
                         </div>
                         <p className="text-xs text-muted-foreground">
-                          {orders.length > 0 && (
-                            <>
+                          {orders.length > 0 && <>
                               Laatste: €{(orders[0]?.total / 100).toFixed(2)}
-                            </>
-                          )}
+                            </>}
                         </p>
                       </CardContent>
                     </Card>
@@ -1818,8 +1613,7 @@ Het Bouw met Respect team
                             </TableRow>
                           </TableHeader>
                           <TableBody>
-                            {orders.map((order) => (
-                              <TableRow key={order.id}>
+                            {orders.map(order => <TableRow key={order.id}>
                                 <TableCell className="font-medium">
                                   {order.customer_first_name} {order.customer_last_name}
                                 </TableCell>
@@ -1839,35 +1633,18 @@ Het Bouw met Respect team
                                     <Button variant="ghost" size="sm">
                                       <Eye className="w-4 h-4" />
                                     </Button>
-                                    <Button
-                                      variant="ghost"
-                                      size="sm"
-                                      onClick={() => editOrder(order)}
-                                      title="Bewerk bestelling"
-                                    >
+                                    <Button variant="ghost" size="sm" onClick={() => editOrder(order)} title="Bewerk bestelling">
                                       <Edit className="w-4 h-4" />
                                     </Button>
-                                    <Button
-                                      variant="ghost"
-                                      size="sm"
-                                      onClick={() => printOrderDetails(order)}
-                                      title="Print bestelling"
-                                    >
+                                    <Button variant="ghost" size="sm" onClick={() => printOrderDetails(order)} title="Print bestelling">
                                       <Printer className="w-4 h-4" />
                                     </Button>
-                                    <Button
-                                      variant="ghost"
-                                      size="sm"
-                                      onClick={() => deleteOrder(order.id)}
-                                      title="Verwijder bestelling"
-                                      className="text-destructive hover:text-destructive"
-                                    >
+                                    <Button variant="ghost" size="sm" onClick={() => deleteOrder(order.id)} title="Verwijder bestelling" className="text-destructive hover:text-destructive">
                                       <Trash2 className="w-4 h-4" />
                                     </Button>
                                   </div>
                                 </TableCell>
-                              </TableRow>
-                            ))}
+                              </TableRow>)}
                           </TableBody>
                         </Table>
                       </div>
@@ -1952,13 +1729,10 @@ Het Bouw met Respect team
                           </CardTitle>
                           <CardDescription>Beheer alle bedrijfsprofielen in de partnersgalerij</CardDescription>
                         </div>
-                        <Button 
-                          onClick={() => {
-                            setEditingProfile(null);
-                            setShowProfileForm(true);
-                          }}
-                          className="flex items-center gap-2"
-                        >
+                        <Button onClick={() => {
+                        setEditingProfile(null);
+                        setShowProfileForm(true);
+                      }} className="flex items-center gap-2">
                           <Plus className="w-4 h-4" />
                           Nieuw Profiel
                         </Button>
@@ -1979,44 +1753,29 @@ Het Bouw met Respect team
                             </TableRow>
                           </TableHeader>
                           <TableBody>
-                            {profiles.map((profile) => (
-                              <TableRow key={profile.id}>
+                            {profiles.map(profile => <TableRow key={profile.id}>
                                 <TableCell className="font-medium">
                                   <div className="flex items-center gap-2">
-                                    {profile.logo_url && (
-                                      <img 
-                                        src={profile.logo_url} 
-                                        alt={profile.name}
-                                        className="w-8 h-8 rounded object-cover"
-                                      />
-                                    )}
+                                    {profile.logo_url && <img src={profile.logo_url} alt={profile.name} className="w-8 h-8 rounded object-cover" />}
                                     {profile.name}
                                   </div>
                                 </TableCell>
                                 <TableCell>{profile.industry || 'Niet gespecificeerd'}</TableCell>
                                 <TableCell>
-                                  {profile.website ? (
-                                    <a href={profile.website} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                                  {profile.website ? <a href={profile.website} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
                                       {profile.website.replace('https://', '').replace('http://', '')}
-                                    </a>
-                                  ) : (
-                                    'Geen website'
-                                  )}
+                                    </a> : 'Geen website'}
                                 </TableCell>
                                 <TableCell>
                                   <div className="text-sm">
-                                    {profile.contact_email && (
-                                      <div className="flex items-center gap-1">
+                                    {profile.contact_email && <div className="flex items-center gap-1">
                                         <Mail className="w-3 h-3" />
                                         {profile.contact_email}
-                                      </div>
-                                    )}
-                                    {profile.contact_phone && (
-                                      <div className="flex items-center gap-1">
+                                      </div>}
+                                    {profile.contact_phone && <div className="flex items-center gap-1">
                                         <Phone className="w-3 h-3" />
                                         {profile.contact_phone}
-                                      </div>
-                                    )}
+                                      </div>}
                                   </div>
                                 </TableCell>
                                 <TableCell>
@@ -2027,31 +1786,21 @@ Het Bouw met Respect team
                                 <TableCell>{profile.display_order}</TableCell>
                                 <TableCell className="text-right">
                                   <div className="flex items-center gap-2 justify-end">
-                                    <Button 
-                                      variant="ghost" 
-                                      size="sm"
-                                      onClick={() => {
-                                        setEditingProfile(profile);
-                                        setShowProfileForm(true);
-                                      }}
-                                    >
+                                    <Button variant="ghost" size="sm" onClick={() => {
+                                  setEditingProfile(profile);
+                                  setShowProfileForm(true);
+                                }}>
                                       <Edit className="w-4 h-4" />
                                     </Button>
                                     <Button variant="ghost" size="sm">
                                       <Eye className="w-4 h-4" />
                                     </Button>
-                                    <Button 
-                                      variant="ghost" 
-                                      size="sm"
-                                      onClick={() => handleDeleteProfile(profile.id)}
-                                      className="text-destructive hover:text-destructive"
-                                    >
+                                    <Button variant="ghost" size="sm" onClick={() => handleDeleteProfile(profile.id)} className="text-destructive hover:text-destructive">
                                       <Trash2 className="w-4 h-4" />
                                     </Button>
                                   </div>
                                 </TableCell>
-                              </TableRow>
-                            ))}
+                              </TableRow>)}
                           </TableBody>
                         </Table>
                       </div>
@@ -2062,10 +1811,7 @@ Het Bouw met Respect team
 
               <TabsContent value="products">
                 <div className="space-y-6">
-                  <ProductManagement 
-                    products={products}
-                    onProductsChange={fetchProducts}
-                  />
+                  <ProductManagement products={products} onProductsChange={fetchProducts} />
                 </div>
               </TabsContent>
 
@@ -2099,17 +1845,11 @@ Het Bouw met Respect team
       </div>
       
       {/* Company Profile Form Dialog */}
-      <CompanyProfileForm
-        open={showProfileForm}
-        onOpenChange={setShowProfileForm}
-        onSuccess={() => {
-          fetchProfiles();
-          setShowProfileForm(false);
-          setEditingProfile(null);
-        }}
-        profile={editingProfile}
-        isPartnerDashboard={false}
-      />
+      <CompanyProfileForm open={showProfileForm} onOpenChange={setShowProfileForm} onSuccess={() => {
+      fetchProfiles();
+      setShowProfileForm(false);
+      setEditingProfile(null);
+    }} profile={editingProfile} isPartnerDashboard={false} />
 
       {/* Membership Edit Dialog */}
       <Dialog open={isEditing} onOpenChange={setIsEditing}>
@@ -2117,98 +1857,72 @@ Het Bouw met Respect team
           <DialogHeader>
             <DialogTitle>Lidmaatschap Bewerken</DialogTitle>
           </DialogHeader>
-          {editingMembership && (
-            <div className="space-y-4">
+          {editingMembership && <div className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="text-sm font-medium">Voornaam</label>
-                  <Input
-                    value={editingMembership.first_name}
-                    onChange={(e) => setEditingMembership({
-                      ...editingMembership,
-                      first_name: e.target.value
-                    })}
-                  />
+                  <Input value={editingMembership.first_name} onChange={e => setEditingMembership({
+                ...editingMembership,
+                first_name: e.target.value
+              })} />
                 </div>
                 <div>
                   <label className="text-sm font-medium">Achternaam</label>
-                  <Input
-                    value={editingMembership.last_name}
-                    onChange={(e) => setEditingMembership({
-                      ...editingMembership,
-                      last_name: e.target.value
-                    })}
-                  />
+                  <Input value={editingMembership.last_name} onChange={e => setEditingMembership({
+                ...editingMembership,
+                last_name: e.target.value
+              })} />
                 </div>
               </div>
               
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="text-sm font-medium">Email</label>
-                  <Input
-                    type="email"
-                    value={editingMembership.email}
-                    onChange={(e) => setEditingMembership({
-                      ...editingMembership,
-                      email: e.target.value
-                    })}
-                  />
+                  <Input type="email" value={editingMembership.email} onChange={e => setEditingMembership({
+                ...editingMembership,
+                email: e.target.value
+              })} />
                 </div>
                 <div>
                   <label className="text-sm font-medium">Telefoon</label>
-                  <Input
-                    value={editingMembership.phone}
-                    onChange={(e) => setEditingMembership({
-                      ...editingMembership,
-                      phone: e.target.value
-                    })}
-                  />
+                  <Input value={editingMembership.phone} onChange={e => setEditingMembership({
+                ...editingMembership,
+                phone: e.target.value
+              })} />
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="text-sm font-medium">Bedrijf</label>
-                  <Input
-                    value={editingMembership.company || ''}
-                    onChange={(e) => setEditingMembership({
-                      ...editingMembership,
-                      company: e.target.value
-                    })}
-                  />
+                  <Input value={editingMembership.company || ''} onChange={e => setEditingMembership({
+                ...editingMembership,
+                company: e.target.value
+              })} />
                 </div>
                 <div>
                   <label className="text-sm font-medium">Functietitel</label>
-                  <Input
-                    value={editingMembership.job_title}
-                    onChange={(e) => setEditingMembership({
-                      ...editingMembership,
-                      job_title: e.target.value
-                    })}
-                  />
+                  <Input value={editingMembership.job_title} onChange={e => setEditingMembership({
+                ...editingMembership,
+                job_title: e.target.value
+              })} />
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="text-sm font-medium">Rol in de industrie</label>
-                  <Input
-                    value={editingMembership.industry_role}
-                    onChange={(e) => setEditingMembership({
-                      ...editingMembership,
-                      industry_role: e.target.value
-                    })}
-                  />
+                  <Input value={editingMembership.industry_role} onChange={e => setEditingMembership({
+                ...editingMembership,
+                industry_role: e.target.value
+              })} />
                 </div>
                 <div>
                   <label className="text-sm font-medium">Ervaring</label>
-                  <Select
-                    value={editingMembership.experience_years}
-                    onValueChange={(value) => setEditingMembership({
-                      ...editingMembership,
-                      experience_years: value
-                    })}
-                  >
+                  <Select value={editingMembership.experience_years} onValueChange={value => setEditingMembership({
+                ...editingMembership,
+                experience_years: value
+              })}>
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
@@ -2226,13 +1940,10 @@ Het Bouw met Respect team
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="text-sm font-medium">Lidmaatschap Type</label>
-                  <Select
-                    value={editingMembership.membership_type}
-                    onValueChange={(value: 'klein' | 'middelgroot' | 'groot' | 'offerte') => setEditingMembership({
-                      ...editingMembership,
-                      membership_type: value
-                    })}
-                  >
+                  <Select value={editingMembership.membership_type} onValueChange={(value: 'klein' | 'middelgroot' | 'groot' | 'offerte') => setEditingMembership({
+                ...editingMembership,
+                membership_type: value
+              })}>
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
@@ -2246,13 +1957,10 @@ Het Bouw met Respect team
                 </div>
                 <div>
                   <label className="text-sm font-medium">Payment Status</label>
-                  <Select
-                    value={editingMembership.payment_status}
-                    onValueChange={(value) => setEditingMembership({
-                      ...editingMembership,
-                      payment_status: value
-                    })}
-                  >
+                  <Select value={editingMembership.payment_status} onValueChange={value => setEditingMembership({
+                ...editingMembership,
+                payment_status: value
+              })}>
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
@@ -2269,43 +1977,32 @@ Het Bouw met Respect team
               <div>
                 <label className="text-sm font-medium">Specialisaties</label>
                 <div className="grid grid-cols-2 gap-2 mt-2">
-                  {['duurzaam-bouwen', 'sociale-woningbouw', 'veiligheid', 'gemeenschapsprojecten', 'innovatie', 'circulariteit'].map(spec => (
-                    <label key={spec} className="flex items-center space-x-2">
-                      <Checkbox
-                        checked={editingMembership.specializations?.includes(spec) || false}
-                        onCheckedChange={(checked) => {
-                          const currentSpecs = editingMembership.specializations || [];
-                          const newSpecs = checked 
-                            ? [...currentSpecs, spec]
-                            : currentSpecs.filter(s => s !== spec);
-                          setEditingMembership({
-                            ...editingMembership,
-                            specializations: newSpecs
-                          });
-                        }}
-                      />
+                  {['duurzaam-bouwen', 'sociale-woningbouw', 'veiligheid', 'gemeenschapsprojecten', 'innovatie', 'circulariteit'].map(spec => <label key={spec} className="flex items-center space-x-2">
+                      <Checkbox checked={editingMembership.specializations?.includes(spec) || false} onCheckedChange={checked => {
+                  const currentSpecs = editingMembership.specializations || [];
+                  const newSpecs = checked ? [...currentSpecs, spec] : currentSpecs.filter(s => s !== spec);
+                  setEditingMembership({
+                    ...editingMembership,
+                    specializations: newSpecs
+                  });
+                }} />
                       <span className="text-sm capitalize">{spec.replace('-', ' ')}</span>
-                    </label>
-                  ))}
+                    </label>)}
                 </div>
               </div>
 
               <div className="flex justify-end gap-2 pt-4">
-                <Button 
-                  variant="outline" 
-                  onClick={() => {
-                    setIsEditing(false);
-                    setEditingMembership(null);
-                  }}
-                >
+                <Button variant="outline" onClick={() => {
+              setIsEditing(false);
+              setEditingMembership(null);
+            }}>
                   Annuleren
                 </Button>
                 <Button onClick={() => updateMembership(editingMembership)}>
                   Opslaan
                 </Button>
               </div>
-            </div>
-          )}
+            </div>}
         </DialogContent>
       </Dialog>
 
@@ -2315,8 +2012,7 @@ Het Bouw met Respect team
           <DialogHeader>
             <DialogTitle>Lidmaatschap Details</DialogTitle>
           </DialogHeader>
-          {selectedMembership && (
-            <div className="space-y-4">
+          {selectedMembership && <div className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="text-sm font-medium text-muted-foreground">Naam</label>
@@ -2375,11 +2071,9 @@ Het Bouw met Respect team
               <div>
                 <label className="text-sm font-medium text-muted-foreground">Specialisaties</label>
                 <div className="flex flex-wrap gap-2 mt-2">
-                  {selectedMembership.specializations?.map(spec => (
-                    <Badge key={spec} variant="secondary">
+                  {selectedMembership.specializations?.map(spec => <Badge key={spec} variant="secondary">
                       {spec.replace('-', ' ')}
-                    </Badge>
-                  ))}
+                    </Badge>)}
                 </div>
               </div>
 
@@ -2394,33 +2088,25 @@ Het Bouw met Respect team
                 </div>
               </div>
 
-              {selectedMembership.mollie_payment_id && (
-                <div>
+              {selectedMembership.mollie_payment_id && <div>
                   <label className="text-sm font-medium text-muted-foreground">Mollie Payment ID</label>
                   <p className="font-medium font-mono text-sm">{selectedMembership.mollie_payment_id}</p>
-                </div>
-              )}
+                </div>}
 
               <div className="flex justify-end gap-2 pt-4">
-                <Button 
-                  variant="outline" 
-                  onClick={() => setSelectedMembership(null)}
-                >
+                <Button variant="outline" onClick={() => setSelectedMembership(null)}>
                   Sluiten
                 </Button>
-                <Button 
-                  onClick={() => {
-                    setEditingMembership(selectedMembership);
-                    setIsEditing(true);
-                    setSelectedMembership(null);
-                  }}
-                >
+                <Button onClick={() => {
+              setEditingMembership(selectedMembership);
+              setIsEditing(true);
+              setSelectedMembership(null);
+            }}>
                   <Edit className="w-4 h-4 mr-2" />
                   Bewerken
                 </Button>
               </div>
-            </div>
-          )}
+            </div>}
         </DialogContent>
       </Dialog>
 
@@ -2430,52 +2116,38 @@ Het Bouw met Respect team
           <DialogHeader>
             <DialogTitle>Bestelling Bewerken</DialogTitle>
           </DialogHeader>
-          {editingOrder && (
-            <div className="space-y-4">
+          {editingOrder && <div className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="text-sm font-medium">Voornaam</label>
-                  <Input
-                    value={editingOrder.customer_first_name || ''}
-                    onChange={(e) => setEditingOrder({
-                      ...editingOrder,
-                      customer_first_name: e.target.value
-                    })}
-                  />
+                  <Input value={editingOrder.customer_first_name || ''} onChange={e => setEditingOrder({
+                ...editingOrder,
+                customer_first_name: e.target.value
+              })} />
                 </div>
                 <div>
                   <label className="text-sm font-medium">Achternaam</label>
-                  <Input
-                    value={editingOrder.customer_last_name || ''}
-                    onChange={(e) => setEditingOrder({
-                      ...editingOrder,
-                      customer_last_name: e.target.value
-                    })}
-                  />
+                  <Input value={editingOrder.customer_last_name || ''} onChange={e => setEditingOrder({
+                ...editingOrder,
+                customer_last_name: e.target.value
+              })} />
                 </div>
               </div>
               
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="text-sm font-medium">Email</label>
-                  <Input
-                    type="email"
-                    value={editingOrder.customer_email || ''}
-                    onChange={(e) => setEditingOrder({
-                      ...editingOrder,
-                      customer_email: e.target.value
-                    })}
-                  />
+                  <Input type="email" value={editingOrder.customer_email || ''} onChange={e => setEditingOrder({
+                ...editingOrder,
+                customer_email: e.target.value
+              })} />
                 </div>
                 <div>
                   <label className="text-sm font-medium">Telefoon</label>
-                  <Input
-                    value={editingOrder.customer_phone || ''}
-                    onChange={(e) => setEditingOrder({
-                      ...editingOrder,
-                      customer_phone: e.target.value
-                    })}
-                  />
+                  <Input value={editingOrder.customer_phone || ''} onChange={e => setEditingOrder({
+                ...editingOrder,
+                customer_phone: e.target.value
+              })} />
                 </div>
               </div>
 
@@ -2484,58 +2156,43 @@ Het Bouw met Respect team
                 <div className="grid grid-cols-3 gap-4">
                   <div className="col-span-2">
                     <label className="text-sm font-medium">Straatnaam</label>
-                    <Input
-                      value={editingOrder.address_street || ''}
-                      onChange={(e) => setEditingOrder({
-                        ...editingOrder,
-                        address_street: e.target.value
-                      })}
-                    />
+                    <Input value={editingOrder.address_street || ''} onChange={e => setEditingOrder({
+                  ...editingOrder,
+                  address_street: e.target.value
+                })} />
                   </div>
                   <div>
                     <label className="text-sm font-medium">Huisnummer</label>
-                    <Input
-                      value={editingOrder.address_house_number || ''}
-                      onChange={(e) => setEditingOrder({
-                        ...editingOrder,
-                        address_house_number: e.target.value
-                      })}
-                    />
+                    <Input value={editingOrder.address_house_number || ''} onChange={e => setEditingOrder({
+                  ...editingOrder,
+                  address_house_number: e.target.value
+                })} />
                   </div>
                 </div>
                 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className="text-sm font-medium">Postcode</label>
-                    <Input
-                      value={editingOrder.address_postcode || ''}
-                      onChange={(e) => setEditingOrder({
-                        ...editingOrder,
-                        address_postcode: e.target.value
-                      })}
-                    />
+                    <Input value={editingOrder.address_postcode || ''} onChange={e => setEditingOrder({
+                  ...editingOrder,
+                  address_postcode: e.target.value
+                })} />
                   </div>
                   <div>
                     <label className="text-sm font-medium">Plaats</label>
-                    <Input
-                      value={editingOrder.address_city || ''}
-                      onChange={(e) => setEditingOrder({
-                        ...editingOrder,
-                        address_city: e.target.value
-                      })}
-                    />
+                    <Input value={editingOrder.address_city || ''} onChange={e => setEditingOrder({
+                  ...editingOrder,
+                  address_city: e.target.value
+                })} />
                   </div>
                 </div>
                 
                 <div>
                   <label className="text-sm font-medium">Land</label>
-                  <Input
-                    value={editingOrder.address_country || ''}
-                    onChange={(e) => setEditingOrder({
-                      ...editingOrder,
-                      address_country: e.target.value
-                    })}
-                  />
+                  <Input value={editingOrder.address_country || ''} onChange={e => setEditingOrder({
+                ...editingOrder,
+                address_country: e.target.value
+              })} />
                 </div>
               </div>
 
@@ -2544,13 +2201,10 @@ Het Bouw met Respect team
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className="text-sm font-medium">Payment Status</label>
-                    <Select
-                      value={editingOrder.payment_status}
-                      onValueChange={(value) => setEditingOrder({
-                        ...editingOrder,
-                        payment_status: value
-                      })}
-                    >
+                    <Select value={editingOrder.payment_status} onValueChange={value => setEditingOrder({
+                  ...editingOrder,
+                  payment_status: value
+                })}>
                       <SelectTrigger>
                         <SelectValue />
                       </SelectTrigger>
@@ -2564,39 +2218,29 @@ Het Bouw met Respect team
                   </div>
                   <div>
                     <label className="text-sm font-medium">Totaal (in centen)</label>
-                    <Input
-                      type="number"
-                      value={editingOrder.total}
-                      onChange={(e) => setEditingOrder({
-                        ...editingOrder,
-                        total: parseInt(e.target.value) || 0
-                      })}
-                    />
+                    <Input type="number" value={editingOrder.total} onChange={e => setEditingOrder({
+                  ...editingOrder,
+                  total: parseInt(e.target.value) || 0
+                })} />
                   </div>
                 </div>
               </div>
 
               <div className="flex justify-end gap-2 pt-4">
-                <Button 
-                  variant="outline" 
-                  onClick={() => {
-                    setIsEditingOrder(false);
-                    setEditingOrder(null);
-                  }}
-                >
+                <Button variant="outline" onClick={() => {
+              setIsEditingOrder(false);
+              setEditingOrder(null);
+            }}>
                   Annuleren
                 </Button>
                 <Button onClick={updateOrder}>
                   Opslaan
                 </Button>
               </div>
-            </div>
-          )}
+            </div>}
         </DialogContent>
       </Dialog>
 
-    </SidebarProvider>
-  );
+    </SidebarProvider>;
 };
-
 export default Dashboard;
