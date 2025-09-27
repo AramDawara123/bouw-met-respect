@@ -391,164 +391,248 @@ const Webshop = () => {
                       </div>}
                   </Button>
                 </SheetTrigger>
-                <SheetContent className="w-full sm:max-w-lg">
-                  <SheetHeader>
-                    <SheetTitle className="flex items-center gap-2">
+                <SheetContent className="w-full max-w-md sm:max-w-lg flex flex-col">
+                  <SheetHeader className="pb-4">
+                    <SheetTitle className="flex items-center gap-2 text-lg">
                       <ShoppingCart className="w-5 h-5" />
                       Winkelwagen ({cartItemCount} items)
                     </SheetTitle>
                   </SheetHeader>
-                  <div className="mt-6 space-y-4 max-h-[70vh] sm:max-h-[75vh] overflow-y-auto scroll-smooth pb-40" style={{
-                  scrollBehavior: 'smooth',
-                  scrollbarWidth: 'thin'
-                }}>
-                    {Object.entries(cart).length === 0 ? <div className="text-center py-8">
-                        <ShoppingCart className="w-16 h-16 mx-auto text-muted-foreground mb-4" />
-                        <p className="text-muted-foreground">Je winkelwagen is leeg</p>
-                      </div> : Object.entries(cart).map(([productId, quantity]) => {
-                    const product = products.find(p => p.id === productId);
-                    if (!product) return null;
-                    return <div key={productId} className="flex items-center space-x-4 p-4 border rounded-lg">
-                            <img src={product.image} alt={product.name} className="w-16 h-16 object-cover rounded-lg" loading="lazy" decoding="async" />
-                            <div className="flex-1">
-                              <h4 className="font-semibold text-sm">{product.name}</h4>
-                              <p className="text-sm text-muted-foreground">€{product.price.toFixed(2)}</p>
-                            </div>
-                            <div className="flex items-center space-x-2">
-                              <Button variant="outline" size="sm" onClick={() => decreaseQuantity(productId)} className="w-8 h-8 p-0">
-                                <Minus className="w-3 h-3" />
-                              </Button>
-                              <span className="w-8 text-center font-semibold">{quantity}</span>
-                              <Button variant="outline" size="sm" onClick={() => increaseQuantity(productId)} className="w-8 h-8 p-0">
-                                <Plus className="w-3 h-3" />
-                              </Button>
-                              <Button variant="ghost" size="sm" onClick={() => removeFromCart(productId)} className="w-8 h-8 p-0 text-destructive hover:bg-destructive/10">
-                                <X className="w-3 h-3" />
-                              </Button>
-                            </div>
-                          </div>;
-                  })}
-
-                     {cartItemCount > 0 && <>
-                         <div className="mt-6 space-y-4 border-t pt-4">
-                           {/* Customer details form */}
-                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                             <div>
-                               <Label htmlFor="firstName">Voornaam</Label>
-                               <Input id="firstName" value={customer.firstName} onChange={e => setCustomer({
-                            ...customer,
-                            firstName: e.target.value
-                          })} placeholder="Jan" />
-                             </div>
-                             <div>
-                               <Label htmlFor="lastName">Achternaam</Label>
-                               <Input id="lastName" value={customer.lastName} onChange={e => setCustomer({
-                            ...customer,
-                            lastName: e.target.value
-                          })} placeholder="Jansen" />
-                             </div>
-                             <div className="sm:col-span-2">
-                               <Label htmlFor="email">E-mail</Label>
-                               <Input id="email" type="email" value={customer.email} onChange={e => setCustomer({
-                            ...customer,
-                            email: e.target.value
-                          })} placeholder="jan@voorbeeld.nl" />
-                             </div>
-                             <div className="sm:col-span-2">
-                               <Label htmlFor="phone">Telefoon</Label>
-                               <Input id="phone" value={customer.phone} onChange={e => setCustomer({
-                            ...customer,
-                            phone: e.target.value
-                          })} placeholder="0612345678" />
-                             </div>
-                             <div className="sm:col-span-2">
-                               <Label htmlFor="street">Straat</Label>
-                               <Input id="street" value={customer.street} onChange={e => setCustomer({
-                            ...customer,
-                            street: e.target.value
-                          })} placeholder="Hoofdstraat" />
-                             </div>
-                             <div>
-                               <Label htmlFor="houseNumber">Huisnummer</Label>
-                               <Input id="houseNumber" value={customer.houseNumber} onChange={e => setCustomer({
-                            ...customer,
-                            houseNumber: e.target.value
-                          })} placeholder="12A" />
-                             </div>
-                             <div>
-                               <Label htmlFor="postcode">Postcode</Label>
-                               <Input id="postcode" value={customer.postcode} onChange={e => setCustomer({
-                            ...customer,
-                            postcode: e.target.value
-                          })} placeholder="1234 AB" />
-                             </div>
-                             <div className="sm:col-span-2">
-                               <Label htmlFor="city">Plaats</Label>
-                               <Input id="city" value={customer.city} onChange={e => setCustomer({
-                            ...customer,
-                            city: e.target.value
-                          })} placeholder="Amsterdam" />
-                             </div>
-                             <div className="sm:col-span-2">
-                               <Label htmlFor="country">Land</Label>
-                               <Input id="country" value={customer.country} onChange={e => setCustomer({
-                            ...customer,
-                            country: e.target.value
-                          })} placeholder="Nederland" />
+                  
+                  <div className="flex-1 overflow-y-auto -mx-2 px-2">
+                    <div className="space-y-4 pb-4">
+                      {Object.entries(cart).length === 0 ? (
+                        <div className="text-center py-8">
+                          <ShoppingCart className="w-16 h-16 mx-auto text-muted-foreground mb-4" />
+                          <p className="text-muted-foreground">Je winkelwagen is leeg</p>
+                        </div>
+                      ) : (
+                        Object.entries(cart).map(([productId, quantity]) => {
+                          const product = products.find(p => p.id === productId);
+                          if (!product) return null;
+                          return (
+                            <div key={productId} className="flex items-center space-x-3 p-3 border rounded-lg bg-card">
+                              <img 
+                                src={product.image} 
+                                alt={product.name} 
+                                className="w-12 h-12 sm:w-16 sm:h-16 object-cover rounded-lg flex-shrink-0" 
+                                loading="lazy" 
+                                decoding="async" 
+                              />
+                              <div className="flex-1 min-w-0">
+                                <h4 className="font-semibold text-sm truncate">{product.name}</h4>
+                                <p className="text-sm text-muted-foreground">€{product.price.toFixed(2)}</p>
                               </div>
-                             </div>
-                           </div>
-
-                           <div className="space-y-3 pt-4 border-t">
-                             <Label htmlFor="discountCode" className="flex items-center gap-2">
-                               <Tag className="w-4 h-4" />
-                               Kortingscode (optioneel)
-                             </Label>
-                             <div className="flex gap-2">
-                               <Input id="discountCode" value={discountCode} onChange={e => {
-                          setDiscountCode(e.target.value.toUpperCase());
-                          checkDiscountCode(e.target.value);
-                        }} placeholder="KORTINGSCODE" className="uppercase" />
-                             </div>
-                             {discountError && <p className="text-sm text-destructive">{discountError}</p>}
-                             {appliedDiscount && <div className="flex items-center gap-2">
-                                 <Check className="w-4 h-4 text-green-600" />
-                                 <Badge variant="default" className="bg-green-100 text-green-800">
-                                   {formatDiscountDisplay(appliedDiscount)} toegepast
-                                 </Badge>
-                               </div>}
+                              <div className="flex items-center space-x-1">
+                                <Button 
+                                  variant="outline" 
+                                  size="sm" 
+                                  onClick={() => decreaseQuantity(productId)} 
+                                  className="w-7 h-7 p-0"
+                                >
+                                  <Minus className="w-3 h-3" />
+                                </Button>
+                                <span className="w-8 text-center font-semibold text-sm">{quantity}</span>
+                                <Button 
+                                  variant="outline" 
+                                  size="sm" 
+                                  onClick={() => increaseQuantity(productId)} 
+                                  className="w-7 h-7 p-0"
+                                >
+                                  <Plus className="w-3 h-3" />
+                                </Button>
+                                <Button 
+                                  variant="ghost" 
+                                  size="sm" 
+                                  onClick={() => removeFromCart(productId)} 
+                                  className="w-7 h-7 p-0 text-destructive hover:bg-destructive/10 ml-1"
+                                >
+                                  <X className="w-3 h-3" />
+                                </Button>
+                              </div>
                             </div>
-                       </>}
-                   </div>
+                          );
+                        })
+                      )}
 
-                    {cartItemCount > 0 && <div className="sticky bottom-0 left-0 right-0 -mx-6 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 border-t border-border p-4">
-                        <div className="space-y-2">
-                          <div className="flex justify-between text-sm">
-                            <span>Subtotaal:</span>
-                            <span>€{cartTotal.toFixed(2)}</span>
+                      {cartItemCount > 0 && (
+                        <div className="space-y-4 border-t pt-4">
+                          {/* Customer details form */}
+                          <div className="space-y-4">
+                            <h3 className="font-semibold text-base">Contactgegevens</h3>
+                            <div className="grid gap-4">
+                              <div className="grid grid-cols-2 gap-3">
+                                <div>
+                                  <Label htmlFor="firstName" className="text-sm">Voornaam</Label>
+                                  <Input 
+                                    id="firstName" 
+                                    value={customer.firstName} 
+                                    onChange={e => setCustomer({...customer, firstName: e.target.value})} 
+                                    placeholder="Jan" 
+                                    className="mt-1"
+                                  />
+                                </div>
+                                <div>
+                                  <Label htmlFor="lastName" className="text-sm">Achternaam</Label>
+                                  <Input 
+                                    id="lastName" 
+                                    value={customer.lastName} 
+                                    onChange={e => setCustomer({...customer, lastName: e.target.value})} 
+                                    placeholder="Jansen"
+                                    className="mt-1" 
+                                  />
+                                </div>
+                              </div>
+                              
+                              <div>
+                                <Label htmlFor="email" className="text-sm">E-mail</Label>
+                                <Input 
+                                  id="email" 
+                                  type="email" 
+                                  value={customer.email} 
+                                  onChange={e => setCustomer({...customer, email: e.target.value})} 
+                                  placeholder="jan@voorbeeld.nl"
+                                  className="mt-1"
+                                />
+                              </div>
+                              
+                              <div>
+                                <Label htmlFor="phone" className="text-sm">Telefoon</Label>
+                                <Input 
+                                  id="phone" 
+                                  value={customer.phone} 
+                                  onChange={e => setCustomer({...customer, phone: e.target.value})} 
+                                  placeholder="0612345678"
+                                  className="mt-1"
+                                />
+                              </div>
+                              
+                              <div>
+                                <Label htmlFor="street" className="text-sm">Straat</Label>
+                                <Input 
+                                  id="street" 
+                                  value={customer.street} 
+                                  onChange={e => setCustomer({...customer, street: e.target.value})} 
+                                  placeholder="Hoofdstraat"
+                                  className="mt-1"
+                                />
+                              </div>
+                              
+                              <div className="grid grid-cols-2 gap-3">
+                                <div>
+                                  <Label htmlFor="houseNumber" className="text-sm">Huisnummer</Label>
+                                  <Input 
+                                    id="houseNumber" 
+                                    value={customer.houseNumber} 
+                                    onChange={e => setCustomer({...customer, houseNumber: e.target.value})} 
+                                    placeholder="12A"
+                                    className="mt-1"
+                                  />
+                                </div>
+                                <div>
+                                  <Label htmlFor="postcode" className="text-sm">Postcode</Label>
+                                  <Input 
+                                    id="postcode" 
+                                    value={customer.postcode} 
+                                    onChange={e => setCustomer({...customer, postcode: e.target.value})} 
+                                    placeholder="1234 AB"
+                                    className="mt-1"
+                                  />
+                                </div>
+                              </div>
+                              
+                              <div>
+                                <Label htmlFor="city" className="text-sm">Plaats</Label>
+                                <Input 
+                                  id="city" 
+                                  value={customer.city} 
+                                  onChange={e => setCustomer({...customer, city: e.target.value})} 
+                                  placeholder="Amsterdam"
+                                  className="mt-1"
+                                />
+                              </div>
+                              
+                              <div>
+                                <Label htmlFor="country" className="text-sm">Land</Label>
+                                <Input 
+                                  id="country" 
+                                  value={customer.country} 
+                                  onChange={e => setCustomer({...customer, country: e.target.value})} 
+                                  placeholder="Nederland"
+                                  className="mt-1"
+                                />
+                              </div>
+                            </div>
                           </div>
-                          {appliedDiscount && discountAmount > 0 && <div className="flex justify-between text-sm text-green-600">
-                              <span>Korting ({formatDiscountDisplay(appliedDiscount)}):</span>
-                              <span>-€{discountAmount.toFixed(2)}</span>
-                            </div>}
-                          {cartTotal - discountAmount < 50 && <div className="flex justify-between text-sm">
-                              <span>Verzendkosten:</span>
-                              <span>€5.00</span>
-                            </div>}
-                          {cartTotal - discountAmount >= 50 && <div className="flex justify-between text-sm text-green-600">
-                              <span>Verzending:</span>
-                              <span>Gratis</span>
-                            </div>}
-                          <div className="flex justify-between font-bold text-lg border-t pt-2">
-                            <span>Totaal:</span>
-                            <span>€{finalTotal.toFixed(2)}</span>
+
+                          <div className="space-y-3 pt-4 border-t">
+                            <Label htmlFor="discountCode" className="flex items-center gap-2 text-sm">
+                              <Tag className="w-4 h-4" />
+                              Kortingscode (optioneel)
+                            </Label>
+                            <Input 
+                              id="discountCode" 
+                              value={discountCode} 
+                              onChange={e => {
+                                setDiscountCode(e.target.value.toUpperCase());
+                                checkDiscountCode(e.target.value);
+                              }} 
+                              placeholder="KORTINGSCODE" 
+                              className="uppercase"
+                            />
+                            {discountError && (
+                              <p className="text-sm text-destructive">{discountError}</p>
+                            )}
+                            {appliedDiscount && (
+                              <div className="flex items-center gap-2">
+                                <Check className="w-4 h-4 text-green-600" />
+                                <Badge variant="default" className="bg-green-100 text-green-800">
+                                  {formatDiscountDisplay(appliedDiscount)} toegepast
+                                </Badge>
+                              </div>
+                            )}
                           </div>
                         </div>
-                       <Button className="w-full mt-4" size="lg" onClick={checkout} disabled={isCheckingOut}>
-                         <ShoppingCart className="w-4 h-4 mr-2" />
-                         {isCheckingOut ? 'Bezig met afrekenen...' : 'Naar afrekenen'}
-                       </Button>
-                     </div>}
+                      )}
+                    </div>
+                  </div>
+
+                  {cartItemCount > 0 && (
+                    <div className="border-t bg-background p-4 mt-4 -mx-6 -mb-6">
+                      <div className="space-y-2">
+                        <div className="flex justify-between text-sm">
+                          <span>Subtotaal:</span>
+                          <span>€{cartTotal.toFixed(2)}</span>
+                        </div>
+                        {appliedDiscount && discountAmount > 0 && (
+                          <div className="flex justify-between text-sm text-green-600">
+                            <span>Korting ({formatDiscountDisplay(appliedDiscount)}):</span>
+                            <span>-€{discountAmount.toFixed(2)}</span>
+                          </div>
+                        )}
+                        {cartTotal - discountAmount < 50 && (
+                          <div className="flex justify-between text-sm">
+                            <span>Verzendkosten:</span>
+                            <span>€5.00</span>
+                          </div>
+                        )}
+                        {cartTotal - discountAmount >= 50 && (
+                          <div className="flex justify-between text-sm text-green-600">
+                            <span>Verzending:</span>
+                            <span>Gratis</span>
+                          </div>
+                        )}
+                        <div className="flex justify-between font-bold text-lg border-t pt-2">
+                          <span>Totaal:</span>
+                          <span>€{finalTotal.toFixed(2)}</span>
+                        </div>
+                      </div>
+                      <Button className="w-full mt-4" size="lg" onClick={checkout} disabled={isCheckingOut}>
+                        <ShoppingCart className="w-4 h-4 mr-2" />
+                        {isCheckingOut ? 'Bezig met afrekenen...' : 'Naar afrekenen'}
+                      </Button>
+                    </div>
+                  )}
                 </SheetContent>
               </Sheet>
               <div className="text-right">
