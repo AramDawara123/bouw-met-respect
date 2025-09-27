@@ -88,11 +88,11 @@ const Statistics = () => {
               <div className="w-16 h-16 mx-auto mb-6 bg-blue-500 rounded-xl flex items-center justify-center shadow-lg">
                 <stat.icon className="w-8 h-8 text-yellow-400" />
               </div>
-              <div className="text-4xl font-bold text-primary mb-2">
+              <div className="text-4xl font-bold text-blue-600 mb-2">
                 {getCountValue(index).toLocaleString()}{stat.suffix}
               </div>
-              <h3 className="text-xl font-semibold mb-2 text-foreground">{stat.title}</h3>
-              <p className="text-muted-foreground text-sm">{stat.description}</p>
+              <h3 className="text-xl font-semibold mb-2 text-blue-600">{stat.title}</h3>
+              <p className="text-blue-600 text-sm">{stat.description}</p>
             </Card>
           ))}
         </div>
