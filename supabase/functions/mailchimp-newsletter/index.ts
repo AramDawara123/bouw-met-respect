@@ -35,6 +35,7 @@ const handler = async (req: Request): Promise<Response> => {
 
     const mailchimpApiKey = Deno.env.get("MAILCHIMP_API_KEY");
     console.log("API Key found:", mailchimpApiKey ? "Yes" : "No");
+    console.log("API Key format:", mailchimpApiKey ? `${mailchimpApiKey.substring(0, 10)}...` : "None");
     if (!mailchimpApiKey) {
       console.error("MAILCHIMP_API_KEY not found in environment variables");
       return new Response(
@@ -48,6 +49,7 @@ const handler = async (req: Request): Promise<Response> => {
 
     // Extract datacenter from API key (us7 from key-us7)
     const datacenter = mailchimpApiKey.split("-")[1];
+    console.log("Datacenter extracted:", datacenter);
 
     // Mailchimp Marketing API uses HTTP Basic auth: base64("anystring:API_KEY")
     const basicAuth = "Basic " + btoa(`anystring:${mailchimpApiKey}`);
@@ -67,10 +69,17 @@ const handler = async (req: Request): Promise<Response> => {
       });
 
       if (!audienceResponse.ok) {
-        const error = await audienceResponse.text();
-        console.error("Failed to get audience:", error);
+        const error = await audienceResponse.json().catch(() => ({ error: "Unknown error" }));
+        console.error("Failed to get audience:", {
+          status: audienceResponse.status,
+          statusText: audienceResponse.statusText,
+          error: error
+        });
+        console.error("Request URL was:", `https://${datacenter}.api.mailchimp.com/3.0/lists`);
         return new Response(
-          JSON.stringify({ error: "Kan geen toegang krijgen tot de nieuwsbrief lijst. Controleer de API key." }),
+          JSON.stringify({ 
+            error: `Mailchimp API error: ${error.detail || error.title || audienceResponse.statusText}. Status: ${audienceResponse.status}` 
+          }),
           {
             status: 500,
             headers: { "Content-Type": "application/json", ...corsHeaders },
