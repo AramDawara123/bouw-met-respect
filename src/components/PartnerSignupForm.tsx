@@ -12,7 +12,7 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { validateDiscountCode, calculateDiscount, formatDiscountDisplay } from "@/lib/discountUtils";
 import type { DiscountValidationResult } from "@/lib/discountUtils";
-import { useActionItemsPricing } from "@/hooks/useActionItemsPricing";
+import { usePartnerPricingTiers } from "@/hooks/usePartnerPricingTiers";
 
 const formSchema = z.object({
   firstName: z.string().min(2, "Voornaam moet minimaal 2 karakters bevatten"),
@@ -22,13 +22,16 @@ const formSchema = z.object({
   companyName: z.string().min(2, "Bedrijfsnaam is verplicht"),
   website: z.string().url("Voer een geldige URL in").optional().or(z.literal("")),
   industry: z.string({
-    required_error: "Selecteer een branche"
+    required_error: "Selecteer een branche",
   }),
   companySize: z.string({
-    required_error: "Selecteer bedrijfsgrootte"
+    required_error: "Selecteer bedrijfsgrootte",
   }),
   description: z.string().optional(),
   discountCode: z.string().optional(),
+  acceptTerms: z.boolean().refine((val) => val === true, {
+    message: "Je moet akkoord gaan met de algemene voorwaarden",
+  }),
 });
 
 interface PartnerSignupFormProps {
@@ -41,7 +44,7 @@ const PartnerSignupForm = ({ open, onOpenChange }: PartnerSignupFormProps) => {
   const [isCheckingDiscount, setIsCheckingDiscount] = useState(false);
   const [appliedDiscount, setAppliedDiscount] = useState<DiscountValidationResult | null>(null);
   const { toast } = useToast();
-  const { pricingData, loading: pricingLoading } = useActionItemsPricing();
+  const { pricingTiers, loading: pricingLoading } = usePartnerPricingTiers();
   
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -56,40 +59,41 @@ const PartnerSignupForm = ({ open, onOpenChange }: PartnerSignupFormProps) => {
       companySize: "",
       description: "",
       discountCode: "",
+      acceptTerms: false,
     }
   });
 
   // Pricing logic based on company size using dynamic pricing from database
   const getAmountFromSize = (size: string) => {
-    if (!pricingData?.length) {
+    if (!pricingTiers?.length) {
       // Fallback prices if no pricing data available
       switch(size) {
-        case 'zzp': return 25000; // €250
-        case 'klein': return 45000; // €450
-        case 'middelgroot': return 75000; // €750
-        case 'groot': return 0; // Offerte
-        default: return 25000;
+        case '1-10 medewerkers': return 50000; // €500
+        case '11-30 medewerkers': return 75000; // €750
+        case '31-50 medewerkers': return 125000; // €1250
+        case '50+ medewerkers': return 0; // Offerte
+        default: return 50000;
       }
     }
     
-    const priceOption = pricingData.find(p => p.size_type === size);
-    return priceOption ? (priceOption.is_quote ? 0 : priceOption.price_cents) : 25000;
+    const priceOption = pricingTiers.find(p => p.employee_range === size);
+    return priceOption ? (priceOption.is_quote ? 0 : priceOption.price_cents) : 50000;
   };
 
   const getPriceDisplay = (size: string) => {
-    if (!pricingData?.length) {
+    if (!pricingTiers?.length) {
       // Fallback prices if no pricing data available
       switch(size) {
-        case 'zzp': return '€250';
-        case 'klein': return '€450';
-        case 'middelgroot': return '€750';
-        case 'groot': return 'Offerte op maat';
-        default: return '€250';
+        case '1-10 medewerkers': return '€500';
+        case '11-30 medewerkers': return '€750';
+        case '31-50 medewerkers': return '€1250';
+        case '50+ medewerkers': return 'Offerte op maat';
+        default: return '€500';
       }
     }
     
-    const priceOption = pricingData.find(p => p.size_type === size);
-    return priceOption ? priceOption.price_display : '€250';
+    const priceOption = pricingTiers.find(p => p.employee_range === size);
+    return priceOption ? priceOption.price_display : '€500';
   };
 
   const selectedSize = form.watch('companySize');
@@ -147,8 +151,8 @@ const PartnerSignupForm = ({ open, onOpenChange }: PartnerSignupFormProps) => {
     try {
       const amount = finalAmount;
       
-      // Handle "groot" (offerte) case
-      if (values.companySize === 'groot') {
+      // Handle "50+ medewerkers" (offerte) case
+      if (values.companySize === '50+ medewerkers') {
         toast({
           title: "Offerte aanvragen",
           description: "Voor grote bedrijven maken we graag een persoonlijke offerte. We nemen binnen 24 uur contact met je op.",
@@ -418,24 +422,24 @@ const PartnerSignupForm = ({ open, onOpenChange }: PartnerSignupFormProps) => {
                           <SelectValue placeholder="Selecteer bedrijfsgrootte" />
                         </SelectTrigger>
                       </FormControl>
-                      <SelectContent>
+                      <SelectContent className="bg-background border-border z-50">
                         {pricingLoading ? (
                           <SelectItem value="loading" disabled>Prijzen laden...</SelectItem>
-                        ) : pricingData?.length > 0 ? (
-                          pricingData
+                        ) : pricingTiers?.length > 0 ? (
+                          pricingTiers
                             .sort((a, b) => a.display_order - b.display_order)
                             .map((option) => (
-                              <SelectItem key={option.id} value={option.size_type}>
-                                {option.employees_range} - {option.price_display}
+                              <SelectItem key={option.id} value={option.employee_range}>
+                                {option.employee_range} - {option.price_display}
                               </SelectItem>
                             ))
                         ) : (
                           // Fallback options if no pricing data available
                           <>
-                            <SelectItem value="zzp">ZZP - €250/jaar</SelectItem>
-                            <SelectItem value="klein">2-10 medewerkers - €450/jaar</SelectItem>
-                            <SelectItem value="middelgroot">11-20 medewerkers - €750/jaar</SelectItem>
-                            <SelectItem value="groot">Meer dan 20 medewerkers - Offerte</SelectItem>
+                            <SelectItem value="1-10 medewerkers">1-10 medewerkers - €500/jaar</SelectItem>
+                            <SelectItem value="11-30 medewerkers">11-30 medewerkers - €750/jaar</SelectItem>
+                            <SelectItem value="31-50 medewerkers">31-50 medewerkers - €1250/jaar</SelectItem>
+                            <SelectItem value="50+ medewerkers">50+ medewerkers - Offerte</SelectItem>
                           </>
                         )}
                       </SelectContent>
@@ -454,8 +458,8 @@ const PartnerSignupForm = ({ open, onOpenChange }: PartnerSignupFormProps) => {
                     <FormControl>
                       <Textarea 
                         placeholder="Vertel over je bedrijf, specialisaties en hoe jullie bijdragen aan respectvolle en duurzame bouwpraktijken..."
-                        className="min-h-[120px]"
-                        {...field} 
+                        className="min-h-[100px]"
+                        {...field}
                       />
                     </FormControl>
                     <FormMessage />
@@ -467,101 +471,115 @@ const PartnerSignupForm = ({ open, onOpenChange }: PartnerSignupFormProps) => {
             {/* Kortingscode */}
             <div className="space-y-4">
               <h3 className="text-lg font-semibold">Kortingscode (optioneel)</h3>
-              <div className="flex gap-2">
-                <FormField
-                  control={form.control}
-                  name="discountCode"
-                  render={({ field }) => (
-                    <FormItem className="flex-1">
-                      <FormControl>
-                        <Input 
-                          placeholder="Voer kortingscode in" 
-                          {...field}
-                          onChange={(e) => {
-                            field.onChange(e);
-                            if (!e.target.value) {
-                              setAppliedDiscount(null);
-                            }
-                          }}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+              <FormField
+                control={form.control}
+                name="discountCode"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Kortingscode</FormLabel>
+                    <FormControl>
+                      <Input 
+                        placeholder="Voer je kortingscode in" 
+                        {...field}
+                        onChange={(e) => {
+                          field.onChange(e);
+                          // Clear applied discount when code changes
+                          if (appliedDiscount) {
+                            setAppliedDiscount(null);
+                          }
+                        }}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              {form.watch('discountCode')?.trim() && (
                 <Button 
                   type="button" 
                   variant="outline" 
                   onClick={checkDiscountCode}
-                  disabled={isCheckingDiscount || !form.getValues('discountCode')?.trim()}
+                  disabled={isCheckingDiscount}
                 >
-                  {isCheckingDiscount ? "Controleren..." : "Toepassen"}
+                  {isCheckingDiscount ? "Controleren..." : "Controleer kortingscode"}
                 </Button>
-              </div>
-              
-              {appliedDiscount?.valid && appliedDiscount.discount && (
-                <div className="p-3 bg-green-50 border border-green-200 rounded-lg">
-                  <p className="text-sm text-green-800 font-medium">
-                    ✓ {formatDiscountDisplay(appliedDiscount.discount)} toegepast
-                  </p>
-                  <p className="text-xs text-green-600 mt-1">
-                    Besparing: €{(discountAmount / 100).toFixed(2)}
-                  </p>
-                </div>
-              )}
-              
-              {appliedDiscount && !appliedDiscount.valid && (
-                <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
-                  <p className="text-sm text-red-800">
-                    {appliedDiscount.error}
-                  </p>
-                </div>
               )}
             </div>
 
             {/* Prijsoverzicht */}
-            {selectedSize && baseAmount > 0 && (
-              <div className="p-4 bg-gray-50 rounded-lg space-y-2">
-                <div className="flex justify-between text-sm">
-                  <span>Basisprijs:</span>
-                  <span>€{(baseAmount / 100).toFixed(2)}</span>
+            {selectedSize && (
+              <div className="bg-muted p-4 rounded-lg space-y-2">
+                <h4 className="font-semibold">Prijsoverzicht</h4>
+                <div className="flex items-center justify-between">
+                  <span>Bedrijfsgrootte: {selectedSize}</span>
+                  <span className="font-medium">{currentPrice}</span>
                 </div>
-                {discountAmount > 0 && (
-                  <div className="flex justify-between text-sm text-green-600">
-                    <span>Korting:</span>
+                {appliedDiscount?.valid && appliedDiscount.discount && (
+                  <div className="flex items-center justify-between text-green-600">
+                    <span>Korting: {formatDiscountDisplay(appliedDiscount.discount)}</span>
                     <span>-€{(discountAmount / 100).toFixed(2)}</span>
                   </div>
                 )}
-                <div className="flex justify-between font-semibold pt-2 border-t">
-                  <span>Totaal:</span>
-                  <span>€{(finalAmount / 100).toFixed(2)}</span>
-                </div>
+                {baseAmount > 0 && (
+                  <div className="flex items-center justify-between font-bold text-lg border-t pt-2">
+                    <span>Totaal:</span>
+                    <span>{finalPrice}</span>
+                  </div>
+                )}
+                {baseAmount === 0 && (
+                  <p className="text-sm text-muted-foreground">
+                    Voor grote bedrijven maken we een persoonlijke offerte.
+                  </p>
+                )}
               </div>
             )}
 
+            {/* Algemene voorwaarden */}
+            <FormField
+              control={form.control}
+              name="acceptTerms"
+              render={({ field }) => (
+                <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                  <FormControl>
+                    <input
+                      type="checkbox"
+                      checked={field.value}
+                      onChange={(e) => field.onChange(e.target.checked)}
+                      className="mt-1"
+                    />
+                  </FormControl>
+                  <div className="space-y-1 leading-none">
+                    <FormLabel>
+                      Ik ga akkoord met de{" "}
+                      <a
+                        href="/algemene-voorwaarden"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-primary underline hover:no-underline"
+                      >
+                        algemene voorwaarden
+                      </a>
+                    </FormLabel>
+                    <FormMessage />
+                  </div>
+                </FormItem>
+              )}
+            />
+
             {/* Submit button */}
-            <div className="flex flex-col sm:flex-row gap-3 pt-4">
-              <Button 
-                type="button" 
-                variant="outline" 
-                onClick={() => onOpenChange(false)}
-                className="sm:flex-1"
-              >
-                Annuleren
-              </Button>
-              <Button 
-                type="submit" 
-                disabled={isSubmitting || !selectedSize}
-                className="sm:flex-1"
-              >
-                {isSubmitting 
-                  ? "Bezig met verwerken..." 
-                  : selectedSize 
-                    ? `Partner worden voor ${finalPrice}/jaar`
-                    : "Selecteer eerst bedrijfsgrootte"
-                }
-              </Button>
-            </div>
+            <Button 
+              type="submit" 
+              className="w-full" 
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? (
+                "Verwerken..."
+              ) : baseAmount === 0 ? (
+                "Offerte aanvragen"
+              ) : (
+                `Doorgaan naar betaling - ${finalPrice}`
+              )}
+            </Button>
           </form>
         </Form>
       </DialogContent>
