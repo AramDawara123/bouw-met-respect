@@ -1647,26 +1647,27 @@ Het Bouw met Respect team
                     </CardHeader>
                     <CardContent>
                       <div className="rounded-md border">
-                        <Table>
-                          <TableHeader>
-                            <TableRow>
-                              <TableHead>Klant</TableHead>
-                              <TableHead>Email</TableHead>
-                              <TableHead>Items</TableHead>
-                              <TableHead>Totaal</TableHead>
-                              <TableHead>Status</TableHead>
-                              <TableHead>Datum</TableHead>
-                              <TableHead className="text-right">Acties</TableHead>
-                            </TableRow>
-                          </TableHeader>
+                          <Table>
+                           <TableHeader>
+                             <TableRow>
+                               <TableHead>Bestelnummer</TableHead>
+                               <TableHead>Klant</TableHead>
+                               <TableHead>Email</TableHead>
+                               <TableHead>Items</TableHead>
+                               <TableHead>Totaal</TableHead>
+                               <TableHead>Status</TableHead>
+                               <TableHead>Datum</TableHead>
+                               <TableHead className="text-right">Acties</TableHead>
+                             </TableRow>
+                           </TableHeader>
                           <TableBody>
-                            {filteredOrders.map(order => <TableRow key={order.id}>
+                             {filteredOrders.map(order => <TableRow key={order.id}>
                                 <TableCell className="font-medium font-mono text-sm">
-                                  {generateOrderNumber(order)}
-                                </TableCell>
-                                <TableCell className="font-medium">
-                                  {order.customer_first_name} {order.customer_last_name}
-                                </TableCell>
+                                   {generateOrderNumber(order)}
+                                 </TableCell>
+                                 <TableCell className="font-medium">
+                                   {order.customer_first_name} {order.customer_last_name}
+                                 </TableCell>
                                 <TableCell>{order.customer_email || order.email}</TableCell>
                                 <TableCell>
                                   {Array.isArray(order.items) ? order.items.length : 'N/A'} items
