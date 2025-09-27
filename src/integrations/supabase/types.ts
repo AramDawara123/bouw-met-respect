@@ -275,6 +275,33 @@ export type Database = {
         }
         Relationships: []
       }
+      newsletter_signups: {
+        Row: {
+          email: string
+          first_name: string | null
+          id: string
+          last_name: string | null
+          mailchimp_synced: boolean | null
+          signed_up_at: string
+        }
+        Insert: {
+          email: string
+          first_name?: string | null
+          id?: string
+          last_name?: string | null
+          mailchimp_synced?: boolean | null
+          signed_up_at?: string
+        }
+        Update: {
+          email?: string
+          first_name?: string | null
+          id?: string
+          last_name?: string | null
+          mailchimp_synced?: boolean | null
+          signed_up_at?: string
+        }
+        Relationships: []
+      }
       orders: {
         Row: {
           address_city: string | null
