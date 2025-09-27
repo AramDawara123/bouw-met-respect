@@ -149,23 +149,19 @@ const Dashboard = () => {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [showCredentialsDialog, setShowCredentialsDialog] = useState(false);
 
-  // Generate readable order number from order ID
-  const generateOrderNumber = (orderId: string) => {
-    // Take the first 8 characters and format them nicely
-    const shortId = orderId.substring(0, 8).replace(/-/g, '');
-    // Convert to a mix of letters and numbers for readability
-    let orderNumber = '';
-    for (let i = 0; i < Math.min(8, shortId.length); i++) {
-      const char = shortId[i];
-      if (i % 2 === 0 && /[0-9]/.test(char)) {
-        // Convert numbers to letters occasionally for better readability
-        const letter = String.fromCharCode(65 + parseInt(char) % 26);
-        orderNumber += i % 4 === 0 ? letter.toLowerCase() : letter;
-      } else {
-        orderNumber += i % 3 === 0 ? char.toLowerCase() : char.toUpperCase();
-      }
+  // Generate readable order number from order ID or mollie payment ID
+  const generateOrderNumber = (order: Order) => {
+    // Use mollie_payment_id if available (for consistency with emails), otherwise use database id
+    const orderId = order.mollie_payment_id || order.id;
+    
+    // For FREE orders, show the full FREE- prefix
+    if (orderId.startsWith('FREE-')) {
+      return orderId;
     }
-    return `#${orderNumber}`;
+    
+    // For Mollie payment IDs, take last 8 characters
+    const shortId = orderId.slice(-8);
+    return `#${shortId.toUpperCase()}`;
   };
   const [newEmail, setNewEmail] = useState('');
   const [newPassword, setNewPassword] = useState('');
@@ -1666,7 +1662,7 @@ Het Bouw met Respect team
                           <TableBody>
                             {filteredOrders.map(order => <TableRow key={order.id}>
                                 <TableCell className="font-medium font-mono text-sm">
-                                  {generateOrderNumber(order.id)}
+                                  {generateOrderNumber(order)}
                                 </TableCell>
                                 <TableCell className="font-medium">
                                   {order.customer_first_name} {order.customer_last_name}

@@ -411,7 +411,7 @@ serve(async (req) => {
           } else {
             // Send order confirmation email
             const confirmationData = {
-              orderId: orderData.id,
+              orderId: orderData.mollie_payment_id || orderData.id,
               customerEmail: orderData.customer_email || orderData.email,
               customerName: `${orderData.customer_first_name || ''} ${orderData.customer_last_name || ''}`.trim() || 'Klant',
               orderItems: Array.isArray(orderData.items) ? orderData.items : [],

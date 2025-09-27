@@ -116,6 +116,44 @@ serve(async (req) => {
         }
       }
 
+      // Send order confirmation email for free orders
+      try {
+        const confirmationData = {
+          orderId: orderId,
+          customerEmail: customer?.email || user?.email,
+          customerName: `${customer?.firstName || ''} ${customer?.lastName || ''}`.trim() || 'Klant',
+          orderItems: items.map((item: any) => ({
+            name: item.name,
+            quantity: item.quantity || 1,
+            price: item.price // Already in euros from frontend
+          })),
+          subtotal: subtotalCents,
+          shipping: shippingCents,
+          total: totalCents,
+          shippingAddress: {
+            street: customer?.street,
+            houseNumber: customer?.houseNumber,
+            postcode: customer?.postcode,
+            city: customer?.city,
+            country: customer?.country || 'Nederland'
+          },
+          orderDate: new Date().toLocaleDateString('nl-NL')
+        };
+
+        const emailResponse = await supabaseService.functions.invoke('send-order-confirmation', {
+          body: confirmationData
+        });
+
+        if (emailResponse.error) {
+          console.error('Error sending free order confirmation email:', emailResponse.error);
+        } else {
+          console.log('Free order confirmation email sent successfully');
+        }
+      } catch (emailError) {
+        console.error('Error in free order email process:', emailError);
+        // Don't fail the order for email issues
+      }
+
       // Return success response for free order
       return new Response(
         JSON.stringify({ 

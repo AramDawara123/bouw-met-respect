@@ -137,8 +137,8 @@ const handler = async (req: Request): Promise<Response> => {
                         <tr style="${index % 2 === 0 ? 'background-color: #fafafa;' : ''} border-bottom: 1px solid #f3f4f6;">
                           <td style="padding: 16px 12px; color: #1f2937; font-weight: 500;">${item.name}</td>
                           <td style="padding: 16px 12px; text-align: center; color: #6b7280; font-weight: 600;">${item.quantity}</td>
-                          <td style="padding: 16px 12px; text-align: right; color: #6b7280;">€${(item.price / 100).toFixed(2)}</td>
-                          <td style="padding: 16px 12px; text-align: right; color: #1f2937; font-weight: 600;">€${((item.price * item.quantity) / 100).toFixed(2)}</td>
+                           <td style="padding: 16px 12px; text-align: right; color: #6b7280;">€${(item.price).toFixed(2)}</td>
+                           <td style="padding: 16px 12px; text-align: right; color: #1f2937; font-weight: 600;">€${(item.price * item.quantity).toFixed(2)}</td>
                         </tr>
                       `).join('')}
                     </table>
@@ -154,18 +154,18 @@ const handler = async (req: Request): Promise<Response> => {
                           <h3 style="color: #1f2937; font-size: 20px; font-weight: 600; margin: 0 0 16px 0; background-color: rgba(255,255,255,0.9); padding: 8px 12px; border-radius: 6px; display: inline-block;">💰 Besteloverzicht</h3>
                           
                           <table width="100%" cellpadding="8" cellspacing="0" border="0" style="background-color: rgba(255,255,255,0.95); border-radius: 6px;">
-                            <tr style="border-bottom: 1px solid #e5e7eb;">
-                              <td style="font-weight: 500; color: #374151; padding: 12px;">Subtotaal:</td>
-                              <td style="font-weight: 600; text-align: right; color: #1f2937; padding: 12px;">€${(orderData.subtotal / 100).toFixed(2)}</td>
-                            </tr>
-                            <tr style="border-bottom: 1px solid #e5e7eb;">
-                              <td style="font-weight: 500; color: #374151; padding: 12px;">Verzendkosten:</td>
-                              <td style="font-weight: 600; text-align: right; color: #1f2937; padding: 12px;">€${(orderData.shipping / 100).toFixed(2)}</td>
-                            </tr>
-                            <tr style="border-top: 2px solid #667eea;">
-                              <td style="font-size: 20px; font-weight: 700; color: #1f2937; padding: 16px 12px 12px 12px;">Totaal:</td>
-                              <td style="font-size: 24px; font-weight: 700; text-align: right; color: #667eea; padding: 16px 12px 12px 12px;">€${(orderData.total / 100).toFixed(2)}</td>
-                            </tr>
+                             <tr style="border-bottom: 1px solid #e5e7eb;">
+                               <td style="font-weight: 500; color: #374151; padding: 12px;">Subtotaal:</td>
+                               <td style="font-weight: 600; text-align: right; color: #1f2937; padding: 12px;">€${(orderData.subtotal / 100).toFixed(2)}</td>
+                             </tr>
+                             <tr style="border-bottom: 1px solid #e5e7eb;">
+                               <td style="font-weight: 500; color: #374151; padding: 12px;">Verzendkosten:</td>
+                               <td style="font-weight: 600; text-align: right; color: #1f2937; padding: 12px;">€${(orderData.shipping / 100).toFixed(2)}</td>
+                             </tr>
+                             <tr style="border-top: 2px solid #667eea;">
+                               <td style="font-size: 20px; font-weight: 700; color: #1f2937; padding: 16px 12px 12px 12px;">Totaal:</td>
+                               <td style="font-size: 24px; font-weight: 700; text-align: right; color: #667eea; padding: 16px 12px 12px 12px;">€${(orderData.total / 100).toFixed(2)}</td>
+                             </tr>
                           </table>
                         </td>
                       </tr>

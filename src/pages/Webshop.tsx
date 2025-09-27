@@ -339,8 +339,7 @@ const Webshop = () => {
             items,
             customer,
             discountCode: appliedDiscount?.code || null,
-            total: 0,
-            isFreeOrder: true
+            discountAmount: discountAmount // Pass discount amount in cents
           }
         });
 
