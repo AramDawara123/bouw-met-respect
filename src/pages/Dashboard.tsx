@@ -1496,7 +1496,18 @@ Het Bouw met Respect team
                 <Tabs value={viewMode} onValueChange={(value) => setViewMode(value as 'memberships' | 'orders' | 'profiles' | 'products' | 'partners' | 'partner-pricing' | 'action-items-pricing' | 'action-items-partner-pricing' | 'discounts' | 'qrcode')}>
                   
                   <TabsContent value="action-items-pricing" className="space-y-6">
-                    <ActionItemsPricingManager />
+                    <div className="space-y-6">
+                      <Card>
+                        <CardHeader>
+                          <CardTitle className="text-blue-600">Actie-items Prijzen</CardTitle>
+                          <CardDescription>
+                            Beheer de prijzen voor lidmaatschappen (voor klanten/leden)
+                          </CardDescription>
+                        </CardHeader>
+                      </Card>
+                      
+                      <ActionItemsPricingManager />
+                    </div>
                   </TabsContent>
 
                   <TabsContent value="action-items-partner-pricing" className="space-y-6">
@@ -1505,30 +1516,12 @@ Het Bouw met Respect team
                         <CardHeader>
                           <CardTitle className="text-blue-600">Actie-items Prijsbeheer</CardTitle>
                           <CardDescription>
-                            Beheer de prijzen van partners voor actie-items
+                            Beheer de prijzen voor partners (bedrijfsgrootte)
                           </CardDescription>
                         </CardHeader>
                       </Card>
                       
-                      <div className="grid gap-6 lg:grid-cols-2">
-                        <Card>
-                          <CardHeader>
-                            <CardTitle className="text-sm font-medium">Actie-items Prijzen</CardTitle>
-                          </CardHeader>
-                          <CardContent>
-                            <ActionItemsPricingManager />
-                          </CardContent>
-                        </Card>
-                        
-                        <Card>
-                          <CardHeader>
-                            <CardTitle className="text-sm font-medium">Partner Prijzen (Bedrijfsgrootte)</CardTitle>
-                          </CardHeader>
-                          <CardContent>
-                            <PartnerPricingTiersManager />
-                          </CardContent>
-                        </Card>
-                      </div>
+                      <PartnerPricingTiersManager />
                     </div>
                   </TabsContent>
               <TabsContent value="memberships" className="space-y-6">
