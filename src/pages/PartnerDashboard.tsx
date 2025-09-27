@@ -5,8 +5,10 @@ import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Link, useNavigate } from "react-router-dom";
-import { ArrowLeft, Building2, LogOut } from "lucide-react";
+import { ArrowLeft, Building2, LogOut, Settings, User as UserIcon } from "lucide-react";
 import CompanyProfileManager from "@/components/company-profile/CompanyProfileManager";
+import PartnerAccountSettings from "@/components/PartnerAccountSettings";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { User, Session } from '@supabase/supabase-js';
 
 interface PartnerMembership {
@@ -105,6 +107,12 @@ const PartnerDashboard = () => {
       setPartnerMembership(data);
     } catch (error) {
       console.error('Error fetching partner membership:', error);
+    }
+  };
+
+  const handleRefreshData = async () => {
+    if (user) {
+      await fetchPartnerData(user);
     }
   };
 
@@ -222,13 +230,36 @@ const PartnerDashboard = () => {
           </CardContent>
         </Card>
 
-        {/* Company Profile Management */}
-        <CompanyProfileManager
-          partnerMembershipId={partnerMembership.id}
-          isPartnerDashboard={true}
-          showCreateButton={true}
-          showDeleteButton={false}
-        />
+        {/* Dashboard Content */}
+        <Tabs defaultValue="profile" className="space-y-6">
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="profile" className="flex items-center gap-2">
+              <Building2 className="w-4 h-4" />
+              Bedrijfsprofiel
+            </TabsTrigger>
+            <TabsTrigger value="account" className="flex items-center gap-2">
+              <Settings className="w-4 h-4" />
+              Account Instellingen
+            </TabsTrigger>
+          </TabsList>
+          
+          <TabsContent value="profile">
+            <CompanyProfileManager
+              partnerMembershipId={partnerMembership.id}
+              isPartnerDashboard={true}
+              showCreateButton={true}
+              showDeleteButton={false}
+            />
+          </TabsContent>
+          
+          <TabsContent value="account">
+            <PartnerAccountSettings
+              partnerMembership={partnerMembership}
+              user={user}
+              onUpdate={handleRefreshData}
+            />
+          </TabsContent>
+        </Tabs>
 
       </div>
     </div>
