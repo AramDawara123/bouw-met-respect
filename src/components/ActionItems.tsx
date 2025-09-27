@@ -155,7 +155,7 @@ const ActionItems = () => {
                   </div>}
                 
                 <div className="w-16 h-16 mx-auto mb-6 rounded-xl flex items-center justify-center bg-accent shadow-lg border border-primary">
-                  <tier.icon className="w-8 h-8 text-accent" />
+                  <tier.icon className="w-8 h-8 text-yellow-500" />
                 </div>
                 
                 <h4 className="text-xl font-semibold mb-2 text-accent">{tier.size}</h4>
