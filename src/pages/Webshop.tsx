@@ -268,13 +268,6 @@ const Webshop = () => {
       description: `${product?.name} is verwijderd uit je winkelwagen.`
     });
   }, [removeFromCartAction, products, toast]);
-  // Auto-redirect handler for free orders
-  const handleFreeOrderRedirect = useCallback(() => {
-    console.log('[Webshop] Redirecting to order-thank-you for free order');
-    clearCart();
-    setAppliedDiscount(null);
-    window.location.href = '/order-thank-you';
-  }, [clearCart, setAppliedDiscount]);
   
   const validateCustomer = () => {
     const missing: string[] = [];
@@ -711,13 +704,12 @@ const Webshop = () => {
                         cartTotal={cartTotal}
                         discountAmount={discountAmount}
                         appliedDiscount={appliedDiscount}
-                        onFreeOrderRedirect={handleFreeOrderRedirect}
                       />
                       <Button 
                         className="w-full mt-4 h-12 text-base font-semibold" 
                         size="lg" 
                         onClick={checkout} 
-                        disabled={isCheckingOut || finalTotal <= 0}
+                        disabled={isCheckingOut}
                       >
                         <ShoppingCart className="w-4 h-4 mr-2" />
                         {isCheckingOut ? 'Bezig met afrekenen...' : 

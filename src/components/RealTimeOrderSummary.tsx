@@ -5,14 +5,12 @@ interface RealTimeOrderSummaryProps {
   cartTotal: number;
   discountAmount: number; // in cents
   appliedDiscount?: any;
-  onFreeOrderRedirect?: () => void;
 }
 
 export const RealTimeOrderSummary: React.FC<RealTimeOrderSummaryProps> = ({
   cartTotal,
   discountAmount,
-  appliedDiscount,
-  onFreeOrderRedirect
+  appliedDiscount
 }) => {
   const calculations = useMemo(() => {
     const subtotalCents = Math.round(cartTotal * 100); // Convert to cents
@@ -32,16 +30,6 @@ export const RealTimeOrderSummary: React.FC<RealTimeOrderSummaryProps> = ({
       isFreeOrder: totalCents === 0
     };
   }, [cartTotal, discountAmount]);
-
-  // Auto-redirect when order becomes free
-  useEffect(() => {
-    if (calculations.isFreeOrder && calculations.total === 0 && onFreeOrderRedirect) {
-      console.log('[RealTimeOrderSummary] Free order detected (€0.00), triggering redirect...');
-      setTimeout(() => {
-        onFreeOrderRedirect();
-      }, 500); // Small delay to show the €0.00 total first
-    }
-  }, [calculations.isFreeOrder, calculations.total, onFreeOrderRedirect]);
 
   console.log('[RealTimeOrderSummary] Real-time calculation:', calculations);
 
@@ -77,7 +65,7 @@ export const RealTimeOrderSummary: React.FC<RealTimeOrderSummaryProps> = ({
       
       {calculations.isFreeOrder && (
         <div className="text-center p-2 bg-green-50 text-green-800 rounded text-sm">
-          🎉 Gratis bestelling! Je wordt zo doorgestuurd...
+          🎉 Gratis bestelling! Klik op afrekenen om je bestelling te plaatsen.
         </div>
       )}
     </div>
