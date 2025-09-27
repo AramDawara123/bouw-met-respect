@@ -23,6 +23,7 @@ import PartnerPricingManager from "@/components/PartnerPricingManager";
 import { QRCodeGenerator } from "@/components/QRCodeGenerator";
 import QRCodeManager from "@/components/QRCodeManager";
 import ActionItemsPricingManager from "@/components/ActionItemsPricingManager";
+import PartnerPricingTiersManager from "@/components/PartnerPricingTiersManager";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
 
@@ -1521,10 +1522,10 @@ Het Bouw met Respect team
                         
                         <Card>
                           <CardHeader>
-                            <CardTitle className="text-sm font-medium">Partner Prijzen</CardTitle>
+                            <CardTitle className="text-sm font-medium">Partner Prijzen (Bedrijfsgrootte)</CardTitle>
                           </CardHeader>
                           <CardContent>
-                            <PartnerPricingManager />
+                            <PartnerPricingTiersManager />
                           </CardContent>
                         </Card>
                       </div>

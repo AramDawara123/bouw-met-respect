@@ -425,6 +425,42 @@ export type Database = {
         }
         Relationships: []
       }
+      partner_pricing_tiers: {
+        Row: {
+          created_at: string
+          display_order: number | null
+          employee_range: string
+          id: string
+          is_active: boolean | null
+          is_quote: boolean | null
+          price_cents: number
+          price_display: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          display_order?: number | null
+          employee_range: string
+          id?: string
+          is_active?: boolean | null
+          is_quote?: boolean | null
+          price_cents: number
+          price_display: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          display_order?: number | null
+          employee_range?: string
+          id?: string
+          is_active?: boolean | null
+          is_quote?: boolean | null
+          price_cents?: number
+          price_display?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       products: {
         Row: {
           category: string | null
