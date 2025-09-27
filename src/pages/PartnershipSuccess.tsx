@@ -67,8 +67,8 @@ const PartnershipSuccess = () => {
             </div>
           </div>
 
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-            <p className="text-blue-800 font-medium">
+          <div className="bg-accent/10 border border-accent rounded-lg p-4">
+            <p className="text-accent-foreground font-medium">
               Je wordt automatisch doorgestuurd naar je dashboard in {countdown} seconden
             </p>
           </div>

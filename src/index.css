@@ -17,20 +17,24 @@
     --popover: 0 0% 100%;
     --popover-foreground: 217 91% 17%;
 
-    /* Primary: Helder Blauw (Bright Blue) - voor blauwe vierkanten */
+    /* Primary: Helder Blauw (Bright Blue) - voor ronde elementen */
     --primary: 214 100% 50%;
-    --primary-foreground: 45 100% 65%;
+    --primary-foreground: 0 0% 100%;
 
     /* Secondary: Donker Blauw (Dark Blue) */
     --secondary: 214 100% 25%;
-    --secondary-foreground: 45 100% 65%;
+    --secondary-foreground: 0 0% 100%;
 
     --muted: 214 25% 90%;
     --muted-foreground: 214 100% 25%;
 
-    /* Accent: Helder Geel (Bright Yellow) - voor gele symbolen */
+    /* Accent: Helder Geel (Bright Yellow) - voor rechthoekige kaders */
     --accent: 45 100% 65%;
     --accent-foreground: 214 100% 25%;
+
+    /* Rectangular border variant - Yellow for squared borders */
+    --rectangle-border: 45 100% 65%;
+    --rectangle-border-foreground: 214 100% 25%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 210 40% 98%;
@@ -115,6 +119,20 @@
 
   .card-gradient {
     background: var(--card-gradient);
+  }
+
+  /* Rectangular border utilities - Yellow for squared elements */
+  .rectangle-border {
+    @apply border-accent bg-accent/10 text-accent;
+  }
+  
+  .rectangle-border-solid {
+    @apply bg-accent text-accent-foreground;
+  }
+  
+  /* Keep rounded elements blue */
+  .rounded-border {
+    @apply border-primary bg-primary/10 text-primary;
   }
 
   .animate-float {

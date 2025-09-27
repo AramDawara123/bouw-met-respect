@@ -191,7 +191,7 @@ const QRCodeManager = () => {
           ) : (
             <div className="grid gap-4">
               {qrCodes.map((qrCode) => (
-                <div key={qrCode.id} className="border rounded-lg p-4 space-y-3">
+                <div key={qrCode.id} className="border border-accent rounded-lg p-4 space-y-3 bg-accent/5">
                   <div className="flex justify-between items-start">
                     <div className="space-y-1 flex-1">
                       <h4 className="font-medium">{qrCode.title}</h4>
@@ -338,7 +338,7 @@ const QRCodeManager = () => {
               <img 
                 src={generatedQRImage} 
                 alt={`QR Code voor ${viewingCode?.title}`}
-                className="border rounded-lg"
+                className="border border-accent rounded-lg bg-accent/5"
               />
             )}
           </div>

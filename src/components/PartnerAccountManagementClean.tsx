@@ -530,7 +530,7 @@ const PartnerAccountManagementClean = () => {
                           <div className="space-y-4">
                             <p className="text-muted-foreground">Geen partners gevonden</p>
                             {partners.length === 0 && (
-                              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 max-w-md mx-auto">
+                              <div className="bg-accent/10 border border-accent rounded-lg p-4 max-w-md mx-auto">
                                 <p className="text-sm text-blue-800 mb-2">
                                   <strong>Hoe partners toevoegen?</strong>
                                 </p>

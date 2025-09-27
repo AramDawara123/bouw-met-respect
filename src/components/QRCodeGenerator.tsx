@@ -361,7 +361,7 @@ export const QRCodeGenerator = () => {
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex justify-center">
-              <div className="border rounded-lg shadow-sm p-4">
+              <div className="border border-accent rounded-lg shadow-sm p-4 bg-accent/5">
                 <img 
                   src={qrCodeUrl}
                   alt="Generated QR Code"

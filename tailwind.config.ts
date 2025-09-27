@@ -59,6 +59,10 @@ export default {
 					DEFAULT: 'hsl(var(--card))',
 					foreground: 'hsl(var(--card-foreground))'
 				},
+				'rectangle-border': {
+					DEFAULT: 'hsl(var(--rectangle-border))',
+					foreground: 'hsl(var(--rectangle-border-foreground))'
+				},
 			},
 			borderRadius: {
 				lg: 'var(--radius)',

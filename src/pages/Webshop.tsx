@@ -411,7 +411,7 @@ const Webshop = () => {
                           const product = products.find(p => p.id === productId);
                           if (!product) return null;
                           return (
-                            <div key={productId} className="flex items-center space-x-3 p-3 border rounded-lg bg-card">
+                            <div key={productId} className="flex items-center space-x-3 p-3 border border-accent rounded-lg bg-accent/5">
                               <img 
                                 src={product.image} 
                                 alt={product.name} 

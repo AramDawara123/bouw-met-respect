@@ -261,7 +261,7 @@ const MembershipForm = ({
                        <RadioGroup onValueChange={field.onChange} value={field.value} className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <Label 
                           htmlFor="klein"
-                          className={`border rounded-lg p-4 cursor-pointer hover:bg-muted/50 transition-colors block ${form.watch('membershipType')==='klein' ? 'border-primary bg-primary/5' : 'border-border'}`}
+                          className={`border rounded-lg p-4 cursor-pointer hover:bg-muted/50 transition-colors block ${form.watch('membershipType')==='klein' ? 'border-accent bg-accent/10' : 'border-border'}`}
                         >
                           <div className="flex items-center space-x-3">
                             <RadioGroupItem value="klein" id="klein" />
@@ -270,7 +270,7 @@ const MembershipForm = ({
                         </Label>
                         <Label 
                           htmlFor="middelgroot"
-                          className={`border rounded-lg p-4 cursor-pointer hover:bg-muted/50 transition-colors block ${form.watch('membershipType')==='middelgroot' ? 'border-primary bg-primary/5' : 'border-border'}`}
+                          className={`border rounded-lg p-4 cursor-pointer hover:bg-muted/50 transition-colors block ${form.watch('membershipType')==='middelgroot' ? 'border-accent bg-accent/10' : 'border-border'}`}
                         >
                           <div className="flex items-center space-x-3">
                             <RadioGroupItem value="middelgroot" id="middelgroot" />
@@ -279,7 +279,7 @@ const MembershipForm = ({
                         </Label>
                         <Label 
                           htmlFor="groot"
-                          className={`border rounded-lg p-4 cursor-pointer hover:bg-muted/50 transition-colors block ${form.watch('membershipType')==='groot' ? 'border-primary bg-primary/5' : 'border-border'}`}
+                          className={`border rounded-lg p-4 cursor-pointer hover:bg-muted/50 transition-colors block ${form.watch('membershipType')==='groot' ? 'border-accent bg-accent/10' : 'border-border'}`}
                         >
                           <div className="flex items-center space-x-3">
                             <RadioGroupItem value="groot" id="groot" />
@@ -288,7 +288,7 @@ const MembershipForm = ({
                         </Label>
                         <Label 
                           htmlFor="offerte"
-                          className={`border rounded-lg p-4 cursor-pointer hover:bg-muted/50 transition-colors block ${form.watch('membershipType')==='offerte' ? 'border-primary bg-primary/5' : 'border-border'}`}
+                          className={`border rounded-lg p-4 cursor-pointer hover:bg-muted/50 transition-colors block ${form.watch('membershipType')==='offerte' ? 'border-accent bg-accent/10' : 'border-border'}`}
                         >
                           <div className="flex items-center space-x-3">
                             <RadioGroupItem value="offerte" id="offerte" />
