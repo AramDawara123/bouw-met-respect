@@ -14,6 +14,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { validateDiscountCode, calculateDiscount, formatDiscountDisplay } from "@/lib/discountUtils";
 import { MarqueeAnimation } from "@/components/ui/marquee-effect";
+import { useCart } from "@/hooks/useCart";
 const Webshop = () => {
   const [faqOpenIndex, setFaqOpenIndex] = useState<number | null>(null);
   const webshopFaqs = [{
@@ -43,9 +44,18 @@ const Webshop = () => {
     ref: productsRef,
     isVisible: productsVisible
   } = useScrollAnimation(0.1);
-  const [cart, setCart] = useState<{
-    [key: string]: number;
-  }>({});
+  
+  // Use the cart hook for persistence
+  const {
+    cart,
+    addToCart: addToCartAction,
+    increaseQuantity,
+    decreaseQuantity,
+    removeFromCart: removeFromCartAction,
+    clearCart,
+    getTotalItemCount
+  } = useCart();
+  
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isCheckingOut, setIsCheckingOut] = useState(false);
   const [customer, setCustomer] = useState({
@@ -181,8 +191,8 @@ const Webshop = () => {
     }, 0);
   }, [cart, products]);
   const cartItemCount = useMemo(() => {
-    return Object.values(cart).reduce((total, quantity) => total + quantity, 0);
-  }, [cart]);
+    return getTotalItemCount();
+  }, [getTotalItemCount]);
   const discountAmount = useMemo(() => {
     if (!appliedDiscount) return 0;
     return calculateDiscount(appliedDiscount, cartTotal * 100) / 100; // Convert back to euros
@@ -214,51 +224,24 @@ const Webshop = () => {
     setCheckingDiscount(false);
   };
 
-  // Optimized cart functions with useCallback
+  // Wrapper functions to add toast notifications
   const addToCart = useCallback((productId: string) => {
-    setCart(prev => ({
-      ...prev,
-      [productId]: (prev[productId] || 0) + 1
-    }));
+    addToCartAction(productId);
     const product = products.find(p => p.id === productId);
     toast({
       title: "Toegevoegd aan winkelwagen",
       description: `${product?.name} is toegevoegd aan je winkelwagen.`
     });
-  }, [products, toast]);
-  const increaseQuantity = useCallback((productId: string) => {
-    setCart(prev => ({
-      ...prev,
-      [productId]: (prev[productId] || 0) + 1
-    }));
-  }, []);
-  const decreaseQuantity = useCallback((productId: string) => {
-    setCart(prev => {
-      const newCart = {
-        ...prev
-      };
-      if (newCart[productId] > 1) {
-        newCart[productId] = newCart[productId] - 1;
-      } else {
-        delete newCart[productId];
-      }
-      return newCart;
-    });
-  }, []);
+  }, [addToCartAction, products, toast]);
+
   const removeFromCart = useCallback((productId: string) => {
-    setCart(prev => {
-      const newCart = {
-        ...prev
-      };
-      delete newCart[productId];
-      return newCart;
-    });
+    removeFromCartAction(productId);
     const product = products.find(p => p.id === productId);
     toast({
       title: "Verwijderd uit winkelwagen",
       description: `${product?.name} is verwijderd uit je winkelwagen.`
     });
-  }, [products, toast]);
+  }, [removeFromCartAction, products, toast]);
   const validateCustomer = () => {
     const missing: string[] = [];
     if (!customer.firstName) missing.push("voornaam");
@@ -331,6 +314,8 @@ const Webshop = () => {
       if ((data as any)?.success && (data as any)?.redirectUrl) {
         const redirectUrl = (data as any)?.redirectUrl;
         console.log('[Webshop] Free order created, redirecting to:', redirectUrl);
+        // Clear cart after successful free order
+        clearCart();
         window.location.href = redirectUrl;
         return;
       }
@@ -382,6 +367,9 @@ const Webshop = () => {
       } catch (emailError) {
         console.error('[Webshop] Error sending fallback email:', emailError);
       }
+      
+      // Clear cart after successful order creation
+      clearCart();
       window.location.href = paymentUrl;
     } catch (e: any) {
       toast({
