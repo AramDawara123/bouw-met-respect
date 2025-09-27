@@ -18,6 +18,7 @@ import PartnerDashboard from "./pages/PartnerDashboard";
 import PartnerAuth from "./pages/PartnerAuth";
 import PartnershipSuccess from "./pages/PartnershipSuccess";
 import OrderVerification from "./pages/OrderVerification";
+import OrderThankYou from "./pages/OrderThankYou";
 
 import NotFound from "./pages/NotFound";
 
@@ -25,7 +26,7 @@ const queryClient = new QueryClient();
 
 const AppContent = () => {
   const location = useLocation();
-  const showNavbar = location.pathname !== '/webshop' && location.pathname !== '/login' && location.pathname !== '/partner-dashboard' && location.pathname !== '/partner-auth';
+  const showNavbar = location.pathname !== '/webshop' && location.pathname !== '/login' && location.pathname !== '/partner-dashboard' && location.pathname !== '/partner-auth' && location.pathname !== '/order-thank-you';
   
   return (
     <div className="overflow-x-hidden min-h-screen">
@@ -42,6 +43,7 @@ const AppContent = () => {
         <Route path="/partner-dashboard" element={<PartnerDashboard />} />
         <Route path="/partnership-success" element={<PartnershipSuccess />} />
         <Route path="/order-verification/:orderId" element={<OrderVerification />} />
+        <Route path="/order-thank-you" element={<OrderThankYou />} />
         
         {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
         <Route path="*" element={<NotFound />} />
