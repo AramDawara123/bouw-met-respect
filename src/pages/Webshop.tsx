@@ -69,13 +69,24 @@ const Webshop = () => {
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const status = params.get('status');
+    const free = params.get('free');
+    
     if (status === 'paid') {
-      toast({
-        title: "Bedankt!",
-        description: "Je betaling is ontvangen."
-      });
+      if (free === 'true') {
+        toast({
+          title: "Bedankt!",
+          description: "Je gratis bestelling is bevestigd."
+        });
+      } else {
+        toast({
+          title: "Bedankt!",
+          description: "Je betaling is ontvangen."
+        });
+      }
+      
       const url = new URL(window.location.href);
       url.searchParams.delete('status');
+      url.searchParams.delete('free');
       window.history.replaceState({}, '', url.toString());
     }
   }, []);
@@ -310,6 +321,15 @@ const Webshop = () => {
       if (error || (data as any)?.error) {
         throw new Error(error?.message || (data as any)?.error || 'Afrekenen mislukt');
       }
+      
+      // Handle free orders
+      if ((data as any)?.success && (data as any)?.redirectUrl) {
+        const redirectUrl = (data as any)?.redirectUrl;
+        console.log('[Webshop] Free order created, redirecting to:', redirectUrl);
+        window.location.href = redirectUrl;
+        return;
+      }
+
       const paymentUrl = (data as any)?.paymentUrl;
       const orderId = (data as any)?.orderId;
       if (!paymentUrl) {
