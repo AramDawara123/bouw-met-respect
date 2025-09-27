@@ -229,7 +229,7 @@ const ActionItems = () => {
             >
               {/* Subtle border gradient */}
               <div className="absolute inset-0 rounded-lg bg-gradient-to-br from-primary/20 via-transparent to-secondary/20 p-[1px]">
-                <div className="h-full w-full rounded-lg bg-card"></div>
+                <div className="h-full w-full rounded-lg bg-card border-2 border-primary"></div>
               </div>
               
               <div className="relative flex items-start space-x-6">
@@ -237,10 +237,10 @@ const ActionItems = () => {
                   <value.icon className="w-8 h-8 text-accent" />
                 </div>
                 <div className="flex-1">
-                  <h3 className="text-xl font-semibold mb-4 text-foreground group-hover:text-primary transition-colors duration-300">
+                  <h3 className="text-xl font-semibold mb-4 text-accent group-hover:text-accent transition-colors duration-300">
                     {value.title}
                   </h3>
-                  <p className="text-muted-foreground leading-relaxed mb-6">
+                  <p className="text-accent/80 leading-relaxed mb-6">
                     {value.description}
                   </p>
                   <ul className="space-y-3">
