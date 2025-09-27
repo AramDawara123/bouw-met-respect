@@ -1,14 +1,13 @@
 import { Heart, Linkedin, Mail, Building, ArrowRight, Users } from "lucide-react";
 import { Link } from "react-router-dom";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
 const Footer = () => {
   const [email, setEmail] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const {
-    toast
-  } = useToast();
+  const iframeRef = useRef<HTMLIFrameElement>(null);
+  const { toast } = useToast();
+
   const handleNewsletterSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email) {
@@ -22,14 +21,35 @@ const Footer = () => {
     setIsLoading(true);
 
     try {
-      const { data, error } = await supabase.functions.invoke('mailchimp-newsletter', {
-        body: { email }
+      // Create a hidden form and submit to Mailchimp
+      const form = document.createElement('form');
+      form.action = 'https://bouwmetrespect.us7.list-manage.com/subscribe/post';
+      form.method = 'POST';
+      form.target = 'mc-embedded-subscribe-frame';
+      form.style.display = 'none';
+
+      // Add form fields
+      const fields = {
+        'u': 'ae557f93e4f6e90f421f82d95',
+        'id': 'a1e71ed8be',
+        'f_id': '00beeae3f0',
+        'EMAIL': email,
+        'b_ae557f93e4f6e90f421f82d95_a1e71ed8be': '' // honeypot
+      };
+
+      Object.entries(fields).forEach(([name, value]) => {
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = name;
+        input.value = value;
+        form.appendChild(input);
       });
 
-      if (error) {
-        throw error;
-      }
+      document.body.appendChild(form);
+      form.submit();
+      document.body.removeChild(form);
 
+      // Show success message
       toast({
         title: "Gelukt!",
         description: "Je bent succesvol aangemeld voor onze nieuwsbrief"
@@ -39,7 +59,7 @@ const Footer = () => {
       console.error('Newsletter signup error:', error);
       toast({
         title: "Fout",
-        description: error.message || "Er is een fout opgetreden. Probeer het opnieuw.",
+        description: "Er is een fout opgetreden. Probeer het opnieuw.",
         variant: "destructive"
       });
     } finally {
@@ -131,6 +151,7 @@ const Footer = () => {
                 {isLoading ? "Aanmelden..." : "Aanmelden"}
               </button>
             </form>
+            <iframe ref={iframeRef} name="mc-embedded-subscribe-frame" style={{ display: 'none' }} />
             <p className="text-background/50 text-xs mt-3">
               Je kunt je op elk moment uitschrijven. We respecteren je privacy.
             </p>

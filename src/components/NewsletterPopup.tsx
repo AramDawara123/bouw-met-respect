@@ -1,9 +1,8 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { X, Mail, CheckCircle } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
 const NewsletterPopup = () => {
@@ -12,6 +11,7 @@ const NewsletterPopup = () => {
   const [email, setEmail] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const iframeRef = useRef<HTMLIFrameElement>(null);
   const { toast } = useToast();
 
   // Don't show popup on login pages and dashboards
@@ -48,13 +48,33 @@ const NewsletterPopup = () => {
     setIsLoading(true);
 
     try {
-      const { data, error } = await supabase.functions.invoke('mailchimp-newsletter', {
-        body: { email }
+      // Create a hidden form and submit to Mailchimp
+      const form = document.createElement('form');
+      form.action = 'https://bouwmetrespect.us7.list-manage.com/subscribe/post';
+      form.method = 'POST';
+      form.target = 'mc-embedded-subscribe-frame-popup';
+      form.style.display = 'none';
+
+      // Add form fields
+      const fields = {
+        'u': 'ae557f93e4f6e90f421f82d95',
+        'id': 'a1e71ed8be',
+        'f_id': '00beeae3f0',
+        'EMAIL': email,
+        'b_ae557f93e4f6e90f421f82d95_a1e71ed8be': '' // honeypot
+      };
+
+      Object.entries(fields).forEach(([name, value]) => {
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = name;
+        input.value = value;
+        form.appendChild(input);
       });
 
-      if (error) {
-        throw error;
-      }
+      document.body.appendChild(form);
+      form.submit();
+      document.body.removeChild(form);
 
       setIsSubmitted(true);
       toast({
@@ -147,6 +167,7 @@ const NewsletterPopup = () => {
             </div>
           )}
         </div>
+        <iframe ref={iframeRef} name="mc-embedded-subscribe-frame-popup" style={{ display: 'none' }} />
       </div>
     </div>
   );
