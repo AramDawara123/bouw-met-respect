@@ -14,7 +14,7 @@ const CallToAction = () => {
         <div className="container mx-auto px-4">
           <Card className="relative overflow-hidden border-0 bg-gradient-to-br from-primary to-secondary text-primary-foreground">
 
-            <div className="relative z-10 p-12 lg:p-20 text-center">
+            <div className="relative z-10 p-12 lg:p-20 text-center text-yellow-400">
               <div className="flex justify-center mb-8">
                 <div className="flex items-center space-x-4">
                   <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center">
