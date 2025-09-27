@@ -27,11 +27,11 @@ const CallToAction = () => {
                 </div>
               </div>
 
-              <h2 className="text-4xl md:text-6xl font-bold mb-6">
+              <h2 className="text-4xl md:text-6xl font-bold mb-6 text-accent">
                 Klaar om je aan te sluiten bij de beweging?
               </h2>
               
-              <p className="text-xl md:text-2xl mb-8 opacity-90 max-w-3xl mx-auto leading-relaxed">
+              <p className="text-xl md:text-2xl mb-8 opacity-90 max-w-3xl mx-auto leading-relaxed text-accent">
                 Word onderdeel van de beweging die grensoverschrijdend gedrag aanpakt. 
                 Samen zorgen we voor een veilige, aantrekkelijke en toekomstbestendige 
                 bouwsector waar jong talent wil blijven.
