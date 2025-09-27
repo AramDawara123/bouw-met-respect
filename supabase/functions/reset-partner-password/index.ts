@@ -40,8 +40,8 @@ const sendPasswordResetEmail = async (email: string, firstName: string, newPassw
   const resendApiKey = Deno.env.get("RESEND_API_KEY");
   
   if (!resendApiKey) {
-    console.error("RESEND_API_KEY not found");
-    throw new Error("Email service not configured");
+    console.log("RESEND_API_KEY not found - skipping email");
+    return { id: "skipped", message: "Email service not configured, but password was reset successfully" };
   }
 
   const emailData = {
@@ -88,22 +88,27 @@ const sendPasswordResetEmail = async (email: string, firstName: string, newPassw
     `,
   };
 
-  const response = await fetch("https://api.resend.com/emails", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": `Bearer ${resendApiKey}`,
-    },
-    body: JSON.stringify(emailData),
-  });
+  try {
+    const response = await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${resendApiKey}`,
+      },
+      body: JSON.stringify(emailData),
+    });
 
-  if (!response.ok) {
-    const errorData = await response.text();
-    console.error("Failed to send email:", errorData);
-    throw new Error("Failed to send email");
+    if (!response.ok) {
+      const errorData = await response.text();
+      console.error("Failed to send email:", errorData);
+      throw new Error(`Failed to send email: ${response.status}`);
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error("Email sending error:", error);
+    throw error;
   }
-
-  return await response.json();
 };
 
 serve(async (req: Request) => {
@@ -129,6 +134,10 @@ serve(async (req: Request) => {
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     
+    if (!supabaseUrl || !supabaseServiceKey) {
+      throw new Error('Missing required environment variables');
+    }
+
     // Create admin client with service role key
     const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey, {
       auth: {
@@ -138,6 +147,8 @@ serve(async (req: Request) => {
     });
 
     const requestBody: ResetPasswordRequest = await req.json();
+    console.log('Request body:', { ...requestBody, newPassword: requestBody.newPassword ? '[REDACTED]' : undefined });
+    
     const { email, partnerId, newPassword } = requestBody;
 
     let partner;
@@ -152,13 +163,18 @@ serve(async (req: Request) => {
         .select('user_id, email, first_name, last_name')
         .eq('email', email)
         .eq('payment_status', 'paid')
-        .single();
+        .maybeSingle();
 
-      if (partnerError || !partnerData) {
-        console.log('Partner not found:', email);
+      if (partnerError) {
+        console.error('Database error:', partnerError);
+        throw new Error(`Database error: ${partnerError.message}`);
+      }
+
+      if (!partnerData) {
+        console.log('Partner not found for email:', email);
         return new Response(
           JSON.stringify({ 
-            error: 'Partner account niet gevonden of niet actief',
+            error: 'Partner account niet gevonden of niet actief. Controleer je email adres.',
             success: false 
           }),
           { 
@@ -177,10 +193,15 @@ serve(async (req: Request) => {
         .from('partner_memberships')
         .select('user_id, email, first_name, last_name')
         .eq('id', partnerId)
-        .single();
+        .maybeSingle();
 
-      if (partnerError || !partnerData) {
-        throw new Error('Partner not found');
+      if (partnerError) {
+        console.error('Database error:', partnerError);
+        throw new Error(`Database error: ${partnerError.message}`);
+      }
+
+      if (!partnerData) {
+        throw new Error('Partner niet gevonden');
       }
 
       partner = partnerData;
@@ -201,7 +222,7 @@ serve(async (req: Request) => {
       console.log('Partner has no associated user account:', partner.email);
       return new Response(
         JSON.stringify({ 
-          error: 'Partner heeft geen gekoppeld gebruikersaccount',
+          error: 'Partner heeft geen gekoppeld gebruikersaccount. Neem contact op met de administrator.',
           success: false 
         }),
         { 
@@ -213,6 +234,7 @@ serve(async (req: Request) => {
 
     // Generate a new secure password if none provided
     const tempPassword = newPassword || generateRandomPassword();
+    console.log('Generated new password for user:', partner.user_id);
 
     // Reset the user's password
     const { error: updateError } = await supabaseAdmin.auth.admin.updateUserById(
@@ -231,23 +253,28 @@ serve(async (req: Request) => {
     console.log(`Password reset successful for partner: ${partner.email}`);
 
     // Send email with new password if this was initiated by email (not admin)
+    let emailSent = false;
     if (email) {
       try {
-        await sendPasswordResetEmail(partner.email, partner.first_name, tempPassword);
-        console.log('Password reset email sent successfully');
+        const emailResult = await sendPasswordResetEmail(partner.email, partner.first_name, tempPassword);
+        console.log('Password reset email result:', emailResult);
+        emailSent = emailResult.id !== 'skipped';
       } catch (emailError) {
-        console.error('Failed to send email:', emailError);
-        // Don't fail the whole request if email fails
+        console.error('Failed to send email, but password was reset:', emailError);
+        // Don't fail the whole request if email fails - password is already reset
       }
     }
 
     return new Response(JSON.stringify({ 
       success: true, 
       message: email 
-        ? `Nieuw wachtwoord gegenereerd en verzonden naar ${partner.email}`
+        ? (emailSent 
+            ? `Nieuw wachtwoord gegenereerd en verzonden naar ${partner.email}` 
+            : `Nieuw wachtwoord gegenereerd voor ${partner.email}. Email service niet beschikbaar - het wachtwoord is: ${tempPassword}`)
         : `Wachtwoord gereset voor ${partner.first_name} ${partner.last_name}`,
-      tempPassword: email ? undefined : tempPassword, // Only return password for admin requests
-      email: partner.email
+      tempPassword: email && !emailSent ? tempPassword : (email ? undefined : tempPassword), 
+      email: partner.email,
+      emailSent: emailSent
     }), {
       status: 200,
       headers: { 'Content-Type': 'application/json', ...corsHeaders },
