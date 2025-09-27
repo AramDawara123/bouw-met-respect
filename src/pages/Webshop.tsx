@@ -178,7 +178,8 @@ const Webshop = () => {
   }, [appliedDiscount, cartTotal]);
   const finalTotal = useMemo(() => {
     const subtotal = cartTotal - discountAmount;
-    return subtotal + (subtotal >= 50 ? 0 : 5.00);
+    const isFreeShipping = subtotal >= 50 || discountAmount >= cartTotal; // Free shipping for 100% discount
+    return subtotal + (isFreeShipping ? 0 : 5.00);
   }, [cartTotal, discountAmount]);
   const checkDiscountCode = async (code: string) => {
     if (!code.trim()) {
@@ -324,7 +325,7 @@ const Webshop = () => {
       // Send immediate fallback confirmation email after successful order creation
       try {
         console.log('[Webshop] Sending fallback confirmation email...');
-        const shipping = cartTotal >= 50 ? 0 : 500; // 5.00 EUR in cents
+        const shipping = (cartTotal >= 50 || discountAmount >= cartTotal) ? 0 : 500; // Free shipping for 50+ EUR or 100% discount
         const {
           error: emailError
         } = await supabase.functions.invoke('send-order-confirmation', {
