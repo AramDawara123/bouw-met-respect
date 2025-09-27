@@ -70,7 +70,7 @@ const Mission = () => {
           {helpMethods.map((method, index) => (
             <Card 
               key={index} 
-              className={`p-8 transition-all duration-500 border-0 bg-muted/30 ${
+              className={`p-8 transition-all duration-500 border-2 border-primary bg-muted/30 ${
                 cardsVisible 
                   ? 'opacity-100 transform translate-y-0' 
                   : 'opacity-0 transform translate-y-12'
@@ -79,11 +79,11 @@ const Mission = () => {
                 transitionDelay: cardsVisible ? `${index * 150}ms` : '0ms'
               }}
             >
-              <div className="w-16 h-16 mb-6 bg-blue-500 rounded-xl flex items-center justify-center shadow-lg">
-                <method.icon className="w-8 h-8 text-yellow-400" />
+              <div className="w-16 h-16 mb-6 bg-primary rounded-xl flex items-center justify-center shadow-lg">
+                <method.icon className="w-8 h-8 text-accent" />
               </div>
-              <h3 className="text-xl font-semibold mb-4 text-foreground">{method.title}</h3>
-              <p className="text-muted-foreground leading-relaxed">{method.description}</p>
+              <h3 className="text-xl font-semibold mb-4 text-accent">{method.title}</h3>
+              <p className="text-accent leading-relaxed">{method.description}</p>
             </Card>
           ))}
         </div>
