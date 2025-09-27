@@ -89,6 +89,24 @@ serve(async (req) => {
         throw new Error('Kon gratis bestelling niet opslaan');
       }
 
+      // Increment discount usage count if a discount code was used
+      if (discountCode) {
+        try {
+          console.log('Incrementing discount usage for code:', discountCode);
+          const { error: incrementError } = await supabaseService.rpc('increment_discount_usage', {
+            code_to_increment: discountCode.toUpperCase()
+          });
+          
+          if (incrementError) {
+            console.error('Failed to increment discount usage:', incrementError);
+            // Don't fail the order for this
+          }
+        } catch (discountError) {
+          console.error('Error incrementing discount usage:', discountError);
+          // Don't fail the order for this
+        }
+      }
+
       // Return success response for free order
       return new Response(
         JSON.stringify({ 
@@ -180,6 +198,24 @@ serve(async (req) => {
 
       if (insertError) {
         console.error('Order save failed, continuing to checkout:', insertError.message);
+      } else {
+        // Increment discount usage count if a discount code was used
+        if (discountCode) {
+          try {
+            console.log('Incrementing discount usage for code:', discountCode);
+            const { error: incrementError } = await supabaseService.rpc('increment_discount_usage', {
+              code_to_increment: discountCode.toUpperCase()
+            });
+            
+            if (incrementError) {
+              console.error('Failed to increment discount usage:', incrementError);
+              // Don't fail the order for this
+            }
+          } catch (discountError) {
+            console.error('Error incrementing discount usage:', discountError);
+            // Don't fail the order for this
+          }
+        }
       }
     } catch (dbErr) {
       console.error('Order save threw exception, continuing to checkout:', dbErr);
