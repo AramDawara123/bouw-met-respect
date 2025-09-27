@@ -43,7 +43,15 @@ serve(async (req) => {
     const totalCents = subtotalAfterDiscount + shippingCents;
     const totalEuroValue = (totalCents / 100).toFixed(2);
 
-    console.log('Processing order:', { subtotalCents, discountAmountCents, subtotalAfterDiscount, shippingCents, totalCents });
+    console.log('Processing order:', { 
+      subtotalCents, 
+      discountAmountCents, 
+      subtotalAfterDiscount, 
+      shippingCents, 
+      totalCents,
+      totalEuroValue,
+      isFreeOrder: totalCents === 0
+    });
 
     const origin = req.headers.get('origin') || Deno.env.get('PUBLIC_SITE_URL') || 'https://example.com';
 

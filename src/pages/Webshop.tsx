@@ -310,33 +310,13 @@ const Webshop = () => {
         return;
       }
 
-      // Check if total is 0 (free order due to discount)
-      if (finalTotal <= 0) {
-        console.log('[Webshop] Free order detected, redirecting to thank you page');
-        
-        // Still create the order in the backend for record keeping
-        const {
-          data,
-          error
-        } = await supabase.functions.invoke('create-shop-order', {
-          body: {
-            items,
-            customer,
-            discountCode: appliedDiscount?.code,
-            discountAmount: Math.max(discountAmount * 100, cartTotal * 100) // Ensure full discount
-          }
-        });
-        
-        if (error || (data as any)?.error) {
-          throw new Error(error?.message || (data as any)?.error || 'Afrekenen mislukt');
-        }
-
-        // Clear cart and redirect to thank you page
-        clearCart();
-        setAppliedDiscount(null);
-        window.location.href = '/order-thank-you';
-        return;
-      }
+      // Log the current state for debugging
+      console.log('[Webshop] Checkout details:', {
+        finalTotal,
+        cartTotal,
+        discountAmount,
+        appliedDiscount: appliedDiscount?.code
+      });
 
       const {
         data,
@@ -346,7 +326,7 @@ const Webshop = () => {
           items,
           customer,
           discountCode: appliedDiscount?.code,
-          discountAmount: discountAmount * 100 // Convert to cents
+          discountAmount: discountAmount * 100 // Convert to cents, edge function expects cents
         }
       });
       
@@ -359,7 +339,11 @@ const Webshop = () => {
       });
       console.log('[Webshop] create-shop-order response', {
         data,
-        error
+        error,
+        finalTotal,
+        isSuccess: (data as any)?.success,
+        redirectUrl: (data as any)?.redirectUrl,
+        paymentUrl: (data as any)?.paymentUrl
       });
       
       if (error || (data as any)?.error) {
