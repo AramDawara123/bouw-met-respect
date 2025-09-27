@@ -69,5 +69,8 @@ verify_jwt = true
 [functions.confirm-user]
 verify_jwt = true
 
+[functions.reset-partner-password]
+verify_jwt = false
+
 [functions.partner-confirmation-email]
 verify_jwt = false

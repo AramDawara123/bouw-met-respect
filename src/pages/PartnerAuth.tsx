@@ -159,22 +159,28 @@ const PartnerAuth = () => {
     setResetLoading(true);
     setError("");
     try {
-      const {
-        error
-      } = await supabase.auth.resetPasswordForEmail(emailToReset, {
-        redirectTo: `${window.location.origin}/partner-auth`
+      const { data, error } = await supabase.functions.invoke('reset-partner-password', {
+        body: { email: emailToReset }
       });
+
       if (error) {
-        setError("Kon geen reset email verzenden. Controleer het email adres.");
+        throw error;
+      }
+
+      if (data.error) {
+        setError(data.error);
         return;
       }
+
       toast({
-        title: "Reset email verzonden",
-        description: "Controleer je inbox voor de wachtwoord reset link."
+        title: "Nieuw wachtwoord verzonden!",
+        description: `Een nieuw wachtwoord is gegenereerd en verzonden naar ${emailToReset}. Controleer je inbox.`,
+        duration: 8000
       });
       setResetEmail("");
     } catch (error: any) {
-      setError("Er ging iets mis bij het verzenden van de reset email");
+      console.error('Password reset error:', error);
+      setError(error.message || "Er ging iets mis bij het genereren van een nieuw wachtwoord");
     } finally {
       setResetLoading(false);
     }
@@ -264,11 +270,12 @@ const PartnerAuth = () => {
                 <div className="mt-6 pt-4 border-t border-border">
                   <div className="text-center mb-3">
                     <p className="text-sm text-muted-foreground">Wachtwoord vergeten?</p>
+                    <p className="text-xs text-muted-foreground mt-1">We genereren automatisch een nieuw wachtwoord en sturen dit naar je email</p>
                   </div>
                   <div className="space-y-2">
                     <Input type="email" placeholder="Voer je email adres in" value={resetEmail} onChange={e => setResetEmail(e.target.value)} />
                     <Button type="button" variant="outline" className="w-full" onClick={() => handlePasswordReset()} disabled={resetLoading}>
-                      {resetLoading ? "Verzenden..." : "Wachtwoord resetten"}
+                      {resetLoading ? "Nieuw wachtwoord genereren..." : "Nieuw wachtwoord genereren"}
                     </Button>
                   </div>
                   
