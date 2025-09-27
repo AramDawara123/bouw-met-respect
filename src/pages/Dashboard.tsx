@@ -1258,7 +1258,14 @@ Het Bouw met Respect team
     const name = `${order.customer_first_name || ''} ${order.customer_last_name || ''}`.toLowerCase();
     const email = (order.customer_email || order.email || '').toLowerCase();
     const address = `${order.address_street || ''} ${order.address_house_number || ''} ${order.address_postcode || ''} ${order.address_city || ''}`.toLowerCase();
-    const matchesSearch = name.includes(searchTerm.toLowerCase()) || email.includes(searchTerm.toLowerCase()) || address.includes(searchTerm.toLowerCase());
+    const orderId = order.id.toLowerCase();
+    const mollieId = (order.mollie_payment_id || '').toLowerCase();
+    
+    const matchesSearch = name.includes(searchTerm.toLowerCase()) || 
+                         email.includes(searchTerm.toLowerCase()) || 
+                         address.includes(searchTerm.toLowerCase()) ||
+                         orderId.includes(searchTerm.toLowerCase()) ||
+                         mollieId.includes(searchTerm.toLowerCase());
     const matchesStatus = orderStatusFilter === 'all' || order.payment_status === orderStatusFilter;
     return matchesSearch && matchesStatus;
   });
@@ -1592,11 +1599,36 @@ Het Bouw met Respect team
                   {/* Orders Table */}
                   <Card>
                     <CardHeader>
-                      <CardTitle className="flex items-center gap-2">
-                        <ShoppingBag className="w-5 h-5" />
-                        Bestellingen
-                      </CardTitle>
-                      <CardDescription>Beheer alle webshop bestellingen</CardDescription>
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <CardTitle className="flex items-center gap-2">
+                            <ShoppingBag className="w-5 h-5" />
+                            Bestellingen
+                          </CardTitle>
+                          <CardDescription>Beheer alle webshop bestellingen</CardDescription>
+                        </div>
+                        <div className="flex gap-2">
+                          <div className="flex items-center gap-2">
+                            <Search className="w-4 h-4 text-muted-foreground" />
+                            <Input 
+                              placeholder="Zoek op naam, email, adres of ordernummer..." 
+                              value={searchTerm} 
+                              onChange={e => setSearchTerm(e.target.value)} 
+                              className="w-80" 
+                            />
+                          </div>
+                          <Select value={orderStatusFilter} onValueChange={setOrderStatusFilter}>
+                            <SelectTrigger className="w-32">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="all">Alle status</SelectItem>
+                              <SelectItem value="paid">Betaald</SelectItem>
+                              <SelectItem value="pending">Openstaand</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      </div>
                     </CardHeader>
                     <CardContent>
                       <div className="rounded-md border">
@@ -1613,7 +1645,10 @@ Het Bouw met Respect team
                             </TableRow>
                           </TableHeader>
                           <TableBody>
-                            {orders.map(order => <TableRow key={order.id}>
+                            {filteredOrders.map(order => <TableRow key={order.id}>
+                                <TableCell className="font-medium font-mono text-xs">
+                                  {order.mollie_payment_id || order.id.substring(0, 8)}
+                                </TableCell>
                                 <TableCell className="font-medium">
                                   {order.customer_first_name} {order.customer_last_name}
                                 </TableCell>
