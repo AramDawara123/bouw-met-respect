@@ -170,8 +170,8 @@ const ActionItems = () => {
                 key={index}
                 className={`relative p-4 sm:p-6 lg:p-8 text-center transition-all duration-300 border-2 hover:shadow-2xl hover:scale-105 ${
                   tier.popular 
-                    ? 'border-accent shadow-xl bg-gradient-to-br from-accent/5 to-accent/10' 
-                    : 'border-border hover:border-accent/50 bg-card'
+                    ? 'border-primary shadow-xl bg-gradient-to-br from-primary/5 to-primary/10' 
+                    : 'border-border hover:border-primary/50 bg-card'
                 }`}
                 style={{ 
                   transitionDelay: pricingVisible ? `${index * 100}ms` : '0ms'
@@ -189,12 +189,12 @@ const ActionItems = () => {
                   <tier.icon className="w-8 h-8 text-accent-foreground" />
                 </div>
                 
-                <h4 className="text-xl font-semibold mb-2 text-foreground">{tier.size}</h4>
-                <p className="text-muted-foreground mb-6">{tier.employees}</p>
+                <h4 className="text-xl font-semibold mb-2 text-accent">{tier.size}</h4>
+                <p className="text-accent/80 mb-6">{tier.employees}</p>
                 
                 <div className="mb-6">
-                  <span className="text-4xl font-bold text-primary">{tier.price}</span>
-                  {!tier.isQuote && <span className="text-muted-foreground ml-1">/jaar</span>}
+                  <span className="text-4xl font-bold text-accent">{tier.price}</span>
+                  {!tier.isQuote && <span className="text-accent/80 ml-1">/jaar</span>}
                 </div>
                 
                 <Button 
@@ -233,8 +233,8 @@ const ActionItems = () => {
               </div>
               
               <div className="relative flex items-start space-x-6">
-                <div className="w-16 h-16 bg-blue-500 rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg">
-                  <value.icon className="w-8 h-8 text-yellow-400" />
+                <div className="w-16 h-16 bg-primary rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg">
+                  <value.icon className="w-8 h-8 text-accent" />
                 </div>
                 <div className="flex-1">
                   <h3 className="text-xl font-semibold mb-4 text-foreground group-hover:text-primary transition-colors duration-300">

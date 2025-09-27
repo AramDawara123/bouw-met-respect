@@ -85,13 +85,13 @@ const Statistics = () => {
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
           {stats.map((stat, index) => (
             <Card key={index} className="p-8 text-center hover:shadow-xl transition-all duration-300 border-0 bg-card group hover:scale-105">
-              <div className="w-16 h-16 mx-auto mb-6 bg-accent rounded-xl flex items-center justify-center shadow-lg">
-                <stat.icon className="w-8 h-8 text-accent-foreground" />
+              <div className="w-16 h-16 mx-auto mb-6 bg-primary rounded-xl flex items-center justify-center shadow-lg">
+                <stat.icon className="w-8 h-8 text-accent" />
               </div>
-              <div className="text-4xl font-bold text-primary mb-2">
+              <div className="text-4xl font-bold text-accent mb-2">
                 {getCountValue(index).toLocaleString()}{stat.suffix}
               </div>
-              <h3 className="text-xl font-semibold mb-2 text-foreground">{stat.title}</h3>
+              <h3 className="text-xl font-semibold mb-2 text-accent">{stat.title}</h3>
               <p className="text-muted-foreground text-sm">{stat.description}</p>
             </Card>
           ))}
