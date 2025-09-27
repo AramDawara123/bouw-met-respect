@@ -3,9 +3,9 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Target, Building2, TrendingUp, Shield, ArrowRight, CheckCircle, Euro, Users, Award } from "lucide-react";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import MembershipForm from "@/components/MembershipForm";
-import { supabase } from "@/integrations/supabase/client";
+import { useActionItemsPricing } from "@/hooks/useActionItemsPricing";
 import { useToast } from "@/hooks/use-toast";
 
 interface ActionItemsPricingData {
@@ -24,7 +24,7 @@ const ActionItems = () => {
   const { ref: pricingRef, isVisible: pricingVisible } = useScrollAnimation(0.1);
   const { ref: cardsRef, isVisible: cardsVisible } = useScrollAnimation(0.1);
   const [formOpen, setFormOpen] = useState(false);
-  const [pricingTiers, setPricingTiers] = useState<any[]>([]);
+  const { pricingData, loading: pricingLoading } = useActionItemsPricing();
   const { toast } = useToast();
 
   const businessValues = [
@@ -58,66 +58,6 @@ const ActionItems = () => {
     }
   ];
 
-  // Load action items pricing from database
-  useEffect(() => {
-    const fetchPricingData = async () => {
-      try {
-        const { data, error } = await supabase
-          .from('action_items_pricing')
-          .select('*')
-          .order('display_order', { ascending: true });
-        
-        if (error) throw error;
-        
-        const transformedPricing = data.map((pricing: ActionItemsPricingData) => ({
-          icon: getIconForSize(pricing.size_type),
-          size: pricing.size_type,
-          employees: pricing.employees_range,
-          price: pricing.price_display,
-          popular: pricing.is_popular,
-          isQuote: pricing.is_quote
-        }));
-        
-        setPricingTiers(transformedPricing);
-      } catch (error) {
-        console.error('Error fetching action items pricing:', error);
-        toast({
-          title: "Fout",
-          description: "Kon prijzen niet laden",
-          variant: "destructive"
-        });
-        // Fallback to default pricing
-        setPricingTiers(getDefaultPricing());
-      }
-    };
-    
-    fetchPricingData();
-    
-    // Listen for pricing updates from admin panel
-    const handlePricingUpdate = () => {
-      fetchPricingData();
-    };
-    window.addEventListener('action-items-pricing-updated', handlePricingUpdate);
-    
-    return () => {
-      window.removeEventListener('action-items-pricing-updated', handlePricingUpdate);
-    };
-  }, [toast]);
-
-  const getIconForSize = (sizeType: string) => {
-    switch (sizeType.toLowerCase()) {
-      case 'klein':
-        return Users;
-      case 'middelgroot':
-        return Building2;
-      case 'groot':
-      case 'enterprise':
-        return Award;
-      default:
-        return Users;
-    }
-  };
-
   const getDefaultPricing = () => [
     {
       icon: Users,
@@ -149,6 +89,32 @@ const ActionItems = () => {
       isQuote: true
     }
   ];
+
+  const getIconForSize = (sizeType: string) => {
+    switch (sizeType.toLowerCase()) {
+      case 'klein':
+        return Users;
+      case 'middelgroot':
+        return Building2;
+      case 'groot':
+      case 'enterprise':
+        return Award;
+      default:
+        return Users;
+    }
+  };
+
+  // Transform pricing data for display
+  const pricingTiers = pricingData.length > 0 
+    ? pricingData.map((pricing: ActionItemsPricingData) => ({
+        icon: getIconForSize(pricing.size_type),
+        size: pricing.size_type,
+        employees: pricing.employees_range,
+        price: pricing.price_display,
+        popular: pricing.is_popular,
+        isQuote: pricing.is_quote
+      }))
+    : getDefaultPricing();
 
   // Build a safe, encoded SVG background for the decoration without nesting quotes in JSX
   const backgroundSvg = `<svg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"><g fill="none" fill-rule="evenodd"><g fill="#f97316" fill-opacity="0.03"><circle cx="30" cy="30" r="2"/></g></g></svg>`;
