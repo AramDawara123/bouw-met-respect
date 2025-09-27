@@ -43,10 +43,13 @@ serve(async (req) => {
     const totalCents = subtotalAfterDiscount + shippingCents;
     const totalEuroValue = (totalCents / 100).toFixed(2);
 
+    console.log('Processing order:', { subtotalCents, discountAmountCents, subtotalAfterDiscount, shippingCents, totalCents });
+
     const origin = req.headers.get('origin') || Deno.env.get('PUBLIC_SITE_URL') || 'https://example.com';
 
     // Handle free orders (0 euro total)
     if (totalCents === 0) {
+      console.log('Creating free order with 0 total');
       // Create free order directly without Mollie
       const supabaseService = createClient(
         Deno.env.get('SUPABASE_URL') ?? '',

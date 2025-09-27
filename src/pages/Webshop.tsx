@@ -274,6 +274,11 @@ const Webshop = () => {
   const checkout = useCallback(async () => {
     try {
       console.log('[Webshop] Checkout clicked');
+      console.log('[Webshop] Cart total:', cartTotal);
+      console.log('[Webshop] Discount amount:', discountAmount);
+      console.log('[Webshop] Final total:', finalTotal);
+      console.log('[Webshop] Applied discount:', appliedDiscount);
+      
       setIsCheckingOut(true);
       const items = Object.entries(cart).map(([productId, quantity]) => {
         const product = products.find(p => p.id === productId);
@@ -631,13 +636,13 @@ const Webshop = () => {
                             <span>-€{discountAmount.toFixed(2)}</span>
                           </div>
                         )}
-                        {cartTotal - discountAmount < 50 && (
+                        {((cartTotal - discountAmount) < 50 && discountAmount < cartTotal) && (
                           <div className="flex justify-between text-sm">
                             <span>Verzendkosten:</span>
                             <span>€5.00</span>
                           </div>
                         )}
-                        {cartTotal - discountAmount >= 50 && (
+                        {((cartTotal - discountAmount) >= 50 || discountAmount >= cartTotal) && (
                           <div className="flex justify-between text-sm text-green-600">
                             <span>Verzending:</span>
                             <span>Gratis</span>
