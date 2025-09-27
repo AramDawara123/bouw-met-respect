@@ -72,10 +72,10 @@ const ReportSection = () => {
                   <h3 className="text-xl font-semibold mb-3 text-foreground">
                     Direct contact
                   </h3>
-                  <p className="text-muted-foreground mb-6 leading-relaxed">
-                    Bij spoedeisende situaties kun je ook direct contact met ons opnemen 
-                    via telefoon of e-mail.
-                  </p>
+                   <p className="text-accent mb-6 leading-relaxed">
+                     Bij spoedeisende situaties kun je ook direct contact met ons opnemen 
+                     via telefoon of e-mail.
+                   </p>
                   <div className="space-y-4 mb-6">
                     <div className="flex items-center space-x-3">
                       <Phone className="w-4 h-4 text-blue-600" />
