@@ -14,7 +14,7 @@ const CallToAction = () => {
         <div className="container mx-auto px-4">
           <Card className="relative overflow-hidden border-0 bg-gradient-to-br from-primary to-secondary text-primary-foreground">
 
-            <div className="relative z-10 p-12 lg:p-20 text-center text-yellow-400">
+            <div className="relative z-10 p-12 lg:p-20 text-center">
               <div className="flex justify-center mb-8">
                 <div className="flex items-center space-x-4">
                   <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center">
@@ -27,11 +27,11 @@ const CallToAction = () => {
                 </div>
               </div>
 
-              <h2 className="text-4xl md:text-6xl font-bold mb-6 text-blue-600">
+              <h2 className="text-4xl md:text-6xl font-bold mb-6">
                 Klaar om je aan te sluiten bij de beweging?
               </h2>
               
-              <p className="text-xl md:text-2xl mb-8 opacity-90 max-w-3xl mx-auto leading-relaxed text-blue-600">
+              <p className="text-xl md:text-2xl mb-8 opacity-90 max-w-3xl mx-auto leading-relaxed">
                 Word onderdeel van de beweging die grensoverschrijdend gedrag aanpakt. 
                 Samen zorgen we voor een veilige, aantrekkelijke en toekomstbestendige 
                 bouwsector waar jong talent wil blijven.
@@ -51,16 +51,16 @@ const CallToAction = () => {
 
               <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-8 max-w-2xl mx-auto">
                 <div className="text-center">
-                  <div className="text-3xl font-bold mb-2 text-blue-600">Keurmerk</div>
-                  <p className="text-sm opacity-80 text-blue-600">Zichtbaar op gevel en website</p>
+                  <div className="text-3xl font-bold mb-2">Keurmerk</div>
+                  <p className="text-sm opacity-80">Zichtbaar op gevel en website</p>
                 </div>
                 <div className="text-center">
-                  <div className="text-3xl font-bold mb-2 text-blue-600">Coaching</div>
-                  <p className="text-sm opacity-80 text-blue-600">Professionele begeleiding</p>
+                  <div className="text-3xl font-bold mb-2">Coaching</div>
+                  <p className="text-sm opacity-80">Professionele begeleiding</p>
                 </div>
                 <div className="text-center">
-                  <div className="text-3xl font-bold mb-2 text-blue-600">Netwerk</div>
-                  <p className="text-sm opacity-80 text-blue-600">Bijeenkomsten en kennisdeling</p>
+                  <div className="text-3xl font-bold mb-2">Netwerk</div>
+                  <p className="text-sm opacity-80">Bijeenkomsten en kennisdeling</p>
                 </div>
               </div>
             </div>

@@ -1424,7 +1424,7 @@ Het Bouw met Respect team
           <CardContent className="pt-6">
             <div className="text-center">
               <h2 className="text-2xl font-bold mb-4">Dashboard Toegang</h2>
-              <p className="text-black mb-4">
+              <p className="text-muted-foreground mb-4">
                 Je moet ingelogd zijn als admin om het dashboard te gebruiken.
               </p>
               <Link to="/">
@@ -1450,10 +1450,10 @@ Het Bouw met Respect team
           <div className="sticky top-0 z-40 border-b border-border/50 bg-card/95 backdrop-blur-sm">
             <div className="flex items-center gap-4 p-6 mt-16 pt-8">
               <SidebarTrigger className="shrink-0" />
-               <div className="flex-1 flex items-center justify-between">
+              <div className="flex-1 flex items-center justify-between">
                 <div>
-                  <h1 className="text-3xl font-bold tracking-tight text-black">Admin Dashboard</h1>
-                  <p className="text-sm text-black">
+                  <h1 className="text-3xl font-bold tracking-tight text-foreground">Admin Dashboard</h1>
+                  <p className="text-sm text-muted-foreground">
                     Beheer lidmaatschappen, bestellingen en bedrijfsprofielen
                   </p>
                 </div>
@@ -1502,14 +1502,14 @@ Het Bouw met Respect team
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
                   <Card className="bg-gradient-to-br from-blue-500/5 to-blue-500/10 border-blue-200/30">
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                      <CardTitle className="text-sm font-medium text-black">
+                      <CardTitle className="text-sm font-medium text-muted-foreground">
                         Totaal Lidmaatschappen
                       </CardTitle>
                       <Users className="h-4 w-4 text-blue-500" />
                     </CardHeader>
                     <CardContent>
-                      <div className="text-2xl font-bold text-black">{memberships.length}</div>
-                      <p className="text-xs text-black">
+                      <div className="text-2xl font-bold text-foreground">{memberships.length}</div>
+                      <p className="text-xs text-muted-foreground">
                         {memberships.filter(m => m.payment_status === 'paid').length} betaald
                       </p>
                     </CardContent>
@@ -1517,50 +1517,50 @@ Het Bouw met Respect team
 
                   <Card className="bg-gradient-to-br from-green-500/5 to-green-500/10 border-green-200/30">
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                      <CardTitle className="text-sm font-medium text-black">
+                      <CardTitle className="text-sm font-medium text-muted-foreground">
                         Nieuwe Deze Maand
                       </CardTitle>
                       <Users className="h-4 w-4 text-green-500" />
                     </CardHeader>
                     <CardContent>
-                      <div className="text-2xl font-bold text-black">
+                      <div className="text-2xl font-bold text-foreground">
                         {memberships.filter(m => {
                           const created = new Date(m.created_at);
                           const now = new Date();
                           return created.getMonth() === now.getMonth() && created.getFullYear() === now.getFullYear();
                         }).length}
                       </div>
-                      <p className="text-xs text-black">dit kalenderjaar</p>
+                      <p className="text-xs text-muted-foreground">dit kalenderjaar</p>
                     </CardContent>
                   </Card>
 
                   <Card className="bg-gradient-to-br from-yellow-500/5 to-yellow-500/10 border-yellow-200/30">
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                      <CardTitle className="text-sm font-medium text-black">
+                      <CardTitle className="text-sm font-medium text-muted-foreground">
                         Openstaand
                       </CardTitle>
                       <CreditCard className="h-4 w-4 text-yellow-500" />
                     </CardHeader>
                     <CardContent>
-                      <div className="text-2xl font-bold text-black">
+                      <div className="text-2xl font-bold text-foreground">
                         {memberships.filter(m => m.payment_status === 'pending').length}
                       </div>
-                      <p className="text-xs text-black">nog te betalen</p>
+                      <p className="text-xs text-muted-foreground">nog te betalen</p>
                     </CardContent>
                   </Card>
 
                   <Card className="bg-gradient-to-br from-red-500/5 to-red-500/10 border-red-200/30">
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                      <CardTitle className="text-sm font-medium text-black">
+                      <CardTitle className="text-sm font-medium text-muted-foreground">
                         Geannuleerd
                       </CardTitle>
                       <CreditCard className="h-4 w-4 text-red-500" />
                     </CardHeader>
                     <CardContent>
-                      <div className="text-2xl font-bold text-black">
+                      <div className="text-2xl font-bold text-foreground">
                         {memberships.filter(m => m.payment_status === 'cancelled').length}
                       </div>
-                      <p className="text-xs text-black">niet voltooid</p>
+                      <p className="text-xs text-muted-foreground">niet voltooid</p>
                     </CardContent>
                   </Card>
                 </div>
@@ -1578,7 +1578,7 @@ Het Bouw met Respect team
                       </div>
                       <div className="flex gap-2">
                         <div className="flex items-center gap-2">
-                          <Search className="w-4 h-4 text-black" />
+                          <Search className="w-4 h-4 text-muted-foreground" />
                           <Input
                             placeholder="Zoek lidmaatschappen..."
                             value={searchTerm}
@@ -1630,7 +1630,7 @@ Het Bouw met Respect team
                         <TableBody>
                           {filteredMemberships.length === 0 ? (
                             <TableRow>
-                              <TableCell colSpan={8} className="text-center py-8 text-black">
+                              <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
                                 {memberships.length === 0 
                                   ? "Geen lidmaatschappen gevonden" 
                                   : "Geen resultaten voor de huidige filters"
@@ -1701,63 +1701,63 @@ Het Bouw met Respect team
                   {/* Summary Cards */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
                     <Card className="bg-gradient-to-br from-blue-500/5 to-blue-500/10 border-blue-200/30">
-                       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                         <CardTitle className="text-sm font-medium text-black">
-                           Totaal Bestellingen
-                         </CardTitle>
+                      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                        <CardTitle className="text-sm font-medium text-muted-foreground">
+                          Totaal Bestellingen
+                        </CardTitle>
                         <ShoppingBag className="h-4 w-4 text-blue-500" />
                       </CardHeader>
-                       <CardContent>
-                         <div className="text-2xl font-bold text-black">{orders.length}</div>
-                         <p className="text-xs text-black">
-                           {orders.filter(o => o.payment_status === 'paid').length} betaald
-                         </p>
-                       </CardContent>
+                      <CardContent>
+                        <div className="text-2xl font-bold text-foreground">{orders.length}</div>
+                        <p className="text-xs text-muted-foreground">
+                          {orders.filter(o => o.payment_status === 'paid').length} betaald
+                        </p>
+                      </CardContent>
                     </Card>
 
                     <Card className="bg-gradient-to-br from-green-500/5 to-green-500/10 border-green-200/30">
-                       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                         <CardTitle className="text-sm font-medium text-black">
-                           Omzet
-                         </CardTitle>
+                      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                        <CardTitle className="text-sm font-medium text-muted-foreground">
+                          Omzet
+                        </CardTitle>
                         <Euro className="h-4 w-4 text-green-500" />
                       </CardHeader>
-                       <CardContent>
-                         <div className="text-2xl font-bold text-black">
-                           €{(orders.filter(o => o.payment_status === 'paid').reduce((sum, o) => sum + o.total, 0) / 100).toFixed(2)}
-                         </div>
-                         <p className="text-xs text-black">betaalde bestellingen</p>
-                       </CardContent>
+                      <CardContent>
+                        <div className="text-2xl font-bold text-foreground">
+                          €{(orders.filter(o => o.payment_status === 'paid').reduce((sum, o) => sum + o.total, 0) / 100).toFixed(2)}
+                        </div>
+                        <p className="text-xs text-muted-foreground">betaalde bestellingen</p>
+                      </CardContent>
                     </Card>
 
                     <Card className="bg-gradient-to-br from-yellow-500/5 to-yellow-500/10 border-yellow-200/30">
-                       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                         <CardTitle className="text-sm font-medium text-black">
-                           Openstaand
-                         </CardTitle>
+                      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                        <CardTitle className="text-sm font-medium text-muted-foreground">
+                          Openstaand
+                        </CardTitle>
                         <CreditCard className="h-4 w-4 text-yellow-500" />
                       </CardHeader>
-                       <CardContent>
-                         <div className="text-2xl font-bold text-black">
-                           {orders.filter(o => o.payment_status === 'pending').length}
-                         </div>
-                         <p className="text-xs text-black">nog te betalen</p>
-                       </CardContent>
+                      <CardContent>
+                        <div className="text-2xl font-bold text-foreground">
+                          {orders.filter(o => o.payment_status === 'pending').length}
+                        </div>
+                        <p className="text-xs text-muted-foreground">nog te betalen</p>
+                      </CardContent>
                     </Card>
 
                     <Card className="bg-gradient-to-br from-purple-500/5 to-purple-500/10 border-purple-200/30">
-                       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                         <CardTitle className="text-sm font-medium text-black">
-                           Gemiddelde Bestelling
-                         </CardTitle>
+                      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                        <CardTitle className="text-sm font-medium text-muted-foreground">
+                          Gemiddelde Bestelling
+                        </CardTitle>
                         <Package className="h-4 w-4 text-purple-500" />
                       </CardHeader>
-                       <CardContent>
-                         <div className="text-2xl font-bold text-black">
-                           €{orders.length > 0 ? (orders.reduce((sum, o) => sum + o.total, 0) / orders.length / 100).toFixed(2) : '0.00'}
-                         </div>
-                         <p className="text-xs text-black">per bestelling</p>
-                       </CardContent>
+                      <CardContent>
+                        <div className="text-2xl font-bold text-foreground">
+                          €{orders.length > 0 ? (orders.reduce((sum, o) => sum + o.total, 0) / orders.length / 100).toFixed(2) : '0.00'}
+                        </div>
+                        <p className="text-xs text-muted-foreground">per bestelling</p>
+                      </CardContent>
                     </Card>
                   </div>
 
@@ -1849,14 +1849,14 @@ Het Bouw met Respect team
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
                     <Card className="bg-gradient-to-br from-blue-500/5 to-blue-500/10 border-blue-200/30">
                       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium text-black">
+                        <CardTitle className="text-sm font-medium text-muted-foreground">
                           Totaal Bedrijven
                         </CardTitle>
                         <Building2 className="h-4 w-4 text-blue-500" />
                       </CardHeader>
                       <CardContent>
-                        <div className="text-2xl font-bold text-black">{profiles.length}</div>
-                        <p className="text-xs text-black">
+                        <div className="text-2xl font-bold text-foreground">{profiles.length}</div>
+                        <p className="text-xs text-muted-foreground">
                           {profiles.filter(p => p.is_featured).length} uitgelicht
                         </p>
                       </CardContent>
@@ -1864,46 +1864,46 @@ Het Bouw met Respect team
 
                     <Card className="bg-gradient-to-br from-green-500/5 to-green-500/10 border-green-200/30">
                       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium text-black">
+                        <CardTitle className="text-sm font-medium text-muted-foreground">
                           Met Website
                         </CardTitle>
                         <Globe className="h-4 w-4 text-green-500" />
                       </CardHeader>
                       <CardContent>
-                        <div className="text-2xl font-bold text-black">
+                        <div className="text-2xl font-bold text-foreground">
                           {profiles.filter(p => p.website).length}
                         </div>
-                        <p className="text-xs text-black">actieve links</p>
+                        <p className="text-xs text-muted-foreground">actieve links</p>
                       </CardContent>
                     </Card>
 
                     <Card className="bg-gradient-to-br from-purple-500/5 to-purple-500/10 border-purple-200/30">
                       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium text-black">
+                        <CardTitle className="text-sm font-medium text-muted-foreground">
                           Met Logo
                         </CardTitle>
                         <Building2 className="h-4 w-4 text-purple-500" />
                       </CardHeader>
                       <CardContent>
-                        <div className="text-2xl font-bold text-black">
+                        <div className="text-2xl font-bold text-foreground">
                           {profiles.filter(p => p.logo_url).length}
                         </div>
-                        <p className="text-xs text-black">visuele identiteit</p>
+                        <p className="text-xs text-muted-foreground">visuele identiteit</p>
                       </CardContent>
                     </Card>
 
                     <Card className="bg-gradient-to-br from-orange-500/5 to-orange-500/10 border-orange-200/30">
                       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium text-black">
+                        <CardTitle className="text-sm font-medium text-muted-foreground">
                           Contactinfo
                         </CardTitle>
                         <Mail className="h-4 w-4 text-orange-500" />
                       </CardHeader>
                       <CardContent>
-                        <div className="text-2xl font-bold text-black">
+                        <div className="text-2xl font-bold text-foreground">
                           {profiles.filter(p => p.contact_email || p.contact_phone).length}
                         </div>
-                        <p className="text-xs text-black">bereikbaar</p>
+                        <p className="text-xs text-muted-foreground">bereikbaar</p>
                       </CardContent>
                     </Card>
                   </div>
@@ -2286,61 +2286,61 @@ Het Bouw met Respect team
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="text-sm font-medium text-black">Naam</label>
+                  <label className="text-sm font-medium text-muted-foreground">Naam</label>
                   <p className="font-medium">{selectedMembership.first_name} {selectedMembership.last_name}</p>
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-black">Email</label>
+                  <label className="text-sm font-medium text-muted-foreground">Email</label>
                   <p className="font-medium">{selectedMembership.email}</p>
                 </div>
               </div>
               
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="text-sm font-medium text-black">Telefoon</label>
+                  <label className="text-sm font-medium text-muted-foreground">Telefoon</label>
                   <p className="font-medium">{selectedMembership.phone}</p>
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-black">Bedrijf</label>
+                  <label className="text-sm font-medium text-muted-foreground">Bedrijf</label>
                   <p className="font-medium">{selectedMembership.company || '-'}</p>
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="text-sm font-medium text-black">Functietitel</label>
+                  <label className="text-sm font-medium text-muted-foreground">Functietitel</label>
                   <p className="font-medium">{selectedMembership.job_title}</p>
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-black">Rol in de industrie</label>
+                  <label className="text-sm font-medium text-muted-foreground">Rol in de industrie</label>
                   <p className="font-medium">{selectedMembership.industry_role}</p>
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="text-sm font-medium text-black">Ervaring</label>
+                  <label className="text-sm font-medium text-muted-foreground">Ervaring</label>
                   <p className="font-medium">{selectedMembership.experience_years}</p>
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-black">Lidmaatschap Type</label>
+                  <label className="text-sm font-medium text-muted-foreground">Lidmaatschap Type</label>
                   <Badge variant="outline">{selectedMembership.membership_type}</Badge>
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="text-sm font-medium text-black">Payment Status</label>
+                  <label className="text-sm font-medium text-muted-foreground">Payment Status</label>
                   {getStatusBadge(selectedMembership.payment_status)}
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-black">Bedrag</label>
+                  <label className="text-sm font-medium text-muted-foreground">Bedrag</label>
                   <p className="font-medium">€{(selectedMembership.amount / 100).toFixed(2)}</p>
                 </div>
               </div>
 
               <div>
-                <label className="text-sm font-medium text-black">Specialisaties</label>
+                <label className="text-sm font-medium text-muted-foreground">Specialisaties</label>
                 <div className="flex flex-wrap gap-2 mt-2">
                   {selectedMembership.specializations?.map(spec => (
                     <Badge key={spec} variant="secondary">
@@ -2352,18 +2352,18 @@ Het Bouw met Respect team
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="text-sm font-medium text-black">Aangemeld op</label>
+                  <label className="text-sm font-medium text-muted-foreground">Aangemeld op</label>
                   <p className="font-medium">{new Date(selectedMembership.created_at).toLocaleDateString()}</p>
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-black">Laatst gewijzigd</label>
+                  <label className="text-sm font-medium text-muted-foreground">Laatst gewijzigd</label>
                   <p className="font-medium">{new Date(selectedMembership.updated_at).toLocaleDateString()}</p>
                 </div>
               </div>
 
               {selectedMembership.mollie_payment_id && (
                 <div>
-                  <label className="text-sm font-medium text-black">Mollie Payment ID</label>
+                  <label className="text-sm font-medium text-muted-foreground">Mollie Payment ID</label>
                   <p className="font-medium font-mono text-sm">{selectedMembership.mollie_payment_id}</p>
                 </div>
               )}

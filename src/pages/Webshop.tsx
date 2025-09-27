@@ -709,7 +709,7 @@ const Webshop = () => {
                         <span className="text-3xl font-bold text-primary block">
                           €{product.price.toFixed(2)}
                         </span>
-                        <p className="text-sm text-muted-foreground">Excl. BTW</p>
+                        <p className="text-sm text-muted-foreground">Incl. BTW</p>
                       </div>
                       {cart[product.id] > 0 && <div className="flex-shrink-0">
                           <div className="inline-flex items-center px-3 py-2 bg-gradient-to-r from-primary/15 to-secondary/15 rounded-full border border-primary/20">
