@@ -112,7 +112,7 @@ serve(async (req) => {
         JSON.stringify({ 
           success: true, 
           orderId: orderId,
-          redirectUrl: `${origin}/order-thank-you`
+          redirectUrl: `${origin}/order-thank-you?orderId=${orderId}`
         }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 200 }
       );
