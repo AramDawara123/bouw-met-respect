@@ -37,10 +37,10 @@ const ReportSection = () => {
                   <Shield className="w-6 h-6 text-red-600" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-semibold mb-3 text-foreground">
+                  <h3 className="text-xl font-semibold mb-3 text-yellow-500">
                     Online melding
                   </h3>
-                  <p className="text-muted-foreground mb-6 leading-relaxed">
+                  <p className="mb-6 leading-relaxed text-yellow-500">
                     Vul ons veilige meldformulier in. Je kunt kiezen voor een anonieme melding of 
                     je contactgegevens achterlaten voor follow-up.
                   </p>
@@ -72,7 +72,7 @@ const ReportSection = () => {
                   <h3 className="text-xl font-semibold mb-3 text-yellow-500">
                     Direct contact
                   </h3>
-                  <p className="text-muted-foreground mb-6 leading-relaxed">
+                  <p className="mb-6 leading-relaxed text-yellow-500">
                     Bij spoedeisende situaties kun je ook direct contact met ons opnemen 
                     via telefoon of e-mail.
                   </p>
