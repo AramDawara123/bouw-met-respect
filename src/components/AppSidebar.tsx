@@ -44,15 +44,15 @@ const navigationItems = {
     icon: Settings,
     description: "Stel partnerprijzen in"
   }, {
-    key: "action-items-pricing",
-    title: "Actie-items Prijzen",
+    key: "lidmaatschappen-prijzen",
+    title: "Lidmaatschappen Prijzen",
     icon: Euro,
-    description: "Stel actie-items prijzen in"
+    description: "Stel lidmaatschappen prijzen in"
   }, {
-    key: "action-items-partner-pricing",
-    title: "Actie-items Prijsbeheer",
+    key: "onze-partners-prijzen",
+    title: "Onze Partners Prijzen",
     icon: Euro,
-    description: "Beheer partnerprijzen voor actie-items"
+    description: "Beheer partnerprijzen"
   }],
   "Tools": [{
     key: "qrcode",

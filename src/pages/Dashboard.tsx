@@ -144,7 +144,7 @@ const Dashboard = () => {
   const [isEditingProduct, setIsEditingProduct] = useState(false);
   const [user, setUser] = useState(null);
   const [isAdmin, setIsAdmin] = useState(false);
-  const [viewMode, setViewMode] = useState<'memberships' | 'orders' | 'profiles' | 'products' | 'partners' | 'partner-pricing' | 'action-items-pricing' | 'action-items-partner-pricing' | 'discounts' | 'qrcode'>("memberships");
+  const [viewMode, setViewMode] = useState<'memberships' | 'orders' | 'profiles' | 'products' | 'partners' | 'partner-pricing' | 'lidmaatschappen-prijzen' | 'onze-partners-prijzen' | 'discounts' | 'qrcode'>("memberships");
   const [showProfileForm, setShowProfileForm] = useState(false);
   const [editingProfile, setEditingProfile] = useState<CompanyProfile | null>(null);
   const [editingPartner, setEditingPartner] = useState<PartnerAccount | null>(null);
@@ -1443,7 +1443,7 @@ Het Bouw met Respect team
       <div className="min-h-screen bg-gradient-to-br from-background via-primary/5 to-secondary/5 flex w-full">
         <AppSidebar 
           viewMode={viewMode} 
-          onViewModeChange={(mode) => setViewMode(mode as 'memberships' | 'orders' | 'profiles' | 'products' | 'partners' | 'partner-pricing' | 'action-items-pricing' | 'action-items-partner-pricing' | 'discounts' | 'qrcode')} 
+          onViewModeChange={(mode) => setViewMode(mode as 'memberships' | 'orders' | 'profiles' | 'products' | 'partners' | 'partner-pricing' | 'lidmaatschappen-prijzen' | 'onze-partners-prijzen' | 'discounts' | 'qrcode')} 
         />
         
         <main className="flex-1 overflow-auto">
@@ -1493,13 +1493,13 @@ Het Bouw met Respect team
           </div>
 
           <div className="p-6 mt-6">
-                <Tabs value={viewMode} onValueChange={(value) => setViewMode(value as 'memberships' | 'orders' | 'profiles' | 'products' | 'partners' | 'partner-pricing' | 'action-items-pricing' | 'action-items-partner-pricing' | 'discounts' | 'qrcode')}>
+                <Tabs value={viewMode} onValueChange={(value) => setViewMode(value as 'memberships' | 'orders' | 'profiles' | 'products' | 'partners' | 'partner-pricing' | 'lidmaatschappen-prijzen' | 'onze-partners-prijzen' | 'discounts' | 'qrcode')}>
                   
-                  <TabsContent value="action-items-pricing" className="space-y-6">
+                  <TabsContent value="lidmaatschappen-prijzen" className="space-y-6">
                     <div className="space-y-6">
                       <Card>
                         <CardHeader>
-                          <CardTitle className="text-blue-600">Actie-items Prijzen</CardTitle>
+                          <CardTitle className="text-blue-600">Lidmaatschappen Prijzen</CardTitle>
                           <CardDescription>
                             Beheer de prijzen voor lidmaatschappen (voor klanten/leden)
                           </CardDescription>
@@ -1510,11 +1510,11 @@ Het Bouw met Respect team
                     </div>
                   </TabsContent>
 
-                  <TabsContent value="action-items-partner-pricing" className="space-y-6">
+                  <TabsContent value="onze-partners-prijzen" className="space-y-6">
                     <div className="space-y-6">
                       <Card>
                         <CardHeader>
-                          <CardTitle className="text-blue-600">Actie-items Prijsbeheer</CardTitle>
+                          <CardTitle className="text-blue-600">Onze Partners Prijzen</CardTitle>
                           <CardDescription>
                             Beheer de prijzen voor partners (bedrijfsgrootte)
                           </CardDescription>
