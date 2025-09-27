@@ -154,8 +154,8 @@ const ActionItems = () => {
                     </span>
                   </div>}
                 
-                <div className="w-16 h-16 mx-auto mb-6 rounded-xl flex items-center justify-center bg-accent shadow-lg border-2 border-primary">
-                  <tier.icon className="w-8 h-8 text-yellow-500" />
+                <div className="w-16 h-16 mx-auto mb-6 rounded-xl flex items-center justify-center bg-primary shadow-lg">
+                  <tier.icon className="w-8 h-8 text-yellow-400" />
                 </div>
                 
                 <h4 className="text-xl font-semibold mb-2 text-accent">{tier.size}</h4>
