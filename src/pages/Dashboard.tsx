@@ -159,9 +159,10 @@ const Dashboard = () => {
       const char = shortId[i];
       if (i % 2 === 0 && /[0-9]/.test(char)) {
         // Convert numbers to letters occasionally for better readability
-        orderNumber += String.fromCharCode(65 + parseInt(char) % 26);
+        const letter = String.fromCharCode(65 + parseInt(char) % 26);
+        orderNumber += i % 4 === 0 ? letter.toLowerCase() : letter;
       } else {
-        orderNumber += char.toUpperCase();
+        orderNumber += i % 3 === 0 ? char.toLowerCase() : char.toUpperCase();
       }
     }
     return `#${orderNumber}`;
