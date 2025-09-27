@@ -85,7 +85,7 @@ const handler = async (req: Request): Promise<Response> => {
                           <table width="100%" cellpadding="8" cellspacing="0" border="0">
                             <tr>
                               <td style="font-weight: 600; color: #374151; padding: 8px 0;">Bestelnummer:</td>
-                              <td style="color: #1f2937; font-family: 'Courier New', monospace; background-color: #e5e7eb; padding: 4px 8px; border-radius: 4px; text-align: right;">#${orderData.orderId.slice(-8)}</td>
+                              <td style="color: #1f2937; font-family: 'Courier New', monospace; background-color: #e5e7eb; padding: 4px 8px; border-radius: 4px; text-align: right;">#${orderData.orderId.slice(-8).toUpperCase()}</td>
                             </tr>
                             <tr style="border-top: 1px solid #e5e7eb;">
                               <td style="font-weight: 600; color: #374151; padding: 8px 0;">Besteldatum:</td>
@@ -234,7 +234,7 @@ const handler = async (req: Request): Promise<Response> => {
     const emailResponse = await resend.emails.send({
       from: "Bouw met Respect <info@bouwmetrespect.nl>",
       to: [orderData.customerEmail],
-      subject: `Bestelbevestiging #${orderData.orderId.slice(-8)} - Bouw met Respect`,
+      subject: `Bestelbevestiging #${orderData.orderId.slice(-8).toUpperCase()} - Bouw met Respect`,
       html: emailHtml,
     });
 
