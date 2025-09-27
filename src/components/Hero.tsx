@@ -109,10 +109,10 @@ const Hero = () => {
                 <div className="w-12 h-12 md:w-16 md:h-16 mx-auto mb-4 md:mb-6 bg-primary rounded-2xl flex items-center justify-center">
                   <feature.icon className="w-6 h-6 md:w-8 md:h-8 text-accent" />
                 </div>
-                <h3 className="text-lg md:text-xl font-semibold mb-2 md:mb-3 text-foreground">
+                <h3 className="text-lg md:text-xl font-semibold mb-2 md:mb-3 text-accent">
                   {feature.title}
                 </h3>
-                <p className="text-sm md:text-base text-muted-foreground leading-relaxed">
+                <p className="text-sm md:text-base text-accent leading-relaxed">
                   {feature.description}
                 </p>
               </Card>
