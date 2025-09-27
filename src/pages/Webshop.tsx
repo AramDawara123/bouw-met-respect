@@ -13,6 +13,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { validateDiscountCode, calculateDiscount, formatDiscountDisplay } from "@/lib/discountUtils";
+import { RealTimeOrderSummary } from '@/components/RealTimeOrderSummary';
 import { MarqueeAnimation } from "@/components/ui/marquee-effect";
 import { useCart } from "@/hooks/useCart";
 const Webshop = () => {
@@ -266,6 +267,14 @@ const Webshop = () => {
       description: `${product?.name} is verwijderd uit je winkelwagen.`
     });
   }, [removeFromCartAction, products, toast]);
+  // Auto-redirect handler for free orders
+  const handleFreeOrderRedirect = useCallback(() => {
+    console.log('[Webshop] Redirecting to order-thank-you for free order');
+    clearCart();
+    setAppliedDiscount(null);
+    window.location.href = '/order-thank-you';
+  }, [clearCart, setAppliedDiscount]);
+  
   const validateCustomer = () => {
     const missing: string[] = [];
     if (!customer.firstName) missing.push("voornaam");
@@ -674,42 +683,21 @@ const Webshop = () => {
 
                   {cartItemCount > 0 && (
                     <div className="flex-shrink-0 border-t bg-background p-4 -mx-6 -mb-6 mt-4 safe-area-inset-bottom">
-                      <div className="space-y-2">
-                        <div className="flex justify-between text-sm">
-                          <span>Subtotaal:</span>
-                          <span>€{cartTotal.toFixed(2)}</span>
-                        </div>
-                        {appliedDiscount && discountAmount > 0 && (
-                          <div className="flex justify-between text-sm text-green-600">
-                            <span>Korting ({formatDiscountDisplay(appliedDiscount)}):</span>
-                            <span>-€{(discountAmount / 100).toFixed(2)}</span>
-                          </div>
-                        )}
-                        {((cartTotal * 100 - discountAmount) < 5000 && discountAmount < cartTotal * 100) && (
-                          <div className="flex justify-between text-sm">
-                            <span>Verzendkosten:</span>
-                            <span>€5.00</span>
-                          </div>
-                        )}
-                        {((cartTotal * 100 - discountAmount) >= 5000 || discountAmount >= cartTotal * 100) && (
-                          <div className="flex justify-between text-sm text-green-600">
-                            <span>Verzending:</span>
-                            <span>Gratis</span>
-                          </div>
-                        )}
-                        <div className="flex justify-between font-bold text-lg border-t pt-2">
-                          <span>Totaal:</span>
-                          <span>€{finalTotal.toFixed(2)}</span>
-                        </div>
-                      </div>
+                      <RealTimeOrderSummary
+                        cartTotal={cartTotal}
+                        discountAmount={discountAmount}
+                        appliedDiscount={appliedDiscount}
+                        onFreeOrderRedirect={handleFreeOrderRedirect}
+                      />
                       <Button 
                         className="w-full mt-4 h-12 text-base font-semibold" 
                         size="lg" 
                         onClick={checkout} 
-                        disabled={isCheckingOut}
+                        disabled={isCheckingOut || finalTotal <= 0}
                       >
                         <ShoppingCart className="w-4 h-4 mr-2" />
-                        {isCheckingOut ? 'Bezig met afrekenen...' : 'Naar afrekenen'}
+                        {isCheckingOut ? 'Bezig met afrekenen...' : 
+                         finalTotal <= 0 ? 'Gratis bestelling verwerken...' : 'Naar afrekenen'}
                       </Button>
                     </div>
                   )}
