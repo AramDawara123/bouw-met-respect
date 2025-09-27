@@ -195,12 +195,28 @@ const Webshop = () => {
   }, [getTotalItemCount]);
   const discountAmount = useMemo(() => {
     if (!appliedDiscount) return 0;
-    return calculateDiscount(appliedDiscount, cartTotal * 100) / 100; // Convert back to euros
+    const discount = calculateDiscount(appliedDiscount, cartTotal * 100) / 100; // Convert back to euros
+    console.log('[Webshop] Discount calculation:', { 
+      appliedDiscount, 
+      cartTotal, 
+      cartTotalCents: cartTotal * 100,
+      discountInCents: calculateDiscount(appliedDiscount, cartTotal * 100),
+      discountInEuros: discount 
+    });
+    return discount;
   }, [appliedDiscount, cartTotal]);
   const finalTotal = useMemo(() => {
     const subtotal = cartTotal - discountAmount;
     const isFreeShipping = subtotal >= 50 || discountAmount >= cartTotal; // Free shipping for 100% discount
-    return subtotal + (isFreeShipping ? 0 : 5.00);
+    const total = subtotal + (isFreeShipping ? 0 : 5.00);
+    console.log('[Webshop] Final total calculation:', { 
+      cartTotal, 
+      discountAmount, 
+      subtotal, 
+      isFreeShipping, 
+      finalTotal: total 
+    });
+    return total;
   }, [cartTotal, discountAmount]);
   const checkDiscountCode = async (code: string) => {
     if (!code.trim()) {
@@ -301,6 +317,14 @@ const Webshop = () => {
           discountCode: appliedDiscount?.code,
           discountAmount: discountAmount * 100 // Convert to cents
         }
+      });
+      
+      console.log('[Webshop] Sending to backend:', {
+        items,
+        discountCode: appliedDiscount?.code,
+        discountAmount,
+        discountAmountCents: discountAmount * 100,
+        finalTotal
       });
       console.log('[Webshop] create-shop-order response', {
         data,
