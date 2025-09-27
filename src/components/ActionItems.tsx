@@ -170,8 +170,8 @@ const ActionItems = () => {
                 key={index}
                 className={`relative p-4 sm:p-6 lg:p-8 text-center transition-all duration-300 border-2 hover:shadow-2xl hover:scale-105 ${
                   tier.popular 
-                    ? 'border-primary shadow-xl bg-gradient-to-br from-primary/5 to-primary/10' 
-                    : 'border-border hover:border-primary/50 bg-card'
+                    ? 'border-accent shadow-xl bg-gradient-to-br from-accent/5 to-accent/10' 
+                    : 'border-border hover:border-accent/50 bg-card'
                 }`}
                 style={{ 
                   transitionDelay: pricingVisible ? `${index * 100}ms` : '0ms'
@@ -185,8 +185,8 @@ const ActionItems = () => {
                   </div>
                 )}
                 
-                <div className="w-16 h-16 mx-auto mb-6 rounded-xl flex items-center justify-center bg-blue-500 shadow-lg">
-                  <tier.icon className="w-8 h-8 text-yellow-400" />
+                <div className="w-16 h-16 mx-auto mb-6 rounded-xl flex items-center justify-center bg-accent shadow-lg">
+                  <tier.icon className="w-8 h-8 text-accent-foreground" />
                 </div>
                 
                 <h4 className="text-xl font-semibold mb-2 text-foreground">{tier.size}</h4>
