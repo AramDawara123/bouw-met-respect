@@ -289,6 +289,7 @@ const Webshop = () => {
           quantity
         };
       }).filter(Boolean);
+      
       if (!items.length) {
         toast({
           title: "Winkelwagen leeg",
@@ -298,6 +299,7 @@ const Webshop = () => {
         console.warn('[Webshop] No items to checkout');
         return;
       }
+      
       const missing = validateCustomer();
       if (missing.length) {
         toast({
@@ -307,6 +309,35 @@ const Webshop = () => {
         });
         return;
       }
+
+      // Check if total is 0 (free order due to discount)
+      if (finalTotal <= 0) {
+        console.log('[Webshop] Free order detected, redirecting to thank you page');
+        
+        // Still create the order in the backend for record keeping
+        const {
+          data,
+          error
+        } = await supabase.functions.invoke('create-shop-order', {
+          body: {
+            items,
+            customer,
+            discountCode: appliedDiscount?.code,
+            discountAmount: Math.max(discountAmount * 100, cartTotal * 100) // Ensure full discount
+          }
+        });
+        
+        if (error || (data as any)?.error) {
+          throw new Error(error?.message || (data as any)?.error || 'Afrekenen mislukt');
+        }
+
+        // Clear cart and redirect to thank you page
+        clearCart();
+        setAppliedDiscount(null);
+        window.location.href = '/order-thank-you';
+        return;
+      }
+
       const {
         data,
         error
@@ -330,16 +361,18 @@ const Webshop = () => {
         data,
         error
       });
+      
       if (error || (data as any)?.error) {
         throw new Error(error?.message || (data as any)?.error || 'Afrekenen mislukt');
       }
       
-      // Handle free orders
+      // Handle free orders from backend
       if ((data as any)?.success && (data as any)?.redirectUrl) {
         const redirectUrl = (data as any)?.redirectUrl;
         console.log('[Webshop] Free order created, redirecting to:', redirectUrl);
         // Clear cart after successful free order
         clearCart();
+        setAppliedDiscount(null);
         window.location.href = redirectUrl;
         return;
       }
