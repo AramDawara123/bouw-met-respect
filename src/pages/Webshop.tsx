@@ -406,9 +406,10 @@ const Webshop = () => {
       setIsCheckingOut(false);
     }
   }, [cart, products, customer, toast]);
-  return <div className="min-h-screen w-full">
+  return (
+    <div className="min-h-screen w-full">
       {/* Sticky Header */}
-      <header className="sticky top-0 z-50 bg-background/95 backdrop-blur-lg border-b border-border/50 shadow-sm">
+      <header className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-lg border-b border-border/50 shadow-sm">
         <div className="container mx-auto px-4 py-3">
           <div className="flex items-center justify-between">
             <Link to="/" className="flex items-center space-x-3 text-primary hover:text-primary/80 transition-colors duration-200 group">
@@ -689,8 +690,8 @@ const Webshop = () => {
         </div>
       </header>
 
-      {/* Hero Section */}
-      <section className="relative py-32 hero-gradient overflow-hidden">
+      {/* Hero Section - Add top padding to account for fixed header */}
+      <section className="relative py-32 pt-44 hero-gradient overflow-hidden">
         {/* Background decoration */}
         <div className="absolute inset-0 bg-[url('/src/assets/webshop-hero-bg.jpg')] bg-cover bg-center bg-no-repeat opacity-30"></div>
         <div className="absolute inset-0 bg-gradient-to-br from-background/80 via-background/60 to-background/80"></div>
@@ -994,6 +995,7 @@ const Webshop = () => {
       
       
       <Footer />
-    </div>;
+    </div>
+  );
 };
 export default Webshop;
