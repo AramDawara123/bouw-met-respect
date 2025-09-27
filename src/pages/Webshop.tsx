@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { ShoppingCart, Coffee, Edit3, ArrowLeft, Plus, Minus, X, ChevronDown, Tag, Check } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 import { useToast } from "@/hooks/use-toast";
 import Footer from "@/components/Footer";
@@ -17,6 +17,7 @@ import { RealTimeOrderSummary } from '@/components/RealTimeOrderSummary';
 import { MarqueeAnimation } from "@/components/ui/marquee-effect";
 import { useCart } from "@/hooks/useCart";
 const Webshop = () => {
+  const navigate = useNavigate();
   const [faqOpenIndex, setFaqOpenIndex] = useState<number | null>(null);
   const webshopFaqs = [{
     question: "Hoe lang duurt de levering?",
@@ -335,12 +336,35 @@ const Webshop = () => {
         appliedDiscount: appliedDiscount?.code
       });
 
-      // Check if total is 0 (free order due to discount) - handle immediately
+      // Handle free orders (€0.00) - still process as order but with special handling
       if (finalTotal <= 0) {
-        console.log('[Webshop] Free order detected (€0.00), redirecting directly to thank you page');
+        console.log('[Webshop] Free order detected (€0.00), processing as free order');
+        
+        // Create free order in database
+        const { data, error } = await supabase.functions.invoke('create-shop-order', {
+          body: {
+            items,
+            customer,
+            discountCode: appliedDiscount?.code || null,
+            total: 0,
+            isFreeOrder: true
+          }
+        });
+
+        if (error) {
+          console.error('[Webshop] Error creating free order:', error);
+          toast({
+            title: "Fout bij bestelling",
+            description: "Er ging iets mis. Probeer opnieuw.",
+            variant: "destructive"
+          });
+          return;
+        }
+
+        console.log('[Webshop] Free order created successfully:', data);
         clearCart();
         setAppliedDiscount(null);
-        window.location.href = '/order-thank-you';
+        navigate(`/order-thank-you?orderId=${data.orderId}`);
         return;
       }
 
