@@ -326,6 +326,15 @@ const Webshop = () => {
         appliedDiscount: appliedDiscount?.code
       });
 
+      // Check if total is 0 (free order due to discount) - handle immediately
+      if (finalTotal <= 0) {
+        console.log('[Webshop] Free order detected (€0.00), redirecting directly to thank you page');
+        clearCart();
+        setAppliedDiscount(null);
+        window.location.href = '/order-thank-you';
+        return;
+      }
+
       const {
         data,
         error
