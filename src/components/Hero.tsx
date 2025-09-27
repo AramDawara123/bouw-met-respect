@@ -99,9 +99,9 @@ const Hero = () => {
             {features.map((feature, index) => (
               <Card 
                 key={index} 
-                className={`p-6 md:p-8 text-center transition-all duration-500 border-0 bg-muted/30 ${
+                className={`p-6 md:p-8 text-center transition-all duration-500 border border-primary bg-muted/30 ${
                   featuresVisible ? 'opacity-100 transform translate-y-0' : 'opacity-0 transform translate-y-8'
-                }`} 
+                }`}
                 style={{
                   transitionDelay: featuresVisible ? `${index * 100}ms` : '0ms'
                 }}
