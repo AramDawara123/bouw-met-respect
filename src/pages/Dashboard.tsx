@@ -148,6 +148,24 @@ const Dashboard = () => {
   const [userIdInput, setUserIdInput] = useState('');
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [showCredentialsDialog, setShowCredentialsDialog] = useState(false);
+
+  // Generate readable order number from order ID
+  const generateOrderNumber = (orderId: string) => {
+    // Take the first 8 characters and format them nicely
+    const shortId = orderId.substring(0, 8).replace(/-/g, '');
+    // Convert to a mix of letters and numbers for readability
+    let orderNumber = '';
+    for (let i = 0; i < Math.min(8, shortId.length); i++) {
+      const char = shortId[i];
+      if (i % 2 === 0 && /[0-9]/.test(char)) {
+        // Convert numbers to letters occasionally for better readability
+        orderNumber += String.fromCharCode(65 + parseInt(char) % 26);
+      } else {
+        orderNumber += char.toUpperCase();
+      }
+    }
+    return `#${orderNumber}`;
+  };
   const [newEmail, setNewEmail] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [testingEmail, setTestingEmail] = useState(false);
@@ -1611,7 +1629,7 @@ Het Bouw met Respect team
                           <div className="flex items-center gap-2">
                             <Search className="w-4 h-4 text-muted-foreground" />
                             <Input 
-                              placeholder="Zoek op naam, email, adres of ordernummer..." 
+                              placeholder="Zoek op naam, email, adres of bestelnummer..." 
                               value={searchTerm} 
                               onChange={e => setSearchTerm(e.target.value)} 
                               className="w-80" 
@@ -1646,8 +1664,8 @@ Het Bouw met Respect team
                           </TableHeader>
                           <TableBody>
                             {filteredOrders.map(order => <TableRow key={order.id}>
-                                <TableCell className="font-medium font-mono text-xs">
-                                  {order.mollie_payment_id || order.id.substring(0, 8)}
+                                <TableCell className="font-medium font-mono text-sm">
+                                  {generateOrderNumber(order.id)}
                                 </TableCell>
                                 <TableCell className="font-medium">
                                   {order.customer_first_name} {order.customer_last_name}
