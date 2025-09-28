@@ -87,49 +87,15 @@ export const OrderNotifications = ({ onNewOrder }: OrderNotificationsProps) => {
             onNewOrder(newOrder);
           }
 
-          // Play "cha-ching" cash register sound like Shopify
+          // Play authentic Shopify order sound
           try {
-            // Create a better cash register sound using Web Audio API
-            const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
-            const oscillator1 = audioContext.createOscillator();
-            const oscillator2 = audioContext.createOscillator();
-            const gainNode = audioContext.createGain();
-            
-            // Configure the "cha" part (higher pitched)
-            oscillator1.type = 'sine';
-            oscillator1.frequency.setValueAtTime(800, audioContext.currentTime);
-            oscillator1.frequency.exponentialRampToValueAtTime(600, audioContext.currentTime + 0.1);
-            
-            // Configure the "ching" part (bell-like)
-            oscillator2.type = 'triangle';
-            oscillator2.frequency.setValueAtTime(1200, audioContext.currentTime + 0.1);
-            oscillator2.frequency.exponentialRampToValueAtTime(800, audioContext.currentTime + 0.3);
-            
-            // Volume envelope
-            gainNode.gain.setValueAtTime(0, audioContext.currentTime);
-            gainNode.gain.linearRampToValueAtTime(0.3, audioContext.currentTime + 0.01);
-            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
-            
-            // Connect nodes
-            oscillator1.connect(gainNode);
-            oscillator2.connect(gainNode);
-            gainNode.connect(audioContext.destination);
-            
-            // Play the sound
-            oscillator1.start(audioContext.currentTime);
-            oscillator1.stop(audioContext.currentTime + 0.15);
-            oscillator2.start(audioContext.currentTime + 0.1);
-            oscillator2.stop(audioContext.currentTime + 0.5);
-            
+            const audio = new Audio('/shopify-order-sound.mp3');
+            audio.volume = 0.6;
+            audio.play().catch(() => {
+              // Ignore audio play errors - browser might block autoplay
+            });
           } catch (error) {
-            // Fallback to simple beep if Web Audio API fails
-            try {
-              const audio = new Audio('data:audio/wav;base64,UklGRvIBAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YU4BAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmkaFJTI7N6VOAoVYrfp76JQDwxBp+DyvmkaEzi/ydyQOgkUYrjx7aJUEgpBod7wuWMcBjiR1/LMeSwFJHfH8N2QQAkUXrTp66hWFAlGn+DyvmkaFJTI7N6VOAoVYrfq7aJQDwxBp+DyvmkaEzi/ydyQOgkUYrjx7aJUEgpBod7wuWQcBjiR1/LMeSwE=');
-              audio.volume = 0.4;
-              audio.play().catch(() => {});
-            } catch (fallbackError) {
-              // Ignore all audio errors
-            }
+            // Ignore audio errors
           }
         }
       )
