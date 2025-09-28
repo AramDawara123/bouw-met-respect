@@ -9,7 +9,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Search, Users, CreditCard, Edit, Trash2, Download, Filter, Eye, Save, Home, ShoppingBag, Building2, Plus, Globe, Mail, Phone, Package, Printer, CheckCircle, Euro, Tag, Settings, UserPlus } from "lucide-react";
+import { Search, Users, CreditCard, Edit, Trash2, Download, Filter, Eye, Save, Home, ShoppingBag, Building2, Plus, Globe, Mail, Phone, Package, Printer, CheckCircle, Euro, Tag, Settings, UserPlus, LogOut } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { supabaseAdmin } from "@/integrations/supabase/admin-client";
 import { useToast } from "@/hooks/use-toast";
@@ -170,6 +170,26 @@ const Dashboard = () => {
   const {
     toast
   } = useToast();
+
+  const handleLogout = async () => {
+    try {
+      await supabase.auth.signOut();
+      toast({
+        title: "Uitgelogd",
+        description: "Je bent succesvol uitgelogd"
+      });
+      // Redirect to home page
+      window.location.href = '/';
+    } catch (error) {
+      console.error('Logout error:', error);
+      toast({
+        title: "Fout",
+        description: "Er ging iets mis bij het uitloggen",
+        variant: "destructive"
+      });
+    }
+  };
+
   useEffect(() => {
     checkAuthAndFetch();
   }, []);
@@ -1333,8 +1353,10 @@ Het Bouw met Respect team
                     <Download className="w-4 h-4" />
                     Export CSV
                   </Button>
-                  
-                  
+                  <Button onClick={handleLogout} variant="outline" className="flex items-center gap-2">
+                    <LogOut className="w-4 h-4" />
+                    Uitloggen
+                  </Button>
                 </div>
               </div>
             </div>
