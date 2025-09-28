@@ -87,9 +87,9 @@ export const OrderNotifications = ({ onNewOrder }: OrderNotificationsProps) => {
             onNewOrder(newOrder);
           }
 
-          // Play authentic Shopify order sound
+          // Play custom order sound
           try {
-            const audio = new Audio('/shopify-order-sound.mp3');
+            const audio = new Audio('/order-sound.mp4');
             audio.volume = 0.6;
             audio.play().catch(() => {
               // Ignore audio play errors - browser might block autoplay
