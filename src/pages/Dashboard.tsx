@@ -124,7 +124,11 @@ const Dashboard = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [partners, setPartners] = useState<PartnerAccount[]>([]);
   const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState("");
+  const [membershipSearchTerm, setMembershipSearchTerm] = useState("");
+  const [orderSearchTerm, setOrderSearchTerm] = useState("");
+  const [profileSearchTerm, setProfileSearchTerm] = useState("");
+  const [productSearchTerm, setProductSearchTerm] = useState("");
+  const [partnerSearchTerm, setPartnerSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [typeFilter, setTypeFilter] = useState("all");
   const [orderStatusFilter, setOrderStatusFilter] = useState("all");
@@ -601,7 +605,7 @@ const Dashboard = () => {
     handleProfileFormClose();
   };
   const filteredMemberships = memberships.filter(membership => {
-    const matchesSearch = membership.first_name.toLowerCase().includes(searchTerm.toLowerCase()) || membership.last_name.toLowerCase().includes(searchTerm.toLowerCase()) || membership.email.toLowerCase().includes(searchTerm.toLowerCase()) || membership.company?.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesSearch = membership.first_name.toLowerCase().includes(membershipSearchTerm.toLowerCase()) || membership.last_name.toLowerCase().includes(membershipSearchTerm.toLowerCase()) || membership.email.toLowerCase().includes(membershipSearchTerm.toLowerCase()) || membership.company?.toLowerCase().includes(membershipSearchTerm.toLowerCase());
     const matchesStatus = statusFilter === "all" || membership.payment_status === statusFilter;
     const matchesType = typeFilter === "all" || membership.membership_type === typeFilter;
     return matchesSearch && matchesStatus && matchesType;
@@ -1306,11 +1310,11 @@ Het Bouw met Respect team
     const orderId = order.id.toLowerCase();
     const mollieId = (order.mollie_payment_id || '').toLowerCase();
     
-    const matchesSearch = name.includes(searchTerm.toLowerCase()) || 
-                         email.includes(searchTerm.toLowerCase()) || 
-                         address.includes(searchTerm.toLowerCase()) ||
-                         orderId.includes(searchTerm.toLowerCase()) ||
-                         mollieId.includes(searchTerm.toLowerCase());
+    const matchesSearch = name.includes(orderSearchTerm.toLowerCase()) || 
+                         email.includes(orderSearchTerm.toLowerCase()) || 
+                         address.includes(orderSearchTerm.toLowerCase()) ||
+                         orderId.includes(orderSearchTerm.toLowerCase()) ||
+                         mollieId.includes(orderSearchTerm.toLowerCase());
     const matchesStatus = orderStatusFilter === 'all' || order.payment_status === orderStatusFilter;
     return matchesSearch && matchesStatus;
   });
@@ -1491,7 +1495,7 @@ Het Bouw met Respect team
                       <div className="flex gap-2">
                         <div className="flex items-center gap-2">
                           <Search className="w-4 h-4 text-muted-foreground" />
-                          <Input placeholder="Zoek lidmaatschappen..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} className="w-64" />
+                          <Input placeholder="Zoek lidmaatschappen..." value={membershipSearchTerm} onChange={e => setMembershipSearchTerm(e.target.value)} className="w-64" />
                         </div>
                         <Select value={statusFilter} onValueChange={setStatusFilter}>
                           <SelectTrigger className="w-32">
@@ -1662,12 +1666,12 @@ Het Bouw met Respect team
                         <div className="flex gap-2">
                           <div className="flex items-center gap-2">
                             <Search className="w-4 h-4 text-muted-foreground" />
-                            <Input 
-                              placeholder="Zoek op naam, email, adres of bestelnummer..." 
-                              value={searchTerm} 
-                              onChange={e => setSearchTerm(e.target.value)} 
-                              className="w-80" 
-                            />
+                             <Input 
+                               placeholder="Zoek op naam, email, adres of bestelnummer..." 
+                               value={orderSearchTerm} 
+                               onChange={e => setOrderSearchTerm(e.target.value)} 
+                               className="w-80" 
+                             />
                           </div>
                           <Select value={orderStatusFilter} onValueChange={setOrderStatusFilter}>
                             <SelectTrigger className="w-32">
