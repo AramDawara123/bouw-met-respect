@@ -329,37 +329,6 @@ const Webshop = () => {
         appliedDiscount: appliedDiscount?.code
       });
 
-      // Handle free orders (€0.00) - still process as order but with special handling
-      if (finalTotal <= 0) {
-        console.log('[Webshop] Free order detected (€0.00), processing as free order');
-        
-        // Create free order in database
-        const { data, error } = await supabase.functions.invoke('create-shop-order', {
-          body: {
-            items,
-            customer,
-            discountCode: appliedDiscount?.code || null,
-            discountAmount: discountAmount // Pass discount amount in cents
-          }
-        });
-
-        if (error) {
-          console.error('[Webshop] Error creating free order:', error);
-          toast({
-            title: "Fout bij bestelling",
-            description: "Er ging iets mis. Probeer opnieuw.",
-            variant: "destructive"
-          });
-          return;
-        }
-
-        console.log('[Webshop] Free order created successfully:', data);
-        clearCart();
-        setAppliedDiscount(null);
-        navigate(`/order-thank-you?orderId=${data.orderId}`);
-        return;
-      }
-
       const {
         data,
         error
@@ -466,7 +435,80 @@ const Webshop = () => {
     } finally {
       setIsCheckingOut(false);
     }
-  }, [cart, products, customer, toast]);
+  }, [cart, cartTotal, customer, discountAmount, finalTotal, appliedDiscount, products, toast, clearCart]);
+
+  const processFreeOrder = useCallback(async () => {
+    try {
+      console.log('[Webshop] Processing free order');
+      setIsCheckingOut(true);
+      
+      const items = Object.entries(cart).map(([productId, quantity]) => {
+        const product = products.find(p => p.id === productId);
+        if (!product) return null;
+        return {
+          id: product.id,
+          name: product.name,
+          price: product.price,
+          quantity
+        };
+      }).filter(Boolean);
+      
+      if (!items.length) {
+        toast({
+          title: "Winkelwagen leeg",
+          description: "Voeg eerst producten toe.",
+          variant: "destructive"
+        });
+        return;
+      }
+      
+      const missing = validateCustomer();
+      if (missing.length) {
+        toast({
+          title: "Gegevens incompleet",
+          description: `Vul nog in: ${missing.join(', ')}`,
+          variant: "destructive"
+        });
+        return;
+      }
+
+      // Create free order in database
+      const { data, error } = await supabase.functions.invoke('create-shop-order', {
+        body: {
+          items,
+          customer,
+          discountCode: appliedDiscount?.code || null,
+          discountAmount: discountAmount
+        }
+      });
+
+      if (error) {
+        console.error('[Webshop] Error creating free order:', error);
+        toast({
+          title: "Fout bij bestelling",
+          description: "Er ging iets mis. Probeer opnieuw.",
+          variant: "destructive"
+        });
+        return;
+      }
+
+      console.log('[Webshop] Free order created successfully:', data);
+      clearCart();
+      setAppliedDiscount(null);
+      setIsCartOpen(false);
+      navigate(`/order-thank-you?orderId=${data.orderId}`);
+    } catch (e: any) {
+      toast({
+        title: "Fout bij gratis bestelling",
+        description: e.message || String(e),
+        variant: "destructive"
+      });
+      console.error('[Webshop] Free order error', e);
+    } finally {
+      setIsCheckingOut(false);
+    }
+  }, [cart, customer, discountAmount, appliedDiscount, products, toast, clearCart, navigate]);
+
   return (
     <div className="min-h-screen w-full">
       {/* Sticky Header */}
@@ -704,16 +746,27 @@ const Webshop = () => {
                         discountAmount={discountAmount}
                         appliedDiscount={appliedDiscount}
                       />
-                      <Button 
-                        className="w-full mt-4 h-12 text-base font-semibold" 
-                        size="lg" 
-                        onClick={checkout} 
-                        disabled={isCheckingOut}
-                      >
-                        <ShoppingCart className="w-4 h-4 mr-2" />
-                        {isCheckingOut ? 'Bezig met afrekenen...' : 
-                         finalTotal <= 0 ? 'Gratis bestelling verwerken...' : 'Naar afrekenen'}
-                      </Button>
+                      {finalTotal <= 0 ? (
+                        <Button 
+                          className="w-full mt-4 h-12 text-base font-semibold bg-green-600 hover:bg-green-700 text-white" 
+                          size="lg" 
+                          onClick={processFreeOrder} 
+                          disabled={isCheckingOut}
+                        >
+                          <ShoppingCart className="w-4 h-4 mr-2" />
+                          {isCheckingOut ? 'Bezig met verwerken...' : 'Gratis bestelling verwerken'}
+                        </Button>
+                      ) : (
+                        <Button 
+                          className="w-full mt-4 h-12 text-base font-semibold" 
+                          size="lg" 
+                          onClick={checkout} 
+                          disabled={isCheckingOut}
+                        >
+                          <ShoppingCart className="w-4 h-4 mr-2" />
+                          {isCheckingOut ? 'Bezig met afrekenen...' : 'Naar afrekenen'}
+                        </Button>
+                      )}
                     </div>
                   )}
                 </SheetContent>
