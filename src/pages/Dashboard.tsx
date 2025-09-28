@@ -9,7 +9,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Search, Users, CreditCard, Edit, Trash2, Download, Filter, Eye, Save, Home, ShoppingBag, Building2, Plus, Globe, Mail, Phone, Package, Printer, CheckCircle, Euro, Tag, Settings, UserPlus, LogOut } from "lucide-react";
+import { Search, Users, CreditCard, Edit, Trash2, Download, Filter, Eye, Save, Home, ShoppingBag, Building2, Plus, Globe, Mail, Phone, Package, Printer, CheckCircle, Euro, Tag, Settings, UserPlus, LogOut, Bell } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { supabaseAdmin } from "@/integrations/supabase/admin-client";
 import { useToast } from "@/hooks/use-toast";
@@ -26,6 +26,7 @@ import ActionItemsPricingManager from "@/components/ActionItemsPricingManager";
 import PartnerPricingTiersManager from "@/components/PartnerPricingTiersManager";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
+import { OrderNotifications } from "@/components/OrderNotifications";
 interface Membership {
   id: string;
   first_name: string;
@@ -124,6 +125,7 @@ const Dashboard = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [partners, setPartners] = useState<PartnerAccount[]>([]);
   const [loading, setLoading] = useState(true);
+  const [newOrderCount, setNewOrderCount] = useState(0);
   const [membershipSearchTerm, setMembershipSearchTerm] = useState("");
   const [orderSearchTerm, setOrderSearchTerm] = useState("");
   const [profileSearchTerm, setProfileSearchTerm] = useState("");
@@ -154,6 +156,21 @@ const Dashboard = () => {
   const [showCredentialsDialog, setShowCredentialsDialog] = useState(false);
 
   // Generate readable order number from order ID or mollie payment ID
+  const handleNewOrder = (order: any) => {
+    // Increment new order count
+    setNewOrderCount(prev => prev + 1);
+    // Refresh orders to get the latest data
+    fetchOrders();
+  };
+
+  // Reset new order count when viewing orders
+  const handleViewModeChange = (mode: string) => {
+    if (mode === 'orders') {
+      setNewOrderCount(0);
+    }
+    setViewMode(mode as 'memberships' | 'orders' | 'profiles' | 'products' | 'partners' | 'partner-pricing' | 'lidmaatschappen-prijzen' | 'onze-partners-prijzen' | 'discounts' | 'qrcode');
+  };
+
   const generateOrderNumber = (order: Order) => {
     // Use mollie_payment_id if available (for consistency with emails), otherwise use database id
     const orderId = order.mollie_payment_id || order.id;
@@ -1346,8 +1363,9 @@ Het Bouw met Respect team
       </div>;
   }
   return <SidebarProvider>
+      <OrderNotifications onNewOrder={handleNewOrder} />
       <div className="min-h-screen bg-gradient-to-br from-background via-primary/5 to-secondary/5 flex w-full">
-        <AppSidebar viewMode={viewMode} onViewModeChange={mode => setViewMode(mode as 'memberships' | 'orders' | 'profiles' | 'products' | 'partners' | 'partner-pricing' | 'lidmaatschappen-prijzen' | 'onze-partners-prijzen' | 'discounts' | 'qrcode')} />
+        <AppSidebar viewMode={viewMode} onViewModeChange={handleViewModeChange} newOrderCount={newOrderCount} />
         
         <main className="flex-1 overflow-auto">
           {/* Header */}
