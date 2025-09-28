@@ -195,37 +195,47 @@ const Dashboard = () => {
   }, []);
   const checkAuthAndFetch = async () => {
     try {
-      const {
-        data: {
-          user
-        }
-      } = await supabase.auth.getUser();
-      // If no user, create a mock user for testing
+      const { data: { user } } = await supabase.auth.getUser();
+      
       if (!user) {
-        console.log('No user found, using test mode');
-        const mockUser = {
-          id: 'test-user-id',
-          email: 'info@bouwmetrespect.nl',
-          user_metadata: {
-            first_name: 'Admin',
-            last_name: 'User'
-          }
-        };
-        setUser(mockUser as any);
-        setIsAdmin(true);
-        toast({
-          title: "Niet ingelogd",
-          description: "Je moet inloggen om alles te kunnen bewerken. Klik op 'Partner Login' hierboven.",
-          duration: 8000
-        });
-        await Promise.all([fetchMemberships(), fetchOrders(), fetchProfiles(), fetchProducts(), fetchPartners()]);
+        console.log('No user found, redirecting to login');
         setLoading(false);
         return;
       }
+
+      console.log('User logged in:', user.email);
       setUser(user);
 
-      // Allow any logged in user to access dashboard
-      console.log('User logged in:', user.email);
+      // Check if user is admin by checking profiles table
+      const { data: profile, error: profileError } = await supabase
+        .from('profiles')
+        .select('is_admin, role')
+        .eq('user_id', user.id)
+        .single();
+
+      if (profileError) {
+        console.error('Error fetching profile:', profileError);
+        toast({
+          title: "Toegang geweigerd",
+          description: "Kon gebruikersprofiel niet ophalen",
+          variant: "destructive"
+        });
+        setLoading(false);
+        return;
+      }
+
+      // Only allow admin users
+      if (!profile?.is_admin && profile?.role !== 'admin') {
+        console.log('User is not admin, access denied');
+        toast({
+          title: "Toegang geweigerd",
+          description: "Je hebt geen admin rechten voor dit dashboard",
+          variant: "destructive"
+        });
+        setLoading(false);
+        return;
+      }
+
       setIsAdmin(true);
       await Promise.all([fetchMemberships(), fetchOrders(), fetchProfiles(), fetchProducts(), fetchPartners()]);
     } catch (error) {
@@ -1310,17 +1320,22 @@ Het Bouw met Respect team
       </div>;
   }
   if (!user || !isAdmin) {
-    return <div className="min-h-screen flex items-center justify-center">
-        <Card className="w-full max-w-md">
-          <CardContent className="pt-6">
+    return <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-primary/5 to-secondary/5">
+        <Card className="w-full max-w-md mx-4">
+          <CardContent className="p-8">
             <div className="text-center">
               <h2 className="text-2xl font-bold mb-4">Dashboard Toegang</h2>
               <p className="text-muted-foreground mb-4">
                 Je moet ingelogd zijn als admin om het dashboard te gebruiken.
               </p>
-              <Link to="/">
-                <Button>Terug naar Home</Button>
-              </Link>
+              <div className="space-y-3">
+                <Link to="/partner-auth">
+                  <Button className="w-full">Inloggen</Button>
+                </Link>
+                <Link to="/">
+                  <Button variant="outline" className="w-full">Terug naar Home</Button>
+                </Link>
+              </div>
             </div>
           </CardContent>
         </Card>
