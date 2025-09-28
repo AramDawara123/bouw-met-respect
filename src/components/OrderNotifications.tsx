@@ -46,33 +46,40 @@ export const OrderNotifications = ({ onNewOrder }: OrderNotificationsProps) => {
         (payload) => {
           const newOrder = payload.new as Order;
           
-          // Show notification toast
+          // Show shopify-style money notification toast
           toast({
-            title: "🛒 Nieuwe Bestelling!",
+            title: "💰 Cha-ching! Nieuwe Bestelling!",
             description: (
-              <div className="flex flex-col gap-1">
-                <div className="flex items-center gap-2">
-                  <Bell className="w-4 h-4" />
-                  <span className="font-medium">
-                    Bestelling #{generateOrderNumber(newOrder)}
-                  </span>
-                </div>
-                <div className="text-sm text-muted-foreground">
-                  {newOrder.customer_first_name && newOrder.customer_last_name
-                    ? `${newOrder.customer_first_name} ${newOrder.customer_last_name}`
-                    : newOrder.customer_email || 'Onbekende klant'
-                  }
-                </div>
-                <div className="flex items-center gap-1 text-sm font-medium text-green-600">
-                  <Euro className="w-3 h-3" />
-                  {formatPrice(newOrder.total)}
-                </div>
-                <div className="text-xs text-muted-foreground">
-                  {Array.isArray(newOrder.items) ? newOrder.items.length : 0} items
+              <div className="flex flex-col gap-2 p-1">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                      <Euro className="w-4 h-4 text-green-600" />
+                    </div>
+                    <div>
+                      <div className="font-semibold text-sm">
+                        Bestelling #{generateOrderNumber(newOrder)}
+                      </div>
+                      <div className="text-xs text-muted-foreground">
+                        {newOrder.customer_first_name && newOrder.customer_last_name
+                          ? `${newOrder.customer_first_name} ${newOrder.customer_last_name}`
+                          : newOrder.customer_email || 'Onbekende klant'
+                        }
+                      </div>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <div className="text-lg font-bold text-green-600">
+                      {formatPrice(newOrder.total)}
+                    </div>
+                    <div className="text-xs text-muted-foreground">
+                      {Array.isArray(newOrder.items) ? newOrder.items.length : 0} items
+                    </div>
+                  </div>
                 </div>
               </div>
             ),
-            duration: 8000,
+            duration: 10000,
           });
 
           // Call callback if provided
@@ -80,15 +87,49 @@ export const OrderNotifications = ({ onNewOrder }: OrderNotificationsProps) => {
             onNewOrder(newOrder);
           }
 
-          // Play notification sound (optional)
+          // Play "cha-ching" cash register sound like Shopify
           try {
-            const audio = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmkaFJTI7N6VOAoVYrfp76JQDwxBp+DyvmkaEzi/ydyQOAkUYrjw7qFUEgpBod7wuWMcBjiR1/LMeSwGJHfH8N2QQAoUXrTp66hWFAlGn+DyvmkaFJTI7N6VOAoVYrfq7aJQDwxBp+DyvmkaEzi/ydyQOgkUYrjw7qJUEgpBod7wuWMcBjiR1/LMeSwFJHfH8N2QQAkUXrTp66hWFAlGn+DyvmkaFJTI7N6VOAoVYrfq7aJQDwxBp+DyvmkaEzi/ydyQOgkUYrjx7aJUEgpBod7wuWMcBjiR1/LMeSwFJHfH8N2QQAkUXrTp66hWFAlGn+DyvmkaFJTI7N6VOAoVYrfq7aJQDwxBp+DyvmkaEzi/ydyQOgkUYrjx7aJUEgpBod7wuWMcBjiR1/LMeSwFJHfH8N2QQAkUXrTp66hWFAlGn+DyvmkaFJTI7N6VOAoVYrfq7aJQDwxBp+DyvmkaEzi/ydyQOgkUYrjx7aJUEgpBod7wuWQcBjiR1/LMeSwFJHfH8N2QQAkUXrTp66hWFAlGn+DyvmkaFJTI7N6VOAoVYrfq7aJQDwxBp+DyvmkaEzi/ydyQOgkUYrjx7aJUEgpBod7wuWQcBjiR1/LMeSwFJHfH8N2QQAkUXrTp66hWFAlGn+DyvmkaFJTI7N6VOAoVYrfq7aJQDwxBp+DyvmkaEzi/ydyQOgkUYrjx7aJUEgpBod7wuWQcBjiR1/LMeSwFJHfH8N2QQAkUXrTp66hWFAlGn+DyvmkaFJTI7N6VOAoVYrfq7aJQDwxBp+DyvmkaEzi/ydyQOgkUYrjx7aJUEgpBod7wuWQcBjiR1/LMeSwFJHfH8N2QQAkUXrTp66hWFAlGn+DyvmkaFJTI7N6VOAoVYrfq7aJQDwxBp+DyvmkaEzi/ydyQOgkUYrjx7aJUEgpBod7wuWQcBjiR1/LMeSwFJHfH8N2QQAkUXrTp66hWFAlGn+DyvmkaFJTI7N6VOAoVYrfq7aJQDwxBp+DyvmkaEzi/ydyQOgkUYrjx7aJUEgpBod7wuWQcBjiR1/LMeSw=');
-            audio.volume = 0.3;
-            audio.play().catch(() => {
-              // Ignore audio play errors
-            });
+            // Create a better cash register sound using Web Audio API
+            const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+            const oscillator1 = audioContext.createOscillator();
+            const oscillator2 = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            // Configure the "cha" part (higher pitched)
+            oscillator1.type = 'sine';
+            oscillator1.frequency.setValueAtTime(800, audioContext.currentTime);
+            oscillator1.frequency.exponentialRampToValueAtTime(600, audioContext.currentTime + 0.1);
+            
+            // Configure the "ching" part (bell-like)
+            oscillator2.type = 'triangle';
+            oscillator2.frequency.setValueAtTime(1200, audioContext.currentTime + 0.1);
+            oscillator2.frequency.exponentialRampToValueAtTime(800, audioContext.currentTime + 0.3);
+            
+            // Volume envelope
+            gainNode.gain.setValueAtTime(0, audioContext.currentTime);
+            gainNode.gain.linearRampToValueAtTime(0.3, audioContext.currentTime + 0.01);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+            
+            // Connect nodes
+            oscillator1.connect(gainNode);
+            oscillator2.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            // Play the sound
+            oscillator1.start(audioContext.currentTime);
+            oscillator1.stop(audioContext.currentTime + 0.15);
+            oscillator2.start(audioContext.currentTime + 0.1);
+            oscillator2.stop(audioContext.currentTime + 0.5);
+            
           } catch (error) {
-            // Ignore audio errors
+            // Fallback to simple beep if Web Audio API fails
+            try {
+              const audio = new Audio('data:audio/wav;base64,UklGRvIBAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YU4BAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmkaFJTI7N6VOAoVYrfp76JQDwxBp+DyvmkaEzi/ydyQOgkUYrjx7aJUEgpBod7wuWMcBjiR1/LMeSwFJHfH8N2QQAkUXrTp66hWFAlGn+DyvmkaFJTI7N6VOAoVYrfq7aJQDwxBp+DyvmkaEzi/ydyQOgkUYrjx7aJUEgpBod7wuWQcBjiR1/LMeSwE=');
+              audio.volume = 0.4;
+              audio.play().catch(() => {});
+            } catch (fallbackError) {
+              // Ignore all audio errors
+            }
           }
         }
       )
