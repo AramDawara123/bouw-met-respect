@@ -70,7 +70,7 @@ const Mission = () => {
           {helpMethods.map((method, index) => (
             <Card 
               key={index} 
-              className={`p-8 transition-all duration-500 border-2 border-primary bg-muted/30 ${
+              className={`p-8 transition-all duration-500 border-2 border-primary bg-white ${
                 cardsVisible 
                   ? 'opacity-100 transform translate-y-0' 
                   : 'opacity-0 transform translate-y-12'
