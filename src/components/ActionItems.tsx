@@ -140,7 +140,7 @@ const ActionItems = () => {
         {/* Pricing Section */}
         <div ref={pricingRef} className={`mb-20 transition-all duration-500 ${pricingVisible ? 'opacity-100 transform translate-y-0' : 'opacity-0 transform translate-y-8'}`}>
           <div className="text-center mb-12">
-            <h3 className="text-3xl font-bold mb-4 text-foreground">Jaarlijkse bijdrage</h3>
+            <h3 className="text-3xl font-bold mb-4 text-foreground">Jaarlijkse Lidmaatschap</h3>
             <p className="text-muted-foreground">Eenvoudig via automatisch incasso met herinneringen</p>
           </div>
           
