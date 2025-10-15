@@ -34,12 +34,19 @@ export const AnalyticsDashboard = () => {
       startDate.setDate(startDate.getDate() - 7);
 
       const response = await fetch(
-        `https://pkvayugxzgkoipclcpli.supabase.co/functions/v1/get-analytics?startdate=${startDate.toISOString().split('T')[0]}&enddate=${endDate.toISOString().split('T')[0]}&granularity=daily`
+        `https://pkvayugxzgkoipclcpli.supabase.co/functions/v1/get-analytics?startdate=${startDate.toISOString().split('T')[0]}&enddate=${endDate.toISOString().split('T')[0]}&granularity=daily`,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
       );
       
       if (response.ok) {
         const data = await response.json();
         setAnalytics(data);
+      } else {
+        console.error("Analytics fetch failed:", response.status, await response.text());
       }
     } catch (error) {
       console.error("Error fetching analytics:", error);
