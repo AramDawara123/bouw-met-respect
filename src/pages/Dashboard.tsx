@@ -27,6 +27,7 @@ import PartnerPricingTiersManager from "@/components/PartnerPricingTiersManager"
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
 import { OrderNotifications } from "@/components/OrderNotifications";
+import { AnalyticsDashboard } from "@/components/Statistics/AnalyticsDashboard";
 interface Membership {
   id: string;
   first_name: string;
@@ -144,7 +145,7 @@ const Dashboard = () => {
   const [isEditingProduct, setIsEditingProduct] = useState(false);
   const [user, setUser] = useState(null);
   const [isAdmin, setIsAdmin] = useState(false);
-  const [viewMode, setViewMode] = useState<'memberships' | 'orders' | 'profiles' | 'products' | 'partners' | 'partner-pricing' | 'lidmaatschappen-prijzen' | 'onze-partners-prijzen' | 'discounts' | 'qrcode'>("memberships");
+  const [viewMode, setViewMode] = useState<'memberships' | 'orders' | 'profiles' | 'products' | 'partners' | 'partner-pricing' | 'lidmaatschappen-prijzen' | 'onze-partners-prijzen' | 'discounts' | 'qrcode' | 'statistics'>("memberships");
   const [showProfileForm, setShowProfileForm] = useState(false);
   const [editingProfile, setEditingProfile] = useState<CompanyProfile | null>(null);
   const [editingPartner, setEditingPartner] = useState<PartnerAccount | null>(null);
@@ -1948,6 +1949,10 @@ Het Bouw met Respect team
                   <QRCodeGenerator />
                   <QRCodeManager />
                 </div>
+              </TabsContent>
+
+              <TabsContent value="statistics">
+                <AnalyticsDashboard />
               </TabsContent>
             </Tabs>
           </div>

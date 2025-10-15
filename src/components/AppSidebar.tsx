@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Users, Building2, ShoppingBag, Package, Tag, Euro, Settings, Home, QrCode, UserPlus } from "lucide-react";
+import { Users, Building2, ShoppingBag, Package, Tag, Euro, Settings, Home, QrCode, UserPlus, BarChart3 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarHeader, useSidebar } from "@/components/ui/sidebar";
 
@@ -10,6 +10,12 @@ interface AppSidebarProps {
 }
 
 const navigationItems = {
+  "Overzicht": [{
+    key: "statistics",
+    title: "Statistieken",
+    icon: BarChart3,
+    description: "Real-time bezoekersstatistieken"
+  }],
   "Gebruikers & Data": [{
     key: "memberships",
     title: "Lidmaatschappen",
