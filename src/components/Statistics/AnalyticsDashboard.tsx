@@ -1,8 +1,11 @@
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
-import { Eye, MousePointer, Clock, TrendingUp, Globe } from "lucide-react";
+import { Eye, MousePointer, Clock, TrendingUp, Globe, RefreshCw } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 
 interface AnalyticsData {
   visitors: { total: number; daily: Array<{ date: string; value: number }> };
@@ -21,17 +24,49 @@ interface AnalyticsData {
 export const AnalyticsDashboard = () => {
   const [analytics, setAnalytics] = useState<AnalyticsData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [liveVisitors, setLiveVisitors] = useState(0);
+  const [timePeriod, setTimePeriod] = useState("7");
+  const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
     fetchAnalytics();
+    
+    // Set up real-time visitor tracking
+    const channel = supabase.channel('analytics-visitors');
+    
+    channel
+      .on('presence', { event: 'sync' }, () => {
+        const state = channel.presenceState();
+        const count = Object.keys(state).length;
+        setLiveVisitors(count);
+      })
+      .on('presence', { event: 'join' }, ({ key, newPresences }) => {
+        console.log('New visitor joined:', key);
+      })
+      .on('presence', { event: 'leave' }, ({ key, leftPresences }) => {
+        console.log('Visitor left:', key);
+      })
+      .subscribe(async (status) => {
+        if (status === 'SUBSCRIBED') {
+          // Track this session as a visitor
+          await channel.track({
+            user_id: Math.random().toString(36).substring(7),
+            online_at: new Date().toISOString(),
+          });
+        }
+      });
+
+    return () => {
+      channel.unsubscribe();
+    };
   }, []);
 
   const fetchAnalytics = async () => {
     try {
-      // Get last 7 days of data
+      setRefreshing(true);
       const endDate = new Date();
       const startDate = new Date();
-      startDate.setDate(startDate.getDate() - 7);
+      startDate.setDate(startDate.getDate() - parseInt(timePeriod));
 
       const response = await fetch(
         `https://pkvayugxzgkoipclcpli.supabase.co/functions/v1/get-analytics?startdate=${startDate.toISOString().split('T')[0]}&enddate=${endDate.toISOString().split('T')[0]}&granularity=daily`,
@@ -52,8 +87,23 @@ export const AnalyticsDashboard = () => {
       console.error("Error fetching analytics:", error);
     } finally {
       setLoading(false);
+      setRefreshing(false);
     }
   };
+
+  const handleRefresh = () => {
+    fetchAnalytics();
+  };
+
+  const handleTimePeriodChange = (value: string) => {
+    setTimePeriod(value);
+  };
+
+  useEffect(() => {
+    if (!loading) {
+      fetchAnalytics();
+    }
+  }, [timePeriod]);
 
   if (loading) {
     return <div className="flex items-center justify-center h-64">Loading analytics...</div>;
@@ -71,6 +121,44 @@ export const AnalyticsDashboard = () => {
 
   return (
     <div className="space-y-6">
+      {/* Header with Live Visitors and Controls */}
+      <div className="flex items-center justify-between bg-card border border-border rounded-lg px-4 py-3">
+        <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2">
+            <div className="relative">
+              <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+              <div className="absolute inset-0 w-2 h-2 bg-green-500 rounded-full animate-ping" />
+            </div>
+            <span className="text-sm font-medium text-foreground">
+              {liveVisitors} current visitor{liveVisitors !== 1 ? 's' : ''}
+            </span>
+          </div>
+        </div>
+        
+        <div className="flex items-center gap-3">
+          <Select value={timePeriod} onValueChange={handleTimePeriodChange}>
+            <SelectTrigger className="w-[140px]">
+              <SelectValue placeholder="Select period" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="1">Last 24 hours</SelectItem>
+              <SelectItem value="7">Last 7 days</SelectItem>
+              <SelectItem value="30">Last 30 days</SelectItem>
+              <SelectItem value="90">Last 90 days</SelectItem>
+            </SelectContent>
+          </Select>
+          
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={handleRefresh}
+            disabled={refreshing}
+          >
+            <RefreshCw className={`w-4 h-4 ${refreshing ? 'animate-spin' : ''}`} />
+          </Button>
+        </div>
+      </div>
+
       {/* Top Metrics Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
         <Card className="bg-card border-border">
