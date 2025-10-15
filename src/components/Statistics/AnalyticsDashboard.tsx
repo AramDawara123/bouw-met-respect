@@ -31,32 +31,70 @@ export const AnalyticsDashboard = () => {
   useEffect(() => {
     fetchAnalytics();
     
+    // Get or create a unique session ID
+    let sessionId = sessionStorage.getItem('visitor_session_id');
+    if (!sessionId) {
+      sessionId = `visitor_${Date.now()}_${Math.random().toString(36).substring(7)}`;
+      sessionStorage.setItem('visitor_session_id', sessionId);
+    }
+    
     // Set up real-time visitor tracking
-    const channel = supabase.channel('analytics-visitors');
+    const channel = supabase.channel('analytics-visitors', {
+      config: {
+        presence: {
+          key: sessionId,
+        },
+      },
+    });
     
     channel
       .on('presence', { event: 'sync' }, () => {
         const state = channel.presenceState();
         const count = Object.keys(state).length;
+        console.log('Presence sync - Current visitors:', count, state);
         setLiveVisitors(count);
       })
       .on('presence', { event: 'join' }, ({ key, newPresences }) => {
-        console.log('New visitor joined:', key);
+        console.log('New visitor joined:', key, newPresences);
+        const state = channel.presenceState();
+        setLiveVisitors(Object.keys(state).length);
       })
       .on('presence', { event: 'leave' }, ({ key, leftPresences }) => {
-        console.log('Visitor left:', key);
+        console.log('Visitor left:', key, leftPresences);
+        const state = channel.presenceState();
+        setLiveVisitors(Object.keys(state).length);
       })
       .subscribe(async (status) => {
+        console.log('Channel subscription status:', status);
         if (status === 'SUBSCRIBED') {
           // Track this session as a visitor
-          await channel.track({
-            user_id: Math.random().toString(36).substring(7),
+          const trackStatus = await channel.track({
+            session_id: sessionId,
             online_at: new Date().toISOString(),
+            page: window.location.pathname,
           });
+          console.log('Tracking status:', trackStatus);
         }
       });
 
+    // Handle page visibility change
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        channel.untrack();
+      } else {
+        channel.track({
+          session_id: sessionId,
+          online_at: new Date().toISOString(),
+          page: window.location.pathname,
+        });
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
     return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      channel.untrack();
       channel.unsubscribe();
     };
   }, []);
