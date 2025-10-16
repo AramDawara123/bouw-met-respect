@@ -7,6 +7,7 @@ import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import ErrorBoundary from "./components/ErrorBoundary";
 import Navbar from "./components/Navbar";
 import NewsletterPopup from "./components/NewsletterPopup";
+import { useAnalyticsTracking } from "./hooks/useAnalyticsTracking";
 import Index from "./pages/Index";
 import AlgemeneVoorwaarden from "./pages/AlgemeneVoorwaarden";
 import Webshop from "./pages/Webshop";
@@ -27,6 +28,9 @@ const queryClient = new QueryClient();
 const AppContent = () => {
   const location = useLocation();
   const showNavbar = location.pathname !== '/webshop' && location.pathname !== '/login' && location.pathname !== '/partner-dashboard' && location.pathname !== '/partner-auth' && location.pathname !== '/order-thank-you';
+  
+  // Track analytics
+  useAnalyticsTracking();
   
   return (
     <div className="overflow-x-hidden min-h-screen">
