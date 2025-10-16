@@ -23,12 +23,14 @@ serve(async (req) => {
 
     console.log(`Fetching analytics from ${startdate} to ${enddate}`);
 
-    // Fetch analytics events from database
+    // Fetch analytics events from database, excluding lovable.dev referrers
     const { data: events, error } = await supabase
       .from('analytics_events')
       .select('*')
       .gte('created_at', `${startdate}T00:00:00.000Z`)
-      .lte('created_at', `${enddate}T23:59:59.999Z`);
+      .lte('created_at', `${enddate}T23:59:59.999Z`)
+      .not('referrer', 'like', '%lovable.dev%')
+      .not('referrer', 'like', '%lovableproject.com%');
 
     if (error) {
       console.error('Error fetching analytics:', error);
