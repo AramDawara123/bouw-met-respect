@@ -9,7 +9,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 const Login = () => {
   const [email, setEmail] = useState("info@bouwmetrespect.nl");
-  const [password, setPassword] = useState("admin123456");
+  const [password, setPassword] = useState("BouwMetRespect2024!");
   const [loading, setLoading] = useState(false);
   const [resetting, setResetting] = useState(false);
   const {
@@ -35,7 +35,7 @@ const Login = () => {
             error: signUpError
           } = await supabase.auth.signUp({
             email: "info@bouwmetrespect.nl",
-            password: "admin123456",
+            password: "BouwMetRespect2024!",
             options: {
               data: {
                 first_name: 'Admin',
@@ -53,7 +53,7 @@ const Login = () => {
             error: retrySignInError
           } = await supabase.auth.signInWithPassword({
             email: "info@bouwmetrespect.nl",
-            password: "admin123456"
+            password: "BouwMetRespect2024!"
           });
           if (retrySignInError) {
             throw retrySignInError;
@@ -110,24 +110,21 @@ const Login = () => {
   const handleResetAdmin = async () => {
     setResetting(true);
     try {
-      const response = await fetch('https://pkvayugxzgkoipclcpli.supabase.co/functions/v1/reset-admin-password', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${import.meta.env.SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBrdmF5dWd4emdrb2lwY2xjcGxpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTY1ODE3MjMsImV4cCI6MjA3MjE1NzcyM30.6pjPyFAoU5LQMi162jh5M9KzSLq5QA-TegXo8NnTnWE'}`
-        }
+      const { data, error } = await supabase.functions.invoke('reset-admin-password', {
+        body: {}
       });
 
-      const result = await response.json();
-      
-      if (result.success) {
+      if (error) throw error;
+
+      if (data?.success) {
         toast({
-          title: "Admin Account Gereset",
-          description: "Je kunt nu inloggen met info@bouwmetrespect.nl en wachtwoord admin123456",
-          duration: 5000
+          title: "Admin Wachtwoord Gereset",
+          description: "Wachtwoord is gereset naar: BouwMetRespect2024!",
+          duration: 10000
         });
+        setPassword("BouwMetRespect2024!");
       } else {
-        throw new Error(result.error || 'Reset failed');
+        throw new Error(data?.error || 'Reset failed');
       }
     } catch (error: any) {
       console.error('Reset error:', error);
