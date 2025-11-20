@@ -37,7 +37,7 @@ serve(async (req: Request) => {
       // Create the admin user if it doesn't exist
       const { data: newUser, error: createError } = await supabaseAdmin.auth.admin.createUser({
         email: 'info@bouwmetrespect.nl',
-        password: 'admin123456',
+        password: 'BouwMetRespect2024!',
         email_confirm: true,
         user_metadata: {
           first_name: 'Admin',
@@ -65,7 +65,7 @@ serve(async (req: Request) => {
       const { data: updatedUser, error: updateError } = await supabaseAdmin.auth.admin.updateUserById(
         adminUser.id,
         {
-          password: 'admin123456',
+          password: 'BouwMetRespect2024!',
           email_confirm: true
         }
       );
