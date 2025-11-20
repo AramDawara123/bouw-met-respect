@@ -1,7 +1,7 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { Resend } from "https://esm.sh/resend@2.1.0";
 
-const RESEND_API_KEY = Deno.env.get("RESEND_CONTACT_API_KEY");
+const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
 const RESEND_TO_EMAIL = "info@bouwmetrespect.nl";
 
 interface ContactData {
