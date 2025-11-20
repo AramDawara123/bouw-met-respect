@@ -75,7 +75,7 @@ const PartnerAccountManagementClean = () => {
       const { data: profile, error } = await supabase
         .from('profiles')
         .select('is_admin, role')
-        .eq('user_id', user.id)
+        .eq('id', user.id)
         .single();
 
       if (error) {

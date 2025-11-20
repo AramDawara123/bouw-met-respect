@@ -43,7 +43,7 @@ interface Membership {
   respectful_practices?: string;
   respectful_workplace?: string;
   boundary_behavior?: string;
-  membership_type: 'klein' | 'middelgroot' | 'groot' | 'offerte';
+  membership_type?: string;
   payment_status: string;
   amount: number;
   currency: string;
@@ -232,7 +232,7 @@ const Dashboard = () => {
       const { data: profile, error: profileError } = await supabase
         .from('profiles')
         .select('is_admin, role')
-        .eq('user_id', user.id)
+        .eq('id', user.id)
         .single();
 
       if (profileError) {
