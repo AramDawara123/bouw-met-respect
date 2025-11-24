@@ -16,6 +16,7 @@ import { validateDiscountCode, calculateDiscount, formatDiscountDisplay } from "
 import { RealTimeOrderSummary } from '@/components/RealTimeOrderSummary';
 import { MarqueeAnimation } from "@/components/ui/marquee-effect";
 import { useCart } from "@/hooks/useCart";
+import SEO from "@/components/SEO";
 const Webshop = () => {
   const navigate = useNavigate();
   const [faqOpenIndex, setFaqOpenIndex] = useState<number | null>(null);
@@ -511,6 +512,12 @@ const Webshop = () => {
 
   return (
     <div className="min-h-screen w-full">
+      <SEO 
+        title="Webshop | Bouw met Respect Merchandise"
+        description="Bestel exclusieve Bouw met Respect merchandise. Hoogwaardige producten die de beweging voor een veiligere bouwsector ondersteunen. Gratis verzending vanaf €50."
+        keywords="bouw met respect merchandise, bouwsector producten, bedrijfskleding bouw, werkkleding respect"
+        url="/webshop"
+      />
       {/* Sticky Header */}
       <header className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-lg border-b border-border/50 shadow-sm">
         <div className="container mx-auto px-4 py-3">

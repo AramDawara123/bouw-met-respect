@@ -12,6 +12,7 @@ import { useActionItemsPricing } from "@/hooks/useActionItemsPricing";
 import CompanyProfileCard from "@/components/company-profile/CompanyProfileCard";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import SEO from "@/components/SEO";
 const CompanyProfiles = () => {
   const [showPartnerForm, setShowPartnerForm] = useState(false);
   const {
@@ -29,6 +30,12 @@ const CompanyProfiles = () => {
     loading: pricingLoading
   } = useActionItemsPricing();
   return <div className="min-h-screen bg-gradient-to-br from-background via-primary/5 to-secondary/5">
+      <SEO 
+        title="Onze Partners | Bedrijven die Bouwen met Respect"
+        description="Ontdek bedrijven die actief bijdragen aan een veiligere bouwsector. Word partner en laat zien dat jouw bedrijf bouwt met respect voor alle werknemers."
+        keywords="bouwbedrijven respect, verantwoord ondernemen bouw, partnerbedrijven bouw met respect, sociale veiligheid bedrijven"
+        url="/onze-partners"
+      />
       <Navbar />
       
       <div className="container mx-auto px-4 py-8 pt-24">
