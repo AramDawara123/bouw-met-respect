@@ -76,7 +76,7 @@ const Footer = () => {
               <div className="w-12 h-12 bg-primary rounded-2xl flex items-center justify-center shadow-lg">
                 <Building className="w-7 h-7 text-primary-foreground" />
               </div>
-              <h3 className="text-3xl font-bold">Bouw met Respect</h3>
+              <h3 className="text-3xl font-bold">Stichting Bouw met Respect</h3>
             </div>
             <p className="text-background/80 leading-relaxed text-lg mb-8 max-w-lg lg:max-w-none">
               Samen bouwen we aan een betere toekomst voor de bouwsector. 
@@ -178,9 +178,11 @@ const Footer = () => {
         <div className="flex flex-col md:flex-row md:justify-between md:items-center space-y-4 md:space-y-0 text-center md:text-left">
           <div>
             <p className="text-background/60 text-sm mb-2">
-              © 2025 Bouw met Respect. Alle rechten voorbehouden.
+              © 2025 Stichting Bouw met Respect. Alle rechten voorbehouden.
             </p>
-            
+            <p className="text-background/60 text-sm mb-2">
+              KVK: 98829521
+            </p>
             <p className="text-background/60 text-sm text-center md:text-left">
               Gemaakt door <a href="https://dawaraconsulting.com" target="_blank" rel="noopener noreferrer" className="text-primary hover:text-primary/80 transition-colors font-medium">Dawara Consulting</a>
             </p>

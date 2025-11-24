@@ -10,7 +10,7 @@ interface SEOProps {
 }
 
 const SEO = ({ 
-  title = 'Bouw met Respect | Beweging voor een Veilige Bouwsector',
+  title = 'Stichting Bouw met Respect | Beweging voor een Veilige Bouwsector',
   description = 'Sluit je aan bij de beweging tegen grensoverschrijdend gedrag in de bouw. Voor een veiligere, respectvolle werkplek en aantrekkelijke sector voor jong talent.',
   image = '/lovable-uploads/e076c99e-b1ef-46db-9f73-10e463d8e7f7.png',
   url = 'https://bouwmetrespect.nl',
