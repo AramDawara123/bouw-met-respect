@@ -17,7 +17,7 @@ const Index = () => {
   try {
     return <div className="min-h-screen w-full overflow-x-hidden">
         <SEO 
-          title="Bouw met Respect | Beweging voor een Veilige Bouwsector"
+          title="Stichting Bouw met Respect | Beweging voor een Veilige Bouwsector"
           description="Sluit je aan bij de beweging tegen grensoverschrijdend gedrag in de bouw. Voor een veiligere, respectvolle werkplek en aantrekkelijke sector voor jong talent."
           keywords="grensoverschrijdend gedrag bouw, veilige bouwsector, respect bouwplaats, sociale veiligheid bouw, bouwbedrijven respect"
           url="https://bouwmetrespect.nl"
