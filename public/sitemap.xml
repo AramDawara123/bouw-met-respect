@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
         http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
@@ -7,39 +8,35 @@
   <!-- Homepage -->
   <url>
     <loc>https://bouwmetrespect.nl/</loc>
-    <lastmod>2025-01-12</lastmod>
+    <lastmod>2025-11-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
+    <image:image>
+      <image:loc>https://bouwmetrespect.nl/lovable-uploads/e076c99e-b1ef-46db-9f73-10e463d8e7f7.png</image:loc>
+      <image:title>Bouw met Respect Hero</image:title>
+    </image:image>
   </url>
   
-  <!-- Dashboard -->
+  <!-- Partners Page -->
   <url>
-    <loc>https://bouwmetrespect.nl/dashboard</loc>
-    <lastmod>2025-01-12</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
+    <loc>https://bouwmetrespect.nl/onze-partners</loc>
+    <lastmod>2025-11-24</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
   </url>
   
   <!-- Webshop -->
   <url>
     <loc>https://bouwmetrespect.nl/webshop</loc>
-    <lastmod>2025-01-12</lastmod>
+    <lastmod>2025-11-24</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  
-  <!-- Membership Success -->
-  <url>
-    <loc>https://bouwmetrespect.nl/membership-success</loc>
-    <lastmod>2025-01-12</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.5</priority>
+    <priority>0.8</priority>
   </url>
   
   <!-- Algemene Voorwaarden -->
   <url>
     <loc>https://bouwmetrespect.nl/algemene-voorwaarden</loc>
-    <lastmod>2025-01-12</lastmod>
+    <lastmod>2025-11-24</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>

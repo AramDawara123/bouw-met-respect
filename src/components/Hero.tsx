@@ -59,6 +59,8 @@ const Hero = () => {
         <div 
           className="absolute inset-0 bg-cover bg-center bg-no-repeat"
           style={{ backgroundImage: 'url(/lovable-uploads/e076c99e-b1ef-46db-9f73-10e463d8e7f7.png)' }}
+          role="img"
+          aria-label="Bouw met Respect - Hero achtergrond"
         >
           <div className="absolute inset-0 bg-background/70"></div>
         </div>

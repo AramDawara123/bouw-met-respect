@@ -1,11 +1,67 @@
-
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Plus, Minus } from "lucide-react";
 import { useState } from "react";
+import { Helmet } from "react-helmet-async";
 
 const FAQ = () => {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
+
+  // FAQ Schema for SEO
+  const faqSchema = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "Wat is Bouw met Respect?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Bouw met Respect is een beweging die zich inzet voor een veiligere en respectvolle bouwsector. We strijden tegen grensoverschrijdend gedrag en werken aan cultuurverandering in de bouw."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Hoe kan ik meedoen?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Je kunt lid worden van onze beweging door je aan te melden via het formulier op onze website. Bedrijven kunnen partnerbedrijf worden."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Wat houdt grensoverschrijdend gedrag in?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Grensoverschrijdend gedrag omvat intimidatie, discriminatie, pesten, seksuele intimidatie en andere vormen van ongewenst gedrag op de werkplek."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Hoe meld ik een incident?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Je kunt via ons anonieme meldformulier een incident melden. We behandelen alle meldingen vertrouwelijk en nemen ze serieus."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Is lidmaatschap gratis?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Ja, individueel lidmaatschap is gratis. Voor bedrijven hebben we verschillende partnerschappen beschikbaar."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Wat doen jullie met meldingen?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "We behandelen alle meldingen vertrouwelijk en gebruiken ze om trends te signaleren en bedrijven te ondersteunen bij het verbeteren van hun werkomgeving."
+        }
+      }
+    ]
+  };
 
   const faqs = [
     {
@@ -32,6 +88,11 @@ const FAQ = () => {
 
   return (
     <section className="py-20 bg-background">
+      <Helmet>
+        <script type="application/ld+json">
+          {JSON.stringify(faqSchema)}
+        </script>
+      </Helmet>
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-8 sm:mb-12 lg:mb-16">

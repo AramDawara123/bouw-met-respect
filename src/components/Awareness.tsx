@@ -18,17 +18,20 @@ const Awareness = () => {
     image: "/lovable-uploads/af5847a3-a5b8-4469-a490-1a2dd06dd44b.png",
     title: "Herken de signalen",
     subtitle: "Grensoverschrijdend gedrag is niet altijd zichtbaar",
-    description: "Leer de subtiele signalen herkennen van grensoverschrijdend gedrag op de werkplek."
+    description: "Leer de subtiele signalen herkennen van grensoverschrijdend gedrag op de werkplek.",
+    alt: "Grensoverschrijdend gedrag herkennen op de bouwplaats - signalen en preventie"
   }, {
     image: "/lovable-uploads/0aa319ff-868a-4104-9b80-da10435fc7c7.png",
     title: "Zwakke fundatie",
     subtitle: "De fundatie van onze bouwcultuur is te zwak",
-    description: "De huidige cultuur in de bouw houdt geen stand meer. Tijd voor een sterke nieuwe basis."
+    description: "De huidige cultuur in de bouw houdt geen stand meer. Tijd voor een sterke nieuwe basis.",
+    alt: "Zwakke fundatie bouwcultuur - tijd voor verandering in de bouwsector"
   }, {
     image: "/lovable-uploads/af266479-6043-45e9-8c66-dfb97bebf09b.png",
     title: "Bouw mee",
     subtitle: "Aan een respectvolle werkomgeving",
-    description: "Sluit je aan bij onze beweging voor een veiligere en respectvollere bouwsector."
+    description: "Sluit je aan bij onze beweging voor een veiligere en respectvollere bouwsector.",
+    alt: "Bouw mee aan respectvolle bouwsector - word lid van de beweging"
   }];
 
   const openGallery = (index: number) => {
@@ -61,7 +64,7 @@ const Awareness = () => {
               onClick={() => openGallery(index)}
             >
               <div className="aspect-[16/10] relative">
-                <img src={item.image} alt={item.title} className="w-full h-full object-contain" />
+                <img src={item.image} alt={item.alt} className="w-full h-full object-contain" />
                 
                 {/* BMR Badge */}
                 <div className="absolute top-3 left-3">
@@ -86,7 +89,7 @@ const Awareness = () => {
               onClick={() => openGallery(index)}
             >
               <div className="aspect-[16/10] relative">
-                <img src={item.image} alt={item.title} className="w-full h-full object-contain" />
+                <img src={item.image} alt={item.alt} className="w-full h-full object-contain" />
                 
                 {/* BMR Badge */}
                 <div className="absolute top-3 left-3">
@@ -113,7 +116,7 @@ const Awareness = () => {
               onClick={() => openGallery(index)}
             >
               <div className="aspect-[16/10] relative">
-                <img src={item.image} alt={item.title} className="w-full h-full object-contain" />
+                <img src={item.image} alt={item.alt} className="w-full h-full object-contain" />
                 
                 {/* BMR Badge */}
                 <div className="absolute top-3 left-3">
@@ -152,7 +155,7 @@ const Awareness = () => {
               
               <img
                 src={awarenessItems[selectedImageIndex].image}
-                alt={awarenessItems[selectedImageIndex].title}
+                alt={awarenessItems[selectedImageIndex].alt}
                 className="max-w-full max-h-[70vh] object-contain"
               />
               
