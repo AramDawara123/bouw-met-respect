@@ -81,6 +81,7 @@ const MembershipPricingManager = () => {
       const { error } = await supabase
         .from('membership_pricing')
         .update({
+          membership_type: editingData.membership_type,
           price: priceInCents,
           yearly_price_display: priceDisplay,
           employees_range: editingData.employees_range,
@@ -141,7 +142,7 @@ const MembershipPricingManager = () => {
   };
 
   const addNewPricing = async () => {
-    if (!newPricing.membership_type || !newPricing.employees_range || (newPricing.price <= 0 && !newPricing.is_quote)) {
+    if (!newPricing.membership_type.trim() || !newPricing.employees_range.trim() || (newPricing.price <= 0 && !newPricing.is_quote)) {
       toast({
         title: "Fout",
         description: "Vul alle velden in met geldige waarden",
@@ -166,10 +167,10 @@ const MembershipPricingManager = () => {
       const { error } = await supabase
         .from('membership_pricing')
         .insert({
-          membership_type: newPricing.membership_type,
+          membership_type: newPricing.membership_type.trim().toLowerCase(),
           price: priceInCents,
           yearly_price_display: priceDisplay,
-          employees_range: newPricing.employees_range,
+          employees_range: newPricing.employees_range.trim(),
           is_quote: newPricing.is_quote,
           display_order: newPricing.display_order || nextOrder
         });
@@ -237,7 +238,11 @@ const MembershipPricingManager = () => {
                   placeholder="bijv. klein, middelgroot, groot"
                   value={newPricing.membership_type}
                   onChange={(e) => setNewPricing({ ...newPricing, membership_type: e.target.value })}
+                  maxLength={50}
                 />
+                <p className="text-xs text-muted-foreground">
+                  Kleine letters worden automatisch gebruikt (bijv. "Klein" wordt "klein")
+                </p>
               </div>
               <div className="space-y-2">
                 <label className="text-sm font-medium">Medewerkers Range</label>
@@ -245,6 +250,7 @@ const MembershipPricingManager = () => {
                   placeholder="bijv. 1-10 medewerkers"
                   value={newPricing.employees_range}
                   onChange={(e) => setNewPricing({ ...newPricing, employees_range: e.target.value })}
+                  maxLength={100}
                 />
               </div>
               <div className="space-y-2">
@@ -344,9 +350,22 @@ const MembershipPricingManager = () => {
                       )}
                     </TableCell>
                     <TableCell>
-                      <Badge className={getMembershipColor(pricing.membership_type)}>
-                        {getMembershipDisplayName(pricing.membership_type)}
-                      </Badge>
+                      {editingId === pricing.id ? (
+                        <Input
+                          value={editingData.membership_type || ''}
+                          onChange={(e) => setEditingData({
+                            ...editingData,
+                            membership_type: e.target.value.trim().toLowerCase()
+                          })}
+                          placeholder="bijv. klein, middelgroot, groot"
+                          maxLength={50}
+                          className="w-40"
+                        />
+                      ) : (
+                        <Badge className={getMembershipColor(pricing.membership_type)}>
+                          {getMembershipDisplayName(pricing.membership_type)}
+                        </Badge>
+                      )}
                     </TableCell>
                     <TableCell>
                       {editingId === pricing.id ? (
@@ -354,8 +373,10 @@ const MembershipPricingManager = () => {
                           value={editingData.employees_range || ''}
                           onChange={(e) => setEditingData({
                             ...editingData,
-                            employees_range: e.target.value
+                            employees_range: e.target.value.trim()
                           })}
+                          placeholder="bijv. 1-10 medewerkers"
+                          maxLength={100}
                           className="w-40"
                         />
                       ) : (
