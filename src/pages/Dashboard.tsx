@@ -187,8 +187,7 @@ const Dashboard = () => {
     }
     setViewMode(mode as 'memberships' | 'orders' | 'donations' | 'profiles' | 'products' | 'partners' | 'partner-pricing' | 'lidmaatschappen-prijzen' | 'onze-partners-prijzen' | 'discounts' | 'qrcode' | 'statistics');
   };
-  };
-
+ 
   const generateOrderNumber = (order: Order) => {
     // Use mollie_payment_id if available (for consistency with emails), otherwise use database id
     const orderId = order.mollie_payment_id || order.id;
