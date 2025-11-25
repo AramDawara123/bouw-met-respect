@@ -1,19 +1,19 @@
+import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { Target, Building2, TrendingUp, Shield, ArrowRight, CheckCircle, Euro, Users, Award } from "lucide-react";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 import { useState } from "react";
 import MembershipForm from "@/components/MembershipForm";
 import { useMembershipPricing } from "@/hooks/useMembershipPricing";
 import { useToast } from "@/hooks/use-toast";
-interface ActionItemsPricingData {
+interface MembershipPricingData {
   id: string;
-  size_type: string;
+  membership_type: string;
+  price: number;
+  yearly_price_display: string;
   employees_range: string;
-  price_display: string;
-  price_cents: number;
-  is_popular: boolean;
-  is_quote: boolean;
-  display_order: number;
 }
+
 const ActionItems = () => {
   const {
     ref: headerRef,
@@ -28,10 +28,11 @@ const ActionItems = () => {
     isVisible: cardsVisible
   } = useScrollAnimation(0.1);
   const [formOpen, setFormOpen] = useState(false);
+  const [selectedMembershipType, setSelectedMembershipType] = useState<string | null>(null);
   const {
     pricingData,
     loading: pricingLoading
-  } = useActionItemsPricing();
+  } = useMembershipPricing();
   const {
     toast
   } = useToast();
@@ -60,55 +61,48 @@ const ActionItems = () => {
     features: ["Gevelbordje", "Website vermelding", "Certificaat"],
     gradient: "from-orange-500/10 to-red-600/10"
   }];
-  const getDefaultPricing = () => [{
-    icon: Users,
-    size: "Klein",
-    employees: "1-10 medewerkers",
-    price: "€250",
-    popular: false
-  }, {
-    icon: Building2,
-    size: "Middelgroot",
-    employees: "11-30 medewerkers",
-    price: "€750",
-    popular: true
-  }, {
-    icon: Award,
-    size: "Groot",
-    employees: "31-50 medewerkers",
-    price: "€1250",
-    popular: false
-  }, {
-    icon: Award,
-    size: "Enterprise",
-    employees: "50+ medewerkers",
-    price: "Offerte",
-    popular: false,
-    isQuote: true
-  }];
-  const getIconForSize = (sizeType: string) => {
-    switch (sizeType.toLowerCase()) {
+  const getIconForMembershipType = (type: string) => {
+    switch (type.toLowerCase()) {
       case 'klein':
         return Users;
       case 'middelgroot':
         return Building2;
       case 'groot':
-      case 'enterprise':
         return Award;
       default:
         return Users;
     }
   };
 
-  // Transform pricing data for display
-  const pricingTiers = pricingData.length > 0 ? pricingData.map((pricing: ActionItemsPricingData) => ({
-    icon: getIconForSize(pricing.size_type),
-    size: pricing.size_type,
+  // Transform membership pricing data for display
+  const pricingTiers = pricingData.map((pricing: MembershipPricingData) => ({
+    id: pricing.membership_type,
+    icon: getIconForMembershipType(pricing.membership_type),
+    size: pricing.membership_type.charAt(0).toUpperCase() + pricing.membership_type.slice(1),
     employees: pricing.employees_range,
-    price: pricing.price_display,
-    popular: pricing.is_popular,
-    isQuote: pricing.is_quote
-  })) : getDefaultPricing();
+    price: pricing.yearly_price_display,
+    popular: pricing.membership_type === 'middelgroot',
+    isQuote: false
+  }));
+  
+  // Add offerte option at the end
+  const allTiers = [
+    ...pricingTiers,
+    {
+      id: 'offerte',
+      icon: Award,
+      size: 'Offerte',
+      employees: '50+ medewerkers',
+      price: 'Op maat',
+      popular: false,
+      isQuote: true
+    }
+  ];
+
+  const handlePlanClick = (tierId: string) => {
+    setSelectedMembershipType(tierId);
+    setFormOpen(true);
+  };
 
   // Build a safe, encoded SVG background for the decoration without nesting quotes in JSX
   const backgroundSvg = `<svg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"><g fill="none" fill-rule="evenodd"><g fill="#f97316" fill-opacity="0.03"><circle cx="30" cy="30" r="2"/></g></g></svg>`;
@@ -143,7 +137,7 @@ const ActionItems = () => {
           </div>
           
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8 max-w-7xl mx-auto px-4">
-            {pricingTiers.map((tier, index) => <Card key={index} className={`relative p-4 sm:p-6 lg:p-8 text-center transition-all duration-300 border-2 hover:shadow-2xl hover:scale-105 ${tier.popular ? 'border-primary shadow-xl bg-gradient-to-br from-primary/5 to-primary/10' : 'border-border hover:border-primary/50 bg-card'}`} style={{
+            {allTiers.map((tier, index) => <Card key={index} className={`relative p-4 sm:p-6 lg:p-8 text-center transition-all duration-300 border-2 hover:shadow-2xl hover:scale-105 ${tier.popular ? 'border-primary shadow-xl bg-gradient-to-br from-primary/5 to-primary/10' : 'border-border hover:border-primary/50 bg-card'}`} style={{
             transitionDelay: pricingVisible ? `${index * 100}ms` : '0ms'
           }}>
                 {tier.popular && <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
@@ -164,7 +158,7 @@ const ActionItems = () => {
                   {!tier.isQuote && <span className="text-accent/80 ml-1">/jaar</span>}
                 </div>
                 
-                <Button variant={tier.popular ? "default" : "outline"} className="w-full" onClick={() => setFormOpen(true)}>
+                <Button variant={tier.popular ? "default" : "outline"} className="w-full" onClick={() => handlePlanClick(tier.id)}>
                   {tier.isQuote ? "Offerte aanvragen" : "Aanmelden"}
                   <ArrowRight className="w-4 h-4 ml-2" />
                 </Button>
@@ -208,7 +202,7 @@ const ActionItems = () => {
 
         {/* Call to Action */}
         <div className="text-center mt-20">
-          <Button size="lg" onClick={() => setFormOpen(true)} className="px-8 py-4 font-semibold shadow-xl hover:shadow-2xl transition-all duration-300 text-[01428b] text-[#01428b]">
+          <Button size="lg" onClick={() => handlePlanClick('klein')} className="px-8 py-4 font-semibold shadow-xl hover:shadow-2xl transition-all duration-300 text-[01428b] text-[#01428b]">
             <Euro className="w-5 h-5 mr-2" />
             Word onderdeel van de beweging
             <ArrowRight className="w-5 h-5 ml-2" />
@@ -219,7 +213,16 @@ const ActionItems = () => {
         </div>
       </div>
       
-      <MembershipForm open={formOpen} onOpenChange={setFormOpen} />
+      <MembershipForm 
+        open={formOpen} 
+        onOpenChange={setFormOpen}
+        membershipPlan={selectedMembershipType ? {
+          id: selectedMembershipType,
+          name: selectedMembershipType === 'offerte' ? 'Offerte' : selectedMembershipType.charAt(0).toUpperCase() + selectedMembershipType.slice(1),
+          price: pricingData.find(p => p.membership_type === selectedMembershipType)?.price || 0,
+          yearlyPrice: pricingData.find(p => p.membership_type === selectedMembershipType)?.yearly_price_display || 'Op maat'
+        } : undefined}
+      />
     </section>;
 };
 export default ActionItems;
