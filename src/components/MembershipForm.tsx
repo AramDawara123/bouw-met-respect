@@ -38,7 +38,7 @@ const formSchema = z.object({
   boundaryBehavior: z.string().optional(),
   discountCode: z.string().optional(),
   
-  membershipType: z.enum(["klein","middelgroot","groot","offerte"], { required_error: "Kies je lidmaatschap" }),
+  membershipType: z.enum(["klein","middelgroot","groot"], { required_error: "Kies je lidmaatschap" }),
   newsletter: z.boolean().default(true),
   terms: z.boolean().refine(val => val === true, {
     message: "Je moet akkoord gaan met de voorwaarden"
@@ -93,13 +93,11 @@ const MembershipForm = ({
   
   // Get pricing from database
   const getAmountFromType = (t: string) => {
-    if (t === 'offerte') return 0;
     const pricing = pricingData.find(p => p.membership_type === t);
     return pricing ? pricing.price : 0;
   };
   
   const getPriceDisplayFromDb = (t: string) => {
-    if (t === 'offerte') return 'Offerte op maat';
     const pricing = pricingData.find(p => p.membership_type === t);
     return pricing ? pricing.yearly_price_display : `€${(getAmountFromType(t) / 100).toFixed(2)}`;
   };
@@ -109,11 +107,9 @@ const MembershipForm = ({
   const finalAmount = baseAmount - discountAmount;
   
   const basePriceDisplay = getPriceDisplayFromDb(selectedType);
-  const totalPriceDisplay = selectedType === 'offerte'
-    ? 'Offerte op maat'
-    : appliedDiscount
-      ? `€${(finalAmount / 100).toFixed(2)}`
-      : basePriceDisplay;
+  const totalPriceDisplay = appliedDiscount
+    ? `€${(finalAmount / 100).toFixed(2)}`
+    : basePriceDisplay;
 
   const checkDiscountCode = async (code: string) => {
     if (!code.trim()) {
@@ -168,45 +164,6 @@ const MembershipForm = ({
       if (emailError || emailData?.error) {
         console.error('Email sending error:', emailError || emailData?.error);
         // Continue with the flow even if email fails
-      }
-
-      // Handle offerte requests differently
-      if (values.membershipType === 'offerte') {
-        // Store offerte request directly in memberships table
-        const { error } = await supabase
-          .from('memberships')
-          .insert({
-            first_name: values.firstName,
-            last_name: values.lastName,
-            email: values.email,
-            phone: values.phone,
-            company: values.company,
-            job_title: values.jobTitle,
-            industry_role: values.industryRole,
-            experience_years: values.experienceYears,
-            specializations: values.specializations,
-            motivation: values.motivation,
-            respectful_practices: values.respectfulPractices,
-            respectful_workplace: values.respectfulWorkplace,
-            boundary_behavior: values.boundaryBehavior,
-            membership_type: 'offerte' as any,
-            payment_status: 'quote_requested',
-            amount: 0,
-            currency: 'EUR'
-          });
-
-        if (error) {
-          throw error;
-        }
-
-        toast({
-          title: "Offerte aanvraag verzonden!",
-          description: "We nemen binnen 2 werkdagen contact met je op voor een persoonlijke offerte.",
-        });
-        
-        onOpenChange(false);
-        form.reset();
-        return;
       }
 
       // Regular payment flow for other membership types
@@ -278,7 +235,7 @@ const MembershipForm = ({
                   render={({ field }) => (
                     <FormItem>
                        <RadioGroup onValueChange={field.onChange} value={field.value} className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        {pricingData.map((pricing) => (
+                        {pricingData.filter(p => !p.is_quote).map((pricing) => (
                           <Label 
                             key={pricing.membership_type}
                             htmlFor={pricing.membership_type}
@@ -290,18 +247,6 @@ const MembershipForm = ({
                             </div>
                           </Label>
                         ))}
-                        <Label 
-                          htmlFor="offerte"
-                          className={`border rounded-lg p-4 cursor-pointer hover:bg-muted/50 transition-colors block ${form.watch('membershipType')==='offerte' ? 'border-accent bg-accent/10' : 'border-border'}`}
-                        >
-                          <div className="flex items-center space-x-3">
-                            <RadioGroupItem value="offerte" id="offerte" />
-                            <div>
-                              <div className="font-medium">Offerte op maat</div>
-                              <div className="text-sm text-muted-foreground">Voor grote organisaties</div>
-                            </div>
-                          </div>
-                        </Label>
                       </RadioGroup>
                       <FormMessage />
                     </FormItem>
@@ -310,12 +255,11 @@ const MembershipForm = ({
                </div>
 
                {/* Kortingscode sectie */}
-               {selectedType !== 'offerte' && (
-                 <div className="space-y-4">
-                   <h3 className="text-lg font-semibold flex items-center gap-2">
-                     <Tag className="w-5 h-5" />
-                     Kortingscode (optioneel)
-                   </h3>
+               <div className="space-y-4">
+                 <h3 className="text-lg font-semibold flex items-center gap-2">
+                   <Tag className="w-5 h-5" />
+                   Kortingscode (optioneel)
+                 </h3>
                    <FormField
                      control={form.control}
                      name="discountCode"
@@ -373,11 +317,10 @@ const MembershipForm = ({
                         <span>Totaal:</span>
                         <span className={appliedDiscount ? "text-green-600" : ""}>{totalPriceDisplay}</span>
                       </div>
-                    </div>
+                     </div>
                  </div>
-               )}
 
-               {/* Persoonlijke gegevens */}
+                {/* Persoonlijke gegevens */}
             <div className="space-y-4">
               <h3 className="text-lg font-semibold">Persoonlijke gegevens</h3>
               <div className="grid grid-cols-2 gap-4">
@@ -623,10 +566,7 @@ const MembershipForm = ({
                 Annuleren
               </Button>
               <Button type="submit" disabled={isSubmitting} className="flex-1">
-                {isSubmitting ? 
-                  (selectedType === 'offerte' ? "Offerte aanvraag verzenden..." : "Doorsturen naar betaling...") : 
-                  (selectedType === 'offerte' ? "Offerte aanvragen" : `Betaal ${totalPriceDisplay} per jaar`)
-                }
+                {isSubmitting ? "Doorsturen naar betaling..." : `Betaal ${totalPriceDisplay} per jaar`}
               </Button>
             </div>
           </form>
