@@ -81,7 +81,7 @@ const MembershipPricingManager = () => {
       const { error } = await supabase
         .from('membership_pricing')
         .update({
-          membership_type: editingData.membership_type,
+          membership_type: editingData.membership_type?.trim(),
           price: priceInCents,
           yearly_price_display: priceDisplay,
           employees_range: editingData.employees_range,
@@ -167,7 +167,7 @@ const MembershipPricingManager = () => {
       const { error } = await supabase
         .from('membership_pricing')
         .insert({
-          membership_type: newPricing.membership_type.trim().toLowerCase(),
+          membership_type: newPricing.membership_type.trim(),
           price: priceInCents,
           yearly_price_display: priceDisplay,
           employees_range: newPricing.employees_range.trim(),
@@ -235,14 +235,11 @@ const MembershipPricingManager = () => {
               <div className="space-y-2">
                 <label className="text-sm font-medium">Lidmaatschapstype</label>
                 <Input
-                  placeholder="bijv. klein, middelgroot, groot"
+                  placeholder="bijv. Klein, Middelgroot, Groot"
                   value={newPricing.membership_type}
                   onChange={(e) => setNewPricing({ ...newPricing, membership_type: e.target.value })}
                   maxLength={50}
                 />
-                <p className="text-xs text-muted-foreground">
-                  Kleine letters worden automatisch gebruikt (bijv. "Klein" wordt "klein")
-                </p>
               </div>
               <div className="space-y-2">
                 <label className="text-sm font-medium">Medewerkers Range</label>
@@ -355,9 +352,9 @@ const MembershipPricingManager = () => {
                           value={editingData.membership_type || ''}
                           onChange={(e) => setEditingData({
                             ...editingData,
-                            membership_type: e.target.value.trim().toLowerCase()
+                            membership_type: e.target.value.trim()
                           })}
-                          placeholder="bijv. klein, middelgroot, groot"
+                          placeholder="bijv. Klein, Middelgroot, Groot"
                           maxLength={50}
                           className="w-40"
                         />
