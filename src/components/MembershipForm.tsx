@@ -32,10 +32,10 @@ const formSchema = z.object({
     required_error: "Selecteer je ervaring"
   }),
   specializations: z.array(z.string()).min(1, "Selecteer minimaal één specialisatie"),
-  motivation: z.string().optional(),
-  respectfulPractices: z.string().optional(),
-  respectfulWorkplace: z.string().optional(),
-  boundaryBehavior: z.string().optional(),
+  motivation: z.string().min(10, "Motivatie is verplicht (minimaal 10 karakters)"),
+  respectfulPractices: z.string().min(10, "Dit veld is verplicht (minimaal 10 karakters)"),
+  respectfulWorkplace: z.string().min(10, "Dit veld is verplicht (minimaal 10 karakters)"),
+  boundaryBehavior: z.string().min(10, "Dit veld is verplicht (minimaal 10 karakters)"),
   discountCode: z.string().optional(),
   
   membershipType: z.enum(["klein","middelgroot","groot","offerte","Enterprise"], { required_error: "Kies je lidmaatschap" }),
@@ -531,7 +531,7 @@ const MembershipForm = ({
               <FormField control={form.control} name="motivation" render={({
               field
             }) => <FormItem>
-                    <FormLabel>Waarom wil je lid worden van Bouw met Respect? <span className="text-muted-foreground">(optioneel)</span></FormLabel>
+                    <FormLabel>Waarom wil je lid worden van Bouw met Respect?</FormLabel>
                     <FormControl>
                       <Textarea placeholder="Vertel ons over je motivatie om lid te worden van onze community..." className="min-h-[100px]" {...field} />
                     </FormControl>
@@ -540,7 +540,7 @@ const MembershipForm = ({
               <FormField control={form.control} name="respectfulPractices" render={({
               field
             }) => <FormItem>
-                    <FormLabel>Hoe pas je respectvolle bouwpraktijken toe in je werk? <span className="text-muted-foreground">(optioneel)</span></FormLabel>
+                    <FormLabel>Hoe pas je respectvolle bouwpraktijken toe in je werk?</FormLabel>
                     <FormControl>
                       <Textarea placeholder="Beschrijf hoe je respect voor mensen, omgeving en gemeenschap integreert in je projecten..." className="min-h-[100px]" {...field} />
                     </FormControl>
@@ -550,7 +550,7 @@ const MembershipForm = ({
               <FormField control={form.control} name="respectfulWorkplace" render={({
               field
             }) => <FormItem>
-                    <FormLabel>Wat betekent een respectvolle bouwplaats voor jou? <span className="text-muted-foreground">(optioneel)</span></FormLabel>
+                    <FormLabel>Wat betekent een respectvolle bouwplaats voor jou?</FormLabel>
                     <FormControl>
                       <Textarea placeholder="Beschrijf wat voor jou een respectvolle bouwplaats inhoudt..." className="min-h-[100px]" {...field} />
                     </FormControl>
@@ -560,7 +560,7 @@ const MembershipForm = ({
               <FormField control={form.control} name="boundaryBehavior" render={({
               field
             }) => <FormItem>
-                    <FormLabel>Wat doe jij als je grensoverschrijdend gedrag opmerkt? <span className="text-muted-foreground">(optioneel)</span></FormLabel>
+                    <FormLabel>Wat doe jij als je grensoverschrijdend gedrag opmerkt?</FormLabel>
                     <FormControl>
                       <Textarea placeholder="Beschrijf hoe je zou reageren bij grensoverschrijdend gedrag..." className="min-h-[100px]" {...field} />
                     </FormControl>
