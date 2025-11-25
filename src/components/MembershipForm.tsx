@@ -38,7 +38,7 @@ const formSchema = z.object({
   boundaryBehavior: z.string().optional(),
   discountCode: z.string().optional(),
   
-  membershipType: z.enum(["klein","middelgroot","groot"], { required_error: "Kies je lidmaatschap" }),
+  membershipType: z.enum(["klein","middelgroot","groot","offerte","Enterprise"], { required_error: "Kies je lidmaatschap" }),
   newsletter: z.boolean().default(true),
   terms: z.boolean().refine(val => val === true, {
     message: "Je moet akkoord gaan met de voorwaarden"
@@ -235,7 +235,7 @@ const MembershipForm = ({
                   render={({ field }) => (
                     <FormItem>
                        <RadioGroup onValueChange={field.onChange} value={field.value} className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        {pricingData.filter(p => !p.is_quote).map((pricing) => (
+                        {pricingData.map((pricing) => (
                           <Label 
                             key={pricing.membership_type}
                             htmlFor={pricing.membership_type}
@@ -243,7 +243,11 @@ const MembershipForm = ({
                           >
                             <div className="flex items-center space-x-3">
                               <RadioGroupItem value={pricing.membership_type} id={pricing.membership_type} />
-                              <span>{pricing.membership_type.charAt(0).toUpperCase() + pricing.membership_type.slice(1)} — {pricing.yearly_price_display}</span>
+                              <div className="flex flex-col">
+                                <span className="font-medium">{pricing.membership_type.charAt(0).toUpperCase() + pricing.membership_type.slice(1)}</span>
+                                <span className="text-sm">{pricing.employees_range}</span>
+                                <span className="text-lg font-bold text-accent">{pricing.yearly_price_display}</span>
+                              </div>
                             </div>
                           </Label>
                         ))}
