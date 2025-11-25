@@ -240,6 +240,7 @@ export type Database = {
           created_at: string
           employees_range: string
           id: string
+          is_quote: boolean | null
           membership_type: string
           price: number
           updated_at: string
@@ -249,6 +250,7 @@ export type Database = {
           created_at?: string
           employees_range: string
           id?: string
+          is_quote?: boolean | null
           membership_type: string
           price: number
           updated_at?: string
@@ -258,6 +260,7 @@ export type Database = {
           created_at?: string
           employees_range?: string
           id?: string
+          is_quote?: boolean | null
           membership_type?: string
           price?: number
           updated_at?: string

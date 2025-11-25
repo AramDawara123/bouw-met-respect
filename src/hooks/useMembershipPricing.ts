@@ -7,6 +7,7 @@ interface MembershipPricing {
   price: number;
   yearly_price_display: string;
   employees_range: string;
+  is_quote: boolean;
 }
 
 export const useMembershipPricing = () => {
