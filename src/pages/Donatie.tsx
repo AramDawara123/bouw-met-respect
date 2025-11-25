@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -8,6 +8,7 @@ import { Heart, Users, Shield, Award, CheckCircle2 } from "lucide-react";
 import Footer from "@/components/Footer";
 import { useToast } from "@/hooks/use-toast";
 import SEO from "@/components/SEO";
+import { useSearchParams } from "react-router-dom";
 
 const Donatie = () => {
   const [selectedAmount, setSelectedAmount] = useState<number | null>(null);
@@ -19,6 +20,17 @@ const Donatie = () => {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
+  const [searchParams] = useSearchParams();
+
+  useEffect(() => {
+    // Check if user was redirected back after successful payment
+    if (searchParams.get('success') === 'true') {
+      toast({
+        title: "Donatie voltooid!",
+        description: "Bedankt voor je bijdrage aan een veiligere bouwsector.",
+      });
+    }
+  }, [searchParams, toast]);
 
   const suggestedAmounts = [10, 25, 50, 100, 250, 500];
 
@@ -85,21 +97,30 @@ const Donatie = () => {
     setIsSubmitting(true);
 
     try {
-      // TODO: Implement Mollie payment integration here
-      toast({
-        title: "Bedankt voor je donatie!",
-        description: `Je wordt doorgestuurd naar de betaalpagina voor €${finalAmount}`,
-      });
+      const { supabase } = await import("@/integrations/supabase/client");
       
-      // Simulate redirect delay
-      setTimeout(() => {
-        setIsSubmitting(false);
-      }, 2000);
+      const { data, error } = await supabase.functions.invoke('create-donation-payment', {
+        body: {
+          amount: finalAmount,
+          name: formData.name,
+          email: formData.email,
+          message: formData.message
+        }
+      });
+
+      if (error) throw error;
+
+      if (data?.paymentUrl) {
+        // Redirect to Mollie payment page
+        window.location.href = data.paymentUrl;
+      } else {
+        throw new Error('Geen betaal-URL ontvangen');
+      }
     } catch (error) {
       console.error('Donation error:', error);
       toast({
         title: "Er ging iets mis",
-        description: "Probeer het later opnieuw",
+        description: error instanceof Error ? error.message : "Probeer het later opnieuw",
         variant: "destructive"
       });
       setIsSubmitting(false);
