@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Edit, Save, X, Euro, Users } from "lucide-react";
+import { Edit, Save, X, Euro, Users, Trash2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
@@ -95,6 +95,34 @@ const MembershipPricingManager = () => {
       toast({
         title: "Fout",
         description: "Kon prijsgegevens niet opslaan",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const deletePricing = async (id: string) => {
+    if (!confirm('Weet je zeker dat je deze prijscategorie wilt verwijderen?')) return;
+
+    try {
+      const { error } = await supabase
+        .from('membership_pricing')
+        .delete()
+        .eq('id', id);
+
+      if (error) throw error;
+
+      toast({
+        title: "Verwijderd",
+        description: "Prijscategorie is verwijderd"
+      });
+
+      window.dispatchEvent(new CustomEvent('membership-pricing-updated'));
+      fetchPricingData();
+    } catch (error) {
+      console.error('Error deleting pricing:', error);
+      toast({
+        title: "Fout",
+        description: "Kon prijscategorie niet verwijderen",
         variant: "destructive"
       });
     }
@@ -218,15 +246,26 @@ const MembershipPricingManager = () => {
                           </Button>
                         </div>
                       ) : (
-                        <Button
-                          onClick={() => startEditing(pricing)}
-                          variant="outline"
-                          size="sm"
-                          className="flex items-center gap-1"
-                        >
-                          <Edit className="w-4 h-4" />
-                          Bewerken
-                        </Button>
+                        <div className="flex justify-end gap-2">
+                          <Button
+                            onClick={() => startEditing(pricing)}
+                            variant="outline"
+                            size="sm"
+                            className="flex items-center gap-1"
+                          >
+                            <Edit className="w-4 h-4" />
+                            Bewerken
+                          </Button>
+                          <Button
+                            onClick={() => deletePricing(pricing.id)}
+                            variant="outline"
+                            size="sm"
+                            className="flex items-center gap-1 text-destructive hover:text-destructive"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                            Verwijderen
+                          </Button>
+                        </div>
                       )}
                     </TableCell>
                   </TableRow>
