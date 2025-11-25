@@ -99,13 +99,20 @@ const PartnerSignupForm = ({ open, onOpenChange }: PartnerSignupFormProps) => {
   const selectedSize = form.watch('companySize');
   const currentPrice = getPriceDisplay(selectedSize);
   
-  // Calculate price with discount
+  // Calculate price with (optionele) korting
   const baseAmount = getAmountFromSize(selectedSize);
   const discountAmount = appliedDiscount?.valid && appliedDiscount.discount 
     ? calculateDiscount(appliedDiscount.discount, baseAmount)
     : 0;
   const finalAmount = baseAmount - discountAmount;
-  const finalPrice = baseAmount === 0 ? 'Offerte op maat' : `€${(finalAmount / 100).toFixed(2)}`;
+  const hasDiscount = discountAmount > 0;
+  
+  const finalPrice =
+    baseAmount === 0
+      ? 'Offerte op maat'
+      : hasDiscount
+        ? `€${(finalAmount / 100).toFixed(2)}`
+        : currentPrice;
 
   const checkDiscountCode = async () => {
     const discountCode = form.getValues('discountCode');
