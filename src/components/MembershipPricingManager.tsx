@@ -16,6 +16,7 @@ interface MembershipPricing {
   yearly_price_display: string;
   employees_range: string;
   is_quote: boolean;
+  display_order: number;
   created_at: string;
   updated_at: string;
 }
@@ -29,7 +30,8 @@ const MembershipPricingManager = () => {
     membership_type: '',
     price: 0,
     employees_range: '',
-    is_quote: false
+    is_quote: false,
+    display_order: 0
   });
   const { toast } = useToast();
 
@@ -42,7 +44,7 @@ const MembershipPricingManager = () => {
       const { data, error } = await supabase
         .from('membership_pricing')
         .select('*')
-        .order('price', { ascending: true });
+        .order('display_order', { ascending: true });
 
       if (error) throw error;
       setPricingData(data || []);
@@ -82,7 +84,8 @@ const MembershipPricingManager = () => {
           price: priceInCents,
           yearly_price_display: priceDisplay,
           employees_range: editingData.employees_range,
-          is_quote: editingData.is_quote || false
+          is_quote: editingData.is_quote || false,
+          display_order: editingData.display_order || 0
         })
         .eq('id', editingId);
 
@@ -138,7 +141,7 @@ const MembershipPricingManager = () => {
   };
 
   const addNewPricing = async () => {
-    if (!newPricing.membership_type || !newPricing.employees_range || newPricing.price <= 0) {
+    if (!newPricing.membership_type || !newPricing.employees_range || (newPricing.price <= 0 && !newPricing.is_quote)) {
       toast({
         title: "Fout",
         description: "Vul alle velden in met geldige waarden",
@@ -151,6 +154,15 @@ const MembershipPricingManager = () => {
       const priceInCents = Math.round(newPricing.price * 100);
       const priceDisplay = `€${newPricing.price}`;
 
+      // Get the highest display_order and add 1
+      const { data: maxOrderData } = await supabase
+        .from('membership_pricing')
+        .select('display_order')
+        .order('display_order', { ascending: false })
+        .limit(1);
+      
+      const nextOrder = maxOrderData && maxOrderData.length > 0 ? maxOrderData[0].display_order + 1 : 1;
+
       const { error } = await supabase
         .from('membership_pricing')
         .insert({
@@ -158,7 +170,8 @@ const MembershipPricingManager = () => {
           price: priceInCents,
           yearly_price_display: priceDisplay,
           employees_range: newPricing.employees_range,
-          is_quote: newPricing.is_quote
+          is_quote: newPricing.is_quote,
+          display_order: newPricing.display_order || nextOrder
         });
 
       if (error) throw error;
@@ -170,7 +183,7 @@ const MembershipPricingManager = () => {
 
       window.dispatchEvent(new CustomEvent('membership-pricing-updated'));
       setIsAddDialogOpen(false);
-      setNewPricing({ membership_type: '', price: 0, employees_range: '', is_quote: false });
+      setNewPricing({ membership_type: '', price: 0, employees_range: '', is_quote: false, display_order: 0 });
       fetchPricingData();
     } catch (error) {
       console.error('Error adding pricing:', error);
@@ -260,6 +273,20 @@ const MembershipPricingManager = () => {
                   Als je dit aanvinkt, wordt de prijs weergegeven als "Op maat" op de website
                 </p>
               </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Volgorde (optioneel)</label>
+                <Input
+                  type="number"
+                  min="0"
+                  step="1"
+                  placeholder="Automatisch bepaald als leeg"
+                  value={newPricing.display_order || ''}
+                  onChange={(e) => setNewPricing({ ...newPricing, display_order: parseInt(e.target.value) || 0 })}
+                />
+                <p className="text-xs text-muted-foreground">
+                  Lager nummer = eerst weergegeven. Laat leeg voor automatische volgorde.
+                </p>
+              </div>
               <div className="flex justify-end gap-2 pt-4">
                 <Button variant="outline" onClick={() => setIsAddDialogOpen(false)}>
                   Annuleren
@@ -288,6 +315,7 @@ const MembershipPricingManager = () => {
             <Table>
               <TableHeader>
                 <TableRow>
+                  <TableHead>Volgorde</TableHead>
                   <TableHead>Lidmaatschapstype</TableHead>
                   <TableHead>Medewerkers Range</TableHead>
                   <TableHead>Prijs per jaar</TableHead>
@@ -299,6 +327,22 @@ const MembershipPricingManager = () => {
               <TableBody>
                 {pricingData.map((pricing) => (
                   <TableRow key={pricing.id}>
+                    <TableCell>
+                      {editingId === pricing.id ? (
+                        <Input
+                          type="number"
+                          min="0"
+                          value={editingData.display_order || 0}
+                          onChange={(e) => setEditingData({
+                            ...editingData,
+                            display_order: parseInt(e.target.value) || 0
+                          })}
+                          className="w-20"
+                        />
+                      ) : (
+                        <span className="font-medium">{pricing.display_order}</span>
+                      )}
+                    </TableCell>
                     <TableCell>
                       <Badge className={getMembershipColor(pricing.membership_type)}>
                         {getMembershipDisplayName(pricing.membership_type)}

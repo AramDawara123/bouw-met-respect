@@ -8,6 +8,7 @@ interface MembershipPricing {
   yearly_price_display: string;
   employees_range: string;
   is_quote: boolean;
+  display_order: number;
 }
 
 export const useMembershipPricing = () => {
@@ -20,7 +21,7 @@ export const useMembershipPricing = () => {
       const { data, error } = await supabase
         .from('membership_pricing')
         .select('*')
-        .order('price', { ascending: true });
+        .order('display_order', { ascending: true });
       
       if (error) throw error;
       console.log('✅ Membership pricing fetched:', data);
