@@ -98,16 +98,22 @@ const MembershipForm = ({
     return pricing ? pricing.price : 0;
   };
   
-  const getPriceDisplay = (t: string) => {
+  const getPriceDisplayFromDb = (t: string) => {
     if (t === 'offerte') return 'Offerte op maat';
     const pricing = pricingData.find(p => p.membership_type === t);
-    return pricing ? pricing.yearly_price_display : '€0';
+    return pricing ? pricing.yearly_price_display : `€${(getAmountFromType(t) / 100).toFixed(2)}`;
   };
   
   const baseAmount = getAmountFromType(selectedType);
   const discountAmount = appliedDiscount ? calculateDiscount(appliedDiscount, baseAmount) : 0;
   const finalAmount = baseAmount - discountAmount;
-  const displayPrice = selectedType === 'offerte' ? 'Offerte op maat' : `€${(finalAmount / 100).toFixed(2)}`;
+  
+  const basePriceDisplay = getPriceDisplayFromDb(selectedType);
+  const totalPriceDisplay = selectedType === 'offerte'
+    ? 'Offerte op maat'
+    : appliedDiscount
+      ? `€${(finalAmount / 100).toFixed(2)}`
+      : basePriceDisplay;
 
   const checkDiscountCode = async (code: string) => {
     if (!code.trim()) {
@@ -350,24 +356,24 @@ const MembershipForm = ({
                      )}
                    />
                    
-                   {/* Prijs overzicht */}
-                   <div className="bg-muted/50 rounded-lg p-4 space-y-2">
-                     <div className="flex justify-between text-sm">
-                       <span>Basisprijs:</span>
-                       <span>€{(baseAmount / 100).toFixed(2)}</span>
-                     </div>
-                     {appliedDiscount && (
-                       <div className="flex justify-between text-sm text-green-600">
-                         <span>Korting:</span>
-                         <span>-€{(discountAmount / 100).toFixed(2)}</span>
-                       </div>
-                     )}
-                     <hr className="border-muted-foreground/20" />
-                     <div className="flex justify-between font-semibold">
-                       <span>Totaal:</span>
-                       <span className={appliedDiscount ? "text-green-600" : ""}>{displayPrice}</span>
-                     </div>
-                   </div>
+                    {/* Prijs overzicht */}
+                    <div className="bg-muted/50 rounded-lg p-4 space-y-2">
+                      <div className="flex justify-between text-sm">
+                        <span>Basisprijs:</span>
+                        <span>{basePriceDisplay}</span>
+                      </div>
+                      {appliedDiscount && (
+                        <div className="flex justify-between text-sm text-green-600">
+                          <span>Korting:</span>
+                          <span>-€{(discountAmount / 100).toFixed(2)}</span>
+                        </div>
+                      )}
+                      <hr className="border-muted-foreground/20" />
+                      <div className="flex justify-between font-semibold">
+                        <span>Totaal:</span>
+                        <span className={appliedDiscount ? "text-green-600" : ""}>{totalPriceDisplay}</span>
+                      </div>
+                    </div>
                  </div>
                )}
 
@@ -619,7 +625,7 @@ const MembershipForm = ({
               <Button type="submit" disabled={isSubmitting} className="flex-1">
                 {isSubmitting ? 
                   (selectedType === 'offerte' ? "Offerte aanvraag verzenden..." : "Doorsturen naar betaling...") : 
-                  (selectedType === 'offerte' ? "Offerte aanvragen" : `Betaal ${displayPrice} per jaar`)
+                  (selectedType === 'offerte' ? "Offerte aanvragen" : `Betaal ${totalPriceDisplay} per jaar`)
                 }
               </Button>
             </div>
