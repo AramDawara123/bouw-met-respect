@@ -72,12 +72,12 @@ const Footer = () => {
         <div className="grid lg:grid-cols-4 gap-12 mb-16">
           {/* Brand Section */}
           <div className="lg:col-span-1 text-center lg:text-left">
-            <div className="flex items-center justify-center lg:justify-start space-x-3 mb-6">
-              <div className="w-12 h-12 bg-primary rounded-2xl flex items-center justify-center shadow-lg">
+            <Link to="/" className="flex items-center justify-center lg:justify-start space-x-3 mb-6 group">
+              <div className="w-12 h-12 bg-primary rounded-2xl flex items-center justify-center shadow-lg group-hover:bg-primary/90 transition-colors">
                 <Building className="w-7 h-7 text-primary-foreground" />
               </div>
-              <h3 className="text-3xl font-bold">Stichting Bouw met Respect</h3>
-            </div>
+              <h3 className="text-3xl font-bold group-hover:text-background/90 transition-colors">Stichting Bouw met Respect</h3>
+            </Link>
             <p className="text-background/80 leading-relaxed text-lg mb-8 max-w-lg lg:max-w-none">
               Samen bouwen we aan een betere toekomst voor de bouwsector. 
               Een werkplek waar respect, veiligheid en inclusie centraal staan.
