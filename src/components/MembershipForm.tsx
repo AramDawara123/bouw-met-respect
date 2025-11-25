@@ -102,6 +102,11 @@ const MembershipForm = ({
     return pricing ? pricing.yearly_price_display : `€${(getAmountFromType(t) / 100).toFixed(2)}`;
   };
   
+  const isQuoteTier = () => {
+    const pricing = pricingData.find(p => p.membership_type === selectedType);
+    return pricing ? pricing.is_quote : false;
+  };
+  
   const baseAmount = getAmountFromType(selectedType);
   const discountAmount = appliedDiscount ? calculateDiscount(appliedDiscount, baseAmount) : 0;
   const finalAmount = baseAmount - discountAmount;
@@ -164,6 +169,42 @@ const MembershipForm = ({
       if (emailError || emailData?.error) {
         console.error('Email sending error:', emailError || emailData?.error);
         // Continue with the flow even if email fails
+      }
+
+      // Check if this is a quote tier
+      const selectedPricing = pricingData.find(p => p.membership_type === values.membershipType);
+      if (selectedPricing?.is_quote) {
+        // Store offerte request directly in memberships table
+        const { error } = await supabase
+          .from('memberships')
+          .insert({
+            first_name: values.firstName,
+            last_name: values.lastName,
+            email: values.email,
+            phone: values.phone,
+            company: values.company,
+            job_title: values.jobTitle,
+            industry_role: values.industryRole,
+            experience_years: values.experienceYears,
+            specializations: values.specializations,
+            membership_type: values.membershipType as any,
+            payment_status: 'quote_requested',
+            amount: 0,
+            currency: 'EUR'
+          });
+
+        if (error) {
+          throw error;
+        }
+
+        toast({
+          title: "Offerte aanvraag verzonden!",
+          description: "We nemen binnen 2 werkdagen contact met je op voor een persoonlijke offerte.",
+        });
+        
+        onOpenChange(false);
+        form.reset();
+        return;
       }
 
       // Regular payment flow for other membership types
@@ -259,11 +300,12 @@ const MembershipForm = ({
                </div>
 
                {/* Kortingscode sectie */}
-               <div className="space-y-4">
-                 <h3 className="text-lg font-semibold flex items-center gap-2">
-                   <Tag className="w-5 h-5" />
-                   Kortingscode (optioneel)
-                 </h3>
+               {!isQuoteTier() && (
+                 <div className="space-y-4">
+                   <h3 className="text-lg font-semibold flex items-center gap-2">
+                     <Tag className="w-5 h-5" />
+                     Kortingscode (optioneel)
+                   </h3>
                    <FormField
                      control={form.control}
                      name="discountCode"
@@ -323,6 +365,7 @@ const MembershipForm = ({
                       </div>
                      </div>
                  </div>
+               )}
 
                 {/* Persoonlijke gegevens */}
             <div className="space-y-4">
@@ -570,7 +613,10 @@ const MembershipForm = ({
                 Annuleren
               </Button>
               <Button type="submit" disabled={isSubmitting} className="flex-1">
-                {isSubmitting ? "Doorsturen naar betaling..." : `Betaal ${totalPriceDisplay} per jaar`}
+                {isSubmitting 
+                  ? (isQuoteTier() ? "Offerte aanvraag verzenden..." : "Doorsturen naar betaling...") 
+                  : (isQuoteTier() ? "Offerte aanvragen" : `Betaal ${totalPriceDisplay} per jaar`)
+                }
               </Button>
             </div>
           </form>
