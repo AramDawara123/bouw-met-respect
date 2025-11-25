@@ -2385,20 +2385,22 @@ Het Bouw met Respect team
               </div>
 
               <div className="flex justify-end gap-2 pt-4">
-                <Button variant="outline" onClick={() => {
-              setIsEditingOrder(false);
-              setEditingOrder(null);
-            }}>
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    setIsEditingOrder(false);
+                    setEditingOrder(null);
+                  }}
+                >
                   Annuleren
                 </Button>
-                <Button onClick={updateOrder}>
-                  Opslaan
-                </Button>
+                <Button onClick={updateOrder}>Opslaan</Button>
               </div>
             </div>}
+        </DialogContent>
       </Dialog>
 
-    </SidebarProvider>
+      </SidebarProvider>
   );
 };
 
