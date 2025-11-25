@@ -21,6 +21,7 @@ import PartnerAuth from "./pages/PartnerAuth";
 import PartnershipSuccess from "./pages/PartnershipSuccess";
 import OrderVerification from "./pages/OrderVerification";
 import OrderThankYou from "./pages/OrderThankYou";
+import Donatie from "./pages/Donatie";
 
 import NotFound from "./pages/NotFound";
 
@@ -49,6 +50,7 @@ const AppContent = () => {
         <Route path="/partnership-success" element={<PartnershipSuccess />} />
         <Route path="/order-verification/:orderId" element={<OrderVerification />} />
         <Route path="/order-thank-you" element={<OrderThankYou />} />
+        <Route path="/donatie" element={<Donatie />} />
         
         {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
         <Route path="*" element={<NotFound />} />
