@@ -1706,9 +1706,11 @@ Het Bouw met Respect team
                           €{orders.length > 0 ? (orders.reduce((sum, o) => sum + o.total, 0) / 100).toFixed(2) : '0.00'}
                         </div>
                         <p className="text-xs text-muted-foreground">
-                          {orders.length > 0 && <>
+                          {orders.length > 0 && (
+                            <>
                               Laatste: €{(orders[0]?.total / 100).toFixed(2)}
-                            </>}
+                            </>
+                          )}
                         </p>
                       </CardContent>
                     </Card>
@@ -1907,7 +1909,8 @@ Het Bouw met Respect team
                             </TableRow>
                           </TableHeader>
                           <TableBody>
-                            {profiles.map(profile => <TableRow key={profile.id}>
+                            {profiles.map(profile => (
+                              <TableRow key={profile.id}>
                                 <TableCell className="font-medium">
                                   <div className="flex items-center gap-2">
                                     {profile.logo_url && <img src={profile.logo_url} alt={profile.name} className="w-8 h-8 rounded object-cover" />}
@@ -1922,14 +1925,18 @@ Het Bouw met Respect team
                                 </TableCell>
                                 <TableCell>
                                   <div className="text-sm">
-                                    {profile.contact_email && <div className="flex items-center gap-1">
+                                    {profile.contact_email && (
+                                      <div className="flex items-center gap-1">
                                         <Mail className="w-3 h-3" />
                                         {profile.contact_email}
-                                      </div>}
-                                    {profile.contact_phone && <div className="flex items-center gap-1">
+                                      </div>
+                                    )}
+                                    {profile.contact_phone && (
+                                      <div className="flex items-center gap-1">
                                         <Phone className="w-3 h-3" />
                                         {profile.contact_phone}
-                                      </div>}
+                                      </div>
+                                    )}
                                   </div>
                                 </TableCell>
                                 <TableCell>
@@ -1954,7 +1961,8 @@ Het Bouw met Respect team
                                     </Button>
                                   </div>
                                 </TableCell>
-                              </TableRow>)}
+                              </TableRow>
+                            ))}
                           </TableBody>
                         </Table>
                       </div>
@@ -2015,7 +2023,8 @@ Het Bouw met Respect team
           <DialogHeader>
             <DialogTitle>Lidmaatschap Bewerken</DialogTitle>
           </DialogHeader>
-          {editingMembership && <div className="space-y-4">
+          {editingMembership && (
+            <div className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="text-sm font-medium">Voornaam</label>
@@ -2160,7 +2169,8 @@ Het Bouw met Respect team
                   Opslaan
                 </Button>
               </div>
-            </div>}
+            </div>
+          )}
         </DialogContent>
       </Dialog>
 
@@ -2170,7 +2180,8 @@ Het Bouw met Respect team
           <DialogHeader>
             <DialogTitle>Lidmaatschap Details</DialogTitle>
           </DialogHeader>
-          {selectedMembership && <div className="space-y-4">
+          {selectedMembership && (
+            <div className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="text-sm font-medium text-muted-foreground">Naam</label>
@@ -2246,10 +2257,12 @@ Het Bouw met Respect team
                 </div>
               </div>
 
-              {selectedMembership.mollie_payment_id && <div>
+              {selectedMembership.mollie_payment_id && (
+                <div>
                   <label className="text-sm font-medium text-muted-foreground">Mollie Payment ID</label>
                   <p className="font-medium font-mono text-sm">{selectedMembership.mollie_payment_id}</p>
-                </div>}
+                </div>
+              )}
 
               <div className="flex justify-end gap-2 pt-4">
                 <Button variant="outline" onClick={() => setSelectedMembership(null)}>
@@ -2264,7 +2277,8 @@ Het Bouw met Respect team
                   Bewerken
                 </Button>
               </div>
-            </div>}
+            </div>
+          )}
         </DialogContent>
       </Dialog>
 
@@ -2274,7 +2288,8 @@ Het Bouw met Respect team
           <DialogHeader>
             <DialogTitle>Bestelling Bewerken</DialogTitle>
           </DialogHeader>
-          {editingOrder && <div className="space-y-4">
+          {editingOrder && (
+            <div className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="text-sm font-medium">Voornaam</label>
@@ -2396,7 +2411,8 @@ Het Bouw met Respect team
                 </Button>
                  <Button onClick={updateOrder}>Opslaan</Button>
               </div>
-            </div>}
+            </div>
+          )}
         </DialogContent>
       </Dialog>
 
