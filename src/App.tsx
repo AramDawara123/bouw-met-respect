@@ -8,6 +8,7 @@ import { HelmetProvider } from 'react-helmet-async';
 import ErrorBoundary from "./components/ErrorBoundary";
 import Navbar from "./components/Navbar";
 import NewsletterPopup from "./components/NewsletterPopup";
+import ScrollToTop from "./components/ScrollToTop";
 import { useAnalyticsTracking } from "./hooks/useAnalyticsTracking";
 import Index from "./pages/Index";
 import AlgemeneVoorwaarden from "./pages/AlgemeneVoorwaarden";
@@ -36,6 +37,7 @@ const AppContent = () => {
   
   return (
     <div className="overflow-x-hidden min-h-screen">
+      <ScrollToTop />
       {showNavbar && <Navbar />}
       <Routes>
         <Route path="/" element={<Index />} />
