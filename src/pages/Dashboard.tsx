@@ -119,9 +119,24 @@ interface PartnerAccount {
   generated_password?: string;
   account_created?: boolean;
 }
+
+interface Donation {
+  id: string;
+  name: string;
+  email: string;
+  amount: number;
+  message: string | null;
+  mollie_payment_id: string | null;
+  payment_status: string;
+  currency: string;
+  created_at: string;
+  updated_at: string;
+}
+
 const Dashboard = () => {
   const [memberships, setMemberships] = useState<Membership[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
+  const [donations, setDonations] = useState<Donation[]>([]);
   const [profiles, setProfiles] = useState<CompanyProfile[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
   const [partners, setPartners] = useState<PartnerAccount[]>([]);
@@ -129,6 +144,7 @@ const Dashboard = () => {
   const [newOrderCount, setNewOrderCount] = useState(0);
   const [membershipSearchTerm, setMembershipSearchTerm] = useState("");
   const [orderSearchTerm, setOrderSearchTerm] = useState("");
+  const [donationSearchTerm, setDonationSearchTerm] = useState("");
   const [profileSearchTerm, setProfileSearchTerm] = useState("");
   const [productSearchTerm, setProductSearchTerm] = useState("");
   const [partnerSearchTerm, setPartnerSearchTerm] = useState("");
@@ -145,7 +161,7 @@ const Dashboard = () => {
   const [isEditingProduct, setIsEditingProduct] = useState(false);
   const [user, setUser] = useState(null);
   const [isAdmin, setIsAdmin] = useState(false);
-  const [viewMode, setViewMode] = useState<'memberships' | 'orders' | 'profiles' | 'products' | 'partners' | 'partner-pricing' | 'lidmaatschappen-prijzen' | 'onze-partners-prijzen' | 'discounts' | 'qrcode' | 'statistics'>("memberships");
+  const [viewMode, setViewMode] = useState<'memberships' | 'orders' | 'donations' | 'profiles' | 'products' | 'partners' | 'partner-pricing' | 'lidmaatschappen-prijzen' | 'onze-partners-prijzen' | 'discounts' | 'qrcode' | 'statistics'>("memberships");
   const [showProfileForm, setShowProfileForm] = useState(false);
   const [editingProfile, setEditingProfile] = useState<CompanyProfile | null>(null);
   const [editingPartner, setEditingPartner] = useState<PartnerAccount | null>(null);
@@ -169,7 +185,8 @@ const Dashboard = () => {
     if (mode === 'orders') {
       setNewOrderCount(0);
     }
-    setViewMode(mode as 'memberships' | 'orders' | 'profiles' | 'products' | 'partners' | 'partner-pricing' | 'lidmaatschappen-prijzen' | 'onze-partners-prijzen' | 'discounts' | 'qrcode');
+    setViewMode(mode as 'memberships' | 'orders' | 'donations' | 'profiles' | 'products' | 'partners' | 'partner-pricing' | 'lidmaatschappen-prijzen' | 'onze-partners-prijzen' | 'discounts' | 'qrcode' | 'statistics');
+  };
   };
 
   const generateOrderNumber = (order: Order) => {
@@ -259,7 +276,7 @@ const Dashboard = () => {
       }
 
       setIsAdmin(true);
-      await Promise.all([fetchMemberships(), fetchOrders(), fetchProfiles(), fetchProducts(), fetchPartners()]);
+      await Promise.all([fetchMemberships(), fetchOrders(), fetchDonations(), fetchProfiles(), fetchProducts(), fetchPartners()]);
     } catch (error) {
       console.error('Auth check error:', error);
       toast({
@@ -310,6 +327,27 @@ const Dashboard = () => {
       });
     }
   };
+
+  const fetchDonations = async () => {
+    try {
+      const {
+        data,
+        error
+      } = await supabase.from('donations').select('*').order('created_at', {
+        ascending: false
+      });
+      if (error) throw error;
+      setDonations(data || []);
+    } catch (error) {
+      console.error('Error fetching donations:', error);
+      toast({
+        title: "Fout",
+        description: "Kon donaties niet laden",
+        variant: "destructive"
+      });
+    }
+  };
+
   const fetchProfiles = async () => {
     try {
       const {
@@ -1337,12 +1375,15 @@ Het Bouw met Respect team
     return matchesSearch && matchesStatus;
   });
   if (loading) {
-    return <div className="min-h-screen flex items-center justify-center">
+    return (
+      <div className="min-h-screen flex items-center justify-center">
         <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>
-      </div>;
+      </div>
+    );
   }
   if (!user || !isAdmin) {
-    return <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-primary/5 to-secondary/5">
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-primary/5 to-secondary/5">
         <Card className="w-full max-w-md mx-4">
           <CardContent className="p-8">
             <div className="text-center">
@@ -1361,9 +1402,11 @@ Het Bouw met Respect team
             </div>
           </CardContent>
         </Card>
-      </div>;
+      </div>
+    );
   }
-  return <SidebarProvider>
+  return (
+    <SidebarProvider>
       <OrderNotifications onNewOrder={handleNewOrder} />
       <div className="min-h-screen bg-gradient-to-br from-background via-primary/5 to-secondary/5 flex w-full">
         <AppSidebar viewMode={viewMode} onViewModeChange={handleViewModeChange} newOrderCount={newOrderCount} />
@@ -2353,9 +2396,10 @@ Het Bouw met Respect team
                 </Button>
               </div>
             </div>}
-        </DialogContent>
       </Dialog>
 
-    </SidebarProvider>;
+    </SidebarProvider>
+  );
 };
+
 export default Dashboard;

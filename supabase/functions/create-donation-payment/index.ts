@@ -69,28 +69,33 @@ serve(async (req) => {
       throw new Error(errorMsg);
     }
 
-    const molliePayment = await mollieResponse.json();
-    console.log('Mollie donation payment created:', molliePayment.id);
+    try {
+      const { supabase } = await import("@/integrations/supabase/client");
+      
+      const { data, error } = await supabase.functions.invoke('create-donation-payment', {
+        body: {
+          amount: finalAmount,
+          name: formData.name,
+          email: formData.email,
+          message: formData.message
+        }
+      });
 
-    return new Response(
-      JSON.stringify({ 
-        paymentUrl: molliePayment._links.checkout.href,
-        paymentId: molliePayment.id
-      }),
-      {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        status: 200,
-      }
-    );
+      if (error) throw error;
 
-  } catch (error) {
-    console.error('Donation payment creation error:', error);
-    return new Response(
-      JSON.stringify({ error: (error as Error).message }),
-      {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        status: 500,
+      if (data?.paymentUrl) {
+        // Redirect to Mollie payment page
+        window.location.href = data.paymentUrl;
+      } else {
+        throw new Error('Geen betaal-URL ontvangen');
       }
-    );
-  }
+    } catch (error) {
+      console.error('Donation error:', error);
+      toast({
+        title: "Er ging iets mis",
+        description: error instanceof Error ? error.message : "Probeer het later opnieuw",
+        variant: "destructive"
+      });
+      setIsSubmitting(false);
+    }
 });

@@ -196,6 +196,45 @@ export type Database = {
         }
         Relationships: []
       }
+      donations: {
+        Row: {
+          amount: number
+          created_at: string | null
+          currency: string | null
+          email: string
+          id: string
+          message: string | null
+          mollie_payment_id: string | null
+          name: string
+          payment_status: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          amount: number
+          created_at?: string | null
+          currency?: string | null
+          email: string
+          id?: string
+          message?: string | null
+          mollie_payment_id?: string | null
+          name: string
+          payment_status?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          amount?: number
+          created_at?: string | null
+          currency?: string | null
+          email?: string
+          id?: string
+          message?: string | null
+          mollie_payment_id?: string | null
+          name?: string
+          payment_status?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       membership_pricing: {
         Row: {
           created_at: string
