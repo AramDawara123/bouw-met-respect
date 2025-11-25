@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Edit, Save, X, Euro, Users, Trash2 } from "lucide-react";
+import { Edit, Save, X, Euro, Users, Trash2, Plus } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
@@ -23,6 +23,12 @@ const MembershipPricingManager = () => {
   const [pricingData, setPricingData] = useState<MembershipPricing[]>([]);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editingData, setEditingData] = useState<Partial<MembershipPricing>>({});
+  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+  const [newPricing, setNewPricing] = useState({
+    membership_type: '',
+    price: 0,
+    employees_range: ''
+  });
   const { toast } = useToast();
 
   useEffect(() => {
@@ -128,6 +134,50 @@ const MembershipPricingManager = () => {
     }
   };
 
+  const addNewPricing = async () => {
+    if (!newPricing.membership_type || !newPricing.employees_range || newPricing.price <= 0) {
+      toast({
+        title: "Fout",
+        description: "Vul alle velden in met geldige waarden",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    try {
+      const priceInCents = Math.round(newPricing.price * 100);
+      const priceDisplay = `€${newPricing.price}`;
+
+      const { error } = await supabase
+        .from('membership_pricing')
+        .insert({
+          membership_type: newPricing.membership_type,
+          price: priceInCents,
+          yearly_price_display: priceDisplay,
+          employees_range: newPricing.employees_range
+        });
+
+      if (error) throw error;
+
+      toast({
+        title: "Toegevoegd",
+        description: "Nieuwe lidmaatschapprijs is toegevoegd"
+      });
+
+      window.dispatchEvent(new CustomEvent('membership-pricing-updated'));
+      setIsAddDialogOpen(false);
+      setNewPricing({ membership_type: '', price: 0, employees_range: '' });
+      fetchPricingData();
+    } catch (error) {
+      console.error('Error adding pricing:', error);
+      toast({
+        title: "Fout",
+        description: "Kon nieuwe prijscategorie niet toevoegen",
+        variant: "destructive"
+      });
+    }
+  };
+
   const formatPrice = (priceInCents: number) => {
     return `€${(priceInCents / 100).toFixed(0)}`;
   };
@@ -147,9 +197,61 @@ const MembershipPricingManager = () => {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h2 className="text-2xl font-bold">Lidmaatschap Prijzen</h2>
-        <p className="text-muted-foreground">Beheer de prijzen voor verschillende lidmaatschapstypen</p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-2xl font-bold">Lidmaatschap Prijzen</h2>
+          <p className="text-muted-foreground">Beheer de prijzen voor verschillende lidmaatschapstypen</p>
+        </div>
+        <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
+          <DialogTrigger asChild>
+            <Button className="flex items-center gap-2">
+              <Plus className="w-4 h-4" />
+              Nieuwe Prijs Toevoegen
+            </Button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Nieuwe Lidmaatschapprijs Toevoegen</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4 py-4">
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Lidmaatschapstype</label>
+                <Input
+                  placeholder="bijv. klein, middelgroot, groot"
+                  value={newPricing.membership_type}
+                  onChange={(e) => setNewPricing({ ...newPricing, membership_type: e.target.value })}
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Medewerkers Range</label>
+                <Input
+                  placeholder="bijv. 1-10 medewerkers"
+                  value={newPricing.employees_range}
+                  onChange={(e) => setNewPricing({ ...newPricing, employees_range: e.target.value })}
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Prijs per jaar (€)</label>
+                <Input
+                  type="number"
+                  min="0"
+                  step="1"
+                  placeholder="bijv. 250"
+                  value={newPricing.price || ''}
+                  onChange={(e) => setNewPricing({ ...newPricing, price: parseFloat(e.target.value) || 0 })}
+                />
+              </div>
+              <div className="flex justify-end gap-2 pt-4">
+                <Button variant="outline" onClick={() => setIsAddDialogOpen(false)}>
+                  Annuleren
+                </Button>
+                <Button onClick={addNewPricing}>
+                  Toevoegen
+                </Button>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
 
       <Card>
