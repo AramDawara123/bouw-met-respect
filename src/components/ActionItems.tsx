@@ -13,6 +13,7 @@ interface MembershipPricingData {
   yearly_price_display: string;
   employees_range: string;
   is_quote: boolean;
+  display_order: number;
 }
 
 const ActionItems = () => {

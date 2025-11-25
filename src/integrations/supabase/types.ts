@@ -238,6 +238,7 @@ export type Database = {
       membership_pricing: {
         Row: {
           created_at: string
+          display_order: number | null
           employees_range: string
           id: string
           is_quote: boolean | null
@@ -248,6 +249,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          display_order?: number | null
           employees_range: string
           id?: string
           is_quote?: boolean | null
@@ -258,6 +260,7 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          display_order?: number | null
           employees_range?: string
           id?: string
           is_quote?: boolean | null
