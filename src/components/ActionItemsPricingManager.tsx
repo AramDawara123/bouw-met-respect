@@ -7,7 +7,7 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { Pencil, Save, X, RefreshCw } from "lucide-react";
+import { Pencil, Save, X, RefreshCw, Trash2 } from "lucide-react";
 
 interface ActionItemsPricing {
   id: string;
@@ -96,6 +96,34 @@ const ActionItemsPricingManager = () => {
       toast({
         title: "Fout",
         description: "Kon prijsgegevens niet bijwerken",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const deletePricing = async (id: string) => {
+    if (!confirm('Weet je zeker dat je deze prijscategorie wilt verwijderen?')) return;
+
+    try {
+      const { error } = await supabase
+        .from('action_items_pricing')
+        .delete()
+        .eq('id', id);
+
+      if (error) throw error;
+
+      toast({
+        title: "Verwijderd",
+        description: "Prijscategorie is verwijderd"
+      });
+
+      window.dispatchEvent(new CustomEvent('action-items-pricing-updated'));
+      fetchPricingData();
+    } catch (error) {
+      console.error('Error deleting pricing:', error);
+      toast({
+        title: "Fout",
+        description: "Kon prijscategorie niet verwijderen",
         variant: "destructive"
       });
     }
@@ -256,13 +284,23 @@ const ActionItemsPricingManager = () => {
                         </Button>
                       </>
                     ) : (
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => startEditing(pricing)}
-                      >
-                        <Pencil className="w-4 h-4" />
-                      </Button>
+                      <>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => startEditing(pricing)}
+                        >
+                          <Pencil className="w-4 h-4" />
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => deletePricing(pricing.id)}
+                          className="text-destructive hover:text-destructive"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
+                      </>
                     )}
                   </div>
                 </div>
