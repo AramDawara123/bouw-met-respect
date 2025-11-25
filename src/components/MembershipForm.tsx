@@ -374,7 +374,7 @@ const MembershipForm = ({
                 <FormField control={form.control} name="firstName" render={({
                 field
               }) => <FormItem>
-                      <FormLabel>Voornaam</FormLabel>
+                      <FormLabel>Voornaam <span className="text-red-500">*</span></FormLabel>
                       <FormControl>
                         <Input placeholder="Voornaam" {...field} />
                       </FormControl>
@@ -383,7 +383,7 @@ const MembershipForm = ({
                 <FormField control={form.control} name="lastName" render={({
                 field
               }) => <FormItem>
-                      <FormLabel>Achternaam</FormLabel>
+                      <FormLabel>Achternaam <span className="text-red-500">*</span></FormLabel>
                       <FormControl>
                         <Input placeholder="Achternaam" {...field} />
                       </FormControl>
@@ -393,7 +393,7 @@ const MembershipForm = ({
               <FormField control={form.control} name="email" render={({
               field
             }) => <FormItem>
-                    <FormLabel>E-mailadres</FormLabel>
+                    <FormLabel>E-mailadres <span className="text-red-500">*</span></FormLabel>
                     <FormControl>
                       <Input type="email" placeholder="naam@voorbeeld.nl" {...field} />
                     </FormControl>
@@ -402,7 +402,7 @@ const MembershipForm = ({
               <FormField control={form.control} name="phone" render={({
               field
             }) => <FormItem>
-                    <FormLabel>Telefoonnummer</FormLabel>
+                    <FormLabel>Telefoonnummer <span className="text-red-500">*</span></FormLabel>
                     <FormControl>
                       <Input placeholder="06 12345678" {...field} />
                     </FormControl>
@@ -426,7 +426,7 @@ const MembershipForm = ({
                 <FormField control={form.control} name="jobTitle" render={({
                 field
               }) => <FormItem>
-                      <FormLabel>Functietitel</FormLabel>
+                      <FormLabel>Functietitel <span className="text-red-500">*</span></FormLabel>
                       <FormControl>
                         <Input placeholder="Projectleider, Architect, etc." {...field} />
                       </FormControl>
@@ -437,7 +437,7 @@ const MembershipForm = ({
                 <FormField control={form.control} name="industryRole" render={({
                 field
               }) => <FormItem>
-                      <FormLabel>Rol in de bouwsector</FormLabel>
+                      <FormLabel>Rol in de bouwsector <span className="text-red-500">*</span></FormLabel>
                       <Select onValueChange={field.onChange} defaultValue={field.value}>
                         <FormControl>
                           <SelectTrigger>
@@ -461,7 +461,7 @@ const MembershipForm = ({
                 <FormField control={form.control} name="experienceYears" render={({
                 field
               }) => <FormItem>
-                      <FormLabel>Ervaring in de bouw</FormLabel>
+                      <FormLabel>Ervaring in de bouw <span className="text-red-500">*</span></FormLabel>
                       <Select onValueChange={field.onChange} defaultValue={field.value}>
                         <FormControl>
                           <SelectTrigger>
@@ -480,7 +480,7 @@ const MembershipForm = ({
                     </FormItem>} />
               </div>
               <FormField control={form.control} name="specializations" render={() => <FormItem>
-                    <FormLabel>Specialisaties (selecteer alle relevante opties)</FormLabel>
+                    <FormLabel>Specialisaties (selecteer alle relevante opties) <span className="text-red-500">*</span></FormLabel>
                     <div className="grid grid-cols-2 gap-2 pt-2">
                       {[{
                   id: "duurzaam-bouwen",
@@ -531,7 +531,7 @@ const MembershipForm = ({
               <FormField control={form.control} name="motivation" render={({
               field
             }) => <FormItem>
-                    <FormLabel>Waarom wil je lid worden van Bouw met Respect?</FormLabel>
+                    <FormLabel>Waarom wil je lid worden van Bouw met Respect? <span className="text-red-500">*</span></FormLabel>
                     <FormControl>
                       <Textarea placeholder="Vertel ons over je motivatie om lid te worden van onze community..." className="min-h-[100px]" {...field} />
                     </FormControl>
@@ -540,7 +540,7 @@ const MembershipForm = ({
               <FormField control={form.control} name="respectfulPractices" render={({
               field
             }) => <FormItem>
-                    <FormLabel>Hoe pas je respectvolle bouwpraktijken toe in je werk?</FormLabel>
+                    <FormLabel>Hoe pas je respectvolle bouwpraktijken toe in je werk? <span className="text-red-500">*</span></FormLabel>
                     <FormControl>
                       <Textarea placeholder="Beschrijf hoe je respect voor mensen, omgeving en gemeenschap integreert in je projecten..." className="min-h-[100px]" {...field} />
                     </FormControl>
@@ -550,7 +550,7 @@ const MembershipForm = ({
               <FormField control={form.control} name="respectfulWorkplace" render={({
               field
             }) => <FormItem>
-                    <FormLabel>Wat betekent een respectvolle bouwplaats voor jou?</FormLabel>
+                    <FormLabel>Wat betekent een respectvolle bouwplaats voor jou? <span className="text-red-500">*</span></FormLabel>
                     <FormControl>
                       <Textarea placeholder="Beschrijf wat voor jou een respectvolle bouwplaats inhoudt..." className="min-h-[100px]" {...field} />
                     </FormControl>
@@ -560,7 +560,7 @@ const MembershipForm = ({
               <FormField control={form.control} name="boundaryBehavior" render={({
               field
             }) => <FormItem>
-                    <FormLabel>Wat doe jij als je grensoverschrijdend gedrag opmerkt?</FormLabel>
+                    <FormLabel>Wat doe jij als je grensoverschrijdend gedrag opmerkt? <span className="text-red-500">*</span></FormLabel>
                     <FormControl>
                       <Textarea placeholder="Beschrijf hoe je zou reageren bij grensoverschrijdend gedrag..." className="min-h-[100px]" {...field} />
                     </FormControl>
