@@ -215,9 +215,8 @@ const MembershipPricingManager = () => {
                       ) : (
                         <div className="flex items-center gap-2">
                           <span className="text-2xl font-bold">
-                            {formatPrice(pricing.price)}
+                            {pricing.yearly_price_display}
                           </span>
-                          <span className="text-muted-foreground">/jaar</span>
                         </div>
                       )}
                     </TableCell>
