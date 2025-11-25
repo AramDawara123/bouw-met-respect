@@ -12,6 +12,7 @@ interface MembershipPricingData {
   price: number;
   yearly_price_display: string;
   employees_range: string;
+  is_quote: boolean;
 }
 
 const ActionItems = () => {
@@ -75,29 +76,15 @@ const ActionItems = () => {
   };
 
   // Transform membership pricing data for display
-  const pricingTiers = pricingData.map((pricing: MembershipPricingData) => ({
+  const allTiers = pricingData.map((pricing: MembershipPricingData) => ({
     id: pricing.membership_type,
     icon: getIconForMembershipType(pricing.membership_type),
     size: pricing.membership_type.charAt(0).toUpperCase() + pricing.membership_type.slice(1),
     employees: pricing.employees_range,
     price: pricing.yearly_price_display,
     popular: pricing.membership_type === 'middelgroot',
-    isQuote: false
+    isQuote: pricing.is_quote || false
   }));
-  
-  // Add offerte option at the end
-  const allTiers = [
-    ...pricingTiers,
-    {
-      id: 'offerte',
-      icon: Award,
-      size: 'Offerte',
-      employees: '50+ medewerkers',
-      price: 'Op maat',
-      popular: false,
-      isQuote: true
-    }
-  ];
 
   const handlePlanClick = (tierId: string) => {
     setSelectedMembershipType(tierId);

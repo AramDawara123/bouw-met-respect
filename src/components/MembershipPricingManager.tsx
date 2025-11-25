@@ -15,6 +15,7 @@ interface MembershipPricing {
   price: number; // in cents
   yearly_price_display: string;
   employees_range: string;
+  is_quote: boolean;
   created_at: string;
   updated_at: string;
 }
@@ -27,7 +28,8 @@ const MembershipPricingManager = () => {
   const [newPricing, setNewPricing] = useState({
     membership_type: '',
     price: 0,
-    employees_range: ''
+    employees_range: '',
+    is_quote: false
   });
   const { toast } = useToast();
 
@@ -79,7 +81,8 @@ const MembershipPricingManager = () => {
         .update({
           price: priceInCents,
           yearly_price_display: priceDisplay,
-          employees_range: editingData.employees_range
+          employees_range: editingData.employees_range,
+          is_quote: editingData.is_quote || false
         })
         .eq('id', editingId);
 
@@ -154,7 +157,8 @@ const MembershipPricingManager = () => {
           membership_type: newPricing.membership_type,
           price: priceInCents,
           yearly_price_display: priceDisplay,
-          employees_range: newPricing.employees_range
+          employees_range: newPricing.employees_range,
+          is_quote: newPricing.is_quote
         });
 
       if (error) throw error;
@@ -166,7 +170,7 @@ const MembershipPricingManager = () => {
 
       window.dispatchEvent(new CustomEvent('membership-pricing-updated'));
       setIsAddDialogOpen(false);
-      setNewPricing({ membership_type: '', price: 0, employees_range: '' });
+      setNewPricing({ membership_type: '', price: 0, employees_range: '', is_quote: false });
       fetchPricingData();
     } catch (error) {
       console.error('Error adding pricing:', error);
@@ -239,7 +243,22 @@ const MembershipPricingManager = () => {
                   placeholder="bijv. 250"
                   value={newPricing.price || ''}
                   onChange={(e) => setNewPricing({ ...newPricing, price: parseFloat(e.target.value) || 0 })}
+                  disabled={newPricing.is_quote}
                 />
+              </div>
+              <div className="space-y-2">
+                <label className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    checked={newPricing.is_quote}
+                    onChange={(e) => setNewPricing({ ...newPricing, is_quote: e.target.checked })}
+                    className="w-4 h-4"
+                  />
+                  <span className="text-sm font-medium">Dit is een offerte (op maat prijs)</span>
+                </label>
+                <p className="text-xs text-muted-foreground">
+                  Als je dit aanvinkt, wordt de prijs weergegeven als "Op maat" op de website
+                </p>
               </div>
               <div className="flex justify-end gap-2 pt-4">
                 <Button variant="outline" onClick={() => setIsAddDialogOpen(false)}>
@@ -272,6 +291,7 @@ const MembershipPricingManager = () => {
                   <TableHead>Lidmaatschapstype</TableHead>
                   <TableHead>Medewerkers Range</TableHead>
                   <TableHead>Prijs per jaar</TableHead>
+                  <TableHead>Type</TableHead>
                   <TableHead>Laatst bijgewerkt</TableHead>
                   <TableHead className="text-right">Acties</TableHead>
                 </TableRow>
@@ -312,6 +332,7 @@ const MembershipPricingManager = () => {
                               price: parseFloat(e.target.value) || 0
                             })}
                             className="w-24"
+                            disabled={editingData.is_quote}
                           />
                         </div>
                       ) : (
@@ -320,6 +341,26 @@ const MembershipPricingManager = () => {
                             {pricing.yearly_price_display}
                           </span>
                         </div>
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      {editingId === pricing.id ? (
+                        <label className="flex items-center gap-2">
+                          <input
+                            type="checkbox"
+                            checked={editingData.is_quote || false}
+                            onChange={(e) => setEditingData({
+                              ...editingData,
+                              is_quote: e.target.checked
+                            })}
+                            className="w-4 h-4"
+                          />
+                          <span className="text-sm">Offerte</span>
+                        </label>
+                      ) : (
+                        <Badge variant={pricing.is_quote ? "secondary" : "outline"}>
+                          {pricing.is_quote ? "Offerte" : "Vast tarief"}
+                        </Badge>
                       )}
                     </TableCell>
                     <TableCell>
