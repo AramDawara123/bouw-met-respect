@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
@@ -17,6 +17,7 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Tag, Check } from "lucide-react";
 import { validateDiscountCode, calculateDiscount, formatDiscountDisplay } from "@/lib/discountUtils";
+import { useMembershipPricing } from "@/hooks/useMembershipPricing";
 const formSchema = z.object({
   firstName: z.string().min(2, "Voornaam moet minimaal 2 karakters bevatten"),
   lastName: z.string().min(2, "Achternaam moet minimaal 2 karakters bevatten"),
@@ -62,9 +63,8 @@ const MembershipForm = ({
   const [appliedDiscount, setAppliedDiscount] = useState<any>(null);
   const [discountError, setDiscountError] = useState<string>("");
   const [checkingDiscount, setCheckingDiscount] = useState(false);
-  const {
-    toast
-  } = useToast();
+  const { toast } = useToast();
+  const { pricingData, loading: pricingLoading } = useMembershipPricing();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -90,7 +90,20 @@ const MembershipForm = ({
   });
 
   const selectedType = form.watch('membershipType');
-  const getAmountFromType = (t: string) => t === 'middelgroot' ? 75000 : t === 'groot' ? 125000 : t === 'offerte' ? 0 : 25000;
+  
+  // Get pricing from database
+  const getAmountFromType = (t: string) => {
+    if (t === 'offerte') return 0;
+    const pricing = pricingData.find(p => p.membership_type === t);
+    return pricing ? pricing.price : 0;
+  };
+  
+  const getPriceDisplay = (t: string) => {
+    if (t === 'offerte') return 'Offerte op maat';
+    const pricing = pricingData.find(p => p.membership_type === t);
+    return pricing ? pricing.yearly_price_display : '€0';
+  };
+  
   const baseAmount = getAmountFromType(selectedType);
   const discountAmount = appliedDiscount ? calculateDiscount(appliedDiscount, baseAmount) : 0;
   const finalAmount = baseAmount - discountAmount;
@@ -259,33 +272,18 @@ const MembershipForm = ({
                   render={({ field }) => (
                     <FormItem>
                        <RadioGroup onValueChange={field.onChange} value={field.value} className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <Label 
-                          htmlFor="klein"
-                          className={`border rounded-lg p-4 cursor-pointer hover:bg-muted/50 transition-colors block ${form.watch('membershipType')==='klein' ? 'border-accent bg-accent/10' : 'border-border'}`}
-                        >
-                          <div className="flex items-center space-x-3">
-                            <RadioGroupItem value="klein" id="klein" />
-                            <span>Klein — €250/jaar</span>
-                          </div>
-                        </Label>
-                        <Label 
-                          htmlFor="middelgroot"
-                          className={`border rounded-lg p-4 cursor-pointer hover:bg-muted/50 transition-colors block ${form.watch('membershipType')==='middelgroot' ? 'border-accent bg-accent/10' : 'border-border'}`}
-                        >
-                          <div className="flex items-center space-x-3">
-                            <RadioGroupItem value="middelgroot" id="middelgroot" />
-                            <span>Middelgroot — €750/jaar</span>
-                          </div>
-                        </Label>
-                        <Label 
-                          htmlFor="groot"
-                          className={`border rounded-lg p-4 cursor-pointer hover:bg-muted/50 transition-colors block ${form.watch('membershipType')==='groot' ? 'border-accent bg-accent/10' : 'border-border'}`}
-                        >
-                          <div className="flex items-center space-x-3">
-                            <RadioGroupItem value="groot" id="groot" />
-                            <span>Groot — €1250/jaar</span>
-                          </div>
-                        </Label>
+                        {pricingData.map((pricing) => (
+                          <Label 
+                            key={pricing.membership_type}
+                            htmlFor={pricing.membership_type}
+                            className={`border rounded-lg p-4 cursor-pointer hover:bg-muted/50 transition-colors block ${form.watch('membershipType')===pricing.membership_type ? 'border-accent bg-accent/10' : 'border-border'}`}
+                          >
+                            <div className="flex items-center space-x-3">
+                              <RadioGroupItem value={pricing.membership_type} id={pricing.membership_type} />
+                              <span>{pricing.membership_type.charAt(0).toUpperCase() + pricing.membership_type.slice(1)} — {pricing.yearly_price_display}</span>
+                            </div>
+                          </Label>
+                        ))}
                         <Label 
                           htmlFor="offerte"
                           className={`border rounded-lg p-4 cursor-pointer hover:bg-muted/50 transition-colors block ${form.watch('membershipType')==='offerte' ? 'border-accent bg-accent/10' : 'border-border'}`}
