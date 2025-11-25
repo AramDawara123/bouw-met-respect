@@ -1445,20 +1445,11 @@ Het Bouw met Respect team
           <div className="p-6 mt-6">
                 <Tabs value={viewMode} onValueChange={value => setViewMode(value as 'memberships' | 'orders' | 'profiles' | 'products' | 'partners' | 'partner-pricing' | 'lidmaatschappen-prijzen' | 'onze-partners-prijzen' | 'discounts' | 'qrcode')}>
                   
-                  <TabsContent value="lidmaatschappen-prijzen" className="space-y-6">
-                    <div className="space-y-6">
-                      <Card>
-                        <CardHeader>
-                          <CardTitle className="text-blue-600">Lidmaatschappen Prijzen</CardTitle>
-                          <CardDescription>
-                            Beheer de prijzen voor lidmaatschappen (voor klanten/leden)
-                          </CardDescription>
-                        </CardHeader>
-                      </Card>
-                      
-                      <ActionItemsPricingManager />
-                    </div>
-                  </TabsContent>
+                <TabsContent value="lidmaatschappen-prijzen" className="space-y-6">
+                  <div className="space-y-6">
+                    <MembershipPricingManager />
+                  </div>
+                </TabsContent>
 
                   <TabsContent value="onze-partners-prijzen" className="space-y-6">
                     <div className="space-y-6">
