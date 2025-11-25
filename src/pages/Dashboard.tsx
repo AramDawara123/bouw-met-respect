@@ -2394,13 +2394,13 @@ Het Bouw met Respect team
                 >
                   Annuleren
                 </Button>
-                <Button onClick={updateOrder}>Opslaan</Button>
+                 <Button onClick={updateOrder}>Opslaan</Button>
               </div>
             </div>}
         </DialogContent>
       </Dialog>
 
-      </SidebarProvider>
+    </SidebarProvider>
   );
 };
 
