@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Building, Menu, X, ShoppingCart } from "lucide-react";
+import { Building, Menu, X, ShoppingCart, Heart } from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import MembershipForm from "./MembershipForm";
@@ -41,7 +41,10 @@ const Navbar = () => {
                 <ShoppingCart className="w-4 h-4" />
                 Webshop
               </Link>
-              
+              <Link to="/donatie" className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors">
+                <Heart className="w-4 h-4" />
+                Doneren
+              </Link>
               
               <Button className="ml-4" onClick={handleMembershipClick}>
                 Sluit je aan bij de beweging
@@ -76,7 +79,10 @@ const Navbar = () => {
                   <ShoppingCart className="w-4 h-4" />
                   Webshop
                 </Link>
-                
+                <Link to="/donatie" className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors py-2" onClick={() => setIsMenuOpen(false)}>
+                  <Heart className="w-4 h-4" />
+                  Doneren
+                </Link>
                 
                 <Button className="w-full mt-4" onClick={handleMembershipClick}>
                   Sluit je aan bij de beweging
