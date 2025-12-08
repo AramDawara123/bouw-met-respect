@@ -23,6 +23,7 @@ import PartnershipSuccess from "./pages/PartnershipSuccess";
 import OrderVerification from "./pages/OrderVerification";
 import OrderThankYou from "./pages/OrderThankYou";
 import Donatie from "./pages/Donatie";
+import LandingPage from "./pages/LandingPage";
 
 import NotFound from "./pages/NotFound";
 
@@ -53,6 +54,9 @@ const AppContent = () => {
         <Route path="/order-verification/:orderId" element={<OrderVerification />} />
         <Route path="/order-thank-you" element={<OrderThankYou />} />
         <Route path="/donatie" element={<Donatie />} />
+        
+        {/* Dynamic SEO landing pages */}
+        <Route path="/:slug" element={<LandingPage />} />
         
         {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
         <Route path="*" element={<NotFound />} />
