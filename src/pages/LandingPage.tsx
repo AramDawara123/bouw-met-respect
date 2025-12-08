@@ -119,7 +119,7 @@ const LandingPage = () => {
   const missionGoals = [
     { value: '1 op 5', label: 'Bouwvakkers ervaart grensoverschrijdend gedrag', icon: Users },
     { value: '100%', label: 'Vertrouwelijke behandeling van meldingen', icon: Shield },
-    { value: '24/7', label: 'Bereikbaar voor ondersteuning', icon: Phone },
+    { value: 'Snel', label: 'Persoonlijke reactie op meldingen', icon: Phone },
     { value: '0', label: 'Tolerantie voor ongewenst gedrag', icon: Heart },
   ];
 
@@ -180,7 +180,7 @@ const LandingPage = () => {
                   Sluit je aan <ArrowRight className="ml-2 w-6 h-6" />
                 </Button>
                 <Link to="/partner">
-                  <Button size="lg" variant="outline" className="text-lg px-10 py-7 border-2 border-white/30 text-white hover:bg-white/10 backdrop-blur-sm transition-all duration-300 hover:scale-105">
+                  <Button size="lg" variant="outline" className="text-lg px-10 py-7 border-2 border-primary/50 text-primary hover:bg-primary/10 backdrop-blur-sm transition-all duration-300 hover:scale-105">
                     Word partner
                   </Button>
                 </Link>
@@ -478,7 +478,7 @@ const LandingPage = () => {
                   Word lid
                 </Button>
                 <Link to="/contact">
-                  <Button size="lg" variant="outline" className="text-lg px-10 py-7 border-2 border-white/30 text-white hover:bg-white/10 backdrop-blur-sm transition-all duration-300 hover:scale-105">
+                  <Button size="lg" variant="outline" className="text-lg px-10 py-7 border-2 border-accent/50 text-accent hover:bg-accent/10 backdrop-blur-sm transition-all duration-300 hover:scale-105">
                     <Phone className="mr-2 w-5 h-5" />
                     Neem contact op
                   </Button>
