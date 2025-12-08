@@ -235,6 +235,72 @@ export type Database = {
         }
         Relationships: []
       }
+      landing_pages: {
+        Row: {
+          created_at: string
+          cta_text: string | null
+          display_order: number | null
+          h1_title: string
+          id: string
+          industry: string | null
+          intro_text: string
+          is_published: boolean | null
+          main_content: string
+          meta_description: string
+          meta_keywords: string | null
+          problem_type: string | null
+          region: string | null
+          schema_markup: Json | null
+          slug: string
+          solutions_text: string | null
+          statistics: Json | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          cta_text?: string | null
+          display_order?: number | null
+          h1_title: string
+          id?: string
+          industry?: string | null
+          intro_text: string
+          is_published?: boolean | null
+          main_content: string
+          meta_description: string
+          meta_keywords?: string | null
+          problem_type?: string | null
+          region?: string | null
+          schema_markup?: Json | null
+          slug: string
+          solutions_text?: string | null
+          statistics?: Json | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          cta_text?: string | null
+          display_order?: number | null
+          h1_title?: string
+          id?: string
+          industry?: string | null
+          intro_text?: string
+          is_published?: boolean | null
+          main_content?: string
+          meta_description?: string
+          meta_keywords?: string | null
+          problem_type?: string | null
+          region?: string | null
+          schema_markup?: Json | null
+          slug?: string
+          solutions_text?: string | null
+          statistics?: Json | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       membership_pricing: {
         Row: {
           created_at: string
