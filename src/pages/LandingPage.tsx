@@ -4,7 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import SEO from '@/components/SEO';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Shield, Users, Building2, Phone, ArrowRight, CheckCircle, MapPin, Heart, MessageCircle, Award } from 'lucide-react';
+import { Shield, Users, Building2, Phone, ArrowRight, CheckCircle, MapPin, Heart, MessageCircle, Award, Target } from 'lucide-react';
 import MembershipForm from '@/components/MembershipForm';
 import { useState } from 'react';
 import Footer from '@/components/Footer';
@@ -115,27 +115,13 @@ const LandingPage = () => {
     ...page.schema_markup
   };
 
-  const statisticsLabels: Record<string, string> = {
-    reports_region: 'Meldingen',
-    companies_active: 'Actieve bedrijven',
-    workers_helped: 'Medewerkers geholpen',
-    intimidation_reports: 'Intimidatie meldingen',
-    resolved_cases: 'Opgeloste zaken',
-    avg_resolution_days: 'Gem. oplostijd (dagen)',
-    bullying_reports: 'Pestmeldingen',
-    companies_trained: 'Bedrijven getraind',
-    workers_region: 'Werknemers in regio',
-    prevention_sessions: 'Preventiesessies',
-    discrimination_reports: 'Discriminatie meldingen',
-    legal_support_cases: 'Juridische ondersteuning',
-    diversity_trainings: 'Diversiteitstrainingen',
-    active_projects: 'Actieve projecten',
-    workers_south: 'Werknemers Zuid',
-    partner_companies: 'Partnerbedrijven',
-    harbor_projects: 'Havenprojecten',
-    international_workers: 'Internationale werknemers',
-    reports_harbor: 'Haven meldingen',
-  };
+  // Mission-focused goals instead of achieved results
+  const missionGoals = [
+    { value: '1 op 5', label: 'Bouwvakkers ervaart grensoverschrijdend gedrag', icon: Users },
+    { value: '100%', label: 'Vertrouwelijke behandeling van meldingen', icon: Shield },
+    { value: '24/7', label: 'Bereikbaar voor ondersteuning', icon: Phone },
+    { value: '0', label: 'Tolerantie voor ongewenst gedrag', icon: Heart },
+  ];
 
   return (
     <>
@@ -226,42 +212,47 @@ const LandingPage = () => {
           </div>
         </section>
 
-        {/* Statistics Section with Cards */}
-        {page.statistics && Object.keys(page.statistics).length > 0 && (
-          <section className="py-20 bg-gradient-to-b from-muted/50 to-background relative">
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_50%,hsl(var(--primary)/0.05),transparent_50%)]" />
-            <div className="container mx-auto px-4 relative">
-              <div className="text-center mb-12">
-                <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-                  Onze Impact in {page.region || 'de Bouwsector'}
-                </h2>
-                <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-                  Samen werken we aan een veiligere en respectvollere werkomgeving
-                </p>
+        {/* Mission Goals Section */}
+        <section className="py-20 bg-gradient-to-b from-muted/50 to-background relative">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_50%,hsl(var(--primary)/0.05),transparent_50%)]" />
+          <div className="container mx-auto px-4 relative">
+            <div className="text-center mb-12">
+              <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-2 rounded-full mb-6">
+                <Target className="w-4 h-4" />
+                <span className="text-sm font-medium">Onze missie</span>
               </div>
-              
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-                {Object.entries(page.statistics).slice(0, 4).map(([key, value], index) => (
-                  <Card 
-                    key={key} 
-                    className="text-center border-none shadow-xl bg-card hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 animate-scale-in group overflow-hidden"
-                    style={{ animationDelay: `${index * 0.1}s` }}
-                  >
-                    <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-accent/5 opacity-0 group-hover:opacity-100 transition-opacity" />
-                    <CardContent className="pt-8 pb-6 relative">
-                      <div className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent mb-3">
-                        {typeof value === 'number' ? value.toLocaleString() : String(value)}
-                      </div>
-                      <div className="text-sm text-muted-foreground font-medium">
-                        {statisticsLabels[key] || key.replace(/_/g, ' ')}
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
+              <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
+                Waar Wij Voor Staan
+              </h2>
+              <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+                Samen bouwen we aan een veiligere en respectvollere bouwsector in {page.region || 'Nederland'}
+              </p>
             </div>
-          </section>
-        )}
+            
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+              {missionGoals.map((goal, index) => (
+                <Card 
+                  key={goal.label} 
+                  className="text-center border-none shadow-xl bg-card hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 animate-scale-in group overflow-hidden"
+                  style={{ animationDelay: `${index * 0.1}s` }}
+                >
+                  <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-accent/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <CardContent className="pt-8 pb-6 relative">
+                    <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
+                      <goal.icon className="w-6 h-6 text-primary" />
+                    </div>
+                    <div className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent mb-3">
+                      {goal.value}
+                    </div>
+                    <div className="text-sm text-muted-foreground font-medium leading-tight">
+                      {goal.label}
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </div>
+        </section>
 
         {/* Main Content Section with Image */}
         <section className="py-20 md:py-28">
@@ -375,29 +366,42 @@ const LandingPage = () => {
           </section>
         )}
 
-        {/* Testimonial / Quote Section */}
+        {/* Mission Statement Section */}
         <section className="py-20 bg-secondary relative overflow-hidden">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,hsl(var(--primary)/0.1),transparent_70%)]" />
           
           <div className="container mx-auto px-4 relative">
             <div className="max-w-4xl mx-auto text-center">
-              <div className="relative">
-                <div className="absolute -top-8 left-1/2 -translate-x-1/2 text-8xl text-primary/20 font-serif">"</div>
-                <blockquote className="text-2xl md:text-3xl text-white font-medium leading-relaxed mb-8 pt-8">
-                  Samen bouwen we aan een sector waar respect en veiligheid voorop staan. 
-                  Elke stem telt, elke melding maakt verschil.
-                </blockquote>
+              <div className="inline-flex items-center gap-2 bg-white/10 text-white px-4 py-2 rounded-full mb-8">
+                <Heart className="w-4 h-4" />
+                <span className="text-sm font-medium">Onze belofte</span>
               </div>
               
-              <div className="flex items-center justify-center gap-4">
-                <img 
-                  src={workerPortrait} 
-                  alt="Bouwvakker"
-                  className="w-16 h-16 rounded-full object-cover border-4 border-accent shadow-xl"
-                />
-                <div className="text-left">
-                  <p className="text-white font-semibold">Stichting Bouw met Respect</p>
-                  <p className="text-white/70 text-sm">Voor een veiligere bouwsector</p>
+              <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
+                Wij geloven in een bouwsector waar respect de norm is
+              </h2>
+              
+              <p className="text-xl text-white/90 leading-relaxed mb-8">
+                Grensoverschrijdend gedrag hoort nergens thuis. Wij zetten ons in voor een veilige 
+                werkplek waar iedereen met plezier kan werken. Een plek waar problemen bespreekbaar 
+                zijn en waar je ondersteuning krijgt wanneer je die nodig hebt.
+              </p>
+
+              <div className="grid md:grid-cols-3 gap-6 mt-12">
+                <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 text-left">
+                  <Shield className="w-8 h-8 text-accent mb-4" />
+                  <h3 className="text-white font-semibold mb-2">Vertrouwelijk</h3>
+                  <p className="text-white/70 text-sm">Alle meldingen worden strikt vertrouwelijk behandeld</p>
+                </div>
+                <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 text-left">
+                  <Users className="w-8 h-8 text-accent mb-4" />
+                  <h3 className="text-white font-semibold mb-2">Professioneel</h3>
+                  <p className="text-white/70 text-sm">Ondersteuning door ervaren professionals</p>
+                </div>
+                <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 text-left">
+                  <Heart className="w-8 h-8 text-accent mb-4" />
+                  <h3 className="text-white font-semibold mb-2">Menselijk</h3>
+                  <p className="text-white/70 text-sm">Jouw welzijn staat altijd centraal</p>
                 </div>
               </div>
             </div>
