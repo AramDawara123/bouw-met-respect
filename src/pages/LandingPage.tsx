@@ -4,10 +4,13 @@ import { supabase } from '@/integrations/supabase/client';
 import SEO from '@/components/SEO';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Shield, Users, Building2, Phone, ArrowRight, CheckCircle, MapPin } from 'lucide-react';
+import { Shield, Users, Building2, Phone, ArrowRight, CheckCircle, MapPin, Heart, MessageCircle, Award } from 'lucide-react';
 import MembershipForm from '@/components/MembershipForm';
 import { useState } from 'react';
 import Footer from '@/components/Footer';
+import heroImage from '@/assets/landing-hero-construction.jpg';
+import workerPortrait from '@/assets/landing-worker-portrait.jpg';
+import teamMeeting from '@/assets/landing-team-meeting.jpg';
 
 interface LandingPageData {
   id: string;
@@ -63,18 +66,30 @@ const LandingPage = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary/5 via-background to-accent/5">
+        <div className="flex flex-col items-center gap-4">
+          <div className="relative">
+            <div className="animate-spin rounded-full h-16 w-16 border-4 border-primary/20 border-t-primary"></div>
+            <Shield className="absolute inset-0 m-auto w-6 h-6 text-primary" />
+          </div>
+          <p className="text-muted-foreground animate-pulse">Pagina laden...</p>
+        </div>
       </div>
     );
   }
 
   if (error || !page) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center gap-4">
-        <h1 className="text-2xl font-bold">Pagina niet gevonden</h1>
+      <div className="min-h-screen flex flex-col items-center justify-center gap-6 bg-gradient-to-br from-primary/5 via-background to-accent/5">
+        <div className="text-center">
+          <h1 className="text-3xl font-bold text-foreground mb-2">Pagina niet gevonden</h1>
+          <p className="text-muted-foreground">De pagina die je zoekt bestaat niet of is verplaatst.</p>
+        </div>
         <Link to="/">
-          <Button>Terug naar home</Button>
+          <Button size="lg" className="gap-2">
+            <ArrowRight className="w-4 h-4 rotate-180" />
+            Terug naar home
+          </Button>
         </Link>
       </div>
     );
@@ -100,6 +115,28 @@ const LandingPage = () => {
     ...page.schema_markup
   };
 
+  const statisticsLabels: Record<string, string> = {
+    reports_region: 'Meldingen',
+    companies_active: 'Actieve bedrijven',
+    workers_helped: 'Medewerkers geholpen',
+    intimidation_reports: 'Intimidatie meldingen',
+    resolved_cases: 'Opgeloste zaken',
+    avg_resolution_days: 'Gem. oplostijd (dagen)',
+    bullying_reports: 'Pestmeldingen',
+    companies_trained: 'Bedrijven getraind',
+    workers_region: 'Werknemers in regio',
+    prevention_sessions: 'Preventiesessies',
+    discrimination_reports: 'Discriminatie meldingen',
+    legal_support_cases: 'Juridische ondersteuning',
+    diversity_trainings: 'Diversiteitstrainingen',
+    active_projects: 'Actieve projecten',
+    workers_south: 'Werknemers Zuid',
+    partner_companies: 'Partnerbedrijven',
+    harbor_projects: 'Havenprojecten',
+    international_workers: 'Internationale werknemers',
+    reports_harbor: 'Haven meldingen',
+  };
+
   return (
     <>
       <SEO
@@ -113,57 +150,110 @@ const LandingPage = () => {
         {JSON.stringify(schemaMarkup)}
       </script>
 
-      <div className="min-h-screen bg-background">
-        {/* Hero Section */}
-        <section className="relative py-20 md:py-32 bg-gradient-to-br from-primary/10 via-background to-secondary/10">
-          <div className="container mx-auto px-4">
-            <div className="max-w-4xl mx-auto text-center">
+      <div className="min-h-screen bg-background overflow-hidden">
+        {/* Hero Section with Image Background */}
+        <section className="relative min-h-[85vh] flex items-center">
+          {/* Background Image with Overlay */}
+          <div className="absolute inset-0 z-0">
+            <img 
+              src={heroImage} 
+              alt="Bouwvakkers op een bouwplaats"
+              className="w-full h-full object-cover"
+            />
+            <div className="absolute inset-0 bg-gradient-to-r from-secondary/95 via-secondary/80 to-secondary/60" />
+            <div className="absolute inset-0 bg-gradient-to-t from-secondary/90 via-transparent to-transparent" />
+          </div>
+
+          {/* Decorative Elements */}
+          <div className="absolute top-20 right-10 w-72 h-72 bg-accent/20 rounded-full blur-3xl animate-pulse" />
+          <div className="absolute bottom-20 left-10 w-96 h-96 bg-primary/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
+
+          <div className="container mx-auto px-4 relative z-10">
+            <div className="max-w-4xl animate-fade-in">
               {page.region && (
-                <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-2 rounded-full mb-6">
-                  <MapPin className="w-4 h-4" />
-                  <span className="text-sm font-medium">Regio {page.region}</span>
+                <div className="inline-flex items-center gap-2 bg-accent text-accent-foreground px-5 py-2.5 rounded-full mb-8 animate-bounce-in shadow-lg">
+                  <MapPin className="w-5 h-5" />
+                  <span className="font-semibold">Regio {page.region}</span>
                 </div>
               )}
               
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground mb-6 leading-tight">
+              <h1 className="text-4xl md:text-5xl lg:text-7xl font-bold text-white mb-8 leading-tight animate-slide-up">
                 {page.h1_title}
               </h1>
               
-              <p className="text-lg md:text-xl text-muted-foreground mb-8 leading-relaxed">
+              <p className="text-xl md:text-2xl text-white/90 mb-10 leading-relaxed max-w-3xl animate-slide-up" style={{ animationDelay: '0.2s' }}>
                 {page.intro_text}
               </p>
               
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <div className="flex flex-col sm:flex-row gap-4 animate-slide-up" style={{ animationDelay: '0.4s' }}>
                 <Button 
                   size="lg" 
-                  className="text-lg px-8"
+                  className="text-lg px-10 py-7 bg-accent hover:bg-accent/90 text-accent-foreground shadow-2xl hover:shadow-accent/25 transition-all duration-300 hover:scale-105"
                   onClick={() => setShowMembershipForm(true)}
                 >
-                  Sluit je aan <ArrowRight className="ml-2 w-5 h-5" />
+                  Sluit je aan <ArrowRight className="ml-2 w-6 h-6" />
                 </Button>
                 <Link to="/partner">
-                  <Button size="lg" variant="outline" className="text-lg px-8">
+                  <Button size="lg" variant="outline" className="text-lg px-10 py-7 border-2 border-white/30 text-white hover:bg-white/10 backdrop-blur-sm transition-all duration-300 hover:scale-105">
                     Word partner
                   </Button>
                 </Link>
               </div>
+
+              {/* Trust Badges */}
+              <div className="flex flex-wrap gap-6 mt-12 animate-fade-in" style={{ animationDelay: '0.6s' }}>
+                <div className="flex items-center gap-2 text-white/80">
+                  <CheckCircle className="w-5 h-5 text-accent" />
+                  <span>Vertrouwelijk meldpunt</span>
+                </div>
+                <div className="flex items-center gap-2 text-white/80">
+                  <CheckCircle className="w-5 h-5 text-accent" />
+                  <span>Professionele ondersteuning</span>
+                </div>
+                <div className="flex items-center gap-2 text-white/80">
+                  <CheckCircle className="w-5 h-5 text-accent" />
+                  <span>Landelijk netwerk</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Scroll Indicator */}
+          <div className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce">
+            <div className="w-8 h-12 rounded-full border-2 border-white/30 flex items-start justify-center p-2">
+              <div className="w-1.5 h-3 bg-white/60 rounded-full animate-pulse" />
             </div>
           </div>
         </section>
 
-        {/* Statistics Section */}
+        {/* Statistics Section with Cards */}
         {page.statistics && Object.keys(page.statistics).length > 0 && (
-          <section className="py-16 bg-muted/30">
-            <div className="container mx-auto px-4">
+          <section className="py-20 bg-gradient-to-b from-muted/50 to-background relative">
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_50%,hsl(var(--primary)/0.05),transparent_50%)]" />
+            <div className="container mx-auto px-4 relative">
+              <div className="text-center mb-12">
+                <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
+                  Onze Impact in {page.region || 'de Bouwsector'}
+                </h2>
+                <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+                  Samen werken we aan een veiligere en respectvollere werkomgeving
+                </p>
+              </div>
+              
               <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-                {Object.entries(page.statistics).map(([key, value]) => (
-                  <Card key={key} className="text-center">
-                    <CardContent className="pt-6">
-                      <div className="text-3xl md:text-4xl font-bold text-primary mb-2">
-                        {String(value)}
+                {Object.entries(page.statistics).slice(0, 4).map(([key, value], index) => (
+                  <Card 
+                    key={key} 
+                    className="text-center border-none shadow-xl bg-card hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 animate-scale-in group overflow-hidden"
+                    style={{ animationDelay: `${index * 0.1}s` }}
+                  >
+                    <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-accent/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+                    <CardContent className="pt-8 pb-6 relative">
+                      <div className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent mb-3">
+                        {typeof value === 'number' ? value.toLocaleString() : String(value)}
                       </div>
-                      <div className="text-sm text-muted-foreground capitalize">
-                        {key.replace(/_/g, ' ')}
+                      <div className="text-sm text-muted-foreground font-medium">
+                        {statisticsLabels[key] || key.replace(/_/g, ' ')}
                       </div>
                     </CardContent>
                   </Card>
@@ -173,90 +263,184 @@ const LandingPage = () => {
           </section>
         )}
 
-        {/* Main Content Section */}
-        <section className="py-16 md:py-24">
+        {/* Main Content Section with Image */}
+        <section className="py-20 md:py-28">
           <div className="container mx-auto px-4">
-            <div className="max-w-4xl mx-auto">
-              <div 
-                className="prose prose-lg max-w-none text-foreground"
-                dangerouslySetInnerHTML={{ __html: page.main_content }}
-              />
+            <div className="grid lg:grid-cols-2 gap-16 items-center">
+              {/* Image Side */}
+              <div className="relative animate-fade-in order-2 lg:order-1">
+                <div className="relative rounded-3xl overflow-hidden shadow-2xl">
+                  <img 
+                    src={teamMeeting} 
+                    alt="Bouwteam in overleg"
+                    className="w-full h-[500px] object-cover"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-secondary/60 via-transparent to-transparent" />
+                </div>
+                
+                {/* Floating Card */}
+                <Card className="absolute -bottom-8 -right-8 p-6 shadow-2xl bg-card border-none max-w-xs animate-bounce-in hidden md:block">
+                  <div className="flex items-start gap-4">
+                    <div className="w-14 h-14 rounded-full bg-accent/20 flex items-center justify-center flex-shrink-0">
+                      <Heart className="w-7 h-7 text-accent" />
+                    </div>
+                    <div>
+                      <p className="font-semibold text-foreground">Veilige werkomgeving</p>
+                      <p className="text-sm text-muted-foreground">Voor iedereen in de bouw</p>
+                    </div>
+                  </div>
+                </Card>
+
+                {/* Decorative Element */}
+                <div className="absolute -top-6 -left-6 w-24 h-24 bg-primary/10 rounded-2xl -z-10" />
+                <div className="absolute -bottom-6 -left-6 w-16 h-16 bg-accent/20 rounded-xl -z-10" />
+              </div>
+
+              {/* Content Side */}
+              <div className="order-1 lg:order-2">
+                <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-2 rounded-full mb-6">
+                  <MessageCircle className="w-4 h-4" />
+                  <span className="text-sm font-medium">Ons verhaal</span>
+                </div>
+                
+                <div 
+                  className="prose prose-lg max-w-none text-foreground 
+                    prose-headings:text-foreground prose-headings:font-bold
+                    prose-h2:text-2xl prose-h2:md:text-3xl prose-h2:mt-8 prose-h2:mb-4
+                    prose-h3:text-xl prose-h3:mt-6 prose-h3:mb-3
+                    prose-p:text-muted-foreground prose-p:leading-relaxed
+                    prose-ul:text-muted-foreground prose-li:marker:text-primary
+                    prose-strong:text-foreground"
+                  dangerouslySetInnerHTML={{ __html: page.main_content }}
+                />
+              </div>
             </div>
           </div>
         </section>
 
-        {/* Solutions Section */}
+        {/* Solutions Section with Modern Cards */}
         {page.solutions_text && (
-          <section className="py-16 bg-primary/5">
-            <div className="container mx-auto px-4">
-              <div className="max-w-4xl mx-auto">
-                <h2 className="text-3xl font-bold text-foreground mb-8 text-center">
-                  Onze Oplossingen voor {page.region || 'Uw Regio'}
-                </h2>
-                
-                <div className="grid md:grid-cols-3 gap-6 mb-12">
-                  <Card className="text-center p-6">
-                    <Shield className="w-12 h-12 text-primary mx-auto mb-4" />
-                    <h3 className="font-semibold mb-2">Preventie & Training</h3>
-                    <p className="text-sm text-muted-foreground">
-                      Voorkom grensoverschrijdend gedrag met onze trainingen en bewustwordingsprogramma's.
-                    </p>
-                  </Card>
-                  
-                  <Card className="text-center p-6">
-                    <Users className="w-12 h-12 text-primary mx-auto mb-4" />
-                    <h3 className="font-semibold mb-2">Netwerk & Support</h3>
-                    <p className="text-sm text-muted-foreground">
-                      Verbind met gelijkgestemde professionals die respect voorop stellen.
-                    </p>
-                  </Card>
-                  
-                  <Card className="text-center p-6">
-                    <Building2 className="w-12 h-12 text-primary mx-auto mb-4" />
-                    <h3 className="font-semibold mb-2">Certificering</h3>
-                    <p className="text-sm text-muted-foreground">
-                      Toon aan dat uw bedrijf zich inzet voor een veilige werkomgeving.
-                    </p>
-                  </Card>
+          <section className="py-20 bg-gradient-to-br from-primary/5 via-background to-accent/5 relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-1/2 h-full bg-[radial-gradient(circle_at_100%_0%,hsl(var(--accent)/0.1),transparent_50%)]" />
+            
+            <div className="container mx-auto px-4 relative">
+              <div className="text-center mb-16">
+                <div className="inline-flex items-center gap-2 bg-accent/20 text-accent-foreground px-4 py-2 rounded-full mb-6">
+                  <Award className="w-4 h-4" />
+                  <span className="text-sm font-medium">Onze oplossingen</span>
                 </div>
+                <h2 className="text-3xl md:text-5xl font-bold text-foreground mb-4">
+                  Wat Wij Bieden in {page.region || 'Uw Regio'}
+                </h2>
+                <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+                  Concrete hulp en ondersteuning voor een veiligere werkomgeving
+                </p>
+              </div>
+              
+              <div className="grid md:grid-cols-3 gap-8 mb-16">
+                {[
+                  { icon: Shield, title: 'Preventie & Training', desc: 'Voorkom grensoverschrijdend gedrag met onze trainingen en bewustwordingsprogramma\'s.', color: 'primary' },
+                  { icon: Users, title: 'Netwerk & Support', desc: 'Verbind met gelijkgestemde professionals die respect voorop stellen.', color: 'accent' },
+                  { icon: Building2, title: 'Certificering', desc: 'Toon aan dat uw bedrijf zich inzet voor een veilige werkomgeving.', color: 'primary' }
+                ].map((item, index) => (
+                  <Card 
+                    key={item.title}
+                    className="group relative overflow-hidden border-none shadow-xl hover:shadow-2xl transition-all duration-500 hover:-translate-y-3 animate-scale-in bg-card"
+                    style={{ animationDelay: `${index * 0.15}s` }}
+                  >
+                    <div className={`absolute top-0 left-0 w-full h-1 bg-${item.color}`} />
+                    <CardContent className="p-8">
+                      <div className={`w-16 h-16 rounded-2xl bg-${item.color}/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300`}>
+                        <item.icon className={`w-8 h-8 text-${item.color}`} />
+                      </div>
+                      <h3 className="text-xl font-bold text-foreground mb-3">{item.title}</h3>
+                      <p className="text-muted-foreground leading-relaxed">{item.desc}</p>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
 
-                <div 
-                  className="prose prose-lg max-w-none text-foreground"
-                  dangerouslySetInnerHTML={{ __html: page.solutions_text }}
-                />
+              <div className="max-w-4xl mx-auto">
+                <Card className="border-none shadow-xl bg-card overflow-hidden">
+                  <CardContent className="p-8 md:p-12">
+                    <div 
+                      className="prose prose-lg max-w-none text-foreground
+                        prose-p:text-muted-foreground prose-p:leading-relaxed"
+                      dangerouslySetInnerHTML={{ __html: page.solutions_text }}
+                    />
+                  </CardContent>
+                </Card>
               </div>
             </div>
           </section>
         )}
 
+        {/* Testimonial / Quote Section */}
+        <section className="py-20 bg-secondary relative overflow-hidden">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,hsl(var(--primary)/0.1),transparent_70%)]" />
+          
+          <div className="container mx-auto px-4 relative">
+            <div className="max-w-4xl mx-auto text-center">
+              <div className="relative">
+                <div className="absolute -top-8 left-1/2 -translate-x-1/2 text-8xl text-primary/20 font-serif">"</div>
+                <blockquote className="text-2xl md:text-3xl text-white font-medium leading-relaxed mb-8 pt-8">
+                  Samen bouwen we aan een sector waar respect en veiligheid voorop staan. 
+                  Elke stem telt, elke melding maakt verschil.
+                </blockquote>
+              </div>
+              
+              <div className="flex items-center justify-center gap-4">
+                <img 
+                  src={workerPortrait} 
+                  alt="Bouwvakker"
+                  className="w-16 h-16 rounded-full object-cover border-4 border-accent shadow-xl"
+                />
+                <div className="text-left">
+                  <p className="text-white font-semibold">Stichting Bouw met Respect</p>
+                  <p className="text-white/70 text-sm">Voor een veiligere bouwsector</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
         {/* Regional Partners Section */}
         {partners && partners.length > 0 && (
-          <section className="py-16">
+          <section className="py-20 bg-muted/30">
             <div className="container mx-auto px-4">
-              <h2 className="text-3xl font-bold text-foreground mb-8 text-center">
-                Partners in {page.region || 'de Regio'}
-              </h2>
+              <div className="text-center mb-12">
+                <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
+                  Partners in {page.region || 'de Regio'}
+                </h2>
+                <p className="text-muted-foreground text-lg">
+                  Bedrijven die zich inzetten voor een veiligere werkplek
+                </p>
+              </div>
               
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
-                {partners.map((partner) => (
-                  <Card key={partner.id} className="p-4 flex items-center justify-center">
+                {partners.map((partner, index) => (
+                  <Card 
+                    key={partner.id} 
+                    className="p-6 flex items-center justify-center border-none shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 bg-card animate-scale-in h-24"
+                    style={{ animationDelay: `${index * 0.05}s` }}
+                  >
                     {partner.logo_url ? (
                       <img 
                         src={partner.logo_url} 
                         alt={partner.name}
-                        className="max-h-16 object-contain"
+                        className="max-h-12 object-contain grayscale hover:grayscale-0 transition-all duration-300"
                       />
                     ) : (
-                      <span className="text-sm font-medium text-center">{partner.name}</span>
+                      <span className="text-sm font-medium text-center text-muted-foreground">{partner.name}</span>
                     )}
                   </Card>
                 ))}
               </div>
               
-              <div className="text-center mt-8">
+              <div className="text-center mt-10">
                 <Link to="/onze-partners">
-                  <Button variant="outline">
-                    Bekijk alle partners <ArrowRight className="ml-2 w-4 h-4" />
+                  <Button variant="outline" size="lg" className="gap-2 hover:scale-105 transition-transform">
+                    Bekijk alle partners <ArrowRight className="w-4 h-4" />
                   </Button>
                 </Link>
               </div>
@@ -265,31 +449,37 @@ const LandingPage = () => {
         )}
 
         {/* CTA Section */}
-        <section className="py-16 md:py-24 bg-primary text-primary-foreground">
-          <div className="container mx-auto px-4 text-center">
-            <h2 className="text-3xl md:text-4xl font-bold mb-6">
-              {page.cta_text || `Maak het verschil in ${page.region || 'de bouw'}`}
-            </h2>
-            
-            <p className="text-lg opacity-90 mb-8 max-w-2xl mx-auto">
-              Sluit je aan bij de beweging voor een veiligere en respectvollere bouwsector.
-            </p>
-            
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button 
-                size="lg" 
-                variant="secondary"
-                className="text-lg px-8"
-                onClick={() => setShowMembershipForm(true)}
-              >
-                Word lid
-              </Button>
-              <Link to="/contact">
-                <Button size="lg" variant="outline" className="text-lg px-8 border-primary-foreground text-primary-foreground hover:bg-primary-foreground hover:text-primary">
-                  <Phone className="mr-2 w-5 h-5" />
-                  Neem contact op
+        <section className="py-24 md:py-32 bg-gradient-to-br from-primary via-primary to-secondary relative overflow-hidden">
+          {/* Decorative Elements */}
+          <div className="absolute top-10 left-10 w-64 h-64 bg-white/5 rounded-full blur-3xl" />
+          <div className="absolute bottom-10 right-10 w-80 h-80 bg-accent/20 rounded-full blur-3xl" />
+          
+          <div className="container mx-auto px-4 text-center relative">
+            <div className="max-w-3xl mx-auto">
+              <h2 className="text-3xl md:text-5xl font-bold text-white mb-6 animate-slide-up">
+                {page.cta_text || `Maak het verschil in ${page.region || 'de bouw'}`}
+              </h2>
+              
+              <p className="text-xl text-white/90 mb-10 leading-relaxed animate-slide-up" style={{ animationDelay: '0.1s' }}>
+                Sluit je aan bij de beweging voor een veiligere en respectvollere bouwsector. 
+                Samen maken we het verschil.
+              </p>
+              
+              <div className="flex flex-col sm:flex-row gap-4 justify-center animate-slide-up" style={{ animationDelay: '0.2s' }}>
+                <Button 
+                  size="lg" 
+                  className="text-lg px-10 py-7 bg-accent hover:bg-accent/90 text-accent-foreground shadow-2xl hover:shadow-accent/25 transition-all duration-300 hover:scale-105"
+                  onClick={() => setShowMembershipForm(true)}
+                >
+                  Word lid
                 </Button>
-              </Link>
+                <Link to="/contact">
+                  <Button size="lg" variant="outline" className="text-lg px-10 py-7 border-2 border-white/30 text-white hover:bg-white/10 backdrop-blur-sm transition-all duration-300 hover:scale-105">
+                    <Phone className="mr-2 w-5 h-5" />
+                    Neem contact op
+                  </Button>
+                </Link>
+              </div>
             </div>
           </div>
         </section>
