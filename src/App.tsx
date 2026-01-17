@@ -24,6 +24,7 @@ import OrderVerification from "./pages/OrderVerification";
 import OrderThankYou from "./pages/OrderThankYou";
 import Donatie from "./pages/Donatie";
 import LandingPage from "./pages/LandingPage";
+import Gastlessen from "./pages/Gastlessen";
 
 import NotFound from "./pages/NotFound";
 
@@ -54,6 +55,7 @@ const AppContent = () => {
         <Route path="/order-verification/:orderId" element={<OrderVerification />} />
         <Route path="/order-thank-you" element={<OrderThankYou />} />
         <Route path="/donatie" element={<Donatie />} />
+        <Route path="/gastlessen" element={<Gastlessen />} />
         
         {/* Dynamic SEO landing pages */}
         <Route path="/:slug" element={<LandingPage />} />
