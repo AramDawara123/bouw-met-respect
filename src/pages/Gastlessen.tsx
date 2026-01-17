@@ -2,6 +2,12 @@ import { Link } from 'react-router-dom';
 import SEO from '@/components/SEO';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '@/components/ui/accordion';
 import Footer from '@/components/Footer';
 import { 
   GraduationCap, 
@@ -15,7 +21,8 @@ import {
   MessageCircle,
   Award,
   BookOpen,
-  Lightbulb
+  Lightbulb,
+  HelpCircle
 } from 'lucide-react';
 import heroImage from '@/assets/landing-team-meeting.jpg';
 
@@ -63,6 +70,56 @@ const Gastlessen = () => {
     'Materialen inbegrepen',
     'Evaluatie en follow-up',
     'Certificaat van deelname'
+  ];
+
+  const processSteps = [
+    {
+      step: '1',
+      title: 'Kennismakingsgesprek',
+      description: 'We bespreken uw wensen, doelgroep en specifieke situatie.'
+    },
+    {
+      step: '2',
+      title: 'Maatwerk voorstel',
+      description: 'U ontvangt een op maat gemaakt programma met inhoud en kosten.'
+    },
+    {
+      step: '3',
+      title: 'Uitvoering',
+      description: 'Wij verzorgen de gastles of presentatie op de afgesproken datum.'
+    },
+    {
+      step: '4',
+      title: 'Evaluatie',
+      description: 'Na afloop evalueren we samen en bespreken we eventuele vervolgstappen.'
+    }
+  ];
+
+  const faqs = [
+    {
+      question: 'Wat kost een gastles of presentatie?',
+      answer: 'De kosten zijn afhankelijk van de duur, locatie en het type sessie. Neem contact met ons op voor een vrijblijvende offerte op maat.'
+    },
+    {
+      question: 'Hoe lang duurt een gastles?',
+      answer: 'Dit varieert van 15 minuten voor een toolbox meeting tot een hele dag voor uitgebreide trainingen. Wij stemmen de duur af op uw wensen en beschikbare tijd.'
+    },
+    {
+      question: 'Kunnen jullie ook online presentaties geven?',
+      answer: 'Ja, wij verzorgen zowel fysieke als online sessies. Online sessies zijn net zo interactief en effectief dankzij onze digitale werkvormen.'
+    },
+    {
+      question: 'Voor welke doelgroepen zijn de gastlessen geschikt?',
+      answer: 'Onze gastlessen zijn geschikt voor MBO/HBO studenten, bouwprofessionals, leidinggevenden en hele teams. We passen de inhoud aan op het niveau en de context.'
+    },
+    {
+      question: 'Wat hebben deelnemers nodig om deel te nemen?',
+      answer: 'Niets speciaals! Wij zorgen voor alle benodigde materialen. Bij online sessies is alleen een laptop of tablet met internetverbinding nodig.'
+    },
+    {
+      question: 'Hoeveel mensen kunnen deelnemen aan een sessie?',
+      answer: 'Dit hangt af van het type sessie. Toolbox meetings kunnen met grote groepen, terwijl interactieve workshops het beste werken met 15-25 deelnemers.'
+    }
   ];
 
   return (
@@ -230,6 +287,74 @@ const Gastlessen = () => {
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* How it Works Section */}
+      <section className="py-20 bg-background">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
+              Hoe werkt het?
+            </h2>
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+              Van eerste contact tot succesvolle sessie - zo verloopt het proces.
+            </p>
+          </div>
+          
+          <div className="max-w-4xl mx-auto">
+            <div className="grid md:grid-cols-4 gap-8">
+              {processSteps.map((item, index) => (
+                <div key={index} className="relative text-center">
+                  <div className="w-16 h-16 bg-primary text-white rounded-full flex items-center justify-center text-2xl font-bold mx-auto mb-4">
+                    {item.step}
+                  </div>
+                  <h3 className="text-lg font-bold text-foreground mb-2">{item.title}</h3>
+                  <p className="text-sm text-muted-foreground">{item.description}</p>
+                  {index < processSteps.length - 1 && (
+                    <div className="hidden md:block absolute top-8 left-[60%] w-[80%] h-0.5 bg-primary/20" />
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* FAQ Section */}
+      <section className="py-20 bg-muted/30">
+        <div className="container mx-auto px-4">
+          <div className="max-w-3xl mx-auto">
+            <div className="text-center mb-12">
+              <div className="inline-flex items-center gap-2 bg-primary/10 px-4 py-2 rounded-full mb-4">
+                <HelpCircle className="w-5 h-5 text-primary" />
+                <span className="text-primary text-sm font-medium">Veelgestelde vragen</span>
+              </div>
+              <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
+                FAQ
+              </h2>
+              <p className="text-lg text-muted-foreground">
+                Antwoorden op de meest gestelde vragen over onze gastlessen en presentaties.
+              </p>
+            </div>
+            
+            <Accordion type="single" collapsible className="space-y-4">
+              {faqs.map((faq, index) => (
+                <AccordionItem 
+                  key={index} 
+                  value={`item-${index}`}
+                  className="bg-background rounded-xl shadow-md border-0 px-6"
+                >
+                  <AccordionTrigger className="text-left font-semibold text-foreground hover:no-underline py-5">
+                    {faq.question}
+                  </AccordionTrigger>
+                  <AccordionContent className="text-muted-foreground pb-5">
+                    {faq.answer}
+                  </AccordionContent>
+                </AccordionItem>
+              ))}
+            </Accordion>
           </div>
         </div>
       </section>
