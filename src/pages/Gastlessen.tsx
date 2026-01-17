@@ -104,7 +104,7 @@ const Gastlessen = () => {
                 </Button>
               </Link>
               <a href="tel:+31612345678">
-                <Button size="lg" variant="outline" className="text-lg px-10 py-7 border-2 border-white/30 text-white hover:bg-white/10 backdrop-blur-sm transition-all duration-300 hover:scale-105">
+                <Button size="lg" variant="outline" className="text-lg px-10 py-7 border-2 border-primary/50 text-primary hover:bg-primary/10 backdrop-blur-sm transition-all duration-300 hover:scale-105">
                   Bel voor meer info
                 </Button>
               </a>
