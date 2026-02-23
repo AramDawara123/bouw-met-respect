@@ -3,21 +3,38 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
-import { Eye, MousePointer, Clock, TrendingUp, Globe, RefreshCw } from "lucide-react";
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from "recharts";
+import { Eye, MousePointer, Clock, TrendingUp, Globe, RefreshCw, Monitor, Smartphone } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
+interface DailyData {
+  date: string;
+  visitors: number;
+  pageviews: number;
+  pageviewsPerVisit: number;
+  bounceRate: number;
+  sessionDuration: number;
+}
+
+interface BreakdownItem {
+  name: string;
+  count: number;
+}
+
 interface AnalyticsData {
-  visitors: { total: number; daily: Array<{ date: string; value: number }> };
-  pageviews: { total: number; daily: Array<{ date: string; value: number }> };
-  pageviewsPerVisit: { average: number; daily: Array<{ date: string; value: number }> };
-  sessionDuration: { average: number; daily: Array<{ date: string; value: number }> };
-  bounceRate: { average: number; daily: Array<{ date: string; value: number }> };
+  totals: {
+    visitors: number;
+    pageviews: number;
+    pageviewsPerVisit: number;
+    bounceRate: number;
+    sessionDuration: number;
+  };
+  daily: DailyData[];
   breakdown: {
-    page: Array<{ name: string; count: number }>;
-    source: Array<{ name: string; count: number }>;
-    device: Array<{ name: string; count: number }>;
-    country: Array<{ name: string; count: number }>;
+    page: BreakdownItem[];
+    source: BreakdownItem[];
+    device: BreakdownItem[];
+    country: BreakdownItem[];
   };
 }
 
@@ -30,15 +47,14 @@ export const AnalyticsDashboard = () => {
 
   useEffect(() => {
     fetchAnalytics();
-    
-    // Get or create a unique session ID
+
+    // Set up real-time visitor tracking
     let sessionId = sessionStorage.getItem('visitor_session_id');
     if (!sessionId) {
       sessionId = `visitor_${Date.now()}_${Math.random().toString(36).substring(7)}`;
       sessionStorage.setItem('visitor_session_id', sessionId);
     }
-    
-    // Set up real-time visitor tracking
+
     const channel = supabase.channel('analytics-visitors', {
       config: {
         presence: {
@@ -46,38 +62,30 @@ export const AnalyticsDashboard = () => {
         },
       },
     });
-    
+
     channel
       .on('presence', { event: 'sync' }, () => {
         const state = channel.presenceState();
-        const count = Object.keys(state).length;
-        console.log('Presence sync - Current visitors:', count, state);
-        setLiveVisitors(count);
+        setLiveVisitors(Object.keys(state).length);
       })
-      .on('presence', { event: 'join' }, ({ key, newPresences }) => {
-        console.log('New visitor joined:', key, newPresences);
+      .on('presence', { event: 'join' }, () => {
         const state = channel.presenceState();
         setLiveVisitors(Object.keys(state).length);
       })
-      .on('presence', { event: 'leave' }, ({ key, leftPresences }) => {
-        console.log('Visitor left:', key, leftPresences);
+      .on('presence', { event: 'leave' }, () => {
         const state = channel.presenceState();
         setLiveVisitors(Object.keys(state).length);
       })
       .subscribe(async (status) => {
-        console.log('Channel subscription status:', status);
         if (status === 'SUBSCRIBED') {
-          // Track this session as a visitor
-          const trackStatus = await channel.track({
+          await channel.track({
             session_id: sessionId,
             online_at: new Date().toISOString(),
             page: window.location.pathname,
           });
-          console.log('Tracking status:', trackStatus);
         }
       });
 
-    // Handle page visibility change
     const handleVisibilityChange = () => {
       if (document.hidden) {
         channel.untrack();
@@ -115,12 +123,38 @@ export const AnalyticsDashboard = () => {
           },
         }
       );
-      
+
       if (response.ok) {
         const data = await response.json();
-        setAnalytics(data);
+        
+        // Transform to our format
+        const daily: DailyData[] = data.visitors.daily.map((item: any, index: number) => ({
+          date: item.date,
+          visitors: item.value,
+          pageviews: data.pageviews.daily[index]?.value || 0,
+          pageviewsPerVisit: data.pageviewsPerVisit.daily[index]?.value || 0,
+          bounceRate: data.bounceRate.daily[index]?.value || 0,
+          sessionDuration: data.sessionDuration.daily[index]?.value || 0,
+        }));
+
+        setAnalytics({
+          totals: {
+            visitors: data.visitors.total,
+            pageviews: data.pageviews.total,
+            pageviewsPerVisit: data.pageviewsPerVisit.average,
+            bounceRate: data.bounceRate.average,
+            sessionDuration: data.sessionDuration.average,
+          },
+          daily,
+          breakdown: {
+            page: data.breakdown.page,
+            source: data.breakdown.source,
+            device: data.breakdown.device,
+            country: data.breakdown.country,
+          },
+        });
       } else {
-        console.error("Analytics fetch failed:", response.status, await response.text());
+        console.error("Analytics fetch failed:", response.status);
       }
     } catch (error) {
       console.error("Error fetching analytics:", error);
@@ -145,48 +179,96 @@ export const AnalyticsDashboard = () => {
   }, [timePeriod]);
 
   if (loading) {
-    return <div className="flex items-center justify-center h-64">Loading analytics...</div>;
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="flex items-center gap-3">
+          <RefreshCw className="w-5 h-5 animate-spin text-primary" />
+          <span className="text-muted-foreground">Analytics laden...</span>
+        </div>
+      </div>
+    );
   }
 
   if (!analytics) {
-    return <div className="flex items-center justify-center h-64">No analytics data available</div>;
+    return (
+      <div className="flex items-center justify-center h-64">
+        <span className="text-muted-foreground">Geen analytics data beschikbaar</span>
+      </div>
+    );
   }
 
-  const chartData = analytics.visitors.daily.map((item, index) => ({
+  const chartData = analytics.daily.map((item) => ({
     date: new Date(item.date).toLocaleDateString('nl-NL', { month: 'short', day: 'numeric' }),
-    visitors: item.value,
-    pageviews: analytics.pageviews.daily[index]?.value || 0,
+    Bezoekers: item.visitors,
+    Paginaweergaven: item.pageviews,
   }));
+
+  const formatDuration = (seconds: number) => {
+    if (seconds < 60) return `${Math.round(seconds)}s`;
+    const mins = Math.floor(seconds / 60);
+    const secs = Math.round(seconds % 60);
+    return `${mins}m ${secs}s`;
+  };
+
+  const formatSource = (source: string) => {
+    if (source === 'Direct') return 'Direct';
+    try {
+      const url = new URL(source);
+      return url.hostname.replace('www.', '');
+    } catch {
+      // Handle android-app:// and other non-standard URLs
+      return source.replace('android-app://', '').replace('com.', '').replace(/\/$/, '');
+    }
+  };
+
+  const getCountryFlag = (code: string) => {
+    if (code === 'Unknown') return '🌍';
+    try {
+      return code.toUpperCase().replace(/./g, char => 
+        String.fromCodePoint(127397 + char.charCodeAt(0))
+      );
+    } catch {
+      return '🌍';
+    }
+  };
+
+  const getCountryName = (code: string) => {
+    const countries: Record<string, string> = {
+      'NL': 'Nederland', 'US': 'Verenigde Staten', 'DE': 'Duitsland',
+      'BE': 'België', 'GB': 'Verenigd Koninkrijk', 'FR': 'Frankrijk',
+      'AT': 'Oostenrijk', 'ES': 'Spanje', 'IT': 'Italië',
+      'LV': 'Letland', 'CR': 'Costa Rica', 'Unknown': 'Onbekend',
+    };
+    return countries[code] || code;
+  };
 
   return (
     <div className="space-y-6">
       {/* Header with Live Visitors and Controls */}
       <div className="flex items-center justify-between bg-card border border-border rounded-lg px-4 py-3">
         <div className="flex items-center gap-2">
-          <div className="flex items-center gap-2">
-            <div className="relative">
-              <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-              <div className="absolute inset-0 w-2 h-2 bg-green-500 rounded-full animate-ping" />
-            </div>
-            <span className="text-sm font-medium text-foreground">
-              {liveVisitors} current visitor{liveVisitors !== 1 ? 's' : ''}
-            </span>
+          <div className="relative">
+            <div className="w-2.5 h-2.5 bg-green-500 rounded-full animate-pulse" />
+            <div className="absolute inset-0 w-2.5 h-2.5 bg-green-500 rounded-full animate-ping opacity-75" />
           </div>
+          <span className="text-sm font-medium text-foreground">
+            {liveVisitors} live bezoeker{liveVisitors !== 1 ? 's' : ''}
+          </span>
         </div>
-        
+
         <div className="flex items-center gap-3">
           <Select value={timePeriod} onValueChange={handleTimePeriodChange}>
-            <SelectTrigger className="w-[140px]">
-              <SelectValue placeholder="Select period" />
+            <SelectTrigger className="w-[160px]">
+              <SelectValue placeholder="Selecteer periode" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="1">Last 24 hours</SelectItem>
-              <SelectItem value="7">Last 7 days</SelectItem>
-              <SelectItem value="30">Last 30 days</SelectItem>
-              <SelectItem value="90">Last 90 days</SelectItem>
+              <SelectItem value="1">Laatste 24 uur</SelectItem>
+              <SelectItem value="7">Laatste 7 dagen</SelectItem>
+              <SelectItem value="30">Laatste 30 dagen</SelectItem>
+              <SelectItem value="90">Laatste 90 dagen</SelectItem>
             </SelectContent>
           </Select>
-          
+
           <Button
             variant="outline"
             size="icon"
@@ -199,101 +281,112 @@ export const AnalyticsDashboard = () => {
       </div>
 
       {/* Top Metrics Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
         <Card className="bg-card border-border">
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-              <Eye className="w-4 h-4" />
-              Visitors
+            <CardTitle className="text-xs font-medium text-muted-foreground flex items-center gap-1.5">
+              <Eye className="w-3.5 h-3.5" />
+              Bezoekers
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-foreground">{analytics.visitors.total}</div>
+            <div className="text-2xl font-bold text-foreground">{analytics.totals.visitors.toLocaleString('nl-NL')}</div>
           </CardContent>
         </Card>
 
         <Card className="bg-card border-border">
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-              <MousePointer className="w-4 h-4" />
-              Pageviews
+            <CardTitle className="text-xs font-medium text-muted-foreground flex items-center gap-1.5">
+              <MousePointer className="w-3.5 h-3.5" />
+              Paginaweergaven
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-foreground">{analytics.pageviews.total}</div>
+            <div className="text-2xl font-bold text-foreground">{analytics.totals.pageviews.toLocaleString('nl-NL')}</div>
           </CardContent>
         </Card>
 
         <Card className="bg-card border-border">
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
-              Views Per Visit
+            <CardTitle className="text-xs font-medium text-muted-foreground">
+              Weergaven/bezoek
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-foreground">
-              {analytics.pageviewsPerVisit.average.toFixed(2)}
+            <div className="text-2xl font-bold text-foreground">
+              {analytics.totals.pageviewsPerVisit.toFixed(2)}
             </div>
           </CardContent>
         </Card>
 
         <Card className="bg-card border-border">
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-              <Clock className="w-4 h-4" />
-              Visit Duration
+            <CardTitle className="text-xs font-medium text-muted-foreground flex items-center gap-1.5">
+              <Clock className="w-3.5 h-3.5" />
+              Gem. bezoekduur
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-foreground">{analytics.sessionDuration.average}s</div>
+            <div className="text-2xl font-bold text-foreground">{formatDuration(analytics.totals.sessionDuration)}</div>
           </CardContent>
         </Card>
 
         <Card className="bg-card border-border">
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-              <TrendingUp className="w-4 h-4" />
+            <CardTitle className="text-xs font-medium text-muted-foreground flex items-center gap-1.5">
+              <TrendingUp className="w-3.5 h-3.5" />
               Bounce Rate
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-foreground">{analytics.bounceRate.average}%</div>
+            <div className="text-2xl font-bold text-foreground">{analytics.totals.bounceRate}%</div>
           </CardContent>
         </Card>
       </div>
 
-      {/* Chart */}
+      {/* Main Chart */}
       <Card>
         <CardHeader>
-          <CardTitle>Visitor Trends</CardTitle>
+          <CardTitle className="text-base">Bezoekers & Paginaweergaven</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="h-[300px]">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={chartData}>
                 <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                <XAxis 
-                  dataKey="date" 
+                <XAxis
+                  dataKey="date"
                   stroke="hsl(var(--muted-foreground))"
                   fontSize={12}
                 />
-                <YAxis 
+                <YAxis
                   stroke="hsl(var(--muted-foreground))"
                   fontSize={12}
                 />
-                <Tooltip 
+                <Tooltip
                   contentStyle={{
                     backgroundColor: "hsl(var(--card))",
                     border: "1px solid hsl(var(--border))",
                     borderRadius: "8px",
+                    color: "hsl(var(--foreground))",
                   }}
                 />
-                <Line 
-                  type="monotone" 
-                  dataKey="visitors" 
-                  stroke="hsl(var(--primary))" 
+                <Line
+                  type="monotone"
+                  dataKey="Bezoekers"
+                  stroke="hsl(var(--primary))"
                   strokeWidth={2}
-                  dot={{ fill: "hsl(var(--primary))" }}
+                  dot={{ fill: "hsl(var(--primary))", r: 3 }}
+                  activeDot={{ r: 5 }}
+                />
+                <Line
+                  type="monotone"
+                  dataKey="Paginaweergaven"
+                  stroke="hsl(var(--accent-foreground))"
+                  strokeWidth={2}
+                  strokeDasharray="5 5"
+                  dot={{ fill: "hsl(var(--accent-foreground))", r: 3 }}
+                  activeDot={{ r: 5 }}
                 />
               </LineChart>
             </ResponsiveContainer>
@@ -305,21 +398,24 @@ export const AnalyticsDashboard = () => {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Traffic Sources */}
         <Card>
-          <CardHeader>
-            <CardTitle>Traffic Sources</CardTitle>
+          <CardHeader className="pb-3">
+            <CardTitle className="text-base flex items-center gap-2">
+              <Globe className="w-4 h-4 text-primary" />
+              Verkeersbronnen
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Source</TableHead>
-                  <TableHead className="text-right">Visitors</TableHead>
+                  <TableHead>Bron</TableHead>
+                  <TableHead className="text-right">Bezoekers</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {analytics.breakdown.source.map((item, index) => (
                   <TableRow key={index}>
-                    <TableCell className="font-medium">{item.name}</TableCell>
+                    <TableCell className="font-medium">{formatSource(item.name)}</TableCell>
                     <TableCell className="text-right">{item.count}</TableCell>
                   </TableRow>
                 ))}
@@ -330,15 +426,18 @@ export const AnalyticsDashboard = () => {
 
         {/* Top Pages */}
         <Card>
-          <CardHeader>
-            <CardTitle>Top Pages</CardTitle>
+          <CardHeader className="pb-3">
+            <CardTitle className="text-base flex items-center gap-2">
+              <Eye className="w-4 h-4 text-primary" />
+              Populaire Pagina's
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Page</TableHead>
-                  <TableHead className="text-right">Visitors</TableHead>
+                  <TableHead>Pagina</TableHead>
+                  <TableHead className="text-right">Weergaven</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -355,24 +454,27 @@ export const AnalyticsDashboard = () => {
 
         {/* Countries */}
         <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Globe className="w-4 h-4" />
-              Countries
+          <CardHeader className="pb-3">
+            <CardTitle className="text-base flex items-center gap-2">
+              <Globe className="w-4 h-4 text-primary" />
+              Landen
             </CardTitle>
           </CardHeader>
           <CardContent>
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Country</TableHead>
-                  <TableHead className="text-right">Visitors</TableHead>
+                  <TableHead>Land</TableHead>
+                  <TableHead className="text-right">Bezoekers</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {analytics.breakdown.country.map((item, index) => (
                   <TableRow key={index}>
-                    <TableCell className="font-medium">{item.name}</TableCell>
+                    <TableCell className="font-medium">
+                      <span className="mr-2">{getCountryFlag(item.name)}</span>
+                      {getCountryName(item.name)}
+                    </TableCell>
                     <TableCell className="text-right">{item.count}</TableCell>
                   </TableRow>
                 ))}
@@ -383,26 +485,43 @@ export const AnalyticsDashboard = () => {
 
         {/* Devices */}
         <Card>
-          <CardHeader>
-            <CardTitle>Devices</CardTitle>
+          <CardHeader className="pb-3">
+            <CardTitle className="text-base flex items-center gap-2">
+              <Monitor className="w-4 h-4 text-primary" />
+              Apparaten
+            </CardTitle>
           </CardHeader>
           <CardContent>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Device</TableHead>
-                  <TableHead className="text-right">Visitors</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {analytics.breakdown.device.map((item, index) => (
-                  <TableRow key={index}>
-                    <TableCell className="font-medium capitalize">{item.name.replace('-', ' ')}</TableCell>
-                    <TableCell className="text-right">{item.count}</TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+            <div className="space-y-4">
+              {analytics.breakdown.device.map((item, index) => {
+                const total = analytics.breakdown.device.reduce((sum, d) => sum + d.count, 0);
+                const percentage = total > 0 ? Math.round((item.count / total) * 100) : 0;
+                const isDesktop = item.name.toLowerCase().includes('desktop');
+                const DeviceIcon = isDesktop ? Monitor : Smartphone;
+
+                return (
+                  <div key={index} className="flex items-center gap-3">
+                    <DeviceIcon className="w-4 h-4 text-muted-foreground shrink-0" />
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="text-sm font-medium capitalize">
+                          {item.name.replace('-', ' ').replace('mobile ios', 'iOS').replace('mobile android', 'Android')}
+                        </span>
+                        <span className="text-sm text-muted-foreground">
+                          {item.count} ({percentage}%)
+                        </span>
+                      </div>
+                      <div className="w-full bg-muted rounded-full h-2">
+                        <div
+                          className="bg-primary rounded-full h-2 transition-all duration-500"
+                          style={{ width: `${percentage}%` }}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
           </CardContent>
         </Card>
       </div>
