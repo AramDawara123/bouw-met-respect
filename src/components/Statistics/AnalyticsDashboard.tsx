@@ -106,8 +106,9 @@ export const AnalyticsDashboard = () => {
       const startDate = new Date();
       startDate.setDate(startDate.getDate() - parseInt(timePeriod));
 
+      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://kyjgydjsxwqfglocodpi.supabase.co';
       const response = await fetch(
-        `https://pkvayugxzgkoipclcpli.supabase.co/functions/v1/get-analytics?startdate=${startDate.toISOString().split('T')[0]}&enddate=${endDate.toISOString().split('T')[0]}&granularity=daily`,
+        `${supabaseUrl}/functions/v1/get-analytics?startdate=${startDate.toISOString().split('T')[0]}&enddate=${endDate.toISOString().split('T')[0]}&granularity=daily`,
         {
           headers: {
             'Content-Type': 'application/json',
