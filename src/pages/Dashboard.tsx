@@ -1443,7 +1443,7 @@ Het Bouw met Respect team
           </div>
 
           <div className="p-6 mt-6">
-                <Tabs value={viewMode} onValueChange={value => setViewMode(value as 'memberships' | 'orders' | 'profiles' | 'products' | 'partners' | 'partner-pricing' | 'lidmaatschappen-prijzen' | 'onze-partners-prijzen' | 'discounts' | 'qrcode')}>
+                <Tabs value={viewMode} onValueChange={value => setViewMode(value as 'memberships' | 'orders' | 'donations' | 'profiles' | 'products' | 'partners' | 'partner-pricing' | 'lidmaatschappen-prijzen' | 'onze-partners-prijzen' | 'discounts' | 'qrcode' | 'statistics')}>
                   
                 <TabsContent value="lidmaatschappen-prijzen" className="space-y-6">
                   <div className="space-y-6">
