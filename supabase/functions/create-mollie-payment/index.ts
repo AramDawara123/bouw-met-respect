@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
+import Stripe from "https://esm.sh/stripe@14.21.0?target=deno";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -7,7 +8,6 @@ const corsHeaders = {
 };
 
 serve(async (req) => {
-  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
@@ -18,7 +18,6 @@ serve(async (req) => {
       Deno.env.get('SUPABASE_ANON_KEY') ?? ''
     );
 
-    // Get the user (optional for guest payments)
     let user = null;
     const authHeader = req.headers.get('Authorization');
     if (authHeader) {
@@ -33,71 +32,45 @@ serve(async (req) => {
       throw new Error('Membership data and type are required');
     }
 
-    // Default prices based on membership type
     let defaultAmount;
     switch(membershipType) {
-      case 'klein':
-        defaultAmount = 25000; // €250.00
-        break;
-      case 'middelgroot':
-        defaultAmount = 75000; // €750.00
-        break;
-      case 'groot':
-        defaultAmount = 125000; // €1250.00
-        break;
-      default:
-        defaultAmount = 25000; // €250.00
+      case 'klein': defaultAmount = 25000; break;
+      case 'middelgroot': defaultAmount = 75000; break;
+      case 'groot': defaultAmount = 125000; break;
+      default: defaultAmount = 25000;
     }
 
     const membershipAmount = amount || defaultAmount;
-    const amountInEuros = (membershipAmount / 100).toFixed(2);
+    const stripeKey = Deno.env.get('STRIPE_SECRET_KEY');
+    if (!stripeKey) throw new Error('Stripe API key not configured');
 
-    console.log('Creating Mollie payment for membership:', { membershipData, membershipType, amount: membershipAmount });
+    const stripe = new Stripe(stripeKey, { apiVersion: '2023-10-16' });
+    const origin = req.headers.get('origin') || 'https://bouw-met-respect.lovable.app';
 
-    // Create Mollie payment
-    const mollieApiKey = Deno.env.get('MOLLIE_API_KEY');
-    if (!mollieApiKey) {
-      throw new Error('Mollie API key not configured');
-    }
-
-    // Create the payment with Mollie
-    const mollieResponse = await fetch('https://api.mollie.com/v2/payments', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${mollieApiKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        amount: {
-          currency: 'EUR',
-          value: amountInEuros
+    const session = await stripe.checkout.sessions.create({
+      payment_method_types: ['card', 'ideal'],
+      mode: 'payment',
+      customer_email: membershipData.email,
+      line_items: [{
+        price_data: {
+          currency: 'eur',
+          product_data: {
+            name: `Bouw met Respect ${membershipType.charAt(0).toUpperCase() + membershipType.slice(1)} Lidmaatschap`,
+          },
+          unit_amount: membershipAmount,
         },
-        description: `Bouw met Respect ${membershipType.charAt(0).toUpperCase() + membershipType.slice(1)} Lidmaatschap`,
-        redirectUrl: `${req.headers.get('origin')}/membership-success`,
-        metadata: {
-          email: membershipData.email,
-          membershipType
-        }
-      })
+        quantity: 1,
+      }],
+      metadata: {
+        type: 'membership',
+        email: membershipData.email,
+        membershipType,
+      },
+      success_url: `${origin}/membership-success`,
+      cancel_url: `${origin}/membership-success?canceled=true`,
     });
 
-    if (!mollieResponse.ok) {
-      let errorMsg = `Mollie API error: ${mollieResponse.status}`;
-      try {
-        const errJson = await mollieResponse.json();
-        errorMsg = errJson?.detail || errJson?.message || JSON.stringify(errJson);
-      } catch (_) {
-        const errorText = await mollieResponse.text();
-        errorMsg = errorText || errorMsg;
-      }
-      console.error('Mollie API error:', errorMsg);
-      throw new Error(errorMsg);
-    }
-
-    const molliePayment = await mollieResponse.json();
-    console.log('Mollie payment created:', molliePayment.id);
-
-    // Store membership application in database using service role key
+    // Store membership in database
     const supabaseService = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
@@ -118,7 +91,7 @@ serve(async (req) => {
         experience_years: membershipData.experienceYears,
         specializations: membershipData.specializations,
         newsletter: membershipData.newsletter,
-        mollie_payment_id: molliePayment.id,
+        mollie_payment_id: session.id,
         membership_type: membershipType,
         payment_status: 'pending',
         amount: membershipAmount,
@@ -132,27 +105,15 @@ serve(async (req) => {
       throw new Error(`Database error: ${membershipError.message}`);
     }
 
-    console.log('Membership application stored:', membership.id);
-
     return new Response(
-      JSON.stringify({ 
-        paymentUrl: molliePayment._links.checkout.href,
-        membershipId: membership.id 
-      }),
-      {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        status: 200,
-      }
+      JSON.stringify({ paymentUrl: session.url, membershipId: membership.id }),
+      { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 200 }
     );
-
   } catch (error) {
     console.error('Payment creation error:', error);
     return new Response(
       JSON.stringify({ error: (error as Error).message }),
-      {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        status: 500,
-      }
+      { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 500 }
     );
   }
 });

@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
+import Stripe from "https://esm.sh/stripe@14.21.0?target=deno";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -41,25 +42,11 @@ serve(async (req) => {
     const subtotalAfterDiscount = Math.max(0, subtotalCents - discountAmountCents);
     const shippingCents = (subtotalAfterDiscount >= 5000 || discountAmountCents >= subtotalCents) ? 0 : 500;
     const totalCents = subtotalAfterDiscount + shippingCents;
-    const totalEuroValue = (totalCents / 100).toFixed(2);
 
-    console.log('Processing order:', { 
-      subtotalCents, 
-      discountAmountCents, 
-      subtotalAfterDiscount, 
-      shippingCents, 
-      totalCents,
-      totalEuroValue,
-      isFreeOrder: totalCents === 0,
-      discountCoversAll: discountAmountCents >= subtotalCents
-    });
-
-    const origin = req.headers.get('origin') || Deno.env.get('PUBLIC_SITE_URL') || 'https://example.com';
+    const origin = req.headers.get('origin') || Deno.env.get('PUBLIC_SITE_URL') || 'https://bouw-met-respect.lovable.app';
 
     // Handle free orders (0 euro total)
     if (totalCents === 0) {
-      console.log('Creating free order with 0 total');
-      // Create free order directly without Mollie
       const supabaseService = createClient(
         Deno.env.get('SUPABASE_URL') ?? '',
         Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
@@ -71,8 +58,6 @@ serve(async (req) => {
       const { error: insertError } = await supabaseService
         .from('orders')
         .insert({
-          user_id: user?.id || null,
-          email: (customer?.email) || user?.email || null,
           items,
           subtotal: subtotalCents,
           shipping: shippingCents,
@@ -80,17 +65,17 @@ serve(async (req) => {
           discount_amount: discountAmountCents,
           discount_code: discountCode || null,
           currency: 'EUR',
-          payment_status: 'paid', // Free orders are automatically paid
+          payment_status: 'paid',
           mollie_payment_id: orderId,
+          customer_name: `${customer?.firstName || ''} ${customer?.lastName || ''}`.trim() || 'Klant',
           customer_first_name: customer?.firstName || null,
           customer_last_name: customer?.lastName || null,
-          customer_email: customer?.email || null,
+          customer_email: customer?.email || user?.email || '',
           customer_phone: customer?.phone || null,
-          address_street: customer?.street || null,
-          address_house_number: customer?.houseNumber || null,
-          address_postcode: customer?.postcode || null,
-          address_city: customer?.city || null,
-          address_country: customer?.country || null
+          customer_address: customer?.street ? `${customer.street} ${customer.houseNumber || ''}`.trim() : null,
+          customer_postal_code: customer?.postcode || null,
+          customer_city: customer?.city || null,
+          total_amount: totalCents,
         });
 
       if (insertError) {
@@ -98,119 +83,98 @@ serve(async (req) => {
         throw new Error('Kon gratis bestelling niet opslaan');
       }
 
-      // Increment discount usage count if a discount code was used
+      // Increment discount usage
       if (discountCode) {
         try {
-          console.log('Incrementing discount usage for code:', discountCode);
-          const { error: incrementError } = await supabaseService.rpc('increment_discount_usage', {
-            code_to_increment: discountCode.toUpperCase()
-          });
-          
-          if (incrementError) {
-            console.error('Failed to increment discount usage:', incrementError);
-            // Don't fail the order for this
-          }
-        } catch (discountError) {
-          console.error('Error incrementing discount usage:', discountError);
-          // Don't fail the order for this
-        }
+          await supabaseService.rpc('increment_discount_usage', { code_to_increment: discountCode.toUpperCase() });
+        } catch (e) { console.error('Discount increment error:', e); }
       }
 
-      // Send order confirmation email for free orders
+      // Send confirmation email
       try {
-        const confirmationData = {
-          orderId: orderId,
-          customerEmail: customer?.email || user?.email,
-          customerName: `${customer?.firstName || ''} ${customer?.lastName || ''}`.trim() || 'Klant',
-          orderItems: items.map((item: any) => ({
-            name: item.name,
-            quantity: item.quantity || 1,
-            price: item.price // Already in euros from frontend
-          })),
-          subtotal: subtotalCents,
-          shipping: shippingCents,
-          total: totalCents,
-          shippingAddress: {
-            street: customer?.street,
-            houseNumber: customer?.houseNumber,
-            postcode: customer?.postcode,
-            city: customer?.city,
-            country: customer?.country || 'Nederland'
-          },
-          orderDate: new Date().toLocaleDateString('nl-NL')
-        };
-
-        const emailResponse = await supabaseService.functions.invoke('send-order-confirmation', {
-          body: confirmationData
+        await supabaseService.functions.invoke('send-order-confirmation', {
+          body: {
+            orderId,
+            customerEmail: customer?.email || user?.email,
+            customerName: `${customer?.firstName || ''} ${customer?.lastName || ''}`.trim() || 'Klant',
+            orderItems: items.map((item: any) => ({ name: item.name, quantity: item.quantity || 1, price: item.price })),
+            subtotal: subtotalCents,
+            shipping: shippingCents,
+            total: totalCents,
+            shippingAddress: { street: customer?.street, houseNumber: customer?.houseNumber, postcode: customer?.postcode, city: customer?.city, country: customer?.country || 'Nederland' },
+            orderDate: new Date().toLocaleDateString('nl-NL')
+          }
         });
+      } catch (e) { console.error('Email error:', e); }
 
-        if (emailResponse.error) {
-          console.error('Error sending free order confirmation email:', emailResponse.error);
-        } else {
-          console.log('Free order confirmation email sent successfully');
-        }
-      } catch (emailError) {
-        console.error('Error in free order email process:', emailError);
-        // Don't fail the order for email issues
-      }
-
-      // Return success response for free order
       return new Response(
-        JSON.stringify({ 
-          success: true, 
-          orderId: orderId,
-          redirectUrl: `${origin}/order-thank-you?orderId=${orderId}`
-        }),
+        JSON.stringify({ success: true, orderId, redirectUrl: `${origin}/order-thank-you?orderId=${orderId}` }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 200 }
       );
     }
 
-    const mollieApiKey = Deno.env.get('MOLLIE_API_KEY');
-    if (!mollieApiKey) {
-      throw new Error('Mollie API key niet geconfigureerd');
-    }
+    // Paid order - create Stripe Checkout Session
+    const stripeKey = Deno.env.get('STRIPE_SECRET_KEY');
+    if (!stripeKey) throw new Error('Stripe API key niet geconfigureerd');
 
-    const webhookUrl = Deno.env.get('MOLLIE_WEBHOOK_URL');
+    const stripe = new Stripe(stripeKey, { apiVersion: '2023-10-16' });
 
-    const mollieResponse = await fetch('https://api.mollie.com/v2/payments', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${mollieApiKey}`,
-        'Content-Type': 'application/json',
+    const lineItems = items.map((item: any) => ({
+      price_data: {
+        currency: 'eur',
+        product_data: { name: item.name },
+        unit_amount: Math.round(Number(item.price) * 100),
       },
-      body: JSON.stringify({
-        amount: { currency: 'EUR', value: totalEuroValue },
-        description: 'Webshop bestelling',
-        redirectUrl: `${origin}/webshop?status=paid`,
-        webhookUrl: webhookUrl || undefined,
-        metadata: {
-          email: (customer?.email) || user?.email || null,
-          customer,
-          items,
-          subtotalCents: subtotalAfterDiscount,
-          shippingCents,
-          totalCents,
-          discountCode: discountCode || null,
-          discountAmount: discountAmountCents
-        }
-      })
-    });
+      quantity: Number(item.quantity || 1),
+    }));
 
-    if (!mollieResponse.ok) {
-      let errorMsg = `Mollie API error: ${mollieResponse.status}`;
-      try {
-        const errJson = await mollieResponse.json();
-        errorMsg = errJson?.detail || errJson?.message || JSON.stringify(errJson);
-      } catch (_) {
-        const errorText = await mollieResponse.text();
-        errorMsg = errorText || errorMsg;
-      }
-      throw new Error(errorMsg);
+    // Add shipping as a line item if applicable
+    if (shippingCents > 0) {
+      lineItems.push({
+        price_data: {
+          currency: 'eur',
+          product_data: { name: 'Verzendkosten' },
+          unit_amount: shippingCents,
+        },
+        quantity: 1,
+      });
     }
 
-    const molliePayment = await mollieResponse.json();
+    const sessionParams: any = {
+      payment_method_types: ['card', 'ideal'],
+      mode: 'payment',
+      line_items: lineItems,
+      metadata: {
+        type: 'order',
+        customer_email: customer?.email || '',
+        customer_name: `${customer?.firstName || ''} ${customer?.lastName || ''}`.trim(),
+        discount_code: discountCode || '',
+        discount_amount: String(discountAmountCents),
+      },
+      success_url: `${origin}/webshop?status=paid`,
+      cancel_url: `${origin}/webshop?status=canceled`,
+    };
 
-    // Try to store the order, but do not block checkout if it fails
+    if (customer?.email) {
+      sessionParams.customer_email = customer.email;
+    }
+
+    // Apply discount if present
+    if (discountAmountCents > 0) {
+      const coupon = await stripe.coupons.create({
+        amount_off: discountAmountCents,
+        currency: 'eur',
+        duration: 'once',
+        name: discountCode || 'Korting',
+      });
+      sessionParams.discounts = [{ coupon: coupon.id }];
+      // Remove shipping line item and recalculate since Stripe handles discount
+      // Actually, let Stripe handle the line items and discount separately
+    }
+
+    const session = await stripe.checkout.sessions.create(sessionParams);
+
+    // Store order in database
     try {
       const supabaseService = createClient(
         Deno.env.get('SUPABASE_URL') ?? '',
@@ -221,8 +185,6 @@ serve(async (req) => {
       const { error: insertError } = await supabaseService
         .from('orders')
         .insert({
-          user_id: user?.id || null,
-          email: (customer?.email) || user?.email || null,
           items,
           subtotal: subtotalCents,
           shipping: shippingCents,
@@ -231,51 +193,33 @@ serve(async (req) => {
           discount_code: discountCode || null,
           currency: 'EUR',
           payment_status: 'pending',
-          mollie_payment_id: molliePayment.id,
+          mollie_payment_id: session.id,
+          customer_name: `${customer?.firstName || ''} ${customer?.lastName || ''}`.trim() || 'Klant',
           customer_first_name: customer?.firstName || null,
           customer_last_name: customer?.lastName || null,
-          customer_email: customer?.email || null,
+          customer_email: customer?.email || '',
           customer_phone: customer?.phone || null,
-          address_street: customer?.street || null,
-          address_house_number: customer?.houseNumber || null,
-          address_postcode: customer?.postcode || null,
-          address_city: customer?.city || null,
-          address_country: customer?.country || null
+          customer_address: customer?.street ? `${customer.street} ${customer.houseNumber || ''}`.trim() : null,
+          customer_postal_code: customer?.postcode || null,
+          customer_city: customer?.city || null,
+          total_amount: totalCents,
         });
 
       if (insertError) {
-        console.error('Order save failed, continuing to checkout:', insertError.message);
-      } else {
-        // Increment discount usage count if a discount code was used
-        if (discountCode) {
-          try {
-            console.log('Incrementing discount usage for code:', discountCode);
-            const { error: incrementError } = await supabaseService.rpc('increment_discount_usage', {
-              code_to_increment: discountCode.toUpperCase()
-            });
-            
-            if (incrementError) {
-              console.error('Failed to increment discount usage:', incrementError);
-              // Don't fail the order for this
-            }
-          } catch (discountError) {
-            console.error('Error incrementing discount usage:', discountError);
-            // Don't fail the order for this
-          }
-        }
+        console.error('Order save failed:', insertError.message);
+      } else if (discountCode) {
+        try {
+          await supabaseService.rpc('increment_discount_usage', { code_to_increment: discountCode.toUpperCase() });
+        } catch (e) { console.error('Discount increment error:', e); }
       }
     } catch (dbErr) {
-      console.error('Order save threw exception, continuing to checkout:', dbErr);
+      console.error('Order save exception:', dbErr);
     }
 
     return new Response(
-      JSON.stringify({ 
-        paymentUrl: molliePayment._links.checkout.href,
-        orderId: molliePayment.id
-      }),
+      JSON.stringify({ paymentUrl: session.url, orderId: session.id }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 200 }
     );
-
   } catch (error: any) {
     return new Response(
       JSON.stringify({ error: error.message }),
@@ -283,5 +227,3 @@ serve(async (req) => {
     );
   }
 });
-
-
