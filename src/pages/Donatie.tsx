@@ -111,7 +111,7 @@ const Donatie = () => {
       if (error) throw error;
 
       if (data?.paymentUrl) {
-        // Redirect to Mollie payment page
+        // Redirect to Stripe payment page
         window.location.href = data.paymentUrl;
       } else {
         throw new Error('Geen betaal-URL ontvangen');
