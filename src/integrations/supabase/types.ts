@@ -310,6 +310,8 @@ export type Database = {
           is_quote: boolean | null
           membership_type: string
           price: number
+          stripe_price_id: string | null
+          stripe_product_id: string | null
           updated_at: string
           yearly_price_display: string
         }
@@ -321,6 +323,8 @@ export type Database = {
           is_quote?: boolean | null
           membership_type: string
           price: number
+          stripe_price_id?: string | null
+          stripe_product_id?: string | null
           updated_at?: string
           yearly_price_display: string
         }
@@ -332,6 +336,8 @@ export type Database = {
           is_quote?: boolean | null
           membership_type?: string
           price?: number
+          stripe_price_id?: string | null
+          stripe_product_id?: string | null
           updated_at?: string
           yearly_price_display?: string
         }
