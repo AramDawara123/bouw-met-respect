@@ -10,5 +10,49 @@ Allow: /
 User-agent: facebookexternalhit
 Allow: /
 
+# AI crawlers (ChatGPT, Claude, Perplexity, Google AI, etc.)
+User-agent: GPTBot
+Allow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Claude-Web
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Perplexity-User
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /
+
+User-agent: CCBot
+Allow: /
+
 User-agent: *
 Allow: /
+Disallow: /dashboard
+Disallow: /login
+Disallow: /partner-auth
+Disallow: /partner-dashboard
+Disallow: /order-verification/
+Disallow: /order-thank-you
+Disallow: /membership-success
+Disallow: /partnership-success
+
+Sitemap: https://bouwmetrespect.nl/sitemap.xml
