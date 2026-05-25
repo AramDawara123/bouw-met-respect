@@ -142,8 +142,8 @@ const handler = async (req: Request): Promise<Response> => {
                         <tr style="${index % 2 === 0 ? 'background-color: #fafafa;' : ''} border-bottom: 1px solid #f3f4f6;">
                           <td style="padding: 16px 12px; color: #1f2937; font-weight: 500;">${item.name}</td>
                           <td style="padding: 16px 12px; text-align: center; color: #6b7280; font-weight: 600;">${item.quantity}</td>
-                           <td style="padding: 16px 12px; text-align: right; color: #6b7280;">€${(item.price).toFixed(2)}</td>
-                           <td style="padding: 16px 12px; text-align: right; color: #1f2937; font-weight: 600;">€${(item.price * item.quantity).toFixed(2)}</td>
+                           <td style="padding: 16px 12px; text-align: right; color: #6b7280;">€${(item.price >= 100 ? item.price / 100 : item.price).toFixed(2)}</td>
+                           <td style="padding: 16px 12px; text-align: right; color: #1f2937; font-weight: 600;">€${((item.price >= 100 ? item.price / 100 : item.price) * item.quantity).toFixed(2)}</td>
                         </tr>
                       `).join('')}
                     </table>

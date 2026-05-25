@@ -1,6 +1,10 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 import Stripe from "https://esm.sh/stripe@14.21.0?target=deno";
+import {
+  generateDigitalDownloadLinks,
+  sendDigitalProductEmails,
+} from "../_shared/digital-downloads.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -90,20 +94,58 @@ serve(async (req) => {
         } catch (e) { console.error('Discount increment error:', e); }
       }
 
-      // Send confirmation email
+      const customerEmail = customer?.email || user?.email || '';
+      const customerName = `${customer?.firstName || ''} ${customer?.lastName || ''}`.trim() || 'Klant';
+      const orderDate = new Date().toLocaleDateString('nl-NL');
+      const orderItems = items.map((item: any) => ({
+        id: item.id,
+        name: item.name,
+        quantity: item.quantity || 1,
+        price: item.price,
+      }));
+
+      const downloadLinks = await generateDigitalDownloadLinks(
+        supabaseService,
+        orderItems,
+        orderId,
+        customerEmail
+      );
+
       try {
+        await sendDigitalProductEmails(supabaseService, {
+          customerEmail,
+          customerName,
+          orderId,
+          orderDate,
+          total: totalCents,
+          downloadLinks,
+        });
+
         await supabaseService.functions.invoke('send-order-confirmation', {
           body: {
             orderId,
-            customerEmail: customer?.email || user?.email,
-            customerName: `${customer?.firstName || ''} ${customer?.lastName || ''}`.trim() || 'Klant',
-            orderItems: items.map((item: any) => ({ name: item.name, quantity: item.quantity || 1, price: item.price })),
+            customerEmail,
+            customerName,
+            orderItems: orderItems.map((item) => ({
+              name: item.name,
+              quantity: item.quantity,
+              price: item.price,
+            })),
             subtotal: subtotalCents,
             shipping: shippingCents,
             total: totalCents,
-            shippingAddress: { street: customer?.street, houseNumber: customer?.houseNumber, postcode: customer?.postcode, city: customer?.city, country: customer?.country || 'Nederland' },
-            orderDate: new Date().toLocaleDateString('nl-NL')
-          }
+            shippingAddress: downloadLinks.length > 0
+              ? {}
+              : {
+                  street: customer?.street,
+                  houseNumber: customer?.houseNumber,
+                  postcode: customer?.postcode,
+                  city: customer?.city,
+                  country: customer?.country || 'Nederland',
+                },
+            orderDate,
+            ...(downloadLinks.length > 0 ? { downloadLinks } : {}),
+          },
         });
       } catch (e) { console.error('Email error:', e); }
 

@@ -389,41 +389,7 @@ const Webshop = () => {
         return;
       }
 
-      // Send immediate fallback confirmation email after successful order creation
-      try {
-        console.log('[Webshop] Sending fallback confirmation email...');
-        const shipping = (cartTotal >= 50 || discountAmount >= cartTotal) ? 0 : 500; // Free shipping for 50+ EUR or 100% discount
-        const {
-          error: emailError
-        } = await supabase.functions.invoke('send-order-confirmation', {
-          body: {
-            orderId: orderId || 'ORDER-' + Date.now(),
-            customerEmail: customer.email,
-            customerName: `${customer.firstName} ${customer.lastName}`,
-            orderItems: items,
-            subtotal: cartTotal * 100,
-            // Convert to cents
-            shipping: shipping,
-            total: finalTotal * 100,
-            // Convert to cents
-            shippingAddress: {
-              street: customer.street,
-              houseNumber: customer.houseNumber,
-              postcode: customer.postcode,
-              city: customer.city,
-              country: 'Nederland'
-            },
-            orderDate: new Date().toLocaleDateString('nl-NL')
-          }
-        });
-        if (emailError) {
-          console.error('[Webshop] Fallback email failed:', emailError);
-        } else {
-          console.log('[Webshop] Fallback confirmation email sent successfully');
-        }
-      } catch (emailError) {
-        console.error('[Webshop] Error sending fallback email:', emailError);
-      }
+      // Confirmation + download emails worden verstuurd na succesvolle betaling (stripe-webhook)
       
       // Save session ID + purchased items so OrderThankYou can show downloads
       if (orderId) {

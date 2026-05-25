@@ -1,6 +1,10 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 import Stripe from "https://esm.sh/stripe@14.21.0?target=deno";
+import {
+  generateDigitalDownloadLinks,
+  sendDigitalProductEmails,
+} from "../_shared/digital-downloads.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -213,80 +217,24 @@ serve(async (req) => {
             const orderItems: Array<{ id?: string; name: string; quantity: number; price: number }> =
               Array.isArray(orderData.items) ? orderData.items : [];
 
-            // Generate signed download URLs for digital products
-            const downloadLinks: Array<{ productName: string; url: string; expiresAt: string }> = [];
-
-            const productIds = orderItems.map(item => item.id).filter((id): id is string => !!id);
-
-            if (productIds.length > 0) {
-              const { data: products } = await supabaseService
-                .from('products')
-                .select('id, name, pdf_url, is_digital')
-                .in('id', productIds);
-
-              if (products) {
-                for (const product of products) {
-                  if (product.is_digital && product.pdf_url) {
-                    const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
-                    const bucketName = 'smb';
-                    const storageBasePattern = `/storage/v1/object/public/${bucketName}/`;
-                    const pathIndex = (product.pdf_url as string).indexOf(storageBasePattern);
-                    const storagePath = pathIndex !== -1
-                      ? (product.pdf_url as string).substring(pathIndex + storageBasePattern.length)
-                      : null;
-
-                    let downloadUrl = product.pdf_url as string;
-
-                    if (storagePath) {
-                      const { data: signedData, error: signedError } = await supabaseService.storage
-                        .from(bucketName)
-                        .createSignedUrl(storagePath, 7 * 24 * 60 * 60, { download: `${product.name}.pdf` });
-
-                      if (!signedError && signedData?.signedUrl) {
-                        downloadUrl = signedData.signedUrl;
-                        console.log(`[STRIPE WEBHOOK] Signed URL created for ${product.name}`);
-                      } else {
-                        console.error('[STRIPE WEBHOOK] Signed URL error:', signedError);
-                      }
-                    }
-
-                    // Save token for tracking
-                    await supabaseService.from('download_tokens').insert({
-                      order_id: orderId,
-                      product_id: product.id,
-                      product_name: product.name,
-                      customer_email: customerEmail,
-                      pdf_url: product.pdf_url,
-                      expires_at: expiresAt.toISOString(),
-                      max_downloads: 5
-                    });
-
-                    downloadLinks.push({
-                      productName: product.name,
-                      url: downloadUrl,
-                      expiresAt: expiresAt.toLocaleDateString('nl-NL')
-                    });
-                  }
-                }
-              }
-            }
+            const downloadLinks = await generateDigitalDownloadLinks(
+              supabaseService,
+              orderItems,
+              orderId,
+              customerEmail
+            );
 
             const customerName = `${orderData.customer_first_name || ''} ${orderData.customer_last_name || ''}`.trim() || 'Klant';
             const orderDate = new Date(orderData.created_at).toLocaleDateString('nl-NL');
 
-            // Send special digital email when there are downloads
-            if (downloadLinks.length > 0) {
-              await supabaseService.functions.invoke('send-digital-product-email', {
-                body: {
-                  customerEmail,
-                  customerName,
-                  orderId,
-                  orderDate,
-                  downloads: downloadLinks.map(dl => ({ productName: dl.productName, url: dl.url })),
-                  total: orderData.total || 0
-                }
-              });
-            }
+            await sendDigitalProductEmails(supabaseService, {
+              customerEmail,
+              customerName,
+              orderId,
+              orderDate,
+              total: orderData.total || 0,
+              downloadLinks,
+            });
 
             // Always also send regular order confirmation
             await supabaseService.functions.invoke('send-order-confirmation', {
@@ -298,12 +246,14 @@ serve(async (req) => {
                 subtotal: orderData.subtotal || 0,
                 shipping: orderData.shipping || 0,
                 total: orderData.total || 0,
-                shippingAddress: {
-                  street: orderData.customer_address,
-                  postcode: orderData.customer_postal_code,
-                  city: orderData.customer_city,
-                  country: 'Nederland'
-                },
+                shippingAddress: downloadLinks.length > 0
+                  ? {}
+                  : {
+                      street: orderData.customer_address,
+                      postcode: orderData.customer_postal_code,
+                      city: orderData.customer_city,
+                      country: 'Nederland',
+                    },
                 orderDate,
                 ...(downloadLinks.length > 0 ? { downloadLinks } : {})
               }
