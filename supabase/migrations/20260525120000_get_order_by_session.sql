@@ -1,4 +1,6 @@
 -- RPC: order ophalen via Stripe session ID (voor bedankpagina)
+DROP FUNCTION IF EXISTS public.get_order_by_session(TEXT);
+
 CREATE OR REPLACE FUNCTION public.get_order_by_session(p_session_id TEXT)
 RETURNS TABLE (
   id UUID,
