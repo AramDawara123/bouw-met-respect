@@ -89,6 +89,21 @@ export type Database = {
         }
         Relationships: []
       }
+      app_config: {
+        Row: {
+          key: string
+          value: string
+        }
+        Insert: {
+          key: string
+          value: string
+        }
+        Update: {
+          key?: string
+          value?: string
+        }
+        Relationships: []
+      }
       company_profiles: {
         Row: {
           contact_email: string | null
@@ -234,6 +249,56 @@ export type Database = {
           updated_at?: string | null
         }
         Relationships: []
+      }
+      download_tokens: {
+        Row: {
+          created_at: string
+          customer_email: string
+          download_count: number
+          expires_at: string
+          id: string
+          max_downloads: number
+          order_id: string
+          pdf_url: string
+          product_id: string | null
+          product_name: string
+          token: string
+        }
+        Insert: {
+          created_at?: string
+          customer_email: string
+          download_count?: number
+          expires_at?: string
+          id?: string
+          max_downloads?: number
+          order_id: string
+          pdf_url: string
+          product_id?: string | null
+          product_name: string
+          token?: string
+        }
+        Update: {
+          created_at?: string
+          customer_email?: string
+          download_count?: number
+          expires_at?: string
+          id?: string
+          max_downloads?: number
+          order_id?: string
+          pdf_url?: string
+          product_id?: string | null
+          product_name?: string
+          token?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "download_tokens_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       landing_pages: {
         Row: {
@@ -604,7 +669,9 @@ export type Database = {
           id: string
           image_url: string | null
           in_stock: boolean | null
+          is_digital: boolean
           name: string
+          pdf_url: string | null
           price: number
           stripe_price_id: string | null
           stripe_product_id: string | null
@@ -621,7 +688,9 @@ export type Database = {
           id?: string
           image_url?: string | null
           in_stock?: boolean | null
+          is_digital?: boolean
           name: string
+          pdf_url?: string | null
           price: number
           stripe_price_id?: string | null
           stripe_product_id?: string | null
@@ -638,7 +707,9 @@ export type Database = {
           id?: string
           image_url?: string | null
           in_stock?: boolean | null
+          is_digital?: boolean
           name?: string
+          pdf_url?: string | null
           price?: number
           stripe_price_id?: string | null
           stripe_product_id?: string | null
@@ -720,6 +791,22 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_order_by_session: {
+        Args: { p_session_id: string }
+        Returns: {
+          created_at: string
+          customer_email: string
+          customer_first_name: string
+          customer_last_name: string
+          discount_amount: number
+          id: string
+          items: Json
+          payment_status: string
+          shipping: number
+          subtotal: number
+          total: number
+        }[]
+      }
       verify_admin_access: { Args: never; Returns: boolean }
     }
     Enums: {
