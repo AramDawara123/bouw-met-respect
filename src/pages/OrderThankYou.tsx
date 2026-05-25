@@ -19,7 +19,6 @@ interface DigitalDownload {
 
 interface OrderDetails {
   id: string;
-  mollie_payment_id: string;
   items: OrderItem[];
   subtotal: number;
   shipping: number;
@@ -38,7 +37,6 @@ const OrderThankYou = () => {
   const [downloads, setDownloads] = useState<DigitalDownload[]>([]);
   const [loading, setLoading] = useState(true);
   const [retrying, setRetrying] = useState(false);
-  const [notFound, setNotFound] = useState(false);
 
   const parseItems = (raw: any): OrderItem[] => {
     if (!Array.isArray(raw)) return [];
@@ -50,86 +48,117 @@ const OrderThankYou = () => {
     }));
   };
 
+  // Fetch pdf_url for any digital products in a list of items
   const fetchDownloads = useCallback(async (items: OrderItem[]) => {
     const ids = items.map(i => i.id).filter(id => id && id.length === 36);
-    if (ids.length === 0) return;
+    if (ids.length === 0) return [];
 
     const { data } = await supabase
       .from('products')
       .select('id, name, pdf_url, is_digital')
       .in('id', ids);
 
-    if (!data) return;
+    if (!data) return [];
 
-    const links: DigitalDownload[] = data
+    return data
       .filter((p: any) => p.is_digital && p.pdf_url)
-      .map((p: any) => ({ productName: p.name, pdfUrl: p.pdf_url }));
-
-    setDownloads(links);
+      .map((p: any) => ({ productName: p.name, pdfUrl: p.pdf_url })) as DigitalDownload[];
   }, []);
 
-  const loadOrder = useCallback(async (sessionId?: string, orderId?: string) => {
-    try {
-      let query = supabase.from('orders').select('*');
+  const load = useCallback(async () => {
+    const sessionId = searchParams.get('session_id');
+    const orderId   = searchParams.get('orderId');
 
-      if (sessionId) {
-        query = query.eq('mollie_payment_id', sessionId);
-      } else if (orderId) {
-        query = query.eq('id', orderId);
-      } else {
-        setNotFound(true);
-        return;
+    // ── 1. Try to find order via RPC (bypasses RLS) ──────────────────────
+    let items: OrderItem[] = [];
+
+    if (sessionId) {
+      try {
+        const { data, error } = await supabase.rpc('get_order_by_session', {
+          p_session_id: sessionId,
+        });
+
+        if (!error && data && data.length > 0) {
+          const row = data[0];
+          items = parseItems(row.items);
+          setOrder({
+            id: row.id,
+            items,
+            subtotal: row.subtotal ?? 0,
+            shipping: row.shipping ?? 0,
+            total: row.total ?? 0,
+            discount_amount: row.discount_amount ?? 0,
+            customer_first_name: row.customer_first_name ?? '',
+            customer_last_name:  row.customer_last_name  ?? '',
+            customer_email:      row.customer_email      ?? '',
+            created_at:          row.created_at,
+          });
+        }
+      } catch (e) {
+        console.error('RPC lookup failed:', e);
       }
+    } else if (orderId) {
+      try {
+        const { data } = await supabase
+          .from('orders')
+          .select('*')
+          .eq('id', orderId)
+          .maybeSingle();
 
-      const { data, error } = await query.maybeSingle();
-
-      if (error || !data) {
-        setNotFound(true);
-        return;
+        if (data) {
+          items = parseItems(data.items);
+          setOrder({
+            id: data.id,
+            items,
+            subtotal: data.subtotal ?? 0,
+            shipping: data.shipping ?? 0,
+            total: data.total ?? 0,
+            discount_amount: data.discount_amount ?? 0,
+            customer_first_name: data.customer_first_name ?? '',
+            customer_last_name:  data.customer_last_name  ?? '',
+            customer_email:      data.customer_email       ?? '',
+            created_at:          data.created_at,
+          });
+        }
+      } catch (e) {
+        console.error('Direct lookup failed:', e);
       }
-
-      const items = parseItems(data.items);
-      setOrder({
-        id: data.id,
-        mollie_payment_id: data.mollie_payment_id,
-        items,
-        subtotal: data.subtotal || 0,
-        shipping: data.shipping || 0,
-        total: data.total || 0,
-        discount_amount: data.discount_amount || 0,
-        customer_first_name: data.customer_first_name || '',
-        customer_last_name: data.customer_last_name || '',
-        customer_email: data.customer_email || '',
-        created_at: data.created_at,
-      });
-
-      await fetchDownloads(items);
-    } catch (e) {
-      console.error('Error loading order:', e);
-      setNotFound(true);
-    } finally {
-      setLoading(false);
-      setRetrying(false);
     }
-  }, [fetchDownloads]);
+
+    // ── 2. Fallback: use items saved to localStorage before Stripe redirect ──
+    if (items.length === 0) {
+      const saved = localStorage.getItem('lastPurchasedItems');
+      if (saved) {
+        try { items = JSON.parse(saved); } catch { /* ignore */ }
+      }
+    }
+
+    // ── 3. Find digital downloads from whichever items we have ──────────
+    if (items.length > 0) {
+      const links = await fetchDownloads(items);
+      setDownloads(links);
+    }
+
+    setLoading(false);
+    setRetrying(false);
+  }, [searchParams, fetchDownloads]);
 
   useEffect(() => {
     document.title = 'Bedankt voor je bestelling - Bouw met Respect';
-    const sessionId = searchParams.get('session_id') || undefined;
-    const orderId = searchParams.get('orderId') || undefined;
-    loadOrder(sessionId, orderId);
-  }, [searchParams, loadOrder]);
+    // Clean up localStorage after we've read it
+    localStorage.removeItem('lastStripeSessionId');
+    localStorage.removeItem('lastPurchasedItems');
+    load();
+  }, [load]);
 
   const handleRetry = () => {
     setRetrying(true);
-    setNotFound(false);
-    const sessionId = searchParams.get('session_id') || undefined;
-    const orderId = searchParams.get('orderId') || undefined;
-    loadOrder(sessionId, orderId);
+    setLoading(true);
+    load();
   };
 
   const fmt = (cents: number) => `€${(cents / 100).toFixed(2)}`;
-  const isDigitalOrder = downloads.length > 0;
+  const isDigital = downloads.length > 0;
 
   // ── Loading ──────────────────────────────────────────────────────────────
   if (loading) {
@@ -143,33 +172,8 @@ const OrderThankYou = () => {
     );
   }
 
-  // ── Not found ────────────────────────────────────────────────────────────
-  if (notFound) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-50 to-purple-50 px-4">
-        <div className="text-center max-w-md">
-          <div className="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <RefreshCw className="w-8 h-8 text-yellow-600" />
-          </div>
-          <h2 className="text-xl font-bold text-gray-800 mb-2">Bestelling wordt verwerkt…</h2>
-          <p className="text-gray-500 mb-6 text-sm">
-            Je betaling is ontvangen. Het kan een moment duren voordat je bestelling zichtbaar is.
-          </p>
-          <div className="flex flex-col gap-3">
-            <Button onClick={handleRetry} disabled={retrying} className="bg-indigo-600 hover:bg-indigo-700">
-              {retrying ? 'Opnieuw laden…' : 'Opnieuw proberen'}
-            </Button>
-            <Button variant="outline" onClick={() => navigate('/webshop')}>
-              <ArrowLeft className="w-4 h-4 mr-2" /> Terug naar winkel
-            </Button>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
   // ── Digital product page ─────────────────────────────────────────────────
-  if (isDigitalOrder) {
+  if (isDigital) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-indigo-950 via-indigo-900 to-purple-900 px-4 py-12">
         <div className="max-w-xl mx-auto space-y-6">
@@ -199,13 +203,13 @@ const OrderThankYou = () => {
             <div className="p-6 space-y-4">
               {downloads.map((dl, i) => (
                 <div key={i} className="border-2 border-indigo-100 rounded-xl p-5 bg-indigo-50">
-                  <div className="flex items-start gap-4">
+                  <div className="flex items-start gap-4 mb-4">
                     <div className="flex-shrink-0 w-12 h-12 bg-indigo-100 rounded-xl flex items-center justify-center">
                       <FileText className="w-6 h-6 text-indigo-600" />
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="font-semibold text-gray-800 truncate">{dl.productName}</p>
-                      <p className="text-sm text-gray-500 mt-0.5">PDF bestand • Directe download</p>
+                      <p className="text-sm text-gray-500 mt-0.5">PDF bestand · Directe download</p>
                     </div>
                   </div>
                   <a
@@ -213,7 +217,7 @@ const OrderThankYou = () => {
                     download={`${dl.productName}.pdf`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="mt-4 flex items-center justify-center gap-2 w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-bold py-3.5 px-6 rounded-xl transition-all duration-200 shadow-md hover:shadow-indigo-300 text-base no-underline"
+                    className="flex items-center justify-center gap-2 w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-bold py-3.5 px-6 rounded-xl transition-all duration-200 shadow-md text-base no-underline"
                   >
                     <Download className="w-5 h-5" />
                     {dl.productName} downloaden
@@ -221,9 +225,9 @@ const OrderThankYou = () => {
                 </div>
               ))}
 
-              <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 mt-2">
+              <div className="bg-amber-50 border border-amber-200 rounded-xl p-4">
                 <p className="text-amber-800 text-sm">
-                  <strong>Tip:</strong> Sla het bestand direct op je apparaat op zodat je het altijd kunt terugvinden.
+                  <strong>Tip:</strong> Sla het bestand op je apparaat op zodat je het altijd kunt terugvinden.
                 </p>
               </div>
             </div>
@@ -246,10 +250,12 @@ const OrderThankYou = () => {
                   <span>{fmt(order.total)}</span>
                 </div>
               </div>
-              <div className="mt-3 pt-3 border-t border-white/10 flex items-center gap-2 text-indigo-300 text-xs">
-                <Mail className="w-3.5 h-3.5" />
-                Bevestiging verstuurd naar {order.customer_email}
-              </div>
+              {order.customer_email && (
+                <div className="mt-3 pt-3 border-t border-white/10 flex items-center gap-2 text-indigo-300 text-xs">
+                  <Mail className="w-3.5 h-3.5" />
+                  Bevestiging verstuurd naar {order.customer_email}
+                </div>
+              )}
             </div>
           )}
 
@@ -275,7 +281,7 @@ const OrderThankYou = () => {
     );
   }
 
-  // ── Regular (physical) order page ────────────────────────────────────────
+  // ── Regular / no-order page ───────────────────────────────────────────────
   return (
     <div className="min-h-screen bg-gradient-to-br from-background to-muted/30 py-8 px-4">
       <div className="w-full max-w-4xl mx-auto space-y-6">
@@ -287,7 +293,12 @@ const OrderThankYou = () => {
           <h1 className="text-2xl font-bold text-gray-900 mb-2">
             Bedankt voor je bestelling{order?.customer_first_name ? `, ${order.customer_first_name}` : ''}!
           </h1>
-          <p className="text-gray-500">Je bestelling is ontvangen en wordt zo snel mogelijk verwerkt.</p>
+          <p className="text-gray-500 mb-4">Je bestelling is ontvangen en wordt zo snel mogelijk verwerkt.</p>
+          {!order && (
+            <Button onClick={handleRetry} disabled={retrying} variant="outline" size="sm">
+              {retrying ? 'Laden…' : <><RefreshCw className="w-4 h-4 mr-2" />Bestelling opnieuw laden</>}
+            </Button>
+          )}
           {order && (
             <p className="text-sm text-gray-400 mt-2">
               Bestelnummer: <span className="font-mono text-gray-700">{order.id.split('-')[0].toUpperCase()}</span>
@@ -307,14 +318,16 @@ const OrderThankYou = () => {
                     <p className="font-medium text-gray-800">{item.name}</p>
                     <p className="text-sm text-gray-500">Aantal: {item.quantity}</p>
                   </div>
-                  <p className="font-semibold text-gray-800">{fmt(item.price * item.quantity * 100)}</p>
+                  <p className="font-semibold">{fmt(item.price * item.quantity * 100)}</p>
                 </div>
               ))}
             </div>
             <Separator className="my-4" />
             <div className="flex justify-between font-bold text-lg">
               <span>Totaal</span>
-              <span className="flex items-center gap-1"><Euro className="w-4 h-4" />{(order.total / 100).toFixed(2)}</span>
+              <span className="flex items-center gap-1">
+                <Euro className="w-4 h-4" />{(order.total / 100).toFixed(2)}
+              </span>
             </div>
           </div>
         )}
@@ -336,12 +349,14 @@ const OrderThankYou = () => {
 
         <div className="bg-indigo-50 border border-indigo-100 rounded-2xl p-6 text-center">
           <p className="text-gray-700 font-medium mb-1">Vragen over je bestelling?</p>
-          <p className="text-indigo-600 font-semibold">info@bouwmetrespect.nl</p>
+          <a href="mailto:info@bouwmetrespect.nl" className="text-indigo-600 font-semibold">
+            info@bouwmetrespect.nl
+          </a>
         </div>
 
         <div className="flex flex-col sm:flex-row gap-3">
           <Button onClick={() => navigate('/webshop')} variant="outline" className="flex-1 h-12" size="lg">
-            Verder winkelen
+            <ArrowLeft className="w-4 h-4 mr-2" /> Verder winkelen
           </Button>
           <Button onClick={() => navigate('/')} className="flex-1 h-12" size="lg">
             Terug naar homepage

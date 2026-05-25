@@ -425,10 +425,11 @@ const Webshop = () => {
         console.error('[Webshop] Error sending fallback email:', emailError);
       }
       
-      // Save session ID so OrderThankYou can show downloads after Stripe redirect
+      // Save session ID + purchased items so OrderThankYou can show downloads
       if (orderId) {
         localStorage.setItem('lastStripeSessionId', orderId);
       }
+      localStorage.setItem('lastPurchasedItems', JSON.stringify(items));
 
       // Clear cart after successful order creation
       clearCart();
