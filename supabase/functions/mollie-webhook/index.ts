@@ -431,8 +431,35 @@ serve(async (req) => {
                 for (const product of products) {
                   if (product.is_digital && product.pdf_url) {
                     const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+                    const sevenDaysInSeconds = 7 * 24 * 60 * 60;
 
-                    const { data: tokenData, error: tokenError } = await supabaseService
+                    // Extract storage path from the public URL
+                    const bucketName = 'smb';
+                    const storageBasePattern = `/storage/v1/object/public/${bucketName}/`;
+                    const pathIndex = (product.pdf_url as string).indexOf(storageBasePattern);
+                    const storagePath = pathIndex !== -1
+                      ? (product.pdf_url as string).substring(pathIndex + storageBasePattern.length)
+                      : null;
+
+                    let downloadUrl = product.pdf_url as string;
+
+                    if (storagePath) {
+                      const { data: signedData, error: signedError } = await supabaseService.storage
+                        .from(bucketName)
+                        .createSignedUrl(storagePath, sevenDaysInSeconds, {
+                          download: `${product.name}.pdf`
+                        });
+
+                      if (!signedError && signedData?.signedUrl) {
+                        downloadUrl = signedData.signedUrl;
+                        console.log(`[WEBHOOK] Signed URL created for product ${product.name}`);
+                      } else {
+                        console.error('[WEBHOOK] Signed URL error, using public URL:', signedError);
+                      }
+                    }
+
+                    // Save token for tracking
+                    await supabaseService
                       .from('download_tokens')
                       .insert({
                         order_id: orderId,
@@ -442,22 +469,13 @@ serve(async (req) => {
                         pdf_url: product.pdf_url,
                         expires_at: expiresAt.toISOString(),
                         max_downloads: 5
-                      })
-                      .select('token')
-                      .single();
-
-                    if (!tokenError && tokenData) {
-                      const supabaseUrl = Deno.env.get('SUPABASE_URL') ?? '';
-                      const downloadUrl = `${supabaseUrl}/functions/v1/download-pdf?token=${tokenData.token}`;
-                      downloadLinks.push({
-                        productName: product.name,
-                        url: downloadUrl,
-                        expiresAt: expiresAt.toLocaleDateString('nl-NL')
                       });
-                      console.log(`[WEBHOOK] Download token created for product ${product.name}`);
-                    } else {
-                      console.error('[WEBHOOK] Error creating download token:', tokenError);
-                    }
+
+                    downloadLinks.push({
+                      productName: product.name,
+                      url: downloadUrl,
+                      expiresAt: expiresAt.toLocaleDateString('nl-NL')
+                    });
                   }
                 }
               }
