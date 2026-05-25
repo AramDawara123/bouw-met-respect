@@ -85,22 +85,24 @@ const Webshop = () => {
     const free = params.get('free');
     
     if (status === 'paid') {
-      if (free === 'true') {
+      const sessionId = localStorage.getItem('lastStripeSessionId');
+      localStorage.removeItem('lastStripeSessionId');
+
+      if (sessionId) {
+        // Redirect to thank-you page which shows download links
+        window.location.replace(`/order-thank-you?session_id=${sessionId}`);
+      } else if (free === 'true') {
         toast({
           title: "Bedankt!",
           description: "Je gratis bestelling is bevestigd."
         });
+        const url = new URL(window.location.href);
+        url.searchParams.delete('status');
+        url.searchParams.delete('free');
+        window.history.replaceState({}, '', url.toString());
       } else {
-        toast({
-          title: "Bedankt!",
-          description: "Je betaling is ontvangen."
-        });
+        window.location.replace('/order-thank-you');
       }
-      
-      const url = new URL(window.location.href);
-      url.searchParams.delete('status');
-      url.searchParams.delete('free');
-      window.history.replaceState({}, '', url.toString());
     }
   }, []);
   const [products, setProducts] = useState([]);
@@ -423,6 +425,11 @@ const Webshop = () => {
         console.error('[Webshop] Error sending fallback email:', emailError);
       }
       
+      // Save session ID so OrderThankYou can show downloads after Stripe redirect
+      if (orderId) {
+        localStorage.setItem('lastStripeSessionId', orderId);
+      }
+
       // Clear cart after successful order creation
       clearCart();
       window.location.href = paymentUrl;
