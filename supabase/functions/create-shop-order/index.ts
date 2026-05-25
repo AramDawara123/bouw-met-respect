@@ -193,7 +193,7 @@ serve(async (req) => {
         discount_code: discountCode || '',
         discount_amount: String(discountAmountCents),
       },
-      success_url: `${origin}/webshop?status=paid`,
+      success_url: `${origin}/order-thank-you?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${origin}/webshop?status=canceled`,
     };
 

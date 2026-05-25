@@ -37,120 +37,195 @@ const OrderThankYou = () => {
   const [downloads, setDownloads] = useState<DigitalDownload[]>([]);
   const [loading, setLoading] = useState(true);
   const [retrying, setRetrying] = useState(false);
+  const [fulfillError, setFulfillError] = useState<string | null>(null);
 
-  const parseItems = (raw: any): OrderItem[] => {
+  const parseItems = (raw: unknown): OrderItem[] => {
     if (!Array.isArray(raw)) return [];
-    return raw.map((item: any) => ({
-      id: item.id || '',
-      name: item.name || '',
+    return raw.map((item: Record<string, unknown>) => ({
+      id: String(item.id || ''),
+      name: String(item.name || ''),
       price: Number(item.price) || 0,
       quantity: Number(item.quantity) || 1,
     }));
   };
 
-  // Fetch pdf_url for any digital products in a list of items
-  const fetchDownloads = useCallback(async (items: OrderItem[]) => {
-    const ids = items.map(i => i.id).filter(id => id && id.length === 36);
-    if (ids.length === 0) return [];
+  const fetchDownloadsFromProducts = useCallback(async (items: OrderItem[]): Promise<DigitalDownload[]> => {
+    const ids = items.map((i) => i.id).filter((id) => id.length === 36);
+    const names = items.map((i) => i.name).filter(Boolean);
 
-    const { data } = await supabase
-      .from('products')
-      .select('id, name, pdf_url, is_digital')
-      .in('id', ids);
+    const results: DigitalDownload[] = [];
+    const seen = new Set<string>();
 
-    if (!data) return [];
+    if (ids.length > 0) {
+      const { data } = await supabase
+        .from('products')
+        .select('id, name, pdf_url, is_digital')
+        .in('id', ids);
 
-    return data
-      .filter((p: any) => p.is_digital && p.pdf_url)
-      .map((p: any) => ({ productName: p.name, pdfUrl: p.pdf_url })) as DigitalDownload[];
+      for (const p of data ?? []) {
+        if (p.is_digital && p.pdf_url && !seen.has(p.id)) {
+          seen.add(p.id);
+          results.push({ productName: p.name, pdfUrl: p.pdf_url });
+        }
+      }
+    }
+
+    const missingNames = names.filter(
+      (name) => !results.some((r) => r.productName === name)
+    );
+
+    if (missingNames.length > 0) {
+      const { data } = await supabase
+        .from('products')
+        .select('id, name, pdf_url, is_digital')
+        .in('name', missingNames);
+
+      for (const p of data ?? []) {
+        if (p.is_digital && p.pdf_url && !seen.has(p.id)) {
+          seen.add(p.id);
+          results.push({ productName: p.name, pdfUrl: p.pdf_url });
+        }
+      }
+    }
+
+    return results;
+  }, []);
+
+  const fulfillDigitalOrder = useCallback(async (sessionId: string): Promise<DigitalDownload[]> => {
+    const { data, error } = await supabase.functions.invoke('fulfill-digital-order', {
+      body: { sessionId },
+    });
+
+    if (error) {
+      console.error('fulfill-digital-order error:', error);
+      setFulfillError(error.message);
+      return [];
+    }
+
+    if (data?.error) {
+      setFulfillError(data.error);
+      return [];
+    }
+
+    setFulfillError(null);
+    return (data?.downloads ?? []).map((dl: { productName: string; url: string }) => ({
+      productName: dl.productName,
+      pdfUrl: dl.url,
+    }));
+  }, []);
+
+  const loadOrderFromDb = useCallback(async (sessionId?: string, orderId?: string) => {
+    if (sessionId) {
+      const { data, error } = await supabase.rpc('get_order_by_session', {
+        p_session_id: sessionId,
+      });
+
+      if (!error && data && data.length > 0) {
+        const row = data[0];
+        const items = parseItems(row.items);
+        setOrder({
+          id: row.id,
+          items,
+          subtotal: row.subtotal ?? 0,
+          shipping: row.shipping ?? 0,
+          total: row.total ?? 0,
+          discount_amount: row.discount_amount ?? 0,
+          customer_first_name: row.customer_first_name ?? '',
+          customer_last_name: row.customer_last_name ?? '',
+          customer_email: row.customer_email ?? '',
+          created_at: row.created_at,
+        });
+        return items;
+      }
+
+      const { data: direct } = await supabase
+        .from('orders')
+        .select('*')
+        .eq('mollie_payment_id', sessionId)
+        .maybeSingle();
+
+      if (direct) {
+        const items = parseItems(direct.items);
+        setOrder({
+          id: direct.id,
+          items,
+          subtotal: direct.subtotal ?? 0,
+          shipping: direct.shipping ?? 0,
+          total: direct.total ?? 0,
+          discount_amount: direct.discount_amount ?? 0,
+          customer_first_name: direct.customer_first_name ?? '',
+          customer_last_name: direct.customer_last_name ?? '',
+          customer_email: direct.customer_email ?? '',
+          created_at: direct.created_at,
+        });
+        return items;
+      }
+    }
+
+    if (orderId) {
+      const { data } = await supabase
+        .from('orders')
+        .select('*')
+        .eq('id', orderId)
+        .maybeSingle();
+
+      if (data) {
+        const items = parseItems(data.items);
+        setOrder({
+          id: data.id,
+          items,
+          subtotal: data.subtotal ?? 0,
+          shipping: data.shipping ?? 0,
+          total: data.total ?? 0,
+          discount_amount: data.discount_amount ?? 0,
+          customer_first_name: data.customer_first_name ?? '',
+          customer_last_name: data.customer_last_name ?? '',
+          customer_email: data.customer_email ?? '',
+          created_at: data.created_at,
+        });
+        return items;
+      }
+    }
+
+    return [];
   }, []);
 
   const load = useCallback(async () => {
     const sessionId = searchParams.get('session_id');
-    const orderId   = searchParams.get('orderId');
+    const orderId = searchParams.get('orderId');
 
-    // Read localStorage synchronously before any awaits (useEffect clears it after us)
     let localItems: OrderItem[] = [];
     try {
       const saved = localStorage.getItem('lastPurchasedItems');
       if (saved) localItems = JSON.parse(saved);
-    } catch { /* ignore */ }
-
-    // ── 1. Try to find order via RPC (bypasses RLS) ──────────────────────
-    let items: OrderItem[] = [];
-
-    if (sessionId) {
-      try {
-        const { data, error } = await supabase.rpc('get_order_by_session', {
-          p_session_id: sessionId,
-        });
-
-        if (!error && data && data.length > 0) {
-          const row = data[0];
-          items = parseItems(row.items);
-          setOrder({
-            id: row.id,
-            items,
-            subtotal: row.subtotal ?? 0,
-            shipping: row.shipping ?? 0,
-            total: row.total ?? 0,
-            discount_amount: row.discount_amount ?? 0,
-            customer_first_name: row.customer_first_name ?? '',
-            customer_last_name:  row.customer_last_name  ?? '',
-            customer_email:      row.customer_email      ?? '',
-            created_at:          row.created_at,
-          });
-        }
-      } catch (e) {
-        console.error('RPC lookup failed:', e);
-      }
-    } else if (orderId) {
-      try {
-        const { data } = await supabase
-          .from('orders')
-          .select('*')
-          .eq('id', orderId)
-          .maybeSingle();
-
-        if (data) {
-          items = parseItems(data.items);
-          setOrder({
-            id: data.id,
-            items,
-            subtotal: data.subtotal ?? 0,
-            shipping: data.shipping ?? 0,
-            total: data.total ?? 0,
-            discount_amount: data.discount_amount ?? 0,
-            customer_first_name: data.customer_first_name ?? '',
-            customer_last_name:  data.customer_last_name  ?? '',
-            customer_email:      data.customer_email       ?? '',
-            created_at:          data.created_at,
-          });
-        }
-      } catch (e) {
-        console.error('Direct lookup failed:', e);
-      }
+    } catch {
+      /* ignore */
     }
 
-    // ── 2. Fallback: use items saved to localStorage before Stripe redirect ──
+    let items = await loadOrderFromDb(sessionId ?? undefined, orderId ?? undefined);
+
     if (items.length === 0) {
       items = localItems;
     }
 
-    // ── 3. Find digital downloads from whichever items we have ──────────
-    if (items.length > 0) {
-      const links = await fetchDownloads(items);
-      setDownloads(links);
+    let links: DigitalDownload[] = [];
+
+    if (sessionId) {
+      links = await fulfillDigitalOrder(sessionId);
     }
 
+    if (links.length === 0 && items.length > 0) {
+      links = await fetchDownloadsFromProducts(items);
+    }
+
+    setDownloads(links);
     setLoading(false);
     setRetrying(false);
-  }, [searchParams, fetchDownloads]);
+  }, [searchParams, loadOrderFromDb, fulfillDigitalOrder, fetchDownloadsFromProducts]);
 
   useEffect(() => {
     document.title = 'Bedankt voor je bestelling - Bouw met Respect';
     load().then(() => {
-      // Clean up only after load() has read what it needs
       localStorage.removeItem('lastStripeSessionId');
       localStorage.removeItem('lastPurchasedItems');
     });
@@ -159,13 +234,13 @@ const OrderThankYou = () => {
   const handleRetry = () => {
     setRetrying(true);
     setLoading(true);
+    setFulfillError(null);
     load();
   };
 
   const fmt = (cents: number) => `€${(cents / 100).toFixed(2)}`;
   const isDigital = downloads.length > 0;
 
-  // ── Loading ──────────────────────────────────────────────────────────────
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-50 to-purple-50">
@@ -177,13 +252,10 @@ const OrderThankYou = () => {
     );
   }
 
-  // ── Digital product page ─────────────────────────────────────────────────
   if (isDigital) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-indigo-950 via-indigo-900 to-purple-900 px-4 py-12">
         <div className="max-w-xl mx-auto space-y-6">
-
-          {/* Hero */}
           <div className="text-center pt-4 pb-2">
             <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-white/10 backdrop-blur border border-white/20 mb-5">
               <FileText className="w-10 h-10 text-white" />
@@ -198,7 +270,6 @@ const OrderThankYou = () => {
             </p>
           </div>
 
-          {/* Download card */}
           <div className="bg-white rounded-2xl shadow-2xl overflow-hidden">
             <div className="bg-gradient-to-r from-indigo-500 to-purple-600 px-6 py-4">
               <p className="text-white font-semibold text-sm uppercase tracking-wide flex items-center gap-2">
@@ -214,12 +285,11 @@ const OrderThankYou = () => {
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="font-semibold text-gray-800 truncate">{dl.productName}</p>
-                      <p className="text-sm text-gray-500 mt-0.5">PDF bestand · Directe download</p>
+                      <p className="text-sm text-gray-500 mt-0.5">PDF · Klik om te downloaden</p>
                     </div>
                   </div>
                   <a
                     href={dl.pdfUrl}
-                    download={`${dl.productName}.pdf`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex items-center justify-center gap-2 w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-bold py-3.5 px-6 rounded-xl transition-all duration-200 shadow-md text-base no-underline"
@@ -232,13 +302,12 @@ const OrderThankYou = () => {
 
               <div className="bg-amber-50 border border-amber-200 rounded-xl p-4">
                 <p className="text-amber-800 text-sm">
-                  <strong>Tip:</strong> Sla het bestand op je apparaat op zodat je het altijd kunt terugvinden.
+                  <strong>Tip:</strong> Je ontvangt ook een e-mail met de downloadlink. Controleer je spam-map.
                 </p>
               </div>
             </div>
           </div>
 
-          {/* Order summary */}
           {order && (
             <div className="bg-white/10 backdrop-blur border border-white/20 rounded-2xl p-5">
               <p className="text-indigo-200 text-xs uppercase tracking-wide font-semibold mb-3">Besteloverzicht</p>
@@ -246,7 +315,7 @@ const OrderThankYou = () => {
                 {order.items.map((item, i) => (
                   <div key={i} className="flex justify-between text-white text-sm">
                     <span>{item.name} × {item.quantity}</span>
-                    <span>{fmt(item.price * item.quantity * 100)}</span>
+                    <span>{fmt(Math.round(item.price * item.quantity * 100))}</span>
                   </div>
                 ))}
                 <Separator className="bg-white/20 my-2" />
@@ -264,7 +333,6 @@ const OrderThankYou = () => {
             </div>
           )}
 
-          {/* Actions */}
           <div className="flex flex-col gap-3 pb-8">
             <Button
               onClick={() => navigate('/webshop')}
@@ -286,11 +354,9 @@ const OrderThankYou = () => {
     );
   }
 
-  // ── Regular / no-order page ───────────────────────────────────────────────
   return (
     <div className="min-h-screen bg-gradient-to-br from-background to-muted/30 py-8 px-4">
       <div className="w-full max-w-4xl mx-auto space-y-6">
-
         <div className="bg-white rounded-2xl shadow-xl p-8 text-center">
           <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
             <CheckCircle className="w-8 h-8 text-green-600" />
@@ -299,14 +365,15 @@ const OrderThankYou = () => {
             Bedankt voor je bestelling{order?.customer_first_name ? `, ${order.customer_first_name}` : ''}!
           </h1>
           <p className="text-gray-500 mb-4">Je bestelling is ontvangen en wordt zo snel mogelijk verwerkt.</p>
-          {!order && (
-            <Button onClick={handleRetry} disabled={retrying} variant="outline" size="sm">
-              {retrying ? 'Laden…' : <><RefreshCw className="w-4 h-4 mr-2" />Bestelling opnieuw laden</>}
-            </Button>
+          {fulfillError && (
+            <p className="text-sm text-amber-600 mb-3">{fulfillError}</p>
           )}
+          <Button onClick={handleRetry} disabled={retrying} variant="outline" size="sm">
+            {retrying ? 'Laden…' : <><RefreshCw className="w-4 h-4 mr-2" />Download opnieuw laden</>}
+          </Button>
           {order && (
             <p className="text-sm text-gray-400 mt-2">
-              Bestelnummer: <span className="font-mono text-gray-700">{order.id.split('-')[0].toUpperCase()}</span>
+              Bestelnummer: <span className="font-mono text-gray-700">{String(order.id).slice(0, 8).toUpperCase()}</span>
             </p>
           )}
         </div>
@@ -323,7 +390,7 @@ const OrderThankYou = () => {
                     <p className="font-medium text-gray-800">{item.name}</p>
                     <p className="text-sm text-gray-500">Aantal: {item.quantity}</p>
                   </div>
-                  <p className="font-semibold">{fmt(item.price * item.quantity * 100)}</p>
+                  <p className="font-semibold">{fmt(Math.round(item.price * item.quantity * 100))}</p>
                 </div>
               ))}
             </div>
@@ -353,7 +420,10 @@ const OrderThankYou = () => {
         </div>
 
         <div className="bg-indigo-50 border border-indigo-100 rounded-2xl p-6 text-center">
-          <p className="text-gray-700 font-medium mb-1">Vragen over je bestelling?</p>
+          <p className="text-gray-700 font-medium mb-1">Digitale product gekocht?</p>
+          <p className="text-sm text-gray-600 mb-2">
+            Klik op &quot;Download opnieuw laden&quot; of neem contact op als je geen downloadlink hebt ontvangen.
+          </p>
           <a href="mailto:info@bouwmetrespect.nl" className="text-indigo-600 font-semibold">
             info@bouwmetrespect.nl
           </a>
