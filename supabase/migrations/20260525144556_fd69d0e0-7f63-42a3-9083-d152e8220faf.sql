@@ -1,0 +1,2 @@
+CREATE POLICY "Admins can delete orders" ON public.orders FOR DELETE USING (verify_admin_access());
+CREATE POLICY "Admins can delete memberships" ON public.memberships FOR DELETE USING (verify_admin_access());
