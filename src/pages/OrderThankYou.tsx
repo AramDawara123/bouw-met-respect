@@ -69,6 +69,13 @@ const OrderThankYou = () => {
     const sessionId = searchParams.get('session_id');
     const orderId   = searchParams.get('orderId');
 
+    // Read localStorage synchronously before any awaits (useEffect clears it after us)
+    let localItems: OrderItem[] = [];
+    try {
+      const saved = localStorage.getItem('lastPurchasedItems');
+      if (saved) localItems = JSON.parse(saved);
+    } catch { /* ignore */ }
+
     // ── 1. Try to find order via RPC (bypasses RLS) ──────────────────────
     let items: OrderItem[] = [];
 
@@ -127,10 +134,7 @@ const OrderThankYou = () => {
 
     // ── 2. Fallback: use items saved to localStorage before Stripe redirect ──
     if (items.length === 0) {
-      const saved = localStorage.getItem('lastPurchasedItems');
-      if (saved) {
-        try { items = JSON.parse(saved); } catch { /* ignore */ }
-      }
+      items = localItems;
     }
 
     // ── 3. Find digital downloads from whichever items we have ──────────
@@ -145,10 +149,11 @@ const OrderThankYou = () => {
 
   useEffect(() => {
     document.title = 'Bedankt voor je bestelling - Bouw met Respect';
-    // Clean up localStorage after we've read it
-    localStorage.removeItem('lastStripeSessionId');
-    localStorage.removeItem('lastPurchasedItems');
-    load();
+    load().then(() => {
+      // Clean up only after load() has read what it needs
+      localStorage.removeItem('lastStripeSessionId');
+      localStorage.removeItem('lastPurchasedItems');
+    });
   }, [load]);
 
   const handleRetry = () => {
