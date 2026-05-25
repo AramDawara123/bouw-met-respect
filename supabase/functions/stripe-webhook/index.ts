@@ -271,11 +271,29 @@ serve(async (req) => {
               }
             }
 
+            const customerName = `${orderData.customer_first_name || ''} ${orderData.customer_last_name || ''}`.trim() || 'Klant';
+            const orderDate = new Date(orderData.created_at).toLocaleDateString('nl-NL');
+
+            // Send special digital email when there are downloads
+            if (downloadLinks.length > 0) {
+              await supabaseService.functions.invoke('send-digital-product-email', {
+                body: {
+                  customerEmail,
+                  customerName,
+                  orderId,
+                  orderDate,
+                  downloads: downloadLinks.map(dl => ({ productName: dl.productName, url: dl.url })),
+                  total: orderData.total || 0
+                }
+              });
+            }
+
+            // Always also send regular order confirmation
             await supabaseService.functions.invoke('send-order-confirmation', {
               body: {
                 orderId,
                 customerEmail,
-                customerName: `${orderData.customer_first_name || ''} ${orderData.customer_last_name || ''}`.trim() || 'Klant',
+                customerName,
                 orderItems,
                 subtotal: orderData.subtotal || 0,
                 shipping: orderData.shipping || 0,
@@ -286,7 +304,7 @@ serve(async (req) => {
                   city: orderData.customer_city,
                   country: 'Nederland'
                 },
-                orderDate: new Date(orderData.created_at).toLocaleDateString('nl-NL'),
+                orderDate,
                 ...(downloadLinks.length > 0 ? { downloadLinks } : {})
               }
             });
