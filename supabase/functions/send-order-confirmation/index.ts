@@ -28,6 +28,11 @@ interface OrderConfirmationRequest {
     country?: string;
   };
   orderDate: string;
+  downloadLinks?: Array<{
+    productName: string;
+    url: string;
+    expiresAt: string;
+  }>;
 }
 
 const handler = async (req: Request): Promise<Response> => {
@@ -173,6 +178,34 @@ const handler = async (req: Request): Promise<Response> => {
                   </td>
                 </tr>
 
+                ${orderData.downloadLinks && orderData.downloadLinks.length > 0 ? `
+                <!-- Digital Downloads -->
+                <tr>
+                  <td style="padding: 0 30px 20px 30px;">
+                    <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: #eff6ff; border-radius: 8px; border: 1px solid #bfdbfe;">
+                      <tr>
+                        <td style="padding: 24px;">
+                          <h3 style="color: #1e40af; font-size: 20px; font-weight: 600; margin: 0 0 16px 0;">📥 Jouw downloads</h3>
+                          <p style="color: #1d4ed8; font-size: 14px; margin: 0 0 16px 0;">Klik op de knop hieronder om je digitale product te downloaden. De link is 7 dagen geldig.</p>
+                          ${orderData.downloadLinks.map(link => `
+                          <table cellpadding="0" cellspacing="0" border="0" style="margin-bottom: 12px;">
+                            <tr>
+                              <td style="background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%); border-radius: 8px;">
+                                <a href="${link.url}" style="color: #ffffff; text-decoration: none; padding: 14px 24px; font-weight: 600; display: block; font-size: 15px;">
+                                  📄 ${link.productName} downloaden
+                                </a>
+                              </td>
+                            </tr>
+                          </table>
+                          <p style="color: #6b7280; font-size: 12px; margin: 0 0 8px 0;">Geldig tot: ${link.expiresAt} &nbsp;|&nbsp; Max. 5 downloads</p>
+                          `).join('')}
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+                ` : ''}
+
                 <!-- Status Update -->
                 <tr>
                   <td style="padding: 0 30px 20px 30px;">
@@ -186,8 +219,11 @@ const handler = async (req: Request): Promise<Response> => {
                               </td>
                               <td style="vertical-align: top; padding-left: 16px;">
                                 <h3 style="color: #065f46; font-size: 20px; font-weight: 600; margin: 0 0 12px 0;">Wat gebeurt er nu?</h3>
-                                <p style="color: #047857; margin: 0 0 12px 0; font-size: 16px; line-height: 1.6;">Je bestelling wordt binnen 24 uur verwerkt en zo snel mogelijk verzonden.</p>
-                                <p style="color: #047857; margin: 0; font-size: 16px; line-height: 1.6;">Je ontvangt binnenkort een email met track & trace informatie zodat je je bestelling kunt volgen.</p>
+                                ${orderData.downloadLinks && orderData.downloadLinks.length > 0
+                                  ? `<p style="color: #047857; margin: 0; font-size: 16px; line-height: 1.6;">Je digitale product(en) zijn direct beschikbaar via de downloadlinks hierboven.</p>`
+                                  : `<p style="color: #047857; margin: 0 0 12px 0; font-size: 16px; line-height: 1.6;">Je bestelling wordt binnen 24 uur verwerkt en zo snel mogelijk verzonden.</p>
+                                     <p style="color: #047857; margin: 0; font-size: 16px; line-height: 1.6;">Je ontvangt binnenkort een email met track & trace informatie zodat je je bestelling kunt volgen.</p>`
+                                }
                               </td>
                             </tr>
                           </table>

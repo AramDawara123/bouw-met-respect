@@ -8,7 +8,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Search, Edit, Trash2, Plus, Package, Euro, Upload, X, Percent, Tag } from "lucide-react";
+import { Search, Edit, Trash2, Plus, Package, Euro, Upload, X, Percent, Tag, FileText } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
@@ -24,6 +24,8 @@ interface Product {
   discount_percentage?: number; // Discount percentage (0-100)
   discount_fixed?: number; // Fixed discount in cents
   discount_active?: boolean; // Whether discount is active
+  is_digital?: boolean;
+  pdf_url?: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -41,6 +43,7 @@ const ProductManagement = ({ products, onProductsChange }: ProductManagementProp
   const [isEditing, setIsEditing] = useState(false);
   const [showAddDialog, setShowAddDialog] = useState(false);
   const [uploadingImage, setUploadingImage] = useState(false);
+  const [uploadingPdf, setUploadingPdf] = useState(false);
   const { toast } = useToast();
 
   const [newProduct, setNewProduct] = useState({
@@ -53,7 +56,9 @@ const ProductManagement = ({ products, onProductsChange }: ProductManagementProp
     features: "",
     discount_percentage: "",
     discount_fixed: "",
-    discount_active: false
+    discount_active: false,
+    is_digital: false,
+    pdf_url: ""
   });
 
   // Filter products
@@ -143,6 +148,44 @@ const ProductManagement = ({ products, onProductsChange }: ProductManagementProp
     }
   };
 
+  const handlePdfUpload = async (file: File, isEditingMode: boolean = false) => {
+    if (!file) return;
+
+    if (file.type !== 'application/pdf') {
+      toast({ title: "Fout", description: "Selecteer een geldig PDF-bestand", variant: "destructive" });
+      return;
+    }
+
+    if (file.size > 20 * 1024 * 1024) {
+      toast({ title: "Fout", description: "PDF mag maximaal 20MB zijn", variant: "destructive" });
+      return;
+    }
+
+    setUploadingPdf(true);
+    try {
+      const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.pdf`;
+      const filePath = `product-pdfs/${fileName}`;
+
+      const { error } = await supabase.storage.from('smb').upload(filePath, file, { cacheControl: '3600', upsert: false });
+      if (error) throw error;
+
+      const { data: { publicUrl } } = supabase.storage.from('smb').getPublicUrl(filePath);
+
+      if (isEditingMode && editingProduct) {
+        setEditingProduct({ ...editingProduct, pdf_url: publicUrl });
+      } else {
+        setNewProduct({ ...newProduct, pdf_url: publicUrl });
+      }
+
+      toast({ title: "Succesvol", description: "PDF is geüpload" });
+    } catch (error) {
+      console.error('PDF upload error:', error);
+      toast({ title: "Fout", description: "Kon PDF niet uploaden", variant: "destructive" });
+    } finally {
+      setUploadingPdf(false);
+    }
+  };
+
   const handleAddProduct = async () => {
     try {
       // Validation
@@ -188,7 +231,9 @@ const ProductManagement = ({ products, onProductsChange }: ProductManagementProp
           features: featuresArray,
           discount_percentage: parseInt(newProduct.discount_percentage) || 0,
           discount_fixed: Math.round(parseFloat(newProduct.discount_fixed || '0') * 100), // Convert to cents
-          discount_active: newProduct.discount_active
+          discount_active: newProduct.discount_active,
+          is_digital: newProduct.is_digital,
+          pdf_url: newProduct.is_digital ? (newProduct.pdf_url || null) : null
         }])
         .select();
 
@@ -237,7 +282,9 @@ const ProductManagement = ({ products, onProductsChange }: ProductManagementProp
         features: "",
         discount_percentage: "",
         discount_fixed: "",
-        discount_active: false
+        discount_active: false,
+        is_digital: false,
+        pdf_url: ""
       });
       setShowAddDialog(false);
       onProductsChange();
@@ -267,7 +314,9 @@ const ProductManagement = ({ products, onProductsChange }: ProductManagementProp
           features: editingProduct.features,
           discount_percentage: editingProduct.discount_percentage || 0,
           discount_fixed: editingProduct.discount_fixed || 0,
-          discount_active: editingProduct.discount_active || false
+          discount_active: editingProduct.discount_active || false,
+          is_digital: editingProduct.is_digital || false,
+          pdf_url: editingProduct.is_digital ? (editingProduct.pdf_url || null) : null
         })
         .eq('id', editingProduct.id);
 
@@ -481,6 +530,59 @@ const ProductManagement = ({ products, onProductsChange }: ProductManagementProp
                 />
               </div>
 
+              {/* Digital Product Section */}
+              <div className="border-t pt-4">
+                <div className="flex items-center space-x-2 mb-3">
+                  <Checkbox
+                    id="is_digital"
+                    checked={newProduct.is_digital}
+                    onCheckedChange={(checked) => setNewProduct({...newProduct, is_digital: checked as boolean, pdf_url: ""})}
+                  />
+                  <label htmlFor="is_digital" className="text-sm font-medium flex items-center gap-2">
+                    <FileText className="w-4 h-4" />
+                    Digitaal product (PDF)
+                  </label>
+                </div>
+                {newProduct.is_digital && (
+                  <div className="ml-6 space-y-2">
+                    <label className="text-sm font-medium">PDF Bestand</label>
+                    <div className="flex gap-2 items-center">
+                      <div className="relative flex-1">
+                        <input
+                          type="file"
+                          accept="application/pdf"
+                          onChange={(e) => {
+                            const file = e.target.files?.[0];
+                            if (file) handlePdfUpload(file, false);
+                          }}
+                          className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                          disabled={uploadingPdf}
+                        />
+                        <Button type="button" variant="outline" disabled={uploadingPdf} className="w-full flex items-center gap-2">
+                          <Upload className="w-4 h-4" />
+                          {uploadingPdf ? "Uploading..." : "PDF Uploaden"}
+                        </Button>
+                      </div>
+                      {newProduct.pdf_url && (
+                        <Button
+                          type="button"
+                          variant="destructive"
+                          size="sm"
+                          onClick={() => setNewProduct({...newProduct, pdf_url: ""})}
+                        >
+                          <X className="w-3 h-3" />
+                        </Button>
+                      )}
+                    </div>
+                    {newProduct.pdf_url && (
+                      <p className="text-xs text-green-600 flex items-center gap-1">
+                        <FileText className="w-3 h-3" /> PDF geüpload
+                      </p>
+                    )}
+                  </div>
+                )}
+              </div>
+
               {/* Discount Section */}
               <div className="border-t pt-4">
                 <h4 className="text-sm font-medium mb-3 flex items-center">
@@ -629,9 +731,16 @@ const ProductManagement = ({ products, onProductsChange }: ProductManagementProp
                       </div>
                     </TableCell>
                     <TableCell>
-                      {product.category && (
-                        <Badge variant="secondary">{product.category}</Badge>
-                      )}
+                      <div className="flex flex-col gap-1">
+                        {product.category && (
+                          <Badge variant="secondary">{product.category}</Badge>
+                        )}
+                        {product.is_digital && (
+                          <Badge variant="outline" className="text-blue-600 border-blue-300 w-fit">
+                            <FileText className="w-3 h-3 mr-1" /> Digitaal
+                          </Badge>
+                        )}
+                      </div>
                     </TableCell>
                     <TableCell className="font-medium">
                       <div className="flex flex-col">
@@ -797,12 +906,65 @@ const ProductManagement = ({ products, onProductsChange }: ProductManagementProp
                 <Input
                   value={editingProduct.features.join(', ')}
                   onChange={(e) => setEditingProduct({
-                    ...editingProduct, 
+                    ...editingProduct,
                     features: e.target.value.split(',').map(f => f.trim()).filter(f => f.length > 0)
                   })}
                 />
               </div>
-              
+
+              {/* Digital Product Section */}
+              <div className="border-t pt-4">
+                <div className="flex items-center space-x-2 mb-3">
+                  <Checkbox
+                    id="edit_is_digital"
+                    checked={editingProduct.is_digital || false}
+                    onCheckedChange={(checked) => setEditingProduct({...editingProduct, is_digital: checked as boolean, pdf_url: ""})}
+                  />
+                  <label htmlFor="edit_is_digital" className="text-sm font-medium flex items-center gap-2">
+                    <FileText className="w-4 h-4" />
+                    Digitaal product (PDF)
+                  </label>
+                </div>
+                {editingProduct.is_digital && (
+                  <div className="ml-6 space-y-2">
+                    <label className="text-sm font-medium">PDF Bestand</label>
+                    <div className="flex gap-2 items-center">
+                      <div className="relative flex-1">
+                        <input
+                          type="file"
+                          accept="application/pdf"
+                          onChange={(e) => {
+                            const file = e.target.files?.[0];
+                            if (file) handlePdfUpload(file, true);
+                          }}
+                          className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                          disabled={uploadingPdf}
+                        />
+                        <Button type="button" variant="outline" disabled={uploadingPdf} className="w-full flex items-center gap-2">
+                          <Upload className="w-4 h-4" />
+                          {uploadingPdf ? "Uploading..." : (editingProduct.pdf_url ? "PDF Vervangen" : "PDF Uploaden")}
+                        </Button>
+                      </div>
+                      {editingProduct.pdf_url && (
+                        <Button
+                          type="button"
+                          variant="destructive"
+                          size="sm"
+                          onClick={() => setEditingProduct({...editingProduct, pdf_url: ""})}
+                        >
+                          <X className="w-3 h-3" />
+                        </Button>
+                      )}
+                    </div>
+                    {editingProduct.pdf_url && (
+                      <p className="text-xs text-green-600 flex items-center gap-1">
+                        <FileText className="w-3 h-3" /> PDF aanwezig
+                      </p>
+                    )}
+                  </div>
+                )}
+              </div>
+
               <div className="flex items-center space-x-2">
                 <Checkbox
                   id="edit_in_stock"

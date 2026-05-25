@@ -409,12 +409,66 @@ serve(async (req) => {
           if (orderError || !orderData) {
             console.error('Error fetching order data:', orderError);
           } else {
+            const customerEmail = orderData.customer_email || orderData.email;
+            const orderId = orderData.mollie_payment_id || orderData.id;
+            const orderItems: Array<{ id?: string; name: string; quantity: number; price: number }> =
+              Array.isArray(orderData.items) ? orderData.items : [];
+
+            // Check for digital products and generate download tokens
+            const downloadLinks: Array<{ productName: string; url: string; expiresAt: string }> = [];
+
+            const productIds = orderItems
+              .map(item => item.id)
+              .filter((id): id is string => !!id);
+
+            if (productIds.length > 0) {
+              const { data: products } = await supabaseService
+                .from('products')
+                .select('id, name, pdf_url, is_digital')
+                .in('id', productIds);
+
+              if (products) {
+                for (const product of products) {
+                  if (product.is_digital && product.pdf_url) {
+                    const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+
+                    const { data: tokenData, error: tokenError } = await supabaseService
+                      .from('download_tokens')
+                      .insert({
+                        order_id: orderId,
+                        product_id: product.id,
+                        product_name: product.name,
+                        customer_email: customerEmail,
+                        pdf_url: product.pdf_url,
+                        expires_at: expiresAt.toISOString(),
+                        max_downloads: 5
+                      })
+                      .select('token')
+                      .single();
+
+                    if (!tokenError && tokenData) {
+                      const supabaseUrl = Deno.env.get('SUPABASE_URL') ?? '';
+                      const downloadUrl = `${supabaseUrl}/functions/v1/download-pdf?token=${tokenData.token}`;
+                      downloadLinks.push({
+                        productName: product.name,
+                        url: downloadUrl,
+                        expiresAt: expiresAt.toLocaleDateString('nl-NL')
+                      });
+                      console.log(`[WEBHOOK] Download token created for product ${product.name}`);
+                    } else {
+                      console.error('[WEBHOOK] Error creating download token:', tokenError);
+                    }
+                  }
+                }
+              }
+            }
+
             // Send order confirmation email
             const confirmationData = {
-              orderId: orderData.mollie_payment_id || orderData.id,
-              customerEmail: orderData.customer_email || orderData.email,
+              orderId,
+              customerEmail,
               customerName: `${orderData.customer_first_name || ''} ${orderData.customer_last_name || ''}`.trim() || 'Klant',
-              orderItems: Array.isArray(orderData.items) ? orderData.items : [],
+              orderItems,
               subtotal: orderData.subtotal || 0,
               shipping: orderData.shipping || 0,
               total: orderData.total || 0,
@@ -425,7 +479,8 @@ serve(async (req) => {
                 city: orderData.address_city,
                 country: orderData.address_country || 'Nederland'
               },
-              orderDate: new Date(orderData.created_at).toLocaleDateString('nl-NL')
+              orderDate: new Date(orderData.created_at).toLocaleDateString('nl-NL'),
+              ...(downloadLinks.length > 0 ? { downloadLinks } : {})
             };
 
             // Call the order confirmation email function
