@@ -218,10 +218,12 @@ export type Database = {
           currency: string | null
           email: string
           id: string
+          is_recurring: boolean
           message: string | null
           mollie_payment_id: string | null
           name: string
           payment_status: string | null
+          stripe_subscription_id: string | null
           updated_at: string | null
         }
         Insert: {
@@ -230,10 +232,12 @@ export type Database = {
           currency?: string | null
           email: string
           id?: string
+          is_recurring?: boolean
           message?: string | null
           mollie_payment_id?: string | null
           name: string
           payment_status?: string | null
+          stripe_subscription_id?: string | null
           updated_at?: string | null
         }
         Update: {
@@ -242,10 +246,12 @@ export type Database = {
           currency?: string | null
           email?: string
           id?: string
+          is_recurring?: boolean
           message?: string | null
           mollie_payment_id?: string | null
           name?: string
           payment_status?: string | null
+          stripe_subscription_id?: string | null
           updated_at?: string | null
         }
         Relationships: []
