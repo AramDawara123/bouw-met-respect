@@ -13,14 +13,20 @@ serve(async (req) => {
   }
 
   try {
-    const { amount, name, email, message } = await req.json();
+    const { amount, name, email, message, isRecurring } = await req.json();
     const numericAmount = Number(amount);
+    const recurring = Boolean(isRecurring);
 
-    if (!numericAmount || numericAmount < 5) {
-      throw new Error("Minimum donation amount is €5");
+    const minAmount = recurring ? 3 : 5;
+    if (!numericAmount || numericAmount < minAmount) {
+      throw new Error(
+        recurring
+          ? "Minimum maandelijkse donatie is €3"
+          : "Minimum eenmalige donatie is €5",
+      );
     }
     if (!name || !email) {
-      throw new Error("Name and email are required");
+      throw new Error("Naam en e-mail zijn verplicht");
     }
 
     const stripeKey = Deno.env.get("STRIPE_SECRET_KEY");
@@ -30,29 +36,61 @@ serve(async (req) => {
     const amountInCents = Math.round(numericAmount * 100);
     const origin = req.headers.get("origin") || "https://bouw-met-respect.lovable.app";
 
-    const session = await stripe.checkout.sessions.create({
-      payment_method_types: ["card", "ideal"],
-      mode: "payment",
-      customer_email: email,
-      line_items: [{
-        price_data: {
-          currency: "eur",
-          product_data: { name: `Donatie Bouw met Respect - ${name}` },
-          unit_amount: amountInCents,
-        },
-        quantity: 1,
-      }],
-      metadata: {
-        type: "donation",
-        name,
-        email,
-        message: message || "",
-      },
-      success_url: `${origin}/donatie?success=true`,
-      cancel_url: `${origin}/donatie?canceled=true`,
-    });
+    const productName = recurring
+      ? `Maandelijkse donatie Bouw met Respect - ${name}`
+      : `Donatie Bouw met Respect - ${name}`;
 
-    // Store donation record
+    const sessionConfig: Stripe.Checkout.SessionCreateParams = recurring
+      ? {
+          payment_method_types: ["card"],
+          mode: "subscription",
+          customer_email: email,
+          line_items: [
+            {
+              price_data: {
+                currency: "eur",
+                product_data: { name: productName },
+                unit_amount: amountInCents,
+                recurring: { interval: "month" },
+              },
+              quantity: 1,
+            },
+          ],
+          metadata: {
+            type: "donation_recurring",
+            name,
+            email,
+            message: message || "",
+          },
+          success_url: `${origin}/donatie?success=true&recurring=true`,
+          cancel_url: `${origin}/donatie?canceled=true`,
+        }
+      : {
+          payment_method_types: ["card", "ideal"],
+          mode: "payment",
+          customer_email: email,
+          line_items: [
+            {
+              price_data: {
+                currency: "eur",
+                product_data: { name: productName },
+                unit_amount: amountInCents,
+              },
+              quantity: 1,
+            },
+          ],
+          metadata: {
+            type: "donation",
+            name,
+            email,
+            message: message || "",
+          },
+          success_url: `${origin}/donatie?success=true`,
+          cancel_url: `${origin}/donatie?canceled=true`,
+        };
+
+    const session = await stripe.checkout.sessions.create(sessionConfig);
+
     const supabaseAdmin = createClient(
       Deno.env.get("SUPABASE_URL") ?? "",
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
@@ -64,9 +102,10 @@ serve(async (req) => {
       email,
       amount: amountInCents,
       message: message || null,
-      mollie_payment_id: session.id, // reuse column for stripe session id
+      mollie_payment_id: session.id,
       payment_status: "pending",
       currency: "EUR",
+      is_recurring: recurring,
     });
 
     if (insertError) {
