@@ -1,6 +1,7 @@
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Target, Building2, TrendingUp, Shield, ArrowRight, CheckCircle, Euro, Users, Award } from "lucide-react";
+import { Target, Building2, TrendingUp, Shield, ArrowRight, CheckCircle, Euro, Users, Award, Calendar, Clock, Video, MapPin, PhoneCall } from "lucide-react";
+import { Link } from "react-router-dom";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 import { useState } from "react";
 import MembershipForm from "@/components/MembershipForm";
