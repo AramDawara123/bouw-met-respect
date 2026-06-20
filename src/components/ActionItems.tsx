@@ -118,42 +118,124 @@ const ActionItems = () => {
           </p>
         </div>
 
-        {/* Pricing Section */}
+        {/* Schedule Appointment Section */}
         <div ref={pricingRef} className={`mb-20 transition-all duration-500 ${pricingVisible ? 'opacity-100 transform translate-y-0' : 'opacity-0 transform translate-y-8'}`}>
-          <div className="text-center mb-12">
-            <h3 className="text-3xl font-bold mb-4 text-foreground">Jaarlijkse Lidmaatschap</h3>
-            <p className="text-muted-foreground">Eenvoudig via automatisch incasso met herinneringen</p>
-          </div>
-          
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8 max-w-7xl mx-auto px-4">
-            {allTiers.map((tier, index) => <Card key={index} className={`relative p-4 sm:p-6 lg:p-8 text-center transition-all duration-300 border-2 hover:shadow-2xl hover:scale-105 ${tier.popular ? 'border-primary shadow-xl bg-gradient-to-br from-primary/5 to-primary/10' : 'border-border hover:border-primary/50 bg-card'}`} style={{
-            transitionDelay: pricingVisible ? `${index * 100}ms` : '0ms'
-          }}>
-                {tier.popular && <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                    <span className="bg-primary text-primary-foreground px-4 py-1 rounded-full text-sm font-semibold">
-                      Populair
-                    </span>
-                  </div>}
-                
-                <div className="w-16 h-16 mx-auto mb-6 rounded-xl flex items-center justify-center bg-primary shadow-lg">
-                  <tier.icon className="w-8 h-8 text-yellow-400" />
+          <div className="relative max-w-6xl mx-auto">
+            {/* Decorative glow */}
+            <div className="absolute -inset-1 bg-gradient-to-r from-primary/30 via-secondary/20 to-primary/30 rounded-3xl blur-2xl opacity-60"></div>
+
+            <Card className="relative overflow-hidden border-2 border-primary/20 bg-gradient-to-br from-card via-card to-primary/5 rounded-3xl shadow-2xl">
+              {/* Background pattern */}
+              <div className="absolute top-0 right-0 w-96 h-96 bg-primary/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none"></div>
+              <div className="absolute bottom-0 left-0 w-96 h-96 bg-secondary/10 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2 pointer-events-none"></div>
+
+              <div className="relative grid lg:grid-cols-2 gap-0">
+                {/* Left: Content */}
+                <div className="p-8 sm:p-12 lg:p-16">
+                  <div className="inline-flex items-center px-4 py-2 bg-primary/10 rounded-full text-primary font-semibold text-sm mb-6">
+                    <Calendar className="w-4 h-4 mr-2" />
+                    Plan een kennismaking
+                  </div>
+
+                  <h3 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-6 text-accent leading-tight">
+                    Laten we kennismaken onder het genot van een kop koffie
+                  </h3>
+
+                  <p className="text-lg text-accent/80 leading-relaxed mb-8">
+                    Benieuwd hoe wij samen met jouw bedrijf bouwen aan een sociaal veilige bouwplaats?
+                    Plan vrijblijvend een gesprek in &mdash; online of op locatie. Persoonlijk, eerlijk en zonder verplichtingen.
+                  </p>
+
+                  <ul className="space-y-4 mb-10">
+                    {[
+                      { icon: Clock, text: "30 minuten vrijblijvend gesprek" },
+                      { icon: Video, text: "Online via videocall of fysiek op locatie" },
+                      { icon: CheckCircle, text: "Advies op maat voor jouw organisatie" },
+                    ].map((item, i) => (
+                      <li key={i} className="flex items-start gap-4">
+                        <div className="w-10 h-10 rounded-xl bg-primary/15 flex items-center justify-center flex-shrink-0">
+                          <item.icon className="w-5 h-5 text-primary" />
+                        </div>
+                        <span className="text-accent font-medium pt-2">{item.text}</span>
+                      </li>
+                    ))}
+                  </ul>
+
+                  <div className="flex flex-col sm:flex-row gap-3">
+                    <Link to="/contact" className="flex-1">
+                      <Button size="lg" className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold shadow-lg hover:shadow-xl transition-all">
+                        <Calendar className="w-5 h-5 mr-2" />
+                        Afspraak inplannen
+                        <ArrowRight className="w-4 h-4 ml-2" />
+                      </Button>
+                    </Link>
+                    <a href="tel:+31000000000" className="flex-1">
+                      <Button size="lg" variant="outline" className="w-full border-2 border-primary/30 hover:bg-primary/5 font-semibold">
+                        <PhoneCall className="w-5 h-5 mr-2" />
+                        Direct bellen
+                      </Button>
+                    </a>
+                  </div>
                 </div>
-                
-                <h4 className="text-xl font-semibold mb-2 text-accent">{tier.size}</h4>
-                <p className="text-accent/80 mb-6">{tier.employees}</p>
-                
-                <div className="mb-6">
-                  <span className="text-4xl font-bold text-accent">{tier.price}</span>
-                  {!tier.isQuote && <span className="text-accent/80 ml-1">/jaar</span>}
+
+                {/* Right: Calendar visual */}
+                <div className="relative bg-gradient-to-br from-primary to-primary/80 p-8 sm:p-12 lg:p-16 flex items-center justify-center overflow-hidden">
+                  <div className="absolute inset-0 opacity-10" style={{
+                    backgroundImage: `radial-gradient(circle at 1px 1px, white 1px, transparent 0)`,
+                    backgroundSize: '24px 24px'
+                  }}></div>
+
+                  <div className="relative w-full max-w-sm">
+                    {/* Floating calendar card */}
+                    <div className="bg-card rounded-2xl shadow-2xl p-6 transform rotate-2 hover:rotate-0 transition-transform duration-500">
+                      <div className="flex items-center justify-between mb-4 pb-4 border-b border-border">
+                        <div>
+                          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Beschikbaar</p>
+                          <p className="text-lg font-bold text-accent">Deze week</p>
+                        </div>
+                        <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
+                          <Calendar className="w-6 h-6 text-primary" />
+                        </div>
+                      </div>
+
+                      <div className="space-y-3">
+                        {[
+                          { day: "Di", date: "10:00", label: "Online kennismaking" },
+                          { day: "Wo", date: "14:30", label: "Bedrijfsbezoek" },
+                          { day: "Vr", date: "09:00", label: "Online kennismaking" },
+                        ].map((slot, i) => (
+                          <div key={i} className="flex items-center gap-3 p-3 rounded-xl bg-muted/50 hover:bg-primary/10 transition-colors cursor-pointer group">
+                            <div className="w-12 h-12 rounded-lg bg-primary/15 flex flex-col items-center justify-center flex-shrink-0">
+                              <span className="text-xs font-bold text-primary">{slot.day}</span>
+                              <span className="text-[10px] text-primary/70">{slot.date}</span>
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <p className="text-sm font-semibold text-accent truncate">{slot.label}</p>
+                              <p className="text-xs text-muted-foreground">30 minuten</p>
+                            </div>
+                            <ArrowRight className="w-4 h-4 text-primary opacity-0 group-hover:opacity-100 transition-opacity" />
+                          </div>
+                        ))}
+                      </div>
+
+                      <div className="mt-4 pt-4 border-t border-border flex items-center justify-center gap-2 text-xs text-muted-foreground">
+                        <MapPin className="w-3 h-3" />
+                        <span>Online of op locatie</span>
+                      </div>
+                    </div>
+
+                    {/* Floating badge */}
+                    <div className="absolute -top-4 -left-4 bg-card rounded-xl shadow-xl px-4 py-3 flex items-center gap-2 transform -rotate-6">
+                      <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
+                      <span className="text-xs font-semibold text-accent">Reactie binnen 24u</span>
+                    </div>
+                  </div>
                 </div>
-                
-                <Button variant={tier.popular ? "default" : "outline"} className="w-full" onClick={() => handlePlanClick(tier.id)}>
-                  {tier.isQuote ? "Offerte aanvragen" : "Aanmelden"}
-                  <ArrowRight className="w-4 h-4 ml-2" />
-                </Button>
-              </Card>)}
+              </div>
+            </Card>
           </div>
         </div>
+
 
         {/* Business Values Cards */}
         <div ref={cardsRef} className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 lg:gap-8 max-w-6xl mx-auto px-4">
