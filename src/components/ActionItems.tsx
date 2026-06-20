@@ -186,8 +186,8 @@ const ActionItems = () => {
                   }}></div>
 
                   <div className="relative w-full max-w-sm">
-                    {/* Floating calendar card */}
-                    <div className="bg-card rounded-2xl shadow-2xl p-6 transform rotate-2 hover:rotate-0 transition-transform duration-500">
+                    {/* Calendar card */}
+                    <div className="bg-card rounded-2xl shadow-2xl p-6">
                       <div className="flex items-center justify-between mb-4 pb-4 border-b border-border">
                         <div>
                           <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Beschikbaar</p>
@@ -224,8 +224,8 @@ const ActionItems = () => {
                       </div>
                     </div>
 
-                    {/* Floating badge */}
-                    <div className="absolute -top-4 -left-4 bg-card rounded-xl shadow-xl px-4 py-3 flex items-center gap-2 transform -rotate-6">
+                    {/* Badge */}
+                    <div className="absolute -top-4 -left-4 bg-card rounded-xl shadow-xl px-4 py-3 flex items-center gap-2">
                       <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
                       <span className="text-xs font-semibold text-accent">Reactie binnen 24u</span>
                     </div>
