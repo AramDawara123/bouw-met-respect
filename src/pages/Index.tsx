@@ -28,8 +28,6 @@ const Index = () => {
         <Awareness />
         <ActionItems />
         
-        {/* Membership Plans Section */}
-        <MembershipPlans />
         
         <ReportSection />
         <Mission />
