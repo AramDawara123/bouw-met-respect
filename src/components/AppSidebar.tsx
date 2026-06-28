@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Users, Building2, ShoppingBag, Package, Tag, Euro, Settings, Home, QrCode, UserPlus, BarChart3 } from "lucide-react";
+import { Users, Building2, ShoppingBag, Package, Tag, Euro, Settings, Home, QrCode, UserPlus, BarChart3, MessageSquare } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarHeader, useSidebar } from "@/components/ui/sidebar";
 
@@ -63,6 +63,12 @@ const navigationItems = {
     title: "Onze Partners Prijzen",
     icon: Euro,
     description: "Beheer partnerprijzen"
+  }],
+  "Inhoud": [{
+    key: "interviews",
+    title: "Interviews",
+    icon: MessageSquare,
+    description: "Beheer foto's en interviews op de homepage"
   }],
   "Tools": [{
     key: "qrcode",
