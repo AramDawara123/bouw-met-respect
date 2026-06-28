@@ -28,6 +28,7 @@ import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
 import { OrderNotifications } from "@/components/OrderNotifications";
 import { AnalyticsDashboard } from "@/components/Statistics/AnalyticsDashboard";
+import InterviewsManager from "@/components/InterviewsManager";
 interface Membership {
   id: string;
   first_name: string;
@@ -1994,6 +1995,10 @@ Het Bouw met Respect team
 
               <TabsContent value="statistics">
                 <AnalyticsDashboard />
+              </TabsContent>
+
+              <TabsContent value="interviews">
+                <InterviewsManager />
               </TabsContent>
             </Tabs>
           </div>
