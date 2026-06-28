@@ -10,7 +10,7 @@ import FAQ from "@/components/FAQ";
 import CallToAction from "@/components/CallToAction";
 import Contact from "@/components/Contact";
 import Footer from "@/components/Footer";
-import MembershipPlans from "@/components/MembershipPlans";
+
 import SEO from "@/components/SEO";
 const Index = () => {
   console.log('Index component rendering');
