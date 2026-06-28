@@ -22,10 +22,6 @@ const ActionItems = () => {
     isVisible: headerVisible
   } = useScrollAnimation(0.2);
   const {
-    ref: pricingRef,
-    isVisible: pricingVisible
-  } = useScrollAnimation(0.1);
-  const {
     ref: cardsRef,
     isVisible: cardsVisible
   } = useScrollAnimation(0.1);
@@ -76,16 +72,7 @@ const ActionItems = () => {
     }
   };
 
-  // Transform membership pricing data for display
-  const allTiers = pricingData.map((pricing: MembershipPricingData) => ({
-    id: pricing.membership_type,
-    icon: getIconForMembershipType(pricing.membership_type),
-    size: pricing.membership_type.charAt(0).toUpperCase() + pricing.membership_type.slice(1),
-    employees: pricing.employees_range,
-    price: pricing.yearly_price_display,
-    popular: pricing.membership_type === 'middelgroot',
-    isQuote: pricing.is_quote || false
-  }));
+
 
   const handlePlanClick = (tierId: string) => {
     setSelectedMembershipType(tierId);
