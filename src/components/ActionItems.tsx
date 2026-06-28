@@ -22,10 +22,6 @@ const ActionItems = () => {
     isVisible: headerVisible
   } = useScrollAnimation(0.2);
   const {
-    ref: pricingRef,
-    isVisible: pricingVisible
-  } = useScrollAnimation(0.1);
-  const {
     ref: cardsRef,
     isVisible: cardsVisible
   } = useScrollAnimation(0.1);
@@ -76,16 +72,7 @@ const ActionItems = () => {
     }
   };
 
-  // Transform membership pricing data for display
-  const allTiers = pricingData.map((pricing: MembershipPricingData) => ({
-    id: pricing.membership_type,
-    icon: getIconForMembershipType(pricing.membership_type),
-    size: pricing.membership_type.charAt(0).toUpperCase() + pricing.membership_type.slice(1),
-    employees: pricing.employees_range,
-    price: pricing.yearly_price_display,
-    popular: pricing.membership_type === 'middelgroot',
-    isQuote: pricing.is_quote || false
-  }));
+
 
   const handlePlanClick = (tierId: string) => {
     setSelectedMembershipType(tierId);
@@ -115,43 +102,6 @@ const ActionItems = () => {
             Ontdek waarom steeds meer bedrijven zich aansluiten bij onze beweging 
             en investeren in een sociaal veilige bouwplaats. Een kleine investering met grote impact.
           </p>
-        </div>
-
-        {/* Pricing Section */}
-        <div ref={pricingRef} className={`mb-20 transition-all duration-500 ${pricingVisible ? 'opacity-100 transform translate-y-0' : 'opacity-0 transform translate-y-8'}`}>
-          <div className="text-center mb-12">
-            <h3 className="text-3xl font-bold mb-4 text-foreground">Jaarlijkse Lidmaatschap</h3>
-            <p className="text-muted-foreground">Eenvoudig via automatisch incasso met herinneringen</p>
-          </div>
-          
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8 max-w-7xl mx-auto px-4">
-            {allTiers.map((tier, index) => <Card key={index} className={`relative p-4 sm:p-6 lg:p-8 text-center transition-all duration-300 border-2 hover:shadow-2xl hover:scale-105 ${tier.popular ? 'border-primary shadow-xl bg-gradient-to-br from-primary/5 to-primary/10' : 'border-border hover:border-primary/50 bg-card'}`} style={{
-            transitionDelay: pricingVisible ? `${index * 100}ms` : '0ms'
-          }}>
-                {tier.popular && <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                    <span className="bg-primary text-primary-foreground px-4 py-1 rounded-full text-sm font-semibold">
-                      Populair
-                    </span>
-                  </div>}
-                
-                <div className="w-16 h-16 mx-auto mb-6 rounded-xl flex items-center justify-center bg-primary shadow-lg">
-                  <tier.icon className="w-8 h-8 text-yellow-400" />
-                </div>
-                
-                <h4 className="text-xl font-semibold mb-2 text-accent">{tier.size}</h4>
-                <p className="text-accent/80 mb-6">{tier.employees}</p>
-                
-                <div className="mb-6">
-                  <span className="text-4xl font-bold text-accent">{tier.price}</span>
-                  {!tier.isQuote && <span className="text-accent/80 ml-1">/jaar</span>}
-                </div>
-                
-                <Button variant={tier.popular ? "default" : "outline"} className="w-full" onClick={() => handlePlanClick(tier.id)}>
-                  {tier.isQuote ? "Offerte aanvragen" : "Aanmelden"}
-                  <ArrowRight className="w-4 h-4 ml-2" />
-                </Button>
-              </Card>)}
-          </div>
         </div>
 
         {/* Business Values Cards */}
