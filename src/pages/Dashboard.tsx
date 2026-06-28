@@ -162,7 +162,7 @@ const Dashboard = () => {
   const [isEditingProduct, setIsEditingProduct] = useState(false);
   const [user, setUser] = useState(null);
   const [isAdmin, setIsAdmin] = useState(false);
-  const [viewMode, setViewMode] = useState<'memberships' | 'orders' | 'donations' | 'profiles' | 'products' | 'partners' | 'partner-pricing' | 'lidmaatschappen-prijzen' | 'onze-partners-prijzen' | 'discounts' | 'qrcode' | 'statistics'>("memberships");
+  const [viewMode, setViewMode] = useState<'memberships' | 'orders' | 'donations' | 'profiles' | 'products' | 'partners' | 'partner-pricing' | 'lidmaatschappen-prijzen' | 'onze-partners-prijzen' | 'discounts' | 'qrcode' | 'statistics' | 'interviews'>("memberships");
   const [showProfileForm, setShowProfileForm] = useState(false);
   const [editingProfile, setEditingProfile] = useState<CompanyProfile | null>(null);
   const [editingPartner, setEditingPartner] = useState<PartnerAccount | null>(null);
@@ -186,7 +186,7 @@ const Dashboard = () => {
     if (mode === 'orders') {
       setNewOrderCount(0);
     }
-    setViewMode(mode as 'memberships' | 'orders' | 'donations' | 'profiles' | 'products' | 'partners' | 'partner-pricing' | 'lidmaatschappen-prijzen' | 'onze-partners-prijzen' | 'discounts' | 'qrcode' | 'statistics');
+    setViewMode(mode as 'memberships' | 'orders' | 'donations' | 'profiles' | 'products' | 'partners' | 'partner-pricing' | 'lidmaatschappen-prijzen' | 'onze-partners-prijzen' | 'discounts' | 'qrcode' | 'statistics' | 'interviews');
   };
  
   const generateOrderNumber = (order: Order) => {
@@ -1444,7 +1444,7 @@ Het Bouw met Respect team
           </div>
 
           <div className="p-6 mt-6">
-                <Tabs value={viewMode} onValueChange={value => setViewMode(value as 'memberships' | 'orders' | 'donations' | 'profiles' | 'products' | 'partners' | 'partner-pricing' | 'lidmaatschappen-prijzen' | 'onze-partners-prijzen' | 'discounts' | 'qrcode' | 'statistics')}>
+                <Tabs value={viewMode} onValueChange={value => setViewMode(value as 'memberships' | 'orders' | 'donations' | 'profiles' | 'products' | 'partners' | 'partner-pricing' | 'lidmaatschappen-prijzen' | 'onze-partners-prijzen' | 'discounts' | 'qrcode' | 'statistics' | 'interviews')}>
                   
                 <TabsContent value="lidmaatschappen-prijzen" className="space-y-6">
                   <div className="space-y-6">
