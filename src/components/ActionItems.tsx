@@ -104,43 +104,6 @@ const ActionItems = () => {
           </p>
         </div>
 
-        {/* Pricing Section */}
-        <div ref={pricingRef} className={`mb-20 transition-all duration-500 ${pricingVisible ? 'opacity-100 transform translate-y-0' : 'opacity-0 transform translate-y-8'}`}>
-          <div className="text-center mb-12">
-            <h3 className="text-3xl font-bold mb-4 text-foreground">Jaarlijkse Lidmaatschap</h3>
-            <p className="text-muted-foreground">Eenvoudig via automatisch incasso met herinneringen</p>
-          </div>
-          
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8 max-w-7xl mx-auto px-4">
-            {allTiers.map((tier, index) => <Card key={index} className={`relative p-4 sm:p-6 lg:p-8 text-center transition-all duration-300 border-2 hover:shadow-2xl hover:scale-105 ${tier.popular ? 'border-primary shadow-xl bg-gradient-to-br from-primary/5 to-primary/10' : 'border-border hover:border-primary/50 bg-card'}`} style={{
-            transitionDelay: pricingVisible ? `${index * 100}ms` : '0ms'
-          }}>
-                {tier.popular && <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                    <span className="bg-primary text-primary-foreground px-4 py-1 rounded-full text-sm font-semibold">
-                      Populair
-                    </span>
-                  </div>}
-                
-                <div className="w-16 h-16 mx-auto mb-6 rounded-xl flex items-center justify-center bg-primary shadow-lg">
-                  <tier.icon className="w-8 h-8 text-yellow-400" />
-                </div>
-                
-                <h4 className="text-xl font-semibold mb-2 text-accent">{tier.size}</h4>
-                <p className="text-accent/80 mb-6">{tier.employees}</p>
-                
-                <div className="mb-6">
-                  <span className="text-4xl font-bold text-accent">{tier.price}</span>
-                  {!tier.isQuote && <span className="text-accent/80 ml-1">/jaar</span>}
-                </div>
-                
-                <Button variant={tier.popular ? "default" : "outline"} className="w-full" onClick={() => handlePlanClick(tier.id)}>
-                  {tier.isQuote ? "Offerte aanvragen" : "Aanmelden"}
-                  <ArrowRight className="w-4 h-4 ml-2" />
-                </Button>
-              </Card>)}
-          </div>
-        </div>
-
         {/* Business Values Cards */}
         <div ref={cardsRef} className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 lg:gap-8 max-w-6xl mx-auto px-4">
           {businessValues.map((value, index) => <Card key={index} className={`group relative p-4 sm:p-6 lg:p-8 transition-all duration-400 border-0 hover:shadow-2xl hover:scale-[1.02] bg-gradient-to-br ${value.gradient} backdrop-blur-sm ${cardsVisible ? 'opacity-100 transform translate-x-0' : 'opacity-0 transform ' + (index % 2 === 0 ? '-translate-x-12' : 'translate-x-12')}`} style={{
