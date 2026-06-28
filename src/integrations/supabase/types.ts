@@ -306,6 +306,45 @@ export type Database = {
           },
         ]
       }
+      home_interviews: {
+        Row: {
+          created_at: string
+          full_interview: string
+          id: string
+          image_url: string
+          intro: string
+          is_locked: boolean
+          name: string
+          position: number
+          role: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          full_interview?: string
+          id?: string
+          image_url?: string
+          intro?: string
+          is_locked?: boolean
+          name: string
+          position?: number
+          role?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          full_interview?: string
+          id?: string
+          image_url?: string
+          intro?: string
+          is_locked?: boolean
+          name?: string
+          position?: number
+          role?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       landing_pages: {
         Row: {
           created_at: string
