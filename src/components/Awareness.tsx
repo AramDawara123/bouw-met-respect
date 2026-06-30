@@ -54,7 +54,7 @@ const Awareness = () => {
               <Card
                 key={item.id}
                 className={`overflow-hidden border-0 shadow-lg transition-all duration-700 ${
-                  awarenessVisible ? "animate-fade-in" : "opacity-0"
+                  awarenessVisible ? "animate-fade-in" : ""
                 }`}
                 style={{ animationDelay: `${index * 150}ms` }}
               >
