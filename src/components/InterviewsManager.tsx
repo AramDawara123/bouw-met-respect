@@ -104,7 +104,6 @@ const InterviewsManager = () => {
             role: editing.role,
             intro: editing.intro,
             full_interview: editing.full_interview,
-            image_url: editing.image_url,
             image_url: getInterviewPhotoStoragePath(editing.image_url) || editing.image_url,
           })
           .eq("id", editing.id);
