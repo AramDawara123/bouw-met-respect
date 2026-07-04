@@ -5,6 +5,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/component
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 import { ChevronDown } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { getInterviewPhotoDisplayUrl } from "@/lib/interviewPhotos";
 
 interface Interview {
   id: string;
@@ -28,7 +29,16 @@ const Awareness = () => {
         .from("home_interviews" as any)
         .select("*")
         .order("position", { ascending: true });
-      if (data) setInterviews(data as unknown as Interview[]);
+      if (data) {
+        const rows = data as unknown as Interview[];
+        const interviewsWithPhotos = await Promise.all(
+          rows.map(async (interview) => ({
+            ...interview,
+            image_url: await getInterviewPhotoDisplayUrl(interview.image_url),
+          }))
+        );
+        setInterviews(interviewsWithPhotos);
+      }
     };
     fetchInterviews();
   }, []);

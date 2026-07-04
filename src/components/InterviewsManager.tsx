@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 import { Plus, Trash2, Edit, Upload, Lock, Loader2 } from "lucide-react";
+import { getInterviewPhotoDisplayUrl, getInterviewPhotoStoragePath } from "@/lib/interviewPhotos";
 
 interface Interview {
   id: string;
@@ -18,6 +19,7 @@ interface Interview {
   intro: string;
   full_interview: string;
   image_url: string;
+  display_image_url?: string;
   is_locked: boolean;
 }
 
@@ -49,7 +51,14 @@ const InterviewsManager = () => {
     if (error) {
       toast({ title: "Fout bij laden", description: error.message, variant: "destructive" });
     } else {
-      setInterviews((data as unknown as Interview[]) || []);
+      const rows = (data as unknown as Interview[]) || [];
+      const withPhotos = await Promise.all(
+        rows.map(async (interview) => ({
+          ...interview,
+          display_image_url: await getInterviewPhotoDisplayUrl(interview.image_url),
+        }))
+      );
+      setInterviews(withPhotos);
     }
     setLoading(false);
   };
@@ -68,8 +77,8 @@ const InterviewsManager = () => {
         .from("interview-photos")
         .upload(path, file, { upsert: false });
       if (upErr) throw upErr;
-      const { data } = supabase.storage.from("interview-photos").getPublicUrl(path);
-      setEditing({ ...editing, image_url: data.publicUrl });
+      const displayUrl = await getInterviewPhotoDisplayUrl(path);
+      setEditing({ ...editing, image_url: path, display_image_url: displayUrl });
       toast({ title: "Foto geüpload" });
     } catch (e: any) {
       toast({ title: "Upload mislukt", description: e.message, variant: "destructive" });
@@ -96,6 +105,7 @@ const InterviewsManager = () => {
             intro: editing.intro,
             full_interview: editing.full_interview,
             image_url: editing.image_url,
+            image_url: getInterviewPhotoStoragePath(editing.image_url) || editing.image_url,
           })
           .eq("id", editing.id);
         if (error) throw error;
@@ -107,7 +117,7 @@ const InterviewsManager = () => {
           role: editing.role,
           intro: editing.intro,
           full_interview: editing.full_interview,
-          image_url: editing.image_url,
+          image_url: getInterviewPhotoStoragePath(editing.image_url) || editing.image_url,
           is_locked: false,
         });
         if (error) throw error;
@@ -160,7 +170,7 @@ const InterviewsManager = () => {
                 <Card key={it.id} className="overflow-hidden">
                   <div className="aspect-[16/10] bg-muted">
                     {it.image_url ? (
-                      <img src={it.image_url} alt={it.name} className="w-full h-full object-cover" />
+                      <img src={it.display_image_url || it.image_url} alt={it.name} className="w-full h-full object-cover" />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center text-muted-foreground text-sm">
                         Geen foto
@@ -205,9 +215,9 @@ const InterviewsManager = () => {
             <div className="space-y-4">
               <div className="space-y-2">
                 <Label>Foto</Label>
-                {editing.image_url && (
+                {(editing.display_image_url || editing.image_url) && (
                   <img
-                    src={editing.image_url}
+                    src={editing.display_image_url || editing.image_url}
                     alt=""
                     className="w-full max-h-64 object-contain rounded border"
                   />
