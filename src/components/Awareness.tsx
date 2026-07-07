@@ -22,6 +22,7 @@ interface Interview {
 const Awareness = () => {
   const { ref: awarenessRef, isVisible: awarenessVisible } = useScrollAnimation(0.1);
   const [openIndex, setOpenIndex] = useState<number | null>(null);
+  const [lightboxUrl, setLightboxUrl] = useState<string | null>(null);
   const [interviews, setInterviews] = useState<Interview[]>([]);
 
   useEffect(() => {
