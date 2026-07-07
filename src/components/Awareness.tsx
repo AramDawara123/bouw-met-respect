@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 import { ChevronDown } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -21,6 +22,7 @@ interface Interview {
 const Awareness = () => {
   const { ref: awarenessRef, isVisible: awarenessVisible } = useScrollAnimation(0.1);
   const [openIndex, setOpenIndex] = useState<number | null>(null);
+  const [lightboxUrl, setLightboxUrl] = useState<string | null>(null);
   const [interviews, setInterviews] = useState<Interview[]>([]);
 
   useEffect(() => {
@@ -71,11 +73,18 @@ const Awareness = () => {
                 <Collapsible open={isOpen} onOpenChange={(o) => setOpenIndex(o ? index : null)}>
                   <div className="aspect-[16/10] bg-muted">
                     {item.image_url && (
-                      <img
-                        src={item.image_url}
-                        alt={item.name}
-                        className="w-full h-full object-contain"
-                      />
+                      <button
+                        type="button"
+                        onClick={() => setLightboxUrl(item.image_url)}
+                        className="w-full h-full block cursor-zoom-in focus:outline-none focus:ring-2 focus:ring-primary"
+                        aria-label={`Bekijk foto van ${item.name}`}
+                      >
+                        <img
+                          src={item.image_url}
+                          alt={item.name}
+                          className="w-full h-full object-contain"
+                        />
+                      </button>
                     )}
                   </div>
 
@@ -109,6 +118,14 @@ const Awareness = () => {
           })}
         </div>
       </div>
+
+      <Dialog open={!!lightboxUrl} onOpenChange={(o) => !o && setLightboxUrl(null)}>
+        <DialogContent className="max-w-5xl p-2 bg-background">
+          {lightboxUrl && (
+            <img src={lightboxUrl} alt="" className="w-full h-auto max-h-[85vh] object-contain rounded" />
+          )}
+        </DialogContent>
+      </Dialog>
     </section>
   );
 };
