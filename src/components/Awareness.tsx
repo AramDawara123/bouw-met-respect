@@ -73,11 +73,18 @@ const Awareness = () => {
                 <Collapsible open={isOpen} onOpenChange={(o) => setOpenIndex(o ? index : null)}>
                   <div className="aspect-[16/10] bg-muted">
                     {item.image_url && (
-                      <img
-                        src={item.image_url}
-                        alt={item.name}
-                        className="w-full h-full object-contain"
-                      />
+                      <button
+                        type="button"
+                        onClick={() => setLightboxUrl(item.image_url)}
+                        className="w-full h-full block cursor-zoom-in focus:outline-none focus:ring-2 focus:ring-primary"
+                        aria-label={`Bekijk foto van ${item.name}`}
+                      >
+                        <img
+                          src={item.image_url}
+                          alt={item.name}
+                          className="w-full h-full object-contain"
+                        />
+                      </button>
                     )}
                   </div>
 
