@@ -187,11 +187,9 @@ const InterviewsManager = () => {
                       <Button size="sm" variant="outline" onClick={() => setEditing(it)}>
                         <Edit className="w-3 h-3 mr-1" /> Bewerk
                       </Button>
-                      {!it.is_locked && (
-                        <Button size="sm" variant="outline" onClick={() => handleDelete(it)}>
-                          <Trash2 className="w-3 h-3 mr-1" /> Verwijder
-                        </Button>
-                      )}
+                      <Button size="sm" variant="outline" onClick={() => handleDelete(it)}>
+                        <Trash2 className="w-3 h-3 mr-1" /> Verwijder
+                      </Button>
                     </div>
                   </CardContent>
                 </Card>
