@@ -132,10 +132,6 @@ const InterviewsManager = () => {
   };
 
   const handleDelete = async (item: Interview) => {
-    if (item.is_locked) {
-      toast({ title: "Vergrendeld", description: "De bestuurder kan niet verwijderd worden.", variant: "destructive" });
-      return;
-    }
     if (!confirm(`Verwijder "${item.name}"?`)) return;
     const { error } = await supabase.from("home_interviews" as any).delete().eq("id", item.id);
     if (error) {
