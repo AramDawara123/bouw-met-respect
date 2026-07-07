@@ -132,10 +132,6 @@ const InterviewsManager = () => {
   };
 
   const handleDelete = async (item: Interview) => {
-    if (item.is_locked) {
-      toast({ title: "Vergrendeld", description: "De bestuurder kan niet verwijderd worden.", variant: "destructive" });
-      return;
-    }
     if (!confirm(`Verwijder "${item.name}"?`)) return;
     const { error } = await supabase.from("home_interviews" as any).delete().eq("id", item.id);
     if (error) {
@@ -191,11 +187,9 @@ const InterviewsManager = () => {
                       <Button size="sm" variant="outline" onClick={() => setEditing(it)}>
                         <Edit className="w-3 h-3 mr-1" /> Bewerk
                       </Button>
-                      {!it.is_locked && (
-                        <Button size="sm" variant="outline" onClick={() => handleDelete(it)}>
-                          <Trash2 className="w-3 h-3 mr-1" /> Verwijder
-                        </Button>
-                      )}
+                      <Button size="sm" variant="outline" onClick={() => handleDelete(it)}>
+                        <Trash2 className="w-3 h-3 mr-1" /> Verwijder
+                      </Button>
                     </div>
                   </CardContent>
                 </Card>
