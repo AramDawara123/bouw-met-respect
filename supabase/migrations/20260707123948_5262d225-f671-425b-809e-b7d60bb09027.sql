@@ -1,0 +1,2 @@
+DROP POLICY IF EXISTS "Authenticated can delete unlocked interviews" ON public.home_interviews;
+CREATE POLICY "Authenticated can delete interviews" ON public.home_interviews FOR DELETE TO authenticated USING (true);
