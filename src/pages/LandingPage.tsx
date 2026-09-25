@@ -156,12 +156,6 @@ const LandingPage = () => {
 
           <div className="container mx-auto px-4 relative z-10">
             <div className="max-w-4xl animate-fade-in">
-              {page.region && (
-                <div className="inline-flex items-center gap-2 bg-accent text-accent-foreground px-5 py-2.5 rounded-full mb-8 animate-bounce-in shadow-lg">
-                  <MapPin className="w-5 h-5" />
-                  <span className="font-semibold">Regio {page.region}</span>
-                </div>
-              )}
               
               <h1 className="text-4xl md:text-5xl lg:text-7xl font-bold text-white mb-8 leading-tight animate-slide-up">
                 {page.h1_title}
