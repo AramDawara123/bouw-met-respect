@@ -138,7 +138,7 @@ const LandingPage = () => {
 
       <div className="min-h-screen bg-background overflow-hidden">
         {/* Hero Section with Image Background */}
-        <section className="relative min-h-[85vh] flex items-center">
+        <section className="relative min-h-[85vh] flex items-center pt-28 pb-16 md:pt-0 md:pb-0">
           {/* Background Image with Overlay */}
           <div className="absolute inset-0 z-0">
             <img 
