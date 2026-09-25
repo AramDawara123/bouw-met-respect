@@ -4,7 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import SEO from '@/components/SEO';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Shield, Users, Building2, Phone, ArrowRight, CheckCircle, MapPin, Heart, MessageCircle, Award, Target } from 'lucide-react';
+import { Shield, Users, Building2, Phone, ArrowRight, CheckCircle, Heart, MessageCircle, Award, Target } from 'lucide-react';
 import MembershipForm from '@/components/MembershipForm';
 import { useState } from 'react';
 import Footer from '@/components/Footer';
