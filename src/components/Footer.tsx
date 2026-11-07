@@ -131,7 +131,15 @@ const Footer = () => {
               
               <div className="text-background/80">
                 <div className="font-medium">Volg ons</div>
-                <div className="text-sm opacity-80">LinkedIn</div>
+                <a
+                  href="https://www.linkedin.com/company/bouwmetrespect/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 text-sm opacity-80 hover:opacity-100 transition-opacity"
+                >
+                  <Linkedin className="w-4 h-4" />
+                  LinkedIn
+                </a>
               </div>
             </div>
           </div>
