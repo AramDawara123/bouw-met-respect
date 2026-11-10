@@ -351,9 +351,9 @@ const Donatie = () => {
 
             <div className="mt-8 text-center text-muted-foreground">
               <p className="mb-2">
-                Stichting Bouw met Respect (KVK: 98829521) is een ANBI-stichting.
+                Stichting Bouw met Respect (KVK: 98829521).
               </p>
-              <p>Donaties zijn fiscaal aftrekbaar. Je ontvangt automatisch een bevestiging per e-mail.</p>
+              <p>Je ontvangt automatisch een bevestiging per e-mail.</p>
             </div>
           </div>
         </div>
