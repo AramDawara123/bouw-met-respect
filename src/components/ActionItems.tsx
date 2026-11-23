@@ -96,11 +96,12 @@ const ActionItems = () => {
             Waarde voor bedrijven
           </div>
           <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-6 text-foreground bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-            Investeer in sociale veiligheid
+            Je sluit je niet aan bij een stichting, maar bij een beweging.
           </h2>
           <p className="text-lg sm:text-xl text-muted-foreground max-w-4xl mx-auto mb-8 leading-relaxed px-4">
-            Ontdek waarom steeds meer bedrijven zich aansluiten bij onze beweging 
-            en investeren in een sociaal veilige bouwplaats. Een kleine investering met grote impact.
+            Wie zich aansluit bij Bouw met Respect, laat zien dat de mensen binnen de
+            bouwhekken ertoe doen. Je doet het niet voor ons, maar je doet het voor de
+            volgende generaties.
           </p>
         </div>
 
