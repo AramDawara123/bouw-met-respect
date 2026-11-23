@@ -55,28 +55,22 @@ const Hero = () => {
   return (
     <>
       {/* Hero Section with Background Image */}
-      <section className="relative flex items-end justify-center pt-20 pb-14 md:min-h-screen md:pb-20 lg:mt-16">
-        {/* Background Image (desktop) */}
+      <section className="relative min-h-screen flex items-center justify-center pt-20 pb-16 lg:mt-16">
+        {/* Background Image */}
         <div
-          className="absolute inset-0 hidden md:block bg-cover bg-center bg-no-repeat"
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
           style={{ backgroundImage: `url(${heroBackground.url})` }}
           role="img"
           aria-label="Bouwteam voor de bouwkeet - Hero achtergrond"
         >
-          <div className="absolute inset-0 bg-background/45"></div>
+          <div className="absolute inset-0 bg-background/70"></div>
         </div>
 
         {/* Content Overlay */}
         <div className="relative z-10 container mx-auto px-4">
-          {/* Foto boven de tekst op telefoon */}
-          <img
-            src={heroBackground.url}
-            alt="Bouwteam van Bouw met Respect voor de blauwe bouwkeet"
-            className="md:hidden w-full max-w-xl mx-auto rounded-2xl object-cover shadow-sm mb-8"
-          />
           <div
             ref={heroRef}
-            className={`text-center max-w-4xl mx-auto bg-transparent border-0 shadow-none px-0 py-0 transition-all duration-1000 md:bg-background/80 md:backdrop-blur-md md:border md:border-border/50 md:rounded-3xl md:px-14 md:py-10 md:shadow-sm ${
+            className={`text-center max-w-4xl mx-auto transition-all duration-1000 ${
               heroVisible ? 'opacity-100 transform translate-y-0' : 'opacity-0 transform translate-y-8'
             }`}
           >
