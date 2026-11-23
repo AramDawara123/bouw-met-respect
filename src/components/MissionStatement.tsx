@@ -1,6 +1,7 @@
 import { Card } from "@/components/ui/card";
 import { AlertTriangle, TrendingUp } from "lucide-react";
 import kantoorVsBouwkeet from "@/assets/kantoor-vs-bouwkeet.jpg.asset.json";
+import bouwvakker from "@/assets/bouwvakker-bouwplaats.jpg.asset.json";
 const MissionStatement = () => {
   return <section id="probleem" className="py-20 bg-muted/20">
       <div className="container mx-auto px-4">
@@ -54,7 +55,7 @@ const MissionStatement = () => {
               </div>
             </div>
             <div className="flex justify-center">
-              <img src="/lovable-uploads/14116875-c755-46ea-a3a5-87a4132e6d09.png" alt="Bouwvakker met veiligheidsuitrusting op bouwplaats" className="w-full max-w-md aspect-square object-cover rounded-2xl shadow-lg" />
+              <img src={bouwvakker.url} alt="Bouwvakker met veiligheidsuitrusting op bouwplaats" className="w-full max-w-md aspect-square object-cover rounded-2xl shadow-lg" />
             </div>
           </div>
         </Card>
