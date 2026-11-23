@@ -8,15 +8,15 @@ const MissionStatement = () => {
         <div className="grid lg:grid-cols-2 gap-16 items-center mb-20">
           <div>
             <h2 className="text-4xl md:text-5xl font-bold mb-6 text-foreground leading-tight">
-              Het probleem dat we als beweging oplossen
+              Maak mensen belangrijk
             </h2>
             <p className="text-lg text-muted-foreground leading-relaxed mb-6">
-              Grensoverschrijdend gedrag en een harde cultuur maken de bouwsector onveilig. 
-              Jongeren haken af door negatieve ervaringen op de bouwplaats. Sociale veiligheid 
-              in de bouw is niet meer een luxe – het is noodzaak.
+              De afgelopen decennia is er veel geïnvesteerd in mensen die wilden en konden
+              doorleren. Hoe meer je doorleerde, hoe beter ervoor je werd gezorgd.
             </p>
             <p className="text-lg text-muted-foreground leading-relaxed mb-8">
-              <strong>Als we niets doen, verliezen we waardevolle mensen en de toekomst van de bouw.</strong>
+              <strong>Voor de vakmensen die praktisch zijn opgeleid, is er de afgelopen jaren
+              weinig veranderd. Het is tijd om deze mensen weer belangrijk te maken!</strong>
             </p>
             <div className="flex items-center space-x-3 text-primary">
               <AlertTriangle className="w-6 h-6" />
