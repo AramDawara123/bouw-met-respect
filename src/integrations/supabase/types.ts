@@ -852,6 +852,7 @@ export type Database = {
           total: number
         }[]
       }
+      is_admin_user: { Args: { _uid: string }; Returns: boolean }
       verify_admin_access: { Args: never; Returns: boolean }
     }
     Enums: {
