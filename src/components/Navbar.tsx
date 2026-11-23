@@ -20,8 +20,8 @@ const Navbar = () => {
               
             </Link>
 
-            {/* Desktop Navigation */}
-            <div className="hidden lg:flex items-center space-x-8">
+            {/* Desktop Navigation - gecentreerd */}
+            <div className="hidden lg:flex flex-1 items-center justify-center space-x-8">
               <a href="#probleem" className="text-muted-foreground hover:text-foreground transition-colors">
                 Het probleem
               </a>
@@ -41,12 +41,17 @@ const Navbar = () => {
                 <ShoppingCart className="w-4 h-4" />
                 Webshop
               </Link>
-              <Link to="/donatie" className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors">
-                <Heart className="w-4 h-4" />
-                Doneren
-              </Link>
-              
-              <Button className="ml-4" onClick={handleMembershipClick}>
+            </div>
+
+            {/* Desktop actieknoppen rechts */}
+            <div className="hidden lg:flex items-center gap-3">
+              <Button variant="outline" asChild>
+                <Link to="/donatie" className="inline-flex items-center gap-2">
+                  <Heart className="w-4 h-4" />
+                  Doneren
+                </Link>
+              </Button>
+              <Button onClick={handleMembershipClick}>
                 Sluit je aan bij de beweging
               </Button>
             </div>
@@ -79,12 +84,14 @@ const Navbar = () => {
                   <ShoppingCart className="w-4 h-4" />
                   Webshop
                 </Link>
-                <Link to="/donatie" className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors py-2" onClick={() => setIsMenuOpen(false)}>
-                  <Heart className="w-4 h-4" />
-                  Doneren
-                </Link>
-                
-                <Button className="w-full mt-4" onClick={handleMembershipClick}>
+
+                <Button variant="outline" className="w-full mt-4" asChild>
+                  <Link to="/donatie" className="inline-flex items-center gap-2" onClick={() => setIsMenuOpen(false)}>
+                    <Heart className="w-4 h-4" />
+                    Doneren
+                  </Link>
+                </Button>
+                <Button className="w-full" onClick={handleMembershipClick}>
                   Sluit je aan bij de beweging
                 </Button>
               </div>
