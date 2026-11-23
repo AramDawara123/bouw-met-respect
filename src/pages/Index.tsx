@@ -5,7 +5,6 @@ import Statistics from "@/components/Statistics";
 import Awareness from "@/components/Awareness";
 import QuoteBand from "@/components/QuoteBand";
 import ActionItems from "@/components/ActionItems";
-import ReportSection from "@/components/ReportSection";
 import Testimonial from "@/components/Testimonial";
 import FAQ from "@/components/FAQ";
 import CallToAction from "@/components/CallToAction";
@@ -31,7 +30,6 @@ const Index = () => {
         <ActionItems />
         
         
-        <ReportSection />
         <Mission />
         <Testimonial />
         <FAQ />
