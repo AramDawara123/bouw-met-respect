@@ -3,6 +3,7 @@ import MissionStatement from "@/components/MissionStatement";
 import Mission from "@/components/Mission";
 import Statistics from "@/components/Statistics";
 import Awareness from "@/components/Awareness";
+import QuoteBand from "@/components/QuoteBand";
 import ActionItems from "@/components/ActionItems";
 import ReportSection from "@/components/ReportSection";
 import Testimonial from "@/components/Testimonial";
@@ -25,6 +26,7 @@ const Index = () => {
         <Hero />
         <MissionStatement />
         <Statistics />
+        <QuoteBand />
         <Awareness />
         <ActionItems />
         
