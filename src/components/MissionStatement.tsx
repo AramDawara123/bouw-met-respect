@@ -36,12 +36,12 @@ const MissionStatement = () => {
           <div className="relative z-10 grid lg:grid-cols-2 gap-12 items-center">
             <div>
               <h3 className="text-3xl font-bold mb-6 text-accent">
-                De cijfers spreken voor zich
+                Niet AI wordt de doodsteek van onze sector, maar onze eigen koppigheid.
               </h3>
               <p className="text-accent/80 leading-relaxed mb-8 text-lg">
-                De Nederlandse bouwsector verliest jaarlijks duizenden jonge professionals. 
-                Grensoverschrijdend gedrag in de bouw en gebrek aan respect op de werkvloer 
-                zijn de hoofdoorzaken. Dit moet veranderen.
+                De bouw heeft vakmensen nodig. Jongeren kiezen voor een werkplek waar
+                ze zich welkom voelen. Als wij niet durven te veranderen, blijven de
+                handen weg die we zo hard nodig hebben.
               </p>
               <div className="grid grid-cols-2 gap-8">
                 <div>
