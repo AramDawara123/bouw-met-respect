@@ -15,6 +15,13 @@
       "when": 1795444315410,
       "tag": "0001_tighten_interview_photo_read",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1795444373211,
+      "tag": "0002_remove_public_interview_photo_read",
+      "breakpoints": true
     }
   ]
 }

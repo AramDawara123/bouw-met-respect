@@ -1,0 +1,1 @@
+DROP POLICY IF EXISTS "Visitors can view homepage interview photos" ON storage.objects;

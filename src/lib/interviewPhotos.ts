@@ -28,13 +28,28 @@ export const getInterviewPhotoStoragePath = (value?: string | null) => {
   }
 };
 
+let publicUrlsPromise: Promise<Record<string, string>> | null = null;
+
+const loadPublicUrls = () => {
+  if (!publicUrlsPromise) {
+    publicUrlsPromise = supabase.functions
+      .invoke("interview-photo-urls")
+      .then(({ data }) => (data?.urls as Record<string, string>) || {})
+      .catch(() => ({}));
+  }
+  return publicUrlsPromise;
+};
+
 export const getInterviewPhotoDisplayUrl = async (value?: string | null) => {
   const path = getInterviewPhotoStoragePath(value);
   if (!path) return value || "";
 
+  // Admins can sign directly; visitors get URLs from the server function.
   const { data, error } = await supabase.storage
     .from(INTERVIEW_PHOTOS_BUCKET)
     .createSignedUrl(path, 60 * 60 * 24);
+  if (!error && data?.signedUrl) return data.signedUrl;
 
-  return error ? value || "" : data.signedUrl;
+  const urls = await loadPublicUrls();
+  return urls[path] || value || "";
 };
