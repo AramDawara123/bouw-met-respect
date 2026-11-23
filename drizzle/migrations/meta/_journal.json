@@ -22,6 +22,13 @@
       "when": 1795444373211,
       "tag": "0002_remove_public_interview_photo_read",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1795444399963,
+      "tag": "0003_admin_read_interview_photos",
+      "breakpoints": true
     }
   ]
 }
