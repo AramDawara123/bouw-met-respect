@@ -8,6 +8,13 @@
       "when": 1795443474195,
       "tag": "0000_security_hardening",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1795444315410,
+      "tag": "0001_tighten_interview_photo_read",
+      "breakpoints": true
     }
   ]
 }
