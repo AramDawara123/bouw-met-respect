@@ -12,7 +12,7 @@ interface SEOProps {
 const SEO = ({ 
   title = 'Stichting Bouw met Respect | Beweging voor een Veilige Bouwsector',
   description = 'Sluit je aan bij de beweging tegen grensoverschrijdend gedrag in de bouw. Voor een veiligere, respectvolle werkplek en aantrekkelijke sector voor jong talent.',
-  image = '/lovable-uploads/e076c99e-b1ef-46db-9f73-10e463d8e7f7.png',
+  image = '/__l5e/assets-v1/5c7fa70f-af8d-407b-b3dc-e8cb1f5b14bc/bouwteam-voor-bouwkeet.jpg',
   url = 'https://bouwmetrespect.nl',
   type = 'website',
   keywords = 'grensoverschrijdend gedrag bouw, veilige bouwsector, respect bouwplaats, sociale veiligheid bouw, bouwbedrijven respect'
